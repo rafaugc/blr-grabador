@@ -1,66 +1,66 @@
 [
  {
-  "slug": "circuito-dr7",
-  "nombre": "Circuito DR7",
-  "url": "https://live.apex-timing.com/circuito-dr7/index.html",
-  "tz": "Europe/Madrid",
-  "grabar": true
- },
- {
   "slug": "ariza-racing-circuit",
   "nombre": "Ariza Racing Circuit",
-  "url": "https://www.apex-timing.com/live-timing/ariza-racing-circuit/index.html",
+  "tz": "Europe/Madrid",
   "grabar": true,
-  "tz": "Europe/Madrid"
+  "url": "https://www.apex-timing.com/live-timing/ariza-racing-circuit/index.html"
  },
  {
-  "slug": "kartodromo-lucas-guerrero",
-  "nombre": "Kartódromo Lucas Guerrero",
-  "url": "https://www.apex-timing.com/live-timing/kartodromo-lucas-guerrero/index.html",
+  "slug": "circuito-dr7",
+  "nombre": "DR7",
+  "tz": "Europe/Madrid",
   "grabar": true,
-  "tz": "Europe/Madrid"
- },
- {
-  "slug": "kartodromodeviana",
-  "nombre": "Kartódromo de Viana do Castelo",
-  "url": "https://www.apex-timing.com/live-timing/kartodromodeviana/index.html",
-  "tz": "Europe/Lisbon",
-  "grabar": true
- },
- {
-  "slug": "karting-vendrell",
-  "nombre": "Karting Vendrell",
-  "url": "https://www.apex-timing.com/live-timing/karting-vendrell/index.html",
-  "grabar": true,
-  "tz": "Europe/Madrid"
- },
- {
-  "slug": "karting-sevilla",
-  "nombre": "Karting Sevilla",
-  "url": "https://www.apex-timing.com/live-timing/karting-sevilla/index.html",
-  "grabar": true,
-  "tz": "Europe/Madrid"
- },
- {
-  "slug": "karting-rivas",
-  "nombre": "Karting Rivas",
-  "url": "https://www.apex-timing.com/live-timing/karting-rivas/index.html",
-  "grabar": true,
-  "tz": "Europe/Madrid"
+  "url": "https://live.apex-timing.com/circuito-dr7/"
  },
  {
   "slug": "henakart",
   "nombre": "Henakart",
-  "url": "https://www.apex-timing.com/live-timing/henakart/index.html",
+  "tz": "Europe/Madrid",
   "grabar": true,
-  "tz": "Europe/Madrid"
+  "url": "https://www.apex-timing.com/live-timing/henakart/index.html"
  },
  {
   "slug": "karting-campillos",
   "nombre": "Karting Campillos",
-  "port": 9373,
-  "port_fijo": true,
+  "tz": "Europe/Madrid",
   "grabar": true,
-  "tz": "Europe/Madrid"
+  "port": 9373,
+  "port_fijo": true
+ },
+ {
+  "slug": "karting-rivas",
+  "nombre": "Karting Rivas",
+  "tz": "Europe/Madrid",
+  "grabar": true,
+  "url": "https://www.apex-timing.com/live-timing/karting-rivas/index.html"
+ },
+ {
+  "slug": "karting-sevilla",
+  "nombre": "Karting Sevilla",
+  "tz": "Europe/Madrid",
+  "grabar": true,
+  "url": "https://www.apex-timing.com/live-timing/karting-sevilla/index.html"
+ },
+ {
+  "slug": "karting-vendrell",
+  "nombre": "Karting Vendrell",
+  "tz": "Europe/Madrid",
+  "grabar": true,
+  "url": "https://www.apex-timing.com/live-timing/karting-vendrell/index.html"
+ },
+ {
+  "slug": "kartodromo-lucas-guerrero",
+  "nombre": "Kartódromo Lucas Guerrero",
+  "tz": "Europe/Madrid",
+  "grabar": true,
+  "url": "https://www.apex-timing.com/live-timing/kartodromo-lucas-guerrero/index.html"
+ },
+ {
+  "slug": "kartodromodeviana",
+  "nombre": "Kartódromo de Viana do Castelo",
+  "tz": "Europe/Lisbon",
+  "grabar": true,
+  "url": "https://www.apex-timing.com/live-timing/kartodromodeviana/index.html"
  }
 ]
