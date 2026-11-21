@@ -39,6 +39,24 @@ def parse_gap(s: str):
     return round(float(m.group(2)) + (int(m.group(1)) * 60 if m.group(1) else 0), 3)
 
 
+STINT_RE = re.compile(r'^(.*?)\s*\[(\d{1,2}:\d{2}(?::\d{2})?)\]\s*$')
+
+
+def set_name(row: dict, value: str, team_col: bool):
+    """En carreras por equipos Apex alterna en la misma celda el equipo y el piloto al volante ("NOMBRE [0:24]")."""
+    v = (value or '').strip()
+    if not v:
+        return
+    m = STINT_RE.match(v)
+    if m:
+        row['driver'] = m.group(1).strip()
+        row['teamrace'] = True
+    elif team_col or row.get('teamrace'):
+        row['team'] = v
+    else:
+        row['driver'] = v
+
+
 class _GridParser(HTMLParser):
     """Lee la tabla HTML de Apex: filas <tr data-id="r..."> con celdas <td data-type="...">."""
 
@@ -95,8 +113,11 @@ class ApexState:
 
     def _build(self, partial):
         by_row: dict[str, list] = {}
+        teamrace = any(l.get('team') for l in self.laps)
         for l in self.laps:
-            by_row.setdefault(l['row'], []).append(l)
+            # en carreras por equipos, cada piloto con su kart es una tanda distinta
+            key = (l['row'], l['driver']) if teamrace else l['row']
+            by_row.setdefault(key, []).append(l)
         first = min(l['ts'] for l in self.laps)
         dt = datetime.fromtimestamp(first, self.tz)
         t1, t2 = self.session_title if any(self.session_title) else (self.title1, self.title2)
@@ -104,8 +125,10 @@ class ApexState:
         up = title.upper()
         stype = 'Cronos' if re.search(r'CRONO|QUALI|CLASIF|ENTREN|PRACT|LIBRE|ESSAI|CHRONO', up) else 'Carrera'
         stints = []
-        for rid, ls in by_row.items():
+        for key, ls in by_row.items():
+            rid = key[0] if isinstance(key, tuple) else key
             ls.sort(key=lambda x: x['ts'])
+            teams = [l['team'] for l in ls if l.get('team')]
             drivers = [l['driver'] for l in ls if l['driver']]
             karts = [l['kart'] for l in ls if l['kart']]
             kart = max(set(karts), key=karts.count) if karts else ''
@@ -117,6 +140,7 @@ class ApexState:
             pos = self.rows.get(rid, {}).get('rk', '')
             stints.append({
                 'kart': kart_n, 'driver': driver.strip().upper(), 'cls': '',
+                'team': (max(set(teams), key=teams.count) if teams else ''),
                 'pos': int(pos) if str(pos).isdigit() else None,
                 'laps': [l['t'] for l in ls],
                 'gaps': [l['gap'] for l in ls],
@@ -193,11 +217,17 @@ class ApexState:
                 dt = self.col_type.get(i)
                 if dt:
                     d[dt] = txt.strip()
+                    if dt == 'dr':
+                        set_name(d, txt, self.team_col())
             new_rows[rid] = d
         # si cambia el conjunto de filas por completo, es otra sesión
         if self.laps and new_rows and not (set(new_rows) & set(self.last_lap)):
             self.close_session()
         self.rows = new_rows
+
+    def team_col(self):
+        return any(t == 'dr' and re.search(r'equip|team|[ée]quipe', self.col_title.get(i, ''), re.I)
+                   for i, t in self.col_type.items())
 
     def _cell(self, rid: str, col: int, cls: str, value: str, ts: float):
         row = self.rows.setdefault(rid, {})
@@ -205,6 +235,9 @@ class ApexState:
         if not dtype:
             return
         row[dtype] = value
+        if dtype == 'dr':
+            set_name(row, value, self.team_col() or cls == 'drteam')
+            return
         if dtype == 'int':
             # el intervalo suele llegar justo después de la vuelta: se lo asignamos a esa vuelta
             for l in reversed(self.laps[-40:]):
@@ -223,4 +256,4 @@ class ApexState:
             self.last_lap[rid] = (t, ts)
             gap = parse_gap(row.get('int', ''))
             self.laps.append({'row': rid, 't': t, 'ts': ts, 'kart': row.get('no', ''),
-                              'driver': row.get('dr', ''), 'gap': gap})
+                              'driver': row.get('driver') or row.get('dr', ''), 'team': row.get('team', ''), 'gap': gap})

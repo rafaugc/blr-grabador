@@ -179,19 +179,28 @@ function connect() {
 const parseT = s => { s = (s || '').trim().replace(',', '.'); const m = s.match(/^(?:(\d{1,2}):)?(\d{1,2}\.\d{1,3})$/); if (!m) return null; const t = +m[2] + (m[1] ? +m[1] * 60 : 0); return t > 5 && t < 600 ? Math.round(t * 1000) / 1000 : null; };
 const parseG = s => { s = (s || '').trim().replace(',', '.').replace(/^\+/, ''); const m = s.match(/^(?:(\d{1,2}):)?(\d{1,2}\.\d{1,3})$/); return m ? +m[2] + (m[1] ? +m[1] * 60 : 0) : null; };
 
+const STINT = /^(.*?)\s*\[(\d{1,2}:\d{2}(?::\d{2})?)\]\s*$/;
+function setName(row, v, teamCol) {
+  v = (v || '').trim(); if (!v) return;
+  const m = v.match(STINT);
+  if (m) { row.driver = m[1].trim(); row.teamrace = true; }
+  else if (teamCol || row.teamrace) row.team = v; else row.driver = v;
+}
+const teamCol = () => !!live.teamCol;
 function closeLive() {
   if (live.laps.length >= 5) live.sessions.push(buildLive(true));
   live.laps = []; live.last = {}; live.sessTitle = [live.title1, live.title2];
 }
 function buildLive(done) {
   const by = {};
-  live.laps.forEach(l => (by[l.row] = by[l.row] || []).push(l));
+  const tr = live.laps.some(l => l.team);
+  live.laps.forEach(l => { const k = tr ? l.row + '|' + l.driver : l.row; (by[k] = by[k] || []).push(l); });
   const first = Math.min(...live.laps.map(l => l.ts)), d = new Date(first);
   const t = (live.sessTitle || [live.title1, live.title2]).filter(Boolean).join(' - ');
   return { id: 'live-' + first, circuit: C.nombre, slug: C.slug, date: today(), time: d.toTimeString().slice(0, 5), title: t, group: live.title2 || '',
     type: /CRONO|QUALI|CLASIF|ENTREN|PRACT|LIBRE/i.test(t) ? 'Cronos' : 'Carrera', source: done ? 'directo' : 'en curso', envivo: !done,
-    stints: Object.entries(by).map(([rid, ls]) => ({ kart: +String(ls[ls.length - 1].kart).replace(/\D/g, '') || ls[ls.length - 1].kart, driver: (ls[ls.length - 1].driver || '').toUpperCase(),
-      pos: +live.rows[rid]?.rk || null, laps: ls.map(l => l.t), gaps: ls.map(l => l.gap) })) };
+    stints: Object.entries(by).map(([key, ls]) => { const rid = key.split('|')[0]; return { kart: +String(ls[ls.length - 1].kart).replace(/\D/g, '') || ls[ls.length - 1].kart, driver: (ls[ls.length - 1].driver || '').toUpperCase(),
+      team: ls[ls.length - 1].team || '', pos: +live.rows[rid]?.rk || null, laps: ls.map(l => l.t), gaps: ls.map(l => l.gap) }; }) };
 }
 function feed(msg) {
   const now = Date.now();
@@ -202,29 +211,30 @@ function feed(msg) {
     if ((cmd === 'init' || cmd === 'grid') && val.includes('<tr')) grid(val);
     else if (cmd === 'title1' || cmd === 'title2') { if (live[cmd] !== val) { live[cmd] = val; if (live.laps.length && live.sessTitle && (live.title1 + live.title2) !== live.sessTitle.join('')) closeLive(); if (!live.laps.length) live.sessTitle = [live.title1, live.title2]; } }
     else if (cmd === 'clear' && param === 'grid') { closeLive(); live.rows = {}; }
-    else { let m = cmd.match(/^r(\d+)c(\d+)$/); if (m) cell('r' + m[1], +m[2], val, now); else if ((m = cmd.match(/^r(\d+)$/)) && param === '#') (live.rows[cmd] = live.rows[cmd] || {}).rk = val; }
+    else { let m = cmd.match(/^r(\d+)c(\d+)$/); if (m) cell('r' + m[1], +m[2], val, now, param); else if ((m = cmd.match(/^r(\d+)$/)) && param === '#') (live.rows[cmd] = live.rows[cmd] || {}).rk = val; }
   }
 }
 function grid(html) {
   const doc = new DOMParser().parseFromString('<table>' + html.replace(/^.*?<table[^>]*>/is, '') , 'text/html');
   const trs = [...doc.querySelectorAll('tr')];
   const head = trs.find(tr => tr.classList.contains('head') || tr.dataset.id === 'r0');
-  if (head) { live.cols = {}; [...head.children].forEach((td, i) => live.cols[i + 1] = td.dataset.type || ''); }
+  if (head) { live.cols = {}; live.teamCol = false; [...head.children].forEach((td, i) => { live.cols[i + 1] = td.dataset.type || ''; if (td.dataset.type === 'dr' && /equip|team/i.test(td.textContent)) live.teamCol = true; }); }
   const rows = {};
-  trs.forEach(tr => { if (tr === head || !tr.dataset.id) return; const d = {}; [...tr.children].forEach((td, i) => { const t = live.cols[i + 1]; if (t) d[t] = td.textContent.trim(); }); rows[tr.dataset.id] = d; });
+  trs.forEach(tr => { if (tr === head || !tr.dataset.id) return; const d = {}; [...tr.children].forEach((td, i) => { const t = live.cols[i + 1]; if (t) { d[t] = td.textContent.trim(); if (t === 'dr') setName(d, d[t], teamCol()); } }); rows[tr.dataset.id] = d; });
   if (live.laps.length && Object.keys(rows).length && !Object.keys(rows).some(r => live.last[r])) closeLive();
   live.rows = rows;
 }
-function cell(rid, col, val, ts) {
+function cell(rid, col, val, ts, cls) {
   const row = live.rows[rid] = live.rows[rid] || {}, type = live.cols[col];
   if (!type) return;
   row[type] = val; row['_' + type] = ts;
+  if (type === 'dr') { setName(row, val, teamCol() || cls === 'drteam'); return; }
   if (type === 'int') { for (let i = live.laps.length - 1; i >= Math.max(0, live.laps.length - 40); i--) if (live.laps[i].row === rid) { if (ts - live.laps[i].ts < 3000) live.laps[i].gap = parseG(val); break; } return; }
   if (type !== 'llp') return;
   const t = parseT(val); if (t === null) return;
   const p = live.last[rid]; if (p && p[0] === t && ts - p[1] < t * 600) return;
   live.last[rid] = [t, ts];
-  live.laps.push({ row: rid, t, ts, kart: row.no || '', driver: row.dr || '', gap: parseG(row.int) });
+  live.laps.push({ row: rid, t, ts, kart: row.no || '', driver: row.driver || row.dr || '', team: row.team || '', gap: parseG(row.int) });
 }
 
 // ---------- análisis ----------
@@ -271,7 +281,7 @@ function renderPista() {
   <table><thead><tr><th class="l">Pos</th><th style="text-align:center">Kart</th><th class="l">Piloto</th><th>Última</th><th>Mejor</th><th class="hm">Vueltas vistas</th><th>Kart hoy</th></tr></thead><tbody>
   ${rows.map(([rid, r]) => { const k = keff[String(+String(r.no).replace(/\D/g, '') || r.no)]; const [c] = k ? tier(k.effect) : [''];
     const ls = lapsBy[rid] || [], fresh = Date.now() - (r._llp || 0) < 4000;
-    return `<tr class="${fresh ? 'flash' : ''}"><td class="l">${esc(r.rk || '')}</td><td class="k ${c}">${esc(r.no || '')}</td><td class="l">${esc(r.dr || '')}</td>
+    return `<tr class="${fresh ? 'flash' : ''}"><td class="l">${esc(r.rk || '')}</td><td class="k ${c}">${esc(r.no || '')}</td><td class="l">${esc(r.driver || r.dr || '')}${r.team ? `<div class="mini">${esc(r.team)}</div>` : ''}</td>
     <td class="num">${esc(r.llp || '')}</td><td class="num purple">${esc(r.blp || '')}</td><td class="num hm">${ls.length}</td><td class="num ${c}">${k ? fmt(k.effect) + ' s' : '–'}</td></tr>`; }).join('')}
   </tbody></table></div>`;
 }

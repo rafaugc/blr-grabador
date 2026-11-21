@@ -133,15 +133,15 @@ def save_live(state: ApexState, stats: dict):
 def sample_write(slug, msg, stats):
     """Guarda una muestra pequeña de lo que manda Apex (para revisar columnas y formatos)."""
     d = ROOT / 'data' / 'muestras'
-    if ('init|grid|' in msg or msg.startswith('grid|')) and not stats.get('muestra_grid'):
+    if ('grid||' in msg or 'init|grid|' in msg) and not stats.get('muestra_grid'):
         d.mkdir(parents=True, exist_ok=True)
         (d / f'{slug}_tabla.txt').write_text(msg[:200000])
         stats['muestra_grid'] = True
     n = stats.get('muestra_n', 0)
-    if n < 400:
+    if n < 600:
         d.mkdir(parents=True, exist_ok=True)
         with open(d / f'{slug}_inicio.txt', 'w' if n == 0 else 'a') as f:
-            f.write(msg[:4000].replace('\n', ' ⏎ ') + '\n')
+            f.write(msg[:20000].replace('\n', ' ⏎ ') + '\n')
         stats['muestra_n'] = n + 1
 
 
