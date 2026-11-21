@@ -20,3 +20,16 @@ init|p| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#FF8040 !important; color
  ⏎ 
  ⏎ 
  ⏎ 
+ ⏎ 
+r3c2|sr| ⏎ r3|*|| ⏎ 
+dyn1|countdown|568261 ⏎ 
+r3c2|in| ⏎ 
+dyn1|countdown|538188 ⏎ 
+r3c1|gs| ⏎ r3c2|su| ⏎ r3c3||1 ⏎ r3c6|tb|40.190 ⏎ r3c7|ib|40.190 ⏎ r3|*|40190| ⏎ 
+r3c2|in| ⏎ 
+r3c2|su| ⏎ r3c6|tb|13.750 ⏎ r3c7|ib|13.750 ⏎ r3|*|13750| ⏎ 
+r3c2|sr| ⏎ 
+r3c2|in| ⏎ 
+dyn1|countdown|508080 ⏎ 
+light|lf| ⏎ com||<p><b>20:02</b><span data-flag="chequered"></span>Llegada</p> ⏎ dyn1|text| ⏎ 
+r3c2|sf| ⏎ 
