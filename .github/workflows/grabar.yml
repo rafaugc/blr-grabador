@@ -12,6 +12,9 @@ on:
       minutos:
         description: 'Minutos de grabación (para una prueba rápida, pon 5)'
         default: '350'
+      solo:
+        description: 'Grabar solo estos circuitos (nombres cortos separados por espacios; vacío = todos)'
+        default: ''
       forzar:
         description: 'Grabar aunque ya haya otro grabador en marcha'
         type: boolean
@@ -43,7 +46,7 @@ jobs:
         run: |
           git config user.name "blr-grabador"
           git config user.email "blr-grabador@users.noreply.github.com"
-          python -m grabador.grabar --minutos "${{ github.event.inputs.minutos || '350' }}"
+          python -m grabador.grabar --minutos "${{ github.event.inputs.minutos || '350' }}" ${{ github.event.inputs.solo && format('--solo {0}', github.event.inputs.solo) || '' }}
       - name: Guardar copia en bruto (30 días)
         if: always() && steps.turno.outputs.grabar == 'true'
         uses: actions/upload-artifact@v4

@@ -1,5 +1,12 @@
 [
  {
+  "slug": "circuito-dr7",
+  "nombre": "Circuito DR7",
+  "url": "https://live.apex-timing.com/circuito-dr7/index.html",
+  "tz": "Europe/Madrid",
+  "grabar": true
+ },
+ {
   "slug": "ariza-racing-circuit",
   "nombre": "Ariza Racing Circuit",
   "url": "https://www.apex-timing.com/live-timing/ariza-racing-circuit/index.html",

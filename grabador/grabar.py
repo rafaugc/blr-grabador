@@ -103,7 +103,7 @@ def publish_git():
 
 
 PUB: 'Publisher | None' = None
-LIVE_EVERY = 10 * 60
+LIVE_EVERY = 3 * 60
 
 
 def live_path(slug):
@@ -128,6 +128,21 @@ def save_live(state: ApexState, stats: dict):
     p.write_text(json.dumps(s, ensure_ascii=False, separators=(',', ':')))
     if PUB:
         PUB.mark()
+
+
+def sample_write(slug, msg, stats):
+    """Guarda una muestra pequeña de lo que manda Apex (para revisar columnas y formatos)."""
+    d = ROOT / 'data' / 'muestras'
+    if ('init|grid|' in msg or msg.startswith('grid|')) and not stats.get('muestra_grid'):
+        d.mkdir(parents=True, exist_ok=True)
+        (d / f'{slug}_tabla.txt').write_text(msg[:200000])
+        stats['muestra_grid'] = True
+    n = stats.get('muestra_n', 0)
+    if n < 400:
+        d.mkdir(parents=True, exist_ok=True)
+        with open(d / f'{slug}_inicio.txt', 'w' if n == 0 else 'a') as f:
+            f.write(msg[:4000].replace('\n', ' ⏎ ') + '\n')
+        stats['muestra_n'] = n + 1
 
 
 def save_sessions(state: ApexState, stats: dict):
@@ -188,6 +203,7 @@ async def record(c: dict, deadline: float, stats: dict, raw_dir: Path):
                         if isinstance(msg, bytes):
                             msg = msg.decode('utf-8', 'replace')
                         raw.write(json.dumps([round(now, 2), msg], ensure_ascii=False) + '\n')
+                        sample_write(slug, msg, stats)
                         stats['mensajes'] += 1
                         stats['ultimo_mensaje_ts'] = now
                         try:
@@ -233,7 +249,32 @@ async def main_async(minutes: float, only: list[str] | None):
     stats = {c['slug']: {'nombre': c['nombre'], 'conectado': False, 'conexiones': 0, 'mensajes': 0,
                          'sesiones': 0, 'errores_lectura': 0} for c in active}
     log(f"Grabando {len(active)} circuitos durante {minutes:.0f} minutos: {', '.join(c['slug'] for c in active)}")
-    await asyncio.gather(*(record(c, deadline, stats[c['slug']], raw_dir) for c in active))
+    tasks = {c['slug']: asyncio.create_task(record(c, deadline, stats[c['slug']], raw_dir)) for c in active}
+
+    async def watch_list():
+        # cada 5 min mira si se han añadido circuitos nuevos (desde la app) y empieza a grabarlos
+        while time.time() < deadline - 120:
+            await asyncio.sleep(300)
+            if os.environ.get('GITHUB_ACTIONS') == 'true':
+                await asyncio.to_thread(subprocess.run, ['git', 'pull', '-q', '--rebase', '-X', 'theirs'], cwd=ROOT, capture_output=True)
+            try:
+                fresh = json.loads((ROOT / 'circuitos.json').read_text())
+            except Exception:
+                continue
+            for c in fresh:
+                if c.get('grabar') and c['slug'] not in tasks and (not only or c['slug'] in only):
+                    c = resolve(c)
+                    if not (c.get('port') or c.get('ws')):
+                        continue
+                    stats[c['slug']] = {'nombre': c['nombre'], 'conectado': False, 'conexiones': 0, 'mensajes': 0,
+                                        'sesiones': 0, 'errores_lectura': 0}
+                    log(f"[{c['slug']}] circuito nuevo en la lista, empiezo a grabarlo")
+                    tasks[c['slug']] = asyncio.create_task(record(c, deadline, stats[c['slug']], raw_dir))
+
+    watcher = asyncio.create_task(watch_list())
+    while any(not t.done() for t in tasks.values()):
+        await asyncio.sleep(5)
+    watcher.cancel()
 
     estado_path = ROOT / 'data' / 'estado.json'
     estado_path.parent.mkdir(exist_ok=True)
@@ -247,6 +288,8 @@ async def main_async(minutes: float, only: list[str] | None):
         s.pop('ultimo_mensaje_ts', None)
         s.pop('en_sesion', None)
         s.pop('live_ts', None)
+        s.pop('muestra_grid', None)
+        s.pop('muestra_n', None)
         s['ultima_ejecucion'] = fin
         s['sesiones_total'] = prev.get('sesiones_total', 0) + s['sesiones']
         if s['conectado']:
