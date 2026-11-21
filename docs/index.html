@@ -69,6 +69,16 @@ body.pilot .wrap{max-width:none;padding:6px}
 .pv .posbig{font:700 clamp(40px,20vh,170px)/.9 'Barlow Condensed';color:var(--text)}
 .up{color:#3ddc84!important}.down{color:#ff5f5f!important}
 .kp{display:grid;grid-template-columns:repeat(3,64px);gap:8px;justify-content:center}.kp button{height:52px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;cursor:pointer}
+.ks{height:calc(100vh - 12px);height:calc(100dvh - 12px);display:grid;grid-template-columns:1fr 1.15fr;gap:12px}
+.ksl{display:flex;flex-direction:column;gap:1.2vh;justify-content:center;min-width:0}
+.kst{font:700 clamp(18px,6vh,34px) 'Barlow Condensed'}
+.ksv{font:700 clamp(48px,26vh,180px)/1 'Barlow Condensed';color:var(--accent)}
+.ksgo{height:clamp(40px,13vh,80px);border:0;border-radius:14px;background:var(--accent);color:#111;font:700 clamp(18px,6vh,34px) 'Barlow Condensed';cursor:pointer}
+.ksc{display:flex;flex-wrap:wrap;gap:6px;max-height:18vh;overflow:auto}.ksc .chipd{font-size:clamp(13px,3.4vh,20px);padding:4px 12px}
+.kp2{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,1fr);gap:8px}
+.kp2 button{border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font:600 clamp(22px,8vh,46px) Inter,sans-serif;cursor:pointer}
+.kp2 button:active{background:#2a2410}
+.xx2{width:44px;height:44px;border-radius:12px;border:2px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;cursor:pointer}
 .rot{display:none}@media (orientation:portrait){body.pilot .rot{display:block}}
 tr.click{cursor:pointer}tr.click:hover td{background:#171a20}
 .sub{display:flex;gap:4px;margin:10px 0;flex-wrap:wrap}.sub button{border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:5px 12px;cursor:pointer;color:var(--mute);font-size:13px}.sub button.on{color:var(--accent);border-color:#6b5a1a;background:#2a2410}
@@ -148,8 +158,8 @@ document.querySelectorAll('#tabs a').forEach(a => a.onclick = () => {
   document.querySelectorAll('#tabs a').forEach(x => x.classList.toggle('on', x === a));
   document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.id === 'v-' + a.dataset.v));
   if (a.dataset.v === 'apex' && !$('apexFrame').src && C) $('apexFrame').src = baseUrl(C);
-  document.body.classList.toggle('pilot', a.dataset.v === 'piloto' && !!pilotKart);
-  if (a.dataset.v === 'piloto') renderPilot(true);
+  if (a.dataset.v !== 'piloto') document.body.classList.remove('pilot');
+  if (a.dataset.v === 'piloto') { pilotReady = false; renderPilot(true); }
 });
 $('method').onclick = e => { const b = e.target.closest('button'); if (!b) return; opts.method = b.dataset.v; document.querySelectorAll('#method button').forEach(x => x.classList.toggle('on', x === b)); render(); };
 $('traffic').onchange = e => { opts.noTraffic = e.target.checked; render(); };
@@ -179,11 +189,18 @@ function start() {
   refreshRecorded();
 }
 
+// ---------- índice de sesiones (archivo que mantiene el grabador; sin límite de consultas) ----------
+let INDEXF = null;
+async function loadIndex(force) {
+  if (INDEXF && !force && Date.now() - INDEXF._t < 60000) return INDEXF;
+  try { const r = await fetch(RAW + 'data/indice.json?t=' + Date.now(), { cache: 'no-store' }); if (r.ok) { INDEXF = await r.json(); INDEXF._t = Date.now(); } } catch {}
+  return INDEXF;
+}
 // ---------- días disponibles ----------
 async function loadDays() {
   const slug = C.slug;
-  let days = [];
-  try { const r = await fetch(API + 'data/sesiones/' + slug + '?ref=main'); const l = r.ok ? await r.json() : []; days = (Array.isArray(l) ? l : []).filter(x => x.type === 'dir').map(x => x.name); } catch {}
+  const idx = await loadIndex();
+  let days = idx && idx.circuitos[slug] ? Object.keys(idx.circuitos[slug].dias) : ALLDAYS.slice();
   if (!days.includes(today())) days.push(today());
   days.sort().reverse();
   if (slug !== C.slug) return;
@@ -199,28 +216,26 @@ const daysLabel = () => [...DAYS].sort().map(fmtD).join(', ');
 // ---------- sesiones grabadas (desde el grabador) ----------
 let refreshTimer = null;
 async function loadDay(slug, day) {
-  const path = `data/sesiones/${slug}/${day}`;
-  const r = await fetch(API + path + '?ref=main', { headers: { Accept: 'application/vnd.github+json' } });
-  const list = r.ok ? await r.json() : [];
-  const files = (Array.isArray(list) ? list : []).filter(f => f.name.endsWith('.json'));
+  const idx = await loadIndex(day === today());
+  if (!idx) return; // sin índice no tocamos lo ya cargado
+  const files = (idx.circuitos[slug] && idx.circuitos[slug].dias[day]) || [];
   const box = recorded[day] = recorded[day] || {};
-  await Promise.all(files.filter(f => !box[f.name + f.sha]).map(f =>
-    fetch(RAW + path + '/' + f.name + '?s=' + f.sha).then(x => x.json()).then(x => { box[f.name + f.sha] = x; }).catch(() => {})));
-  const keep = new Set(files.map(f => f.name + f.sha));
-  Object.keys(box).forEach(k => { if (!keep.has(k)) delete box[k]; });
+  const path = `data/sesiones/${slug}/${day}`;
+  await Promise.all(files.filter(f => !box[f.f + f.h]).map(f =>
+    fetch(RAW + path + '/' + f.f + '?h=' + f.h).then(x => x.ok ? x.json() : null).then(x => { if (x) box[f.f + f.h] = x; }).catch(() => {})));
+  const keep = new Set(files.map(f => f.f + f.h));
+  // solo quitamos versiones antiguas si la nueva ya está cargada
+  Object.keys(box).forEach(k => { const name = k.slice(0, k.indexOf('.json') + 5); if (!keep.has(k) && [...keep].some(n => n.startsWith(name) && box[n])) delete box[k]; });
 }
 async function refreshRecorded() {
   clearTimeout(refreshTimer);
   const slug = C.slug;
   try {
     await Promise.all([...DAYS].filter(d => d === today() || !recorded[d]).map(d => loadDay(slug, d)));
-    envivo = null;
     if (isToday()) {
       try {
-        const e = await fetch(API + 'data/envivo?ref=main', { headers: { Accept: 'application/vnd.github+json' } });
-        const files = e.ok ? await e.json() : [];
-        const f = (Array.isArray(files) ? files : []).find(x => x.name === slug + '.json');
-        if (f) { const x = await (await fetch(RAW + 'data/envivo/' + f.name + '?s=' + f.sha)).json(); if (x.date === today()) envivo = x; }
+        const e = await fetch(RAW + 'data/envivo/' + slug + '.json?t=' + Date.now(), { cache: 'no-store' });
+        if (e.ok) { const x = await e.json(); if (x.date === today()) envivo = x; }
       } catch {}
     }
     if (slug !== C.slug) return;
@@ -228,7 +243,7 @@ async function refreshRecorded() {
     $('dataState').textContent = `${n} sesiones grabadas · ${daysLabel()}`; $('dataState').className = 'pill ok';
   } catch (e) { $('dataState').textContent = 'Sin acceso a lo grabado'; $('dataState').className = 'pill warn'; }
   render();
-  if (slug === C.slug && isToday()) refreshTimer = setTimeout(refreshRecorded, 150000);
+  if (slug === C.slug && isToday()) refreshTimer = setTimeout(refreshRecorded, document.body.classList.contains('pilot') ? 60000 : 90000);
 }
 
 // ---------- conexión directa con Apex ----------
@@ -493,9 +508,10 @@ function renderDetail(el, s) {
 // ================= VISTA PILOTO =================
 let pilotKart = store.get('pilotKart', '');
 let flash = { until: 0, cls: '' }, wake = null, pTimer = null;
+const fmt1 = x => { if (!isFinite(x)) return '–'; x = Math.round(x * 10) / 10; const m = Math.floor(x / 60), sec = x - m * 60; return (m ? m + ':' + (sec < 10 ? '0' : '') : '') + sec.toFixed(1); };
 const kartOf = r => String(+String(r.no || '').replace(/\D/g, '') || r.no || '');
-const pilotSoon = () => { if (!pTimer && document.body.classList.contains('pilot')) pTimer = setTimeout(() => { pTimer = null; renderPilot(); }, 250); };
-setInterval(() => { if (document.querySelector('#tabs a.on')?.dataset.v === 'piloto') renderPilot(); }, 1000);
+const pilotSoon = () => { if (!pTimer && pilotReady) pTimer = setTimeout(() => { pTimer = null; renderPilot(); }, 250); };
+setInterval(() => { if (pilotReady && document.querySelector('#tabs a.on')?.dataset.v === 'piloto') renderPilot(); }, 1000);
 function lapsOf(rid) {
   if (!live) return [];
   const own = live.laps.filter(l => l.row === rid);
@@ -524,8 +540,9 @@ function validLaps(rid) {
   const ls = lapsOf(rid);
   const c = ls.filter((l, i) => {
     if (i === 0) return false;
+    const same = (a, b) => a === '' || b === '' || a == null || b == null || String(a) === String(b);
     const pPrev = ls[i - 1].pits, pNow = l.pits, pPrev2 = i > 1 ? ls[i - 2].pits : pPrev;
-    if (pNow !== pPrev || pPrev !== pPrev2) return false; // pasó por boxes en esta vuelta o en la anterior
+    if (!same(pNow, pPrev) || !same(pPrev, pPrev2)) return false; // pasó por boxes en esta vuelta o en la anterior
     return true;
   }).map(l => l.t);
   if (!c.length) return [];
@@ -536,30 +553,37 @@ function paceOf(rid) { const v = validLaps(rid).slice(-5); return v.length >= 2 
 const paceN = rid => Math.min(5, validLaps(rid).length);
 const fmtGap = v => { v = (v || '').trim(); if (!v) return '–'; if (/vuelta|lap|tour|v$/i.test(v)) { const n = v.match(/\d+/); return n ? '+' + n[0] + ' V' : v; } return v.replace('.', ','); };
 function pilotSetup(el) {
-  const onTrack = live ? Object.values(live.rows).filter(r => r.no).map(kartOf).sort((a, b) => a - b) : [];
+  document.body.classList.add('pilot');
+  const onTrack = live ? [...new Set(Object.values(live.rows).filter(r => r.no).map(kartOf))].sort((a, b) => a - b) : [];
   let val = pilotKart || '';
-  el.innerHTML = `<div class="card" style="max-width:420px;margin:20px auto;text-align:center">
-    <div class="mini">Vista piloto · ${esc(C ? C.nombre : '')}</div>
-    <h2 style="font:700 26px 'Barlow Condensed';margin:6px 0 12px">¿Qué kart llevas?</h2>
-    <div id="kv" style="font:700 64px/1 'Barlow Condensed';color:var(--accent);min-height:66px">${esc(val || '–')}</div>
-    <div class="kp" style="margin:12px 0">${[1,2,3,4,5,6,7,8,9,'⌫',0,'✓'].map(k => `<button data-k="${k}">${k}</button>`).join('')}</div>
-    ${onTrack.length ? `<div class="mini" style="margin-bottom:6px">Karts en pista ahora:</div><div class="row" style="justify-content:center">${onTrack.map(k => `<span class="chipd" data-q="${k}">${k}</span>`).join('')}</div>` : ''}
-    <div class="mini" style="margin-top:12px">Gira el móvil en horizontal al entrar.</div></div>`;
+  el.innerHTML = `<div class="ks">
+    <div class="ksl">
+      <div style="display:flex;justify-content:space-between;align-items:center"><span class="mini">Vista piloto · ${esc(C ? C.nombre : '')}</span><button class="xx2" id="ksx">✕</button></div>
+      <div class="kst">¿Qué kart llevas?</div>
+      <div id="kv" class="ksv">${esc(val || '–')}</div>
+      <button id="ksgo" class="ksgo">Entrar</button>
+      ${onTrack.length ? `<div class="mini">En pista ahora (toca el tuyo):</div><div class="ksc">${onTrack.map(k => `<span class="chipd" data-q="${k}">${k}</span>`).join('')}</div>` : '<div class="mini">Gira el móvil en horizontal.</div>'}
+    </div>
+    <div class="kp2">${[1,2,3,4,5,6,7,8,9,'⌫',0,'C'].map(k => `<button data-k="${k}">${k}</button>`).join('')}</div>
+  </div>`;
   const show = () => { $('kv').textContent = val || '–'; };
   const go = async () => {
     if (!val) return;
-    pilotKart = val; store.set('pilotKart', val); document.body.classList.add('pilot');
+    pilotKart = val; store.set('pilotKart', val); pilotMsg = null;
     try { wake = await navigator.wakeLock?.request('screen'); } catch {}
     try { await document.documentElement.requestFullscreen?.(); } catch {}
     try { await screen.orientation?.lock?.('landscape'); } catch {}
-    renderPilot(true);
+    pilotReady = true; renderPilot(true);
   };
-  el.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { const k = b.dataset.k; if (k === '⌫') val = val.slice(0, -1); else if (k === '✓') return go(); else if (val.length < 3) val += k; show(); });
+  el.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { const k = b.dataset.k; if (k === '⌫') val = val.slice(0, -1); else if (k === 'C') val = ''; else if (val.length < 3) val += k; show(); });
   el.querySelectorAll('[data-q]').forEach(b => b.onclick = () => { val = b.dataset.q; show(); go(); });
+  $('ksgo').onclick = go;
+  $('ksx').onclick = () => { document.body.classList.remove('pilot'); document.querySelector('#tabs a[data-v=ranking]').click(); };
 }
+let pilotReady = false;
 function renderPilot(force) {
   const el = $('pilotOut'); if (!el) return;
-  if (!pilotKart || !document.body.classList.contains('pilot')) { if (force || !el.querySelector('.kp')) pilotSetup(el); return; }
+  if (!pilotKart || !pilotReady) { if (force || !el.querySelector('.kp2')) pilotSetup(el); return; }
   const rows = live ? Object.entries(live.rows).filter(([, r]) => r.no) : [];
   const me = rows.find(([, r]) => kartOf(r) === pilotKart);
   const fl = live && FLAGS[live.light];
@@ -598,13 +622,13 @@ function renderPilot(force) {
     ${head()}
     <div class="top">
       <div class="tile"><div class="lab">Última vuelta</div>
-        <div class="fv"><span class="mono ${isPB ? '' : flashing}" style="${isPB ? 'color:var(--purple)' : ''}">${last != null ? fmtT(last).replace(',', '.') : '–'}</span></div>
+        <div class="fv"><span class="mono ${isPB ? '' : flashing}" style="${isPB ? 'color:var(--purple)' : ''}">${last != null ? fmt1(last) : '–'}</span></div>
         <div class="lab" style="color:${dMean == null ? 'var(--mute)' : dMean <= 0 ? 'var(--fast)' : 'var(--vslow)'}">${dMean == null ? '&nbsp;' : fmt(dMean) + ' vs tu media'}</div></div>
       <div class="tile" style="padding-left:4px;padding-right:4px"><div class="lab" style="text-align:center">Posición</div>
         <div class="fv c" style="flex:2.2"><span class="bc">${myPos ? 'P' + myPos : '–'}</span></div>
         <div class="fv c" style="flex:.9"><span class="bc" style="color:var(--mute)">/${N}</span></div></div>
       <div class="tile"><div class="lab">Mi VR</div>
-        <div class="fv" style="flex:2"><span class="mono" style="color:var(--purple)">${isFinite(myBest) ? fmtT(myBest).replace(',', '.') : '–'}</span></div>
+        <div class="fv" style="flex:2"><span class="mono" style="color:var(--purple)">${isFinite(myBest) ? fmt1(myBest) : '–'}</span></div>
         <div class="fv" style="flex:1"><span>${vrRank ? vrRank + '/' + bests.length : '–'}<small style="color:var(--mute);font-size:.45em"> entre VRs</small></span></div></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;min-height:0">
@@ -633,11 +657,11 @@ function fitAll() {
     sp.style.fontSize = lo + 'px'; fitCache[key] = lo;
   });
 }
-window.addEventListener('resize', () => { if (document.body.classList.contains('pilot')) renderPilot(); });
+window.addEventListener('resize', () => { if (pilotReady) renderPilot(); });
 function bindPilot() {
   fitAll();
-  const x = $('exitP'); if (x) x.onclick = () => { document.body.classList.remove('pilot'); try { document.exitFullscreen?.(); } catch {} try { wake?.release(); } catch {} document.querySelector('#tabs a[data-v=ranking]').click(); };
-  const k = $('chgK'); if (k) k.onclick = () => { document.body.classList.remove('pilot'); pilotSetup($('pilotOut')); };
+  const x = $('exitP'); if (x) x.onclick = () => { pilotReady = false; document.body.classList.remove('pilot'); try { document.exitFullscreen?.(); } catch {} try { wake?.release(); } catch {} document.querySelector('#tabs a[data-v=ranking]').click(); };
+  const k = $('chgK'); if (k) k.onclick = () => { pilotReady = false; pilotSetup($('pilotOut')); };
 }
 document.addEventListener('visibilitychange', async () => { if (document.visibilityState === 'visible' && document.body.classList.contains('pilot')) { try { wake = await navigator.wakeLock?.request('screen'); } catch {} } });
 // ================= MENSAJES AL PILOTO (ntfy.sh, gratis y al instante) =================

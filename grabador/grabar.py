@@ -73,6 +73,8 @@ class Publisher:
         self.pending = True
 
     async def maybe(self, force=False):
+        if self.enabled and time.time() - self.last > 180:
+            self.pending = True
         if not self.enabled or not self.pending or (not force and time.time() - self.last < 120):
             return
         async with self.lock:
@@ -83,7 +85,9 @@ class Publisher:
 
 def publish_git():
     cmds = [
+        ['git', 'pull', '-q', '--rebase', '-X', 'theirs'],
         [sys.executable, '-m', 'grabador.unir'],
+        [sys.executable, '-m', 'grabador.indice'],
         ["git", "add", "-A", "data/"],
     ]
     for c in cmds:
