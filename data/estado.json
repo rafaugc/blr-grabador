@@ -97,5 +97,18 @@
   "ultima_ejecucion": "2026-11-21 15:50 UTC",
   "sesiones_total": 14,
   "ultima_conexion_ok": "2026-11-21 15:50 UTC"
+ },
+ "circuito-dr7": {
+  "nombre": "DR7",
+  "conectado": true,
+  "conexiones": 1,
+  "mensajes": 15228,
+  "sesiones": 7,
+  "errores_lectura": 0,
+  "titulo": "Carrera +85 pro",
+  "ultima_sesion": "2026-11-21 17:17 Carrera +85 pro",
+  "ultima_ejecucion": "2026-11-21 17:18 UTC",
+  "sesiones_total": 7,
+  "ultima_conexion_ok": "2026-11-21 17:18 UTC"
  }
 }
