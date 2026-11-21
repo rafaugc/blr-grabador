@@ -45,7 +45,12 @@ iframe{width:100%;height:78vh;border:1px solid var(--line);border-radius:12px;ba
 body.pilot header,body.pilot nav.tabs,body.pilot .foot{display:none}
 body.pilot .wrap{max-width:none;padding:6px}
 .pv{height:calc(100vh - 12px);height:calc(100dvh - 12px);display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1.05fr 1fr;gap:8px}
-.pv .bar{grid-column:1/3;display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--mute);font-size:clamp(12px,2.2vh,16px);padding:0 6px;flex-wrap:wrap}
+.pv .bar{grid-column:1/3;display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--mute);font-size:clamp(11px,1.9vh,14px);padding:0 6px;flex-wrap:nowrap;overflow:hidden}
+.pv .fv{flex:1;min-height:0;min-width:0;display:flex;align-items:center;overflow:hidden}
+.pv .fv.c{justify-content:center;text-align:center}
+.pv .fv>span{white-space:nowrap;line-height:1;display:inline-block}
+.pv .fv.w>span{white-space:normal;line-height:.95}
+.pv .lab{flex:none}
 .pv .tile{background:var(--panel);border-radius:16px;padding:1.2vh 1.6vw;display:flex;flex-direction:column;justify-content:center;min-width:0;overflow:hidden}
 .pv .lab{color:var(--mute);font-size:clamp(11px,2.4vh,16px)}
 .pv .big{font-family:"JetBrains Mono",monospace;font-weight:500;line-height:1.05;font-size:clamp(28px,13vh,110px);transition:color .4s}
@@ -54,10 +59,12 @@ body.pilot .wrap{max-width:none;padding:6px}
 .pv .sub2{font-size:clamp(11px,2.6vh,18px)}
 .pv .gap{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:clamp(18px,7vh,56px);line-height:1.05}
 .pv .msg{border-radius:16px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:700;font-family:"Barlow Condensed"}
+.pv .mono{font-family:"JetBrains Mono",monospace;font-weight:500;transition:color .4s}
+.pv .bc{font-family:"Barlow Condensed";font-weight:700}
 .pv .x{background:none;border:1px solid var(--line);border-radius:8px;color:var(--mute);padding:2px 10px;cursor:pointer}
-.pv .xx{width:clamp(44px,11vh,72px);height:clamp(44px,11vh,72px);border-radius:14px;border:2px solid var(--line);background:var(--panel2);color:var(--text);font-size:clamp(22px,6vh,40px);cursor:pointer;line-height:1}
-.pv .kbtn{height:clamp(40px,10vh,64px);padding:0 14px;border-radius:14px;border:2px solid #6b5a1a;background:#2a2410;color:var(--accent);font:700 clamp(18px,5vh,34px) 'Barlow Condensed';cursor:pointer;white-space:nowrap}
-.pv .clock{font:700 clamp(28px,10vh,78px)/1 'JetBrains Mono',monospace;color:var(--text)}
+.pv .xx{width:clamp(38px,9.4vh,61px);height:clamp(38px,9.4vh,61px);border-radius:12px;border:2px solid var(--line);background:var(--panel2);color:var(--text);font-size:clamp(19px,5.1vh,34px);cursor:pointer;line-height:1}
+.pv .kbtn{height:clamp(34px,8.5vh,54px);padding:0 12px;border-radius:12px;border:2px solid #6b5a1a;background:#2a2410;color:var(--accent);font:700 clamp(15px,4.25vh,29px) 'Barlow Condensed';cursor:pointer;white-space:nowrap}
+.pv .clock{font:700 clamp(24px,8.5vh,66px)/1 'JetBrains Mono',monospace;color:var(--text)}
 .pv .top{grid-column:1/3;display:grid;grid-template-columns:1fr minmax(90px,.5fr) 1fr;gap:8px;min-height:0}
 .pv .posbig{font:700 clamp(40px,20vh,170px)/.9 'Barlow Condensed';color:var(--text)}
 .up{color:#3ddc84!important}.down{color:#ff5f5f!important}
@@ -591,22 +598,44 @@ function renderPilot(force) {
     ${head()}
     <div class="top">
       <div class="tile"><div class="lab">Última vuelta</div>
-        <div class="big ${isPB ? '' : flashing}" style="${isPB ? 'color:var(--purple)' : ''}">${last != null ? fmtT(last).replace(',', '.') : '–'}</div>
-        <div class="sub2" style="color:${dMean == null ? 'var(--mute)' : dMean <= 0 ? 'var(--fast)' : 'var(--vslow)'}">${dMean == null ? '&nbsp;' : fmt(dMean) + ' vs tu media'}</div></div>
-      <div class="tile" style="align-items:center;text-align:center;padding-left:4px;padding-right:4px"><div class="lab">Posición</div><div class="posbig">${myPos ? 'P' + myPos : '–'}</div><div class="mid" style="color:var(--mute)">/${N}</div></div>
-      <div class="tile" style="flex-direction:row;justify-content:space-between;align-items:center"><div style="min-width:0"><div class="lab">Mi VR</div><div class="big" style="color:var(--purple)">${isFinite(myBest) ? fmtT(myBest).replace(',', '.') : '–'}</div></div>
-        <div style="text-align:right"><div class="lab">entre VRs</div><div class="mid">${vrRank ? vrRank + '/' + bests.length : '–'}</div></div></div>
+        <div class="fv"><span class="mono ${isPB ? '' : flashing}" style="${isPB ? 'color:var(--purple)' : ''}">${last != null ? fmtT(last).replace(',', '.') : '–'}</span></div>
+        <div class="lab" style="color:${dMean == null ? 'var(--mute)' : dMean <= 0 ? 'var(--fast)' : 'var(--vslow)'}">${dMean == null ? '&nbsp;' : fmt(dMean) + ' vs tu media'}</div></div>
+      <div class="tile" style="padding-left:4px;padding-right:4px"><div class="lab" style="text-align:center">Posición</div>
+        <div class="fv c" style="flex:2.2"><span class="bc">${myPos ? 'P' + myPos : '–'}</span></div>
+        <div class="fv c" style="flex:.9"><span class="bc" style="color:var(--mute)">/${N}</span></div></div>
+      <div class="tile"><div class="lab">Mi VR</div>
+        <div class="fv" style="flex:2"><span class="mono" style="color:var(--purple)">${isFinite(myBest) ? fmtT(myBest).replace(',', '.') : '–'}</span></div>
+        <div class="fv" style="flex:1"><span>${vrRank ? vrRank + '/' + bests.length : '–'}<small style="color:var(--mute);font-size:.45em"> entre VRs</small></span></div></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;min-height:0">
-      <div class="tile"><div class="lab">Pos ritmo${n ? ` · ${n} v` : ''}</div><div class="huge">${pr ? 'P' + pr : '–'}</div><div class="sub2">${pr ? pr + '/' + paces.length : 'esperando 2 vueltas válidas'}</div></div>
-      <div class="tile" style="padding-top:.6vh;padding-bottom:.6vh"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;border-bottom:1px solid var(--line)"><div class="lab">Delante</div><div class="gap" style="color:#ff8a6b">${esc(ahead === 'LÍDER' || ahead === '–' ? ahead : (ahead.startsWith('+') ? ahead : '+' + ahead))}</div></div>
-        <div style="flex:1;display:flex;flex-direction:column;justify-content:center"><div class="lab">Detrás</div><div class="gap" style="color:var(--fast)">${esc(behind === '–' ? behind : (behind.startsWith('+') ? behind.replace('+', '−') : '−' + behind))}</div></div></div>
+      <div class="tile"><div class="lab">Pos ritmo${n ? ` · ${n} v` : ''}</div>
+        <div class="fv" style="flex:2.2"><span class="bc" style="color:var(--accent)">${pr ? 'P' + pr : '–'}</span></div>
+        <div class="fv" style="flex:.8"><span>${pr ? pr + '/' + paces.length : '<small style="font-size:.5em">esperando 2 vueltas</small>'}</span></div></div>
+      <div class="tile" style="padding-top:.6vh;padding-bottom:.6vh">
+        <div class="lab">Delante</div><div class="fv" style="border-bottom:1px solid var(--line)"><span class="mono" style="color:#ff8a6b">${esc(ahead === 'LÍDER' || ahead === '–' ? ahead : (ahead.startsWith('+') ? ahead : '+' + ahead))}</span></div>
+        <div class="lab">Detrás</div><div class="fv"><span class="mono" style="color:var(--fast)">${esc(behind === '–' ? behind : (behind.startsWith('+') ? behind.replace('+', '−') : '−' + behind))}</span></div></div>
     </div>
     ${msgTile()}
   </div>`;
   bindPilot();
 }
+// ajusta cada texto al máximo tamaño que cabe en su hueco
+const fitCache = {};
+function fitAll() {
+  document.querySelectorAll('.pv .fv').forEach(box => {
+    const sp = box.firstElementChild; if (!sp) return;
+    const W = box.clientWidth - 2, H = box.clientHeight - 2; if (W <= 0 || H <= 0) return;
+    const key = W + 'x' + H + '|' + sp.className + '|' + box.className + '|' + sp.textContent;
+    if (fitCache[key]) { sp.style.fontSize = fitCache[key] + 'px'; return; }
+    if (box.classList.contains('w')) sp.style.maxWidth = W + 'px';
+    let lo = 8, hi = 400;
+    while (hi - lo > 1) { const mid = (lo + hi) >> 1; sp.style.fontSize = mid + 'px'; if (Math.max(sp.offsetWidth, sp.scrollWidth) <= W && Math.max(sp.offsetHeight, sp.scrollHeight) <= H) lo = mid; else hi = mid; }
+    sp.style.fontSize = lo + 'px'; fitCache[key] = lo;
+  });
+}
+window.addEventListener('resize', () => { if (document.body.classList.contains('pilot')) renderPilot(); });
 function bindPilot() {
+  fitAll();
   const x = $('exitP'); if (x) x.onclick = () => { document.body.classList.remove('pilot'); try { document.exitFullscreen?.(); } catch {} try { wake?.release(); } catch {} document.querySelector('#tabs a[data-v=ranking]').click(); };
   const k = $('chgK'); if (k) k.onclick = () => { document.body.classList.remove('pilot'); pilotSetup($('pilotOut')); };
 }
@@ -619,7 +648,7 @@ function msgTile() {
   const m = pilotMsg && Date.now() - pilotMsg.at < MSG_TTL ? pilotMsg.m : null;
   if (!m) return `<div class="msg" style="background:var(--panel);color:var(--dim);font-size:clamp(14px,3vh,22px)">sin mensaje</div>`;
   const box = /^BOX/i.test(m);
-  return `<div class="msg" style="background:${box ? '#FAC775' : '#5F5E5A'};color:${box ? '#412402' : '#F1EFE8'};font-size:${box ? 'clamp(40px,22vh,170px)' : 'clamp(22px,9vh,72px)'};line-height:1;padding:6px">${esc(m)}</div>`;
+  return `<div class="msg tile" style="flex-direction:column;align-items:stretch;background:${box ? '#FAC775' : '#5F5E5A'};color:${box ? '#412402' : '#F1EFE8'};padding:2vh 2vw"><div class="fv c w"><span class="bc">${esc(m)}</span></div></div>`;
 }
 function parseMsg(txt) {
   try { const j = JSON.parse(txt); if (j && j.m) return j; } catch {}
