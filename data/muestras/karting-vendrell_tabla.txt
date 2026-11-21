@@ -1,0 +1,23 @@
+init|p|
+best|hide|
+css|no1|border-bottom-color:#FF8040 !important; color:#000000 !important;
+css|no5|border-bottom-color:#804000 !important; color:#FFFFFF !important;
+css|no2|border-bottom-color:#0080FF !important; color:#FFFFFF !important;
+css|no3|border-bottom-color:#FF0000 !important; color:#FFFFFF !important;
+css|no4|border-bottom-color:#FFFF00 !important; color:#000000 !important;
+css|no6|border-bottom-color:#00FF40 !important; color:#000000 !important;
+css|no7|border-bottom-color:#80FF00 !important; color:#000000 !important;
+css|pena1|color:#f00; font-size:11px; font-weight: bold; text-align:center;
+effects||Mostrar Efectos
+comments||Comentarios
+title1||
+title2||Sesión 4
+dyn1|text|
+light|lf|
+wth1||
+wth2||
+wth3||
+track||Karting Alquiler (1075m)
+com||<p><b>18:10</b><span data-flag="chequered"></span>Llegada</p>
+grid||<tbody><tr data-id="r0" class="head" data-pos="0"><td data-id="c1" data-type="grp" data-pr="6"></td><td data-id="c2" data-type="sta" data-pr="1"></td><td data-id="c3" data-type="rk" data-pr="1">Clasif.</td><td data-id="c4" data-type="no" data-pr="1">Kart</td><td data-id="c5" data-type="dr" data-pr="1" data-width="41" data-min="16">Piloto</td><td data-id="c6" data-type="llp" data-pr="2" data-width="29" data-min="7">Última vuelta</td><td data-id="c7" data-type="blp" data-pr="1" data-width="29" data-min="7">Mejor vuelta</td></tr><tr data-id="r2" data-pos="1"><td data-id="r2c1" class="gs"></td><td data-id="r2c2" class="sf"></td><td class="rk"><div><p data-id="r2c3" class="">1</p></div></td><td class="no"><div data-id="r2c4" class="no7">8</div></td><td data-id="r2c5" class="dr">HOLA </td><td data-id="r2c6" class="tn">17:32.679</td><td data-id="r2c7" class="ib">1:15.920</td></tr><tr data-id="r1" data-pos="2"><td data-id="r1c1" class="in"></td><td data-id="r1c2" class="in"></td><td class="rk"><div><p data-id="r1c3" class=""></p></div></td><td class="no"><div data-id="r1c4" class="no7">7</div></td><td data-id="r1c5" class="dr">HLS</td><td data-id="r1c6" class=""></td><td data-id="r1c7" class="ib"></td></tr></tbody>
+msg||
