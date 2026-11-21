@@ -349,3 +349,52 @@ r42c5|tn|1:17.396 ⏎ r42c6|ib|1:15.612 ⏎ r42c7|in|28.443 ⏎ r42c11|in|32 ⏎
  ⏎ 
  ⏎ 
  ⏎ 
+init|p| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no2|border-bottom-color:#80FF00 !important; color:#000000 !important; ⏎ css|pena1|color:#f00; font-size:11px; font-weight: bold; text-align:center; ⏎ effects||Mostrar Efectos ⏎ comments||Comentarios ⏎ title1|| ⏎ title2||Entrenamientos ⏎ dyn1|countdown|595993 ⏎ light|lg| ⏎ wth1|| ⏎ wth2|| ⏎ wth3|| ⏎ track||Pista Principal (1075m) ⏎ com|| ⏎ grid||<tbody><tr data-id="r0" class="head" data-pos="0"><td data-id="c1" data-type="grp" data-pr="6"></td><td data-id="c2" data-type="sta" data-pr="1"></td><td data-id="c3" data-type="rk" data-pr="1">Clasif.</td><td data-id="c4" data-type="no" data-pr="1">Kart</td><td data-id="c5" data-type="dr" data-pr="1" data-width="24" data-min="16">Piloto</td><td data-id="c6" data-type="llp" data-pr="2" data-width="17" data-min="7">Última vuelta</td><td data-id="c7" data-type="blp" data-pr="1" data-width="17" data-min="7">Mejor vuelta</td><td data-id="c8" data-type="gap" data-pr="4" data-width="12" data-min="7">Gap</td><td data-id="c9" data-type="tlp" data-pr="5" data-width="7" data-min="4">Vueltas</td><td data-id="c10" data-type="otr" data-pr="2" data-width="12" data-min="4">Tiempo en PIT</td><td data-id="c11" data-type="pit" data-pr="2" data-width="8" data-min="7">Pits</td></tr><tr data-id="r80" data-pos="1"><td data-id="r80c1" class="in"></td><td data-id="r80c2" class="in"></td><td class="rk"><div><p data-id="r80c3" class=""></p></div></td><td class="no"><div data-id="r80c4" class="no1">33</div></td><td data-id="r80c5" class="dr">KART 33</td><td data-id="r80c6" class=""></td><td data-id="r80c7" class="ib"></td><td data-id="r80c8" class="in"></td><td data-id="r80c9" class="in"></td><td data-id="r80c10" class="in"></td><td data-id="r80c11" class="in"></td></tr><tr data-id="r81" data-pos="2"><td data-id="r81c1" class="in"></td><td data-id="r81c2" class="in"></td><td class="rk"><div><p data-id="r81c3" class=""></p></div></td><td class="no"><div data-id="r81c4" class="no1">49</div></td><td data-id="r81c5" class="dr">KART 49</td><td data-id="r81c6" class=""></td><td data-id="r81c7" class="ib"></td><td data-id="r81c8" class="in"></td><td data-id="r81c9" class="in"></td><td data-id="r81c10" class="in"></td><td data-id="r81c11" class="in"></td></tr><tr data-id="r82" data-pos="3"><td data-id="r82c1" class="in"></td><td data-id="r82c2" class="in"></td><td class="rk"><div><p data-id="r82c3" class=""></p></div></td><td class="no"><div data-id="r82c4" class="no1">56</div></td><td data-id="r82c5" class="dr">KART 56</td><td data-id="r82c6" class=""></td><td data-id="r82c7" class="ib"></td><td data-id="r82c8" class="in"></td><td data-id="r82c9" class="in"></td><td data-id="r82c10" class="in"></td><td data-id="r82c11" class="in"></td></tr><tr data-id="r83" data-pos="4"><td data-id="r83c1" class="in"></td><td data-id="r83c2" class="in"></td><td class="rk"><div><p data-id="r83c3" class=""></p></div></td><td class="no"><div data-id="r83c4" class="no1">53</div></td><td data-id="r83c5" class="dr">KART 53</td><td data-id="r83c6" class=""></td><td data-id="r83c7" class="ib"></td><td data-id="r83c8" class="in"></td><td data-id="r83c9" class="in"></td><td data-id="r83c10" class="in"></td><td data-id="r83c11" class="in"></td></tr><tr data-id="r84" data-pos="5"><td data-id="r84c1" class="in"></td><td data-id="r84c2" class="in"></td><td class="rk"><div><p data-id="r84c3" class=""></p></div></td><td class="no"><div data-id="r84c4" class="no1">60</div></td><td data-id="r84c5" class="dr">KART 60</td><td data-id="r84c6" class=""></td><td data-id="r84c7" class="ib"></td><td data-id="r84c8" class="in"></td><td data-id="r84c9" class="in"></td><td data-id="r84c10" class="in"></td><td data-id="r84c11" class="in"></td></tr><tr data-id="r85" data-pos="6"><td data-id="r85c1" class="in"></td><td data-id="r85c2" class="in"></td><td class="rk"><div><p data-id="r85c3" class=""></p></div></td><td class="no"><div data-id="r85c4" class="no1">51</div></td><td data-id="r85c5" class
+init|p| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no2|border-bottom-color:#80FF00 !important; color:#000000 !important; ⏎ css|pena1|color:#f00; font-size:11px; font-weight: bold; text-align:center; ⏎ effects||Mostrar Efectos ⏎ comments||Comentarios ⏎ title1|| ⏎ title2||Entrenamientos ⏎ dyn1|countdown|586498 ⏎ light|lg| ⏎ wth1|| ⏎ wth2|| ⏎ wth3|| ⏎ track||Pista Principal (1075m) ⏎ com|| ⏎ grid||<tbody><tr data-id="r0" class="head" data-pos="0"><td data-id="c1" data-type="grp" data-pr="6"></td><td data-id="c2" data-type="sta" data-pr="1"></td><td data-id="c3" data-type="rk" data-pr="1">Clasif.</td><td data-id="c4" data-type="no" data-pr="1">Kart</td><td data-id="c5" data-type="dr" data-pr="1" data-width="24" data-min="16">Piloto</td><td data-id="c6" data-type="llp" data-pr="2" data-width="17" data-min="7">Última vuelta</td><td data-id="c7" data-type="blp" data-pr="1" data-width="17" data-min="7">Mejor vuelta</td><td data-id="c8" data-type="gap" data-pr="4" data-width="12" data-min="7">Gap</td><td data-id="c9" data-type="tlp" data-pr="5" data-width="7" data-min="4">Vueltas</td><td data-id="c10" data-type="otr" data-pr="2" data-width="12" data-min="4">Tiempo en PIT</td><td data-id="c11" data-type="pit" data-pr="2" data-width="8" data-min="7">Pits</td></tr><tr data-id="r80" data-pos="1"><td data-id="r80c1" class="in"></td><td data-id="r80c2" class="in"></td><td class="rk"><div><p data-id="r80c3" class=""></p></div></td><td class="no"><div data-id="r80c4" class="no1">33</div></td><td data-id="r80c5" class="dr">KART 33</td><td data-id="r80c6" class=""></td><td data-id="r80c7" class="ib"></td><td data-id="r80c8" class="in"></td><td data-id="r80c9" class="in"></td><td data-id="r80c10" class="in"></td><td data-id="r80c11" class="in"></td></tr><tr data-id="r81" data-pos="2"><td data-id="r81c1" class="in"></td><td data-id="r81c2" class="in"></td><td class="rk"><div><p data-id="r81c3" class=""></p></div></td><td class="no"><div data-id="r81c4" class="no1">49</div></td><td data-id="r81c5" class="dr">KART 49</td><td data-id="r81c6" class=""></td><td data-id="r81c7" class="ib"></td><td data-id="r81c8" class="in"></td><td data-id="r81c9" class="in"></td><td data-id="r81c10" class="in"></td><td data-id="r81c11" class="in"></td></tr><tr data-id="r82" data-pos="3"><td data-id="r82c1" class="in"></td><td data-id="r82c2" class="in"></td><td class="rk"><div><p data-id="r82c3" class=""></p></div></td><td class="no"><div data-id="r82c4" class="no1">56</div></td><td data-id="r82c5" class="dr">KART 56</td><td data-id="r82c6" class=""></td><td data-id="r82c7" class="ib"></td><td data-id="r82c8" class="in"></td><td data-id="r82c9" class="in"></td><td data-id="r82c10" class="in"></td><td data-id="r82c11" class="in"></td></tr><tr data-id="r83" data-pos="4"><td data-id="r83c1" class="in"></td><td data-id="r83c2" class="in"></td><td class="rk"><div><p data-id="r83c3" class=""></p></div></td><td class="no"><div data-id="r83c4" class="no1">53</div></td><td data-id="r83c5" class="dr">KART 53</td><td data-id="r83c6" class=""></td><td data-id="r83c7" class="ib"></td><td data-id="r83c8" class="in"></td><td data-id="r83c9" class="in"></td><td data-id="r83c10" class="in"></td><td data-id="r83c11" class="in"></td></tr><tr data-id="r84" data-pos="5"><td data-id="r84c1" class="in"></td><td data-id="r84c2" class="in"></td><td class="rk"><div><p data-id="r84c3" class=""></p></div></td><td class="no"><div data-id="r84c4" class="no1">60</div></td><td data-id="r84c5" class="dr">KART 60</td><td data-id="r84c6" class=""></td><td data-id="r84c7" class="ib"></td><td data-id="r84c8" class="in"></td><td data-id="r84c9" class="in"></td><td data-id="r84c10" class="in"></td><td data-id="r84c11" class="in"></td></tr><tr data-id="r85" data-pos="6"><td data-id="r85c1" class="in"></td><td data-id="r85c2" class="in"></td><td class="rk"><div><p data-id="r85c3" class=""></p></div></td><td class="no"><div data-id="r85c4" class="no1">51</div></td><td data-id="r85c5" class
+dyn1|countdown|556402 ⏎ 
+r80c2|sr| ⏎ r80c10|in|0:00 ⏎ r80|*|| ⏎ 
+r82c2|sr| ⏎ r82c10|in|0:00 ⏎ r82|*|| ⏎ 
+r83c2|sr| ⏎ 
+r83c10|in|0:00 ⏎ r83|*|| ⏎ 
+r85c2|sr| ⏎ 
+r85c10|in|0:00 ⏎ r85|*|| ⏎ 
+r84c2|sr| ⏎ r84c10|in|0:00 ⏎ r84|*|| ⏎ 
+r81c2|sr| ⏎ r81c10|in|0:00 ⏎ r81|*|| ⏎ 
+r86c2|sr| ⏎ r86c10|in|0:00 ⏎ r86|*|| ⏎ 
+r89c2|sr| ⏎ 
+r89c10|in|0:00 ⏎ r89|*|| ⏎ r87c2|sr| ⏎ r87c10|in|0:00 ⏎ r87|*|| ⏎ 
+r88c2|sr| ⏎ r88c10|in|0:00 ⏎ r88|*|| ⏎ 
+r93c2|sr| ⏎ 
+r93c10|in|0:00 ⏎ r93|*|| ⏎ 
+r90c2|sr| ⏎ r90c10|in|0:00 ⏎ r94c2|sr| ⏎ r94c10|in|0:00 ⏎ r90|*|| ⏎ r94|*|| ⏎ 
+r92c2|sr| ⏎ 
+r92c10|in|0:00 ⏎ r92|*|| ⏎ r95c2|sr| ⏎ r95c10|in|0:00 ⏎ r95|*|| ⏎ 
+r91c2|sr| ⏎ 
+r91c10|in|0:00 ⏎ r91|*|| ⏎ 
+r80c2|in| ⏎ 
+r96c2|sr| ⏎ r96c10|in|0:00 ⏎ r96|*|| ⏎ 
+r97c2|sr| ⏎ 
+r97c10|in|0:00 ⏎ r97|*|| ⏎ 
+r82c2|in| ⏎ 
+r83c2|in| ⏎ r99c2|sr| ⏎ 
+r99c10|in|0:00 ⏎ r99|*|| ⏎ 
+r98c2|sr| ⏎ 
+r98c10|in|0:00 ⏎ r98|*|| ⏎ 
+r85c2|in| ⏎ 
+r84c2|in| ⏎ 
+r81c2|in| ⏎ 
+r86c2|in| ⏎ 
+r89c2|in| ⏎ 
+r87c2|in| ⏎ 
+r88c2|in| ⏎ 
+r93c2|in| ⏎ 
+r100c2|sr| ⏎ r100c10|in|0:00 ⏎ r100|*|| ⏎ 
+r94c2|in| ⏎ r90c2|in| ⏎ 
+r92c2|in| ⏎ 
+r95c2|in| ⏎ 
+r91c2|in| ⏎ 
+dyn1|countdown|526435 ⏎ r101c2|sr| ⏎ r101c6|tn|1:14.262 ⏎ r101c10|in|0:01 ⏎ r101|*|| ⏎ 
+r96c2|in| ⏎ 
+r97c2|in| ⏎ 
+r99c2|in| ⏎ 
+r98c2|in| ⏎ 
