@@ -49,12 +49,13 @@ def set_name(row: dict, value: str, team_col: bool):
         return
     m = STINT_RE.match(v)
     if m:
-        row['driver'] = m.group(1).strip()
+        row['driver'] = re.sub(r'^\d{1,3}\s*-\s*', '', m.group(1).strip())
         row['teamrace'] = True
     elif team_col or row.get('teamrace'):
         row['team'] = v
     else:
-        row['driver'] = v
+        row['driver'] = re.sub(r'^\d{1,3}\s*-\s*', '', v)  # quita el dorsal: "66-ANTONIO PARRA"
+
 
 
 class _GridParser(HTMLParser):

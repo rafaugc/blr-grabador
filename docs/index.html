@@ -96,6 +96,7 @@ const today = () => { const d = new Date(); return d.getFullYear() + '-' + Strin
 let CIRCS = [], C = null;
 let recorded = {};      // nombre de archivo -> sesión grabada hoy
 let live = null;        // estado de la conexión en directo
+let envivo = null;      // foto de la sesión en curso subida por el grabador
 const opts = { method: 'model', noTraffic: false, cutPct: 3 };
 
 // ---------- pestañas ----------
@@ -145,6 +146,16 @@ async function refreshRecorded() {
     const byName = {}; Object.keys(recorded).forEach(k => { const n = k.slice(0, k.indexOf('.json') + 5); (byName[n] = byName[n] || []).push(k); });
     const names = new Set((Array.isArray(list) ? list : []).map(f => f.name + f.sha));
     Object.keys(recorded).forEach(k => { if (!names.has(k)) delete recorded[k]; });
+    // si no hay conexión directa, usamos la foto en directo que sube el grabador cada 3 min
+    envivo = null;
+    if (!(live && live.ws && live.ws.readyState === 1 && live.laps.length)) {
+      try {
+        const e = await fetch(API + 'data/envivo?ref=main', { headers: { Accept: 'application/vnd.github+json' } });
+        const files = e.ok ? await e.json() : [];
+        const f = (Array.isArray(files) ? files : []).find(x => x.name === slug + '.json');
+        if (f) { const s = await (await fetch(RAW + 'data/envivo/' + f.name + '?s=' + f.sha)).json(); if (s.date === today()) envivo = s; }
+      } catch {}
+    }
     $('dataState').textContent = `${Object.keys(recorded).length} sesiones grabadas hoy`; $('dataState').className = 'pill ok';
   } catch (e) { $('dataState').textContent = 'Sin acceso a lo grabado'; $('dataState').className = 'pill warn'; }
   render();
@@ -183,8 +194,9 @@ const STINT = /^(.*?)\s*\[(\d{1,2}:\d{2}(?::\d{2})?)\]\s*$/;
 function setName(row, v, teamCol) {
   v = (v || '').trim(); if (!v) return;
   const m = v.match(STINT);
-  if (m) { row.driver = m[1].trim(); row.teamrace = true; }
-  else if (teamCol || row.teamrace) row.team = v; else row.driver = v;
+  const nodorsal = x => x.replace(/^\d{1,3}\s*-\s*/, '');
+  if (m) { row.driver = nodorsal(m[1].trim()); row.teamrace = true; }
+  else if (teamCol || row.teamrace) row.team = v; else row.driver = nodorsal(v);
 }
 const teamCol = () => !!live.teamCol;
 function closeLive() {
@@ -241,7 +253,7 @@ function cell(rid, col, val, ts, cls) {
 let rTimer = null;
 const scheduleRender = () => { if (!rTimer) rTimer = setTimeout(() => { rTimer = null; render(); }, 3000); };
 function sessionsToday() {
-  const rec = Object.values(recorded);
+  const rec = Object.values(recorded).concat(envivo && !(live && live.laps.length >= 5) ? [envivo] : []);
   const liveS = live && live.slug === C.slug ? live.sessions.slice() : [];
   if (live && live.laps.length >= 5) liveS.push(buildLive(false));
   const dup = s => rec.some(r => r.title === s.title && Math.abs(toMin(r.time) - toMin(s.time)) <= 3);
