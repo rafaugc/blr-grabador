@@ -1,50 +1,59 @@
 {
- "fecha": "2026-11-21 09:57 UTC",
+ "fecha": "2026-11-21 10:06 UTC",
  "circuitos": [
   {
    "port": 6883,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 6903,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 6913,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 6923,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 6933,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 6943,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 6953,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 6963,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 6973,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 6993,
@@ -52,286 +61,356 @@
    "title1": "SENIOR",
    "title2": "PRE-FINAL - R5",
    "track": "SHARJAH TRACK - 1.159 km",
-   "filas": 324
+   "com": "14:02   Start Under Investigation   14:02   START",
+   "filas": 324,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 7003,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7013,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7023,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7033,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7043,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7053,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7063,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7073,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7083,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7093,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7103,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7113,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7123,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7133,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7143,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7153,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7163,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7173,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7183,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7193,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7203,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7213,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7223,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7233,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7243,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7253,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7263,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7273,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7283,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7293,
    "vivo": true,
-   "title1": "ACADEMY",
-   "title2": "ENTRENOS LIBRES 1",
+   "title1": "KZ/DD2",
+   "title2": "ENTRENOS LIBRES 2",
    "track": "3º CKRM´26 - FORTUNA LARGO - 1.368 km",
-   "com": "10:55   LLEGADA   10:45   SALIDA",
-   "filas": 52
+   "com": "11:00   SALIDA   11:00   SALIDA",
+   "filas": 65,
+   "visto": "2026-11-21",
+   "pais": "ES"
   },
   {
    "port": 7303,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7313,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7323,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7333,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7343,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7353,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7363,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7373,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7383,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7393,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7403,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7413,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7423,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 7433,
+   "vivo": true,
+   "title1": "OK",
+   "title2": "Eliminatory Heats A-C",
+   "track": "South Garda Karting - 1.200 km",
+   "com": "11:03    244 Warning flag   11:02   FINISH   11:00    209 Warning flag   10:57    225 Warning flag   10:56    264 Warnin",
+   "filas": 368,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 7443,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7453,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7463,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7473,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7483,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7493,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7503,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7513,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7523,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7543,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7553,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7563,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7573,
@@ -340,112 +419,138 @@
    "title2": "2ª MANGA QUALIFICAÇÃO",
    "track": "CIRCUITO DO BOMBARRAL - 1.106 km",
    "com": "09:53   PARTIDA   09:51   Nouveau tour de formation",
-   "filas": 190
+   "filas": 190,
+   "visto": "2026-11-21",
+   "pais": "PT"
   },
   {
    "port": 7583,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7593,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7603,
    "vivo": true,
-   "title2": "Session 1",
+   "title2": "Session 2",
    "track": "Karting Track (1240m)",
-   "com": "11:47   Start",
-   "filas": 13
+   "com": "12:02   Start",
+   "filas": 13,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 7613,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7623,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7633,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7643,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7653,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7663,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7673,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7683,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7693,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7703,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7713,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7723,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7733,
    "vivo": true,
-   "title2": "Session 1",
+   "title1": "10+15+15",
+   "title2": "Chronos",
    "track": "Piste P2 (810m)",
-   "filas": 0
+   "com": "10:58   Départ",
+   "filas": 208,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 7773,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7783,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7793,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7803,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7813,
@@ -454,42 +559,51 @@
    "title2": "Qualifying Heat 2 B-D",
    "track": "LYL International Karting Circuit - 1.514 km",
    "com": "17:29    43 Warning flag   17:29   FINISH   17:20    2 Under Investigation   17:17   START",
-   "filas": 300
+   "filas": 300,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 7823,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7833,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7843,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7853,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7873,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7883,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7893,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7913,
@@ -498,42 +612,51 @@
    "title2": "COURSE 1",
    "track": "Piste 1200m",
    "com": "10:55   Arrivée   10:42    2 Pénalité - 30 SECONDES : VITESSE SOUS DRAPEAU JAUNE - 30.000   10:41    11 Pénalité - 30 SE",
-   "filas": 360
+   "filas": 360,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 7923,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7933,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7943,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7953,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7963,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7973,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7983,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 7993,
@@ -542,71 +665,85 @@
    "title2": "Session 1",
    "track": "Piste Karting (800m)",
    "com": "10:51   Arrivée",
-   "filas": 140
+   "filas": 140,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8003,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8013,
    "vivo": true,
-   "title1": "Académie Junior/Senior",
+   "title1": "Académie Kid",
    "title2": "Finale",
    "track": "Piste Alain Prost B (980m)",
-   "com": "10:45   Arrivée   10:31    23 Pénalité - départ - 15.000",
-   "filas": 156
+   "filas": 108,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8023,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8033,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8043,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8053,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8063,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8073,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8083,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8093,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8103,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8113,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8123,
@@ -615,35 +752,42 @@
    "title2": "Chronos",
    "track": "Circuit Beausoleil 1220M",
    "com": "10:53   Arrivée   10:48    13 Avertissement - Vitesse excessive dans les stands   10:44    6 Avertissement - Vitesse exc",
-   "filas": 378
+   "filas": 378,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8133,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8143,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8153,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8163,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8183,
    "vivo": true,
    "title2": "GRUPPO A2",
    "track": "Lignano (1187m)",
-   "com": "10:53   Arrivo   10:38   Partenza   10:26   Partenza   10:25   Partenza",
-   "filas": 204
+   "filas": 108,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "slug": "cabodomundokarting",
@@ -657,103 +801,128 @@
    "title2": "Sessão 2",
    "track": "KCM B (800m)",
    "com": "09:53   Final   09:43   Partida",
-   "filas": 72
+   "filas": 72,
+   "visto": "2026-11-21",
+   "pais": "PT"
   },
   {
    "port": 8203,
    "vivo": true,
    "title2": "Session 1",
    "track": "Piste Karting sens normal (1200m)",
-   "com": "10:49   Départ   10:48   Départ",
-   "filas": 20
+   "com": "10:59   Arrivée   10:49   Départ   10:48   Départ",
+   "filas": 20,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8213,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8223,
    "vivo": true,
    "title2": "Session 6 Course gr 2",
    "track": "Piste Indoor (900m)",
-   "filas": 198
+   "com": "10:58   Arrivée",
+   "filas": 198,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8243,
    "vivo": true,
-   "title1": "Clubhouse Rookies 4 groepen",
-   "title2": "Qual. GROEP 4",
+   "title1": "CLUBHOUSE KIDS",
+   "title2": "Prefinal GROEP 1",
    "track": "Track FUN (550m)",
-   "com": "10:54    11 Straf - zwaar botsen  - 2 Posities   10:54   Finish   10:49    3 Waarschuwing - licht botsen    10:46   Star",
-   "filas": 90
+   "com": "11:04   Start",
+   "filas": 126,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8253,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8263,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8283,
    "vivo": true,
    "title2": "Corsa 1",
    "track": "Pista Orario Full (1400m)",
-   "filas": 0
+   "filas": 0,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8293,
    "vivo": true,
    "title2": "Corsa 3",
    "track": "PISTA KART (1213m)",
-   "filas": 255
+   "com": "10:56   Arrivo",
+   "filas": 255,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8303,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8313,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8323,
    "vivo": true,
-   "title2": "Session 13",
+   "title2": "Session 14",
    "track": "Circuit Kart Escale (706m)",
-   "com": "10:48   Départ",
-   "filas": 70
+   "filas": 20,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8333,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8343,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8353,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8363,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8373,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8383,
@@ -761,17 +930,21 @@
    "title2": "Sessie 2",
    "track": "Kartcentrum Lelystad (735m)",
    "com": "10:56   Finish   10:46   Start",
-   "filas": 45
+   "filas": 45,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8393,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8403,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8413,
@@ -779,47 +952,57 @@
    "title1": "Endurance 2H - Circuit 2",
    "title2": "endurance 2h",
    "track": "CIRCUIT 2 - 1019 M",
-   "filas": 165
+   "filas": 165,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8423,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8433,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8443,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8453,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8463,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8473,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8483,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8493,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8503,
@@ -827,12 +1010,15 @@
    "title2": "Session 1",
    "track": "Piste Adulte (850m)",
    "com": "10:24   Départ",
-   "filas": 0
+   "filas": 0,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8513,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8523,
@@ -841,147 +1027,179 @@
    "title2": "R2",
    "track": "Circuit 1100m (1000m)",
    "com": "10:11   Start",
-   "filas": 252
+   "filas": 252,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8533,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8543,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8553,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8563,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8573,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8583,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8593,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8603,
    "vivo": true,
-   "title2": "Loc rotax 2",
+   "title1": "Grand Prix Journée",
+   "title2": "1ere Manche Qualif",
    "track": "BRIGNOLES KARTING LOISIR (987m)",
-   "com": "10:50   Départ",
-   "filas": 11
+   "filas": 135,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8613,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8623,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8633,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8643,
    "vivo": true,
    "title2": "Heat 79",
    "track": "KART TRACK (325m)",
-   "filas": 130
+   "filas": 130,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8653,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8663,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8673,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8683,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8693,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8703,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8713,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8723,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8733,
    "vivo": true,
    "title2": "Session 3",
    "track": "Piste Karting (1200m)",
-   "com": "10:47   Départ",
-   "filas": 88
+   "com": "10:57   Arrivée   10:47   Départ",
+   "filas": 88,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8743,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8753,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8773,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8783,
    "vivo": true,
    "title2": "Session 1",
    "track": "Piste Karting (1105m)",
-   "filas": 12
+   "filas": 12,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8793,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8803,
@@ -989,85 +1207,105 @@
    "title1": "AMAZING ENDURANCE 2026",
    "title2": "CARRERA",
    "track": "ALCARRAS (3720m)",
-   "filas": 540
+   "com": "11:03   Start",
+   "filas": 540,
+   "visto": "2026-11-21",
+   "pais": "ES"
   },
   {
    "port": 8813,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8823,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8833,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8843,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8853,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8863,
    "vivo": true,
-   "title2": "Session 14",
+   "title1": "2. Grand Prix",
+   "title2": "Qualifying",
    "track": "Reverse Track (620m)",
-   "com": "11:46   Finish",
-   "filas": 252
+   "filas": 168,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8873,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8883,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8893,
    "vivo": true,
-   "title2": "Заезд 24",
+   "title2": "выкуп заезда",
    "track": "Electro Karting Kazan",
-   "com": "12:51   Старт",
-   "filas": 65
+   "filas": 39,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8903,
    "vivo": true,
    "title2": "Session 7",
    "track": "Karting de Douvrin (1000m)",
-   "filas": 22
+   "com": "11:01   Arrivée",
+   "filas": 22,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8913,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8923,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8933,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8943,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 8953,
@@ -1076,12 +1314,15 @@
    "title2": "Finale",
    "track": "Piste loisirs (930m)",
    "com": "10:57   Départ",
-   "filas": 77
+   "filas": 77,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 8963,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "slug": "ariza-racing-circuit",
@@ -1095,8 +1336,10 @@
    "title1": "4 HORAS POR EQUIPOS",
    "title2": "Final",
    "track": "Pista Principal (700m)",
-   "com": "10:49   Start",
-   "filas": 176
+   "com": "11:03    43 Advertencia - Toque en la salida   10:49   Start",
+   "filas": 176,
+   "visto": "2026-11-21",
+   "pais": "ES"
   },
   {
    "slug": "kartodromodeviana",
@@ -1107,49 +1350,57 @@
    "titulo_web": "Live Timing",
    "host": "live-data.apex-timing.com",
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": "PT"
   },
   {
    "port": 8993,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9003,
    "vivo": true,
-   "title1": "College LES LOGES",
-   "title2": "Chronos 3",
+   "title2": "Session 1",
    "track": "Karting Magny-Cours (1110m)",
-   "com": "15:22   Arrivée",
-   "filas": 99
+   "filas": 44,
+   "visto": "2026-11-21",
+   "title1": "College LES LOGES",
+   "pais": ""
   },
   {
    "port": 9013,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9023,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9033,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9043,
    "vivo": true,
-   "title2": "Session 12",
+   "title2": "Session 13",
    "track": "Piste Kart Origins 500m",
-   "com": "10:53   Arrivée   10:43   Départ",
-   "filas": 55
+   "filas": 11,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 9053,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9063,
@@ -1158,77 +1409,93 @@
    "title2": "Finale",
    "track": "Piste Karting (815m)",
    "com": "10:43    12 Pénalité - Passage au stand en 14:34 (Tour 1) - 1 Tour   10:43    19 Pénalité - Passage au stand en 14:24 (T",
-   "filas": 234
+   "filas": 234,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 9083,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9093,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9103,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9113,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9133,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9143,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9163,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9173,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9183,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9193,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9203,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9213,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9223,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9233,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9243,
@@ -1237,82 +1504,107 @@
    "title2": "Clasificación",
    "track": "CALAFAT (3250m)",
    "com": "10:35   Llegada",
-   "filas": 540
+   "filas": 540,
+   "visto": "2026-11-21",
+   "pais": "ES"
   },
   {
    "port": 9253,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9263,
    "vivo": true,
-   "title2": "Session 13",
+   "title2": "Session 14",
    "track": "Piste 1000m",
-   "filas": 0
+   "com": "11:00   Départ",
+   "filas": 72,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 9273,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9283,
    "vivo": true,
-   "title1": "SNH SPRINT GAMES",
-   "title2": "レース②※上位リバース",
+   "title2": "セッション 59",
    "track": "HarborCircuit (410m)",
-   "com": "18:51   FINISH",
-   "filas": 165
+   "com": "19:04   FINISH   19:00   スタート",
+   "filas": 72,
+   "visto": "2026-11-21",
+   "title1": "SNH SPRINT GAMES",
+   "pais": ""
   },
   {
    "port": 9293,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9303,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9313,
    "vivo": true,
    "title2": "Session 9",
    "track": "Kartbahn (290m)",
-   "filas": 24
+   "com": "10:59   Start",
+   "filas": 24,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 9323,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9333,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9343,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9353,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9363,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
+   "slug": "karting-campillos",
    "port": 9373,
+   "url": "",
+   "titulo_web": "Karting Campillos",
    "vivo": true,
    "title2": "Carrera 8",
    "track": "Karting Campillos",
-   "filas": 325
+   "com": "11:04   Llegada",
+   "filas": 325,
+   "visto": "2026-11-21",
+   "pais": "ES"
   },
   {
    "port": 9383,
@@ -1320,17 +1612,21 @@
    "title2": "セッション 50",
    "track": "HarborCircuit Kisarazu (430m)",
    "com": "18:48   FINISH",
-   "filas": 33
+   "filas": 33,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 9393,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9403,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9413,
@@ -1338,22 +1634,27 @@
    "title2": "セッション 11",
    "track": "Ocean Kart Land (600m)",
    "com": "16:30   FINISH",
-   "filas": 10
+   "filas": 10,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 9423,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9433,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9443,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9453,
@@ -1361,113 +1662,138 @@
    "title2": "Sessie 9",
    "track": "Karting Indoor V4 (550m)",
    "com": "10:55   Start",
-   "filas": 99
+   "filas": 99,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 9463,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9473,
    "vivo": true,
-   "title1": "gp gold",
-   "title2": "Finał",
+   "title2": "Sesja 17",
    "track": "Konfiguracja v10.0 (567m)",
-   "com": "10:29   Start",
-   "filas": 150
+   "filas": 24,
+   "visto": "2026-11-21",
+   "title1": "gp gold",
+   "pais": ""
   },
   {
    "port": 9483,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9493,
    "vivo": true,
-   "title2": "Sesja 1",
+   "title2": "Sesja 2",
    "track": "NORMAL",
-   "com": "11:55   Meta",
-   "filas": 60
+   "com": "12:03   Meta",
+   "filas": 60,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 9503,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9513,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9523,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9533,
    "vivo": true,
    "title2": "Session 1",
    "track": "Indoor (600m)",
-   "filas": 20
+   "com": "11:05   Start",
+   "filas": 30,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 9543,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9553,
    "vivo": true,
    "title2": "Corsa 1",
    "track": "Pista Karting (1170m)",
-   "filas": 0
+   "filas": 0,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 9563,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9573,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9583,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9593,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9603,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9613,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9623,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9633,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9643,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9653,
@@ -1475,37 +1801,46 @@
    "title1": "Individual (10/20)",
    "title2": "Qualificação",
    "track": "Kartevora (908m)",
-   "filas": 170
+   "filas": 170,
+   "visto": "2026-11-21",
+   "pais": "PT"
   },
   {
    "port": 9663,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9673,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9683,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9693,
    "vivo": true,
-   "title2": "Session 19",
+   "title2": "Gebi Henry Training",
    "track": "Indoor Strecke (420m)",
-   "filas": 91
+   "filas": 78,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 9703,
    "vivo": true,
-   "title2": "Jazda 8",
+   "title2": "Jazda 9",
    "track": "Indoor (420m)",
-   "com": "10:50   Štart",
-   "filas": 26
+   "com": "11:00   Štart",
+   "filas": 91,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 9713,
@@ -1513,46 +1848,58 @@
    "title2": "Quali Gruppe C",
    "track": "Estoril  (1280m)",
    "com": "10:55   Start",
-   "filas": 80
+   "filas": 80,
+   "visto": "2026-11-21",
+   "pais": "PT"
   },
   {
    "port": 9723,
    "vivo": true,
    "title2": "Session 13",
    "track": "Piste Karting (1090m)",
-   "filas": 221
+   "com": "10:59   Départ",
+   "filas": 221,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 9733,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9743,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9753,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9763,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9773,
    "vivo": true,
    "title2": "Session 1",
    "track": "Piste (1150m)",
-   "filas": 0
+   "filas": 0,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "port": 9793,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "slug": "kartodromodebaltar",
@@ -1566,34 +1913,43 @@
    "title1": "trofeu antonio bompastor",
    "title2": "QUALIFICAÇÃO",
    "track": "Kartodromo Baltar (1023m)",
-   "filas": 0
+   "filas": 0,
+   "visto": "2026-11-21",
+   "pais": "PT"
   },
   {
    "port": 9813,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9823,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9833,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9843,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9853,
    "vivo": true,
    "title2": "Session 13",
    "track": "Kartbahn (400m)",
-   "filas": 50
+   "com": "11:02   Start",
+   "filas": 50,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "slug": "karting-sevilla",
@@ -1604,42 +1960,50 @@
    "titulo_web": "Live Timing",
    "host": "live-data.apex-timing.com",
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": "ES"
   },
   {
    "port": 9873,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9883,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9893,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9903,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9913,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9923,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9933,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9943,
@@ -1647,7 +2011,9 @@
    "title2": "Sesja 22",
    "track": "NORMAL",
    "com": "10:13   Meta   10:07   Start",
-   "filas": 10
+   "filas": 10,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "slug": "kartodromo-lucas-guerrero",
@@ -1658,19 +2024,23 @@
    "titulo_web": "Kartodromo Lucas Guerrero",
    "host": "live-data.apex-timing.com",
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": "ES"
   },
   {
    "port": 9963,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
   },
   {
    "port": 9973,
    "vivo": true,
    "title2": "Carrera rookies",
    "track": "Pista Principal (1075m)",
-   "filas": 240
+   "filas": 240,
+   "visto": "2026-11-21",
+   "pais": "ES"
   },
   {
    "slug": "henakart",
@@ -1681,12 +2051,70 @@
    "titulo_web": "Henakart",
    "host": "live-data.apex-timing.com",
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": "ES"
   },
   {
    "port": 9993,
    "vivo": true,
-   "filas": 0
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10003,
+   "vivo": true,
+   "title2": "Session 14",
+   "track": "Gokartcity Malmö (320m)",
+   "filas": 20,
+   "visto": "2026-11-21",
+   "pais": ""
+  },
+  {
+   "port": 10013,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10023,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10033,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10043,
+   "vivo": true,
+   "title2": "セッション 36 @",
+   "track": "F.Dream Hiratsuka (470m)",
+   "filas": 20,
+   "visto": "2026-11-21",
+   "pais": ""
+  },
+  {
+   "port": 10053,
+   "vivo": true,
+   "title1": "kids 12",
+   "title2": "MANCHE 2",
+   "track": "Piste (717m)",
+   "filas": 99,
+   "visto": "2026-11-21",
+   "pais": ""
+  },
+  {
+   "port": 10063,
+   "vivo": true,
+   "title1": "SWS Endurance 7H",
+   "title2": "Závod",
+   "track": "Reverse GP (620m)",
+   "filas": 117,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "slug": "karting-rivas",
@@ -1695,7 +2123,447 @@
    "port": 10073,
    "gmt": "2",
    "titulo_web": "Karting Rivas",
-   "host": "live-data.apex-timing.com"
+   "host": "live-data.apex-timing.com",
+   "vivo": true,
+   "filas": 0,
+   "pais": "ES"
+  },
+  {
+   "port": 10083,
+   "vivo": true,
+   "title2": "Treinos livres Academia",
+   "track": "Abrantes (800m)",
+   "com": "10:02   Finish",
+   "filas": 91,
+   "visto": "2026-11-21",
+   "pais": ""
+  },
+  {
+   "port": 10093,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10103,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10113,
+   "vivo": true,
+   "title2": "Race 7",
+   "track": "KIP (1270m)",
+   "com": "09:48   Finish",
+   "filas": 140,
+   "visto": "2026-11-21",
+   "pais": ""
+  },
+  {
+   "port": 10123,
+   "vivo": true,
+   "title2": "Session 12",
+   "track": "Piste Découverte",
+   "com": "10:56   Arrivée",
+   "filas": 30,
+   "visto": "2026-11-21",
+   "pais": ""
+  },
+  {
+   "port": 10133,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10143,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10163,
+   "vivo": true,
+   "title2": "Session 3",
+   "track": "Grande Piste (1300m)",
+   "com": "10:57   Arrivée",
+   "filas": 20,
+   "visto": "2026-11-21",
+   "pais": ""
+  },
+  {
+   "port": 10173,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10183,
+   "vivo": true,
+   "title2": "privati",
+   "track": "Pista Karting (480m)",
+   "filas": 90,
+   "visto": "2026-11-21",
+   "pais": ""
+  },
+  {
+   "port": 10203,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10213,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10223,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10233,
+   "vivo": true,
+   "title2": "READY",
+   "track": "Karting Track (460m)",
+   "filas": 18,
+   "visto": "2026-11-21",
+   "pais": ""
+  },
+  {
+   "port": 10243,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10253,
+   "vivo": true,
+   "title2": "25' chronos 2",
+   "track": "Piste Oct 2026 - Janvier 2027 (448m)",
+   "com": "10:40   Arrivée   10:15   Départ",
+   "filas": 90,
+   "visto": "2026-11-21",
+   "pais": ""
+  },
+  {
+   "port": 10263,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10273,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10283,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10293,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10313,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10323,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10333,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10343,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10353,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10363,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10373,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10383,
+   "vivo": true,
+   "title2": "Session 1",
+   "track": "Karting Le Creusot (650m)",
+   "filas": 0,
+   "visto": "2026-11-21",
+   "pais": ""
+  },
+  {
+   "port": 10393,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10403,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10413,
+   "vivo": true,
+   "title1": "EDP Groupe 2",
+   "title2": "Session 1",
+   "track": "JOVIKART (900m)",
+   "filas": 72,
+   "visto": "2026-11-21",
+   "pais": ""
+  },
+  {
+   "port": 10423,
+   "vivo": true,
+   "title2": "Corsa 1",
+   "track": "LA PISTA V2 (720m)",
+   "filas": 0,
+   "visto": "2026-11-21",
+   "pais": ""
+  },
+  {
+   "port": 10433,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10443,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10453,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10463,
+   "vivo": true,
+   "title2": "Sessie 13",
+   "track": "Outdoor Track (1084m)",
+   "com": "11:04   Start",
+   "filas": 180,
+   "visto": "2026-11-21",
+   "pais": ""
+  },
+  {
+   "port": 10473,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10483,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10513,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10523,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10533,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10543,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10553,
+   "vivo": true,
+   "title2": "Session 4",
+   "track": "Piste Karting (587m)",
+   "filas": 20,
+   "visto": "2026-11-21",
+   "pais": ""
+  },
+  {
+   "port": 10563,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10573,
+   "vivo": true,
+   "title2": "Session 1",
+   "track": "Kart Sensation Auvergne  (650m)",
+   "filas": 0,
+   "visto": "2026-11-21",
+   "pais": ""
+  },
+  {
+   "port": 10583,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10593,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10603,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10613,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10623,
+   "vivo": true,
+   "title2": "Race 14",
+   "track": "Karting Track (620m)",
+   "com": "11:52   Finish   11:32   Start",
+   "filas": 18,
+   "visto": "2026-11-21",
+   "pais": ""
+  },
+  {
+   "port": 10633,
+   "vivo": true,
+   "title2": "Sesja 16",
+   "track": "NORMAL",
+   "com": "11:00   Start",
+   "filas": 13,
+   "visto": "2026-11-21",
+   "pais": ""
+  },
+  {
+   "port": 10643,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10653,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10663,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10673,
+   "vivo": true,
+   "title2": "Sesja 16",
+   "track": "NORMAL",
+   "filas": 20,
+   "visto": "2026-11-21",
+   "pais": ""
+  },
+  {
+   "port": 10683,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10693,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10703,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10723,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10733,
+   "vivo": true,
+   "title2": "WYŚCIG B2",
+   "track": "S8 V2 Rewers",
+   "com": "11:03   Meta",
+   "filas": 100,
+   "visto": "2026-11-21",
+   "pais": ""
+  },
+  {
+   "port": 10743,
+   "vivo": true,
+   "filas": 0,
+   "pais": ""
+  },
+  {
+   "port": 10753,
+   "vivo": true,
+   "title2": "Race 15",
+   "track": "Epic Karting (450m)",
+   "com": "11:55   Start   11:54   Start",
+   "filas": 187,
+   "visto": "2026-11-21",
+   "pais": ""
   },
   {
    "slug": "karting-vendrell",
@@ -1704,7 +2572,10 @@
    "port": 10763,
    "gmt": "1",
    "titulo_web": "Karting Vendrell",
-   "host": "live-data.apex-timing.com"
+   "host": "live-data.apex-timing.com",
+   "vivo": true,
+   "filas": 0,
+   "pais": "ES"
   }
  ]
 }
