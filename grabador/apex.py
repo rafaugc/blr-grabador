@@ -98,6 +98,7 @@ class ApexState:
         self.col_title: dict[int, str] = {}
         self.rows: dict[str, dict] = {}
         self.title1 = self.title2 = self.track = ''
+        self.comments = ''
         self.finished: list[dict] = []
         self._new_session()
 
@@ -145,10 +146,29 @@ class ApexState:
                 'pos': int(pos) if str(pos).isdigit() else None,
                 'laps': [l['t'] for l in ls],
                 'gaps': [l['gap'] for l in ls],
+                'posv': [int(l['pos']) if str(l.get('pos', '')).isdigit() else None for l in ls],
+                'lider': [l.get('lider', '') for l in ls],
+                'pitsv': [l.get('pits', '') for l in ls],
                 'ts': [round(l['ts'], 1) for l in ls],
             })
         stints.sort(key=lambda s: (s['pos'] is None, s['pos'] or 0))
+        cols = [(i, t) for i, t in sorted(self.col_type.items()) if t and t not in ('sta', 'grp')]
+        seen = {l['row'] for l in self.laps}
+        clas = []
+        for rid, r in self.rows.items():
+            if rid not in seen:
+                continue
+            clas.append([r.get(t, '') for _, t in cols])
+        rk = next((k for k, (_, t) in enumerate(cols) if t == 'rk'), None)
+        if rk is not None:
+            clas.sort(key=lambda v: int(v[rk]) if str(v[rk]).isdigit() else 999)
+        coms = []
+        for m in re.finditer(r'<p><b>([^<]*)</b>(.*?)</p>', self.comments or ''):
+            txt = re.sub(r'<[^>]+>', ' ', m.group(2))
+            coms.append({'hora': m.group(1), 'texto': re.sub(r'\s+', ' ', txt).strip()})
         return {
+            'columnas': [{'tipo': t, 'titulo': self.col_title.get(i, t)} for i, t in cols],
+            'clasificacion': clas, 'comentarios': coms, 'pista': self.track,
             'id': f"{dt:%Y-%m-%d}_{dt:%H%M}_{self.slug}",
             'circuit': self.name, 'slug': self.slug, 'date': f"{dt:%Y-%m-%d}", 'time': f"{dt:%H:%M}",
             'group': t2 or '', 'type': stype, 'title': title, 'source': 'grabador',
@@ -187,6 +207,8 @@ class ApexState:
                     self.session_title = (self.title1, self.title2)
         elif cmd == 'track':
             self.track = value
+        elif cmd == 'com':
+            self.comments = value
         else:
             m = CELL_RE.match(cmd)
             if m:
@@ -195,6 +217,11 @@ class ApexState:
             m = ROW_RE.match(cmd)
             if m and param == '#':
                 self.rows.setdefault(cmd, {})['rk'] = value
+                for l in reversed(self.laps[-60:]):
+                    if l['row'] == cmd:
+                        if ts - l['ts'] < 3:
+                            l['pos'] = value
+                        break
 
     def _grid(self, html: str):
         p = _GridParser()
@@ -239,12 +266,13 @@ class ApexState:
         if dtype == 'dr':
             set_name(row, value, self.team_col() or cls == 'drteam')
             return
-        if dtype == 'int':
-            # el intervalo suele llegar justo después de la vuelta: se lo asignamos a esa vuelta
-            for l in reversed(self.laps[-40:]):
+        late = {'int': 'gap', 'gap': 'lider', 'rk': 'pos', 'pit': 'pits', 'tlp': 'n'}
+        if dtype in late:
+            # estos datos suelen llegar justo después de la vuelta: se los asignamos a esa vuelta
+            for l in reversed(self.laps[-60:]):
                 if l['row'] == rid:
                     if ts - l['ts'] < 3:
-                        l['gap'] = parse_gap(value)
+                        l[late[dtype]] = parse_gap(value) if dtype == 'int' else value
                     break
             return
         if dtype == 'llp':
@@ -257,4 +285,6 @@ class ApexState:
             self.last_lap[rid] = (t, ts)
             gap = parse_gap(row.get('int', ''))
             self.laps.append({'row': rid, 't': t, 'ts': ts, 'kart': row.get('no', ''),
-                              'driver': row.get('driver') or row.get('dr', ''), 'team': row.get('team', ''), 'gap': gap})
+                              'driver': row.get('driver') or row.get('dr', ''), 'team': row.get('team', ''), 'gap': gap,
+                              'pos': row.get('rk', ''), 'lider': row.get('gap', ''), 'pits': row.get('pit', ''),
+                              'n': row.get('tlp', '')})

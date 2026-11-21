@@ -42,6 +42,10 @@ th.l,td.l{text-align:left}td.k{font:700 21px/1 "Barlow Condensed";text-align:cen
 iframe{width:100%;height:78vh;border:1px solid var(--line);border-radius:12px;background:#fff}
 .flash{animation:fl 1.2s}@keyframes fl{from{background:#2a2410}to{background:transparent}}
 .empty{padding:30px;text-align:center;color:var(--mute)}
+tr.click{cursor:pointer}tr.click:hover td{background:#171a20}
+.sub{display:flex;gap:4px;margin:10px 0;flex-wrap:wrap}.sub button{border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:5px 12px;cursor:pointer;color:var(--mute);font-size:13px}.sub button.on{color:var(--accent);border-color:#6b5a1a;background:#2a2410}
+.lt td{padding:5px 6px;font-size:12px}.lt .best{color:var(--purple);font-weight:600}.lt .sbest{background:#2a1f45}.lt .off{color:var(--dim);text-decoration:line-through}
+.back{background:none;border:1px solid var(--line);border-radius:8px;padding:5px 12px;cursor:pointer;color:var(--text)}
 @media(max-width:640px){.hm{display:none}td,th{padding:7px 4px}}
 </style>
 </head>
@@ -50,14 +54,15 @@ iframe{width:100%;height:78vh;border:1px solid var(--line);border-radius:12px;ba
   <header>
     <div class="logo">BLR <span>en directo</span></div>
     <select id="circ"></select>
+    <select id="dia"></select>
     <div class="grow"></div>
     <span class="pill" id="wsState">Conectando…</span>
     <span class="pill" id="dataState">Cargando sesiones…</span>
   </header>
   <nav class="tabs" id="tabs">
-    <a data-v="ranking" class="on">Karts hoy</a>
+    <a data-v="ranking" class="on">Karts del día</a>
     <a data-v="pista">En pista ahora</a>
-    <a data-v="sesiones">Sesiones de hoy</a>
+    <a data-v="sesiones">Sesiones</a>
     <a data-v="apex">Live timing de Apex</a>
   </nav>
 
@@ -97,6 +102,8 @@ let CIRCS = [], C = null;
 let recorded = {};      // nombre de archivo -> sesión grabada hoy
 let live = null;        // estado de la conexión en directo
 let envivo = null;      // foto de la sesión en curso subida por el grabador
+let DAY = null;         // día elegido (AAAA-MM-DD)
+let openSes = null, subTab = 'clas';
 const opts = { method: 'model', noTraffic: false, cutPct: 3 };
 
 // ---------- pestañas ----------
@@ -123,7 +130,9 @@ async function loadCircuits() {
 function start() {
   C = CIRCS.find(c => c.slug === $('circ').value) || CIRCS[0];
   if (!C) return;
-  recorded = {};
+  recorded = {}; openSes = null;
+  DAY = today();
+  loadDays();
   $('apexFrame').removeAttribute('src');
   $('apexLink').href = baseUrl(C);
   if (document.querySelector('#tabs a.on').dataset.v === 'apex') $('apexFrame').src = baseUrl(C);
@@ -131,11 +140,25 @@ function start() {
   refreshRecorded();
 }
 
-// ---------- sesiones grabadas hoy (desde el grabador) ----------
+// ---------- días disponibles ----------
+async function loadDays() {
+  const slug = C.slug;
+  let days = [];
+  try { const r = await fetch(API + 'data/sesiones/' + slug + '?ref=main'); const l = r.ok ? await r.json() : []; days = (Array.isArray(l) ? l : []).filter(x => x.type === 'dir').map(x => x.name); } catch {}
+  if (!days.includes(today())) days.push(today());
+  days.sort().reverse();
+  if (slug !== C.slug) return;
+  const fmtD = d => d === today() ? 'Hoy' : d.split('-').reverse().join('/');
+  $('dia').innerHTML = days.map(d => `<option value="${d}" ${d === DAY ? 'selected' : ''}>${fmtD(d)}</option>`).join('');
+}
+$('dia').onchange = () => { DAY = $('dia').value; recorded = {}; openSes = null; refreshRecorded(); };
+const isToday = () => DAY === today();
+
+// ---------- sesiones grabadas (desde el grabador) ----------
 let refreshTimer = null;
 async function refreshRecorded() {
   clearTimeout(refreshTimer);
-  const slug = C.slug, path = `data/sesiones/${slug}/${today()}`;
+  const slug = C.slug, day = DAY, path = `data/sesiones/${slug}/${day}`;
   try {
     const r = await fetch(API + path + '?ref=main', { headers: { Accept: 'application/vnd.github+json' } });
     const list = r.ok ? await r.json() : [];
@@ -148,7 +171,7 @@ async function refreshRecorded() {
     Object.keys(recorded).forEach(k => { if (!names.has(k)) delete recorded[k]; });
     // si no hay conexión directa, usamos la foto en directo que sube el grabador cada 3 min
     envivo = null;
-    if (!(live && live.ws && live.ws.readyState === 1 && live.laps.length)) {
+    if (isToday() && !(live && live.ws && live.ws.readyState === 1 && live.laps.length)) {
       try {
         const e = await fetch(API + 'data/envivo?ref=main', { headers: { Accept: 'application/vnd.github+json' } });
         const files = e.ok ? await e.json() : [];
@@ -156,10 +179,11 @@ async function refreshRecorded() {
         if (f) { const s = await (await fetch(RAW + 'data/envivo/' + f.name + '?s=' + f.sha)).json(); if (s.date === today()) envivo = s; }
       } catch {}
     }
-    $('dataState').textContent = `${Object.keys(recorded).length} sesiones grabadas hoy`; $('dataState').className = 'pill ok';
+    if (day !== DAY) return;
+    $('dataState').textContent = `${Object.keys(recorded).length} sesiones grabadas ${isToday() ? 'hoy' : 'ese día'}`; $('dataState').className = 'pill ok';
   } catch (e) { $('dataState').textContent = 'Sin acceso a lo grabado'; $('dataState').className = 'pill warn'; }
   render();
-  if (slug === C.slug) refreshTimer = setTimeout(refreshRecorded, 150000);
+  if (slug === C.slug && isToday()) refreshTimer = setTimeout(refreshRecorded, 150000);
 }
 
 // ---------- conexión directa con Apex ----------
@@ -211,8 +235,11 @@ function buildLive(done) {
   const t = (live.sessTitle || [live.title1, live.title2]).filter(Boolean).join(' - ');
   return { id: 'live-' + first, circuit: C.nombre, slug: C.slug, date: today(), time: d.toTimeString().slice(0, 5), title: t, group: live.title2 || '',
     type: /CRONO|QUALI|CLASIF|ENTREN|PRACT|LIBRE/i.test(t) ? 'Cronos' : 'Carrera', source: done ? 'directo' : 'en curso', envivo: !done,
+    columnas: Object.entries(live.cols).filter(([, t]) => t && t !== 'sta' && t !== 'grp').map(([i, t]) => ({ tipo: t, titulo: live.titles?.[i] || t })),
+    clasificacion: Object.entries(live.rows).filter(([r]) => by[r] || Object.keys(by).some(k => k.startsWith(r + '|'))).map(([, r]) => Object.entries(live.cols).filter(([, t]) => t && t !== 'sta' && t !== 'grp').map(([, t]) => r[t] || '')).sort((a, b) => (+a[0] || 99) - (+b[0] || 99)),
+    pista: live.track || '',
     stints: Object.entries(by).map(([key, ls]) => { const rid = key.split('|')[0]; return { kart: +String(ls[ls.length - 1].kart).replace(/\D/g, '') || ls[ls.length - 1].kart, driver: (ls[ls.length - 1].driver || '').toUpperCase(),
-      team: ls[ls.length - 1].team || '', pos: +live.rows[rid]?.rk || null, laps: ls.map(l => l.t), gaps: ls.map(l => l.gap) }; }) };
+      team: ls[ls.length - 1].team || '', pos: +live.rows[rid]?.rk || null, laps: ls.map(l => l.t), gaps: ls.map(l => l.gap), posv: ls.map(l => +l.pos || null) }; }) };
 }
 function feed(msg) {
   const now = Date.now();
@@ -223,6 +250,7 @@ function feed(msg) {
     if ((cmd === 'init' || cmd === 'grid') && val.includes('<tr')) grid(val);
     else if (cmd === 'title1' || cmd === 'title2') { if (live[cmd] !== val) { live[cmd] = val; if (live.laps.length && live.sessTitle && (live.title1 + live.title2) !== live.sessTitle.join('')) closeLive(); if (!live.laps.length) live.sessTitle = [live.title1, live.title2]; } }
     else if (cmd === 'clear' && param === 'grid') { closeLive(); live.rows = {}; }
+    else if (cmd === 'track') live.track = val;
     else { let m = cmd.match(/^r(\d+)c(\d+)$/); if (m) cell('r' + m[1], +m[2], val, now, param); else if ((m = cmd.match(/^r(\d+)$/)) && param === '#') (live.rows[cmd] = live.rows[cmd] || {}).rk = val; }
   }
 }
@@ -230,7 +258,7 @@ function grid(html) {
   const doc = new DOMParser().parseFromString('<table>' + html.replace(/^.*?<table[^>]*>/is, '') , 'text/html');
   const trs = [...doc.querySelectorAll('tr')];
   const head = trs.find(tr => tr.classList.contains('head') || tr.dataset.id === 'r0');
-  if (head) { live.cols = {}; live.teamCol = false; [...head.children].forEach((td, i) => { live.cols[i + 1] = td.dataset.type || ''; if (td.dataset.type === 'dr' && /equip|team/i.test(td.textContent)) live.teamCol = true; }); }
+  if (head) { live.cols = {}; live.titles = {}; live.teamCol = false; [...head.children].forEach((td, i) => { live.cols[i + 1] = td.dataset.type || ''; live.titles[i + 1] = td.textContent.trim(); if (td.dataset.type === 'dr' && /equip|team/i.test(td.textContent)) live.teamCol = true; }); }
   const rows = {};
   trs.forEach(tr => { if (tr === head || !tr.dataset.id) return; const d = {}; [...tr.children].forEach((td, i) => { const t = live.cols[i + 1]; if (t) { d[t] = td.textContent.trim(); if (t === 'dr') setName(d, d[t], teamCol()); } }); rows[tr.dataset.id] = d; });
   if (live.laps.length && Object.keys(rows).length && !Object.keys(rows).some(r => live.last[r])) closeLive();
@@ -246,7 +274,7 @@ function cell(rid, col, val, ts, cls) {
   const t = parseT(val); if (t === null) return;
   const p = live.last[rid]; if (p && p[0] === t && ts - p[1] < t * 600) return;
   live.last[rid] = [t, ts];
-  live.laps.push({ row: rid, t, ts, kart: row.no || '', driver: row.driver || row.dr || '', team: row.team || '', gap: parseG(row.int) });
+  live.laps.push({ row: rid, t, ts, kart: row.no || '', driver: row.driver || row.dr || '', team: row.team || '', gap: parseG(row.int), pos: row.rk });
 }
 
 // ---------- análisis ----------
@@ -254,8 +282,8 @@ let rTimer = null;
 const scheduleRender = () => { if (!rTimer) rTimer = setTimeout(() => { rTimer = null; render(); }, 3000); };
 function sessionsToday() {
   const rec = Object.values(recorded).concat(envivo && !(live && live.laps.length >= 5) ? [envivo] : []);
-  const liveS = live && live.slug === C.slug ? live.sessions.slice() : [];
-  if (live && live.laps.length >= 5) liveS.push(buildLive(false));
+  const liveS = isToday() && live && live.slug === C.slug ? live.sessions.slice() : [];
+  if (isToday() && live && live.laps.length >= 5) liveS.push(buildLive(false));
   const dup = s => rec.some(r => r.title === s.title && Math.abs(toMin(r.time) - toMin(s.time)) <= 3);
   return rec.concat(liveS.filter(s => !dup(s)));
 }
@@ -270,13 +298,13 @@ function render() {
 }
 function renderRanking(ses) {
   const el = $('rankOut');
-  if (!A || !A.karts.length) { el.innerHTML = `<div class="card empty">Todavía no hay vueltas de hoy en ${esc(C.nombre)}. En cuanto ruede alguna sesión aparecerá aquí.</div>`; return; }
+  if (!A || !A.karts.length) { el.innerHTML = `<div class="card empty">Todavía no hay vueltas ${isToday() ? 'de hoy' : 'de ese día'} en ${esc(C.nombre)}. En cuanto ruede alguna sesión aparecerá aquí.</div>`; return; }
   const ks = A.karts, rel = ks.filter(k => conf(k.se, k.drivers)[0] !== 'baja');
   const pool = rel.length >= 3 ? rel : ks, best = pool.slice(0, 3), worst = pool.slice(-3).reverse().filter(k => !best.includes(k));
   const bk = k => { const [c] = tier(k.effect); return `<div class="bk"><b class="${c}">${k.kart}</b><span class="num ${c}">${fmt(k.effect)} s</span></div>`; };
   el.innerHTML = `<div class="summary"><div class="card"><h4>Pide estos karts</h4><div class="bigk">${best.map(bk).join('')}</div></div>
     <div class="card"><h4>Evita estos karts</h4><div class="bigk">${worst.map(bk).join('')}</div></div></div>
-  <div class="card scroll"><div class="mini" style="margin-bottom:6px">Hoy · ${ses.length} sesiones · ${A.stints.length} tandas. Segundos por vuelta frente a un kart medio (negativo = más rápido).</div>
+  <div class="card scroll"><div class="mini" style="margin-bottom:6px">${isToday() ? 'Hoy' : DAY.split('-').reverse().join('/')} · ${ses.length} sesiones · ${A.stints.length} tandas. Segundos por vuelta frente a un kart medio (negativo = más rápido).</div>
   <table><thead><tr><th class="l">#</th><th style="text-align:center">Kart</th><th>Ventaja</th><th class="hm">±</th><th>Fiabilidad</th><th class="hm">Tandas</th><th class="hm">Pilotos</th><th>Mejor vuelta</th><th class="l hm">Lo llevaron</th></tr></thead><tbody>
   ${ks.map((k, i) => { const [c] = tier(k.effect), [cc, cl] = conf(k.se, k.drivers);
     return `<tr><td class="l mini">${i + 1}</td><td class="k ${c}">${k.kart}</td><td class="num ${c}">${fmt(k.effect)} s</td><td class="num hm mini">${k.se.toFixed(2).replace('.', ',')}</td>
@@ -297,13 +325,62 @@ function renderPista() {
     <td class="num">${esc(r.llp || '')}</td><td class="num purple">${esc(r.blp || '')}</td><td class="num hm">${ls.length}</td><td class="num ${c}">${k ? fmt(k.effect) + ' s' : '–'}</td></tr>`; }).join('')}
   </tbody></table></div>`;
 }
+const sid = s => s.id || (s.title + s.time);
 function renderSes(ses) {
   const el = $('sesOut');
-  if (!ses.length) { el.innerHTML = '<div class="card empty">Aún no hay sesiones hoy.</div>'; return; }
-  el.innerHTML = `<div class="card scroll"><table><thead><tr><th class="l">Hora</th><th class="l">Sesión</th><th>Pilotos</th><th>Vueltas</th><th>Mejor vuelta</th><th class="l">Origen</th></tr></thead><tbody>
+  if (openSes) { const s = ses.find(x => sid(x) === openSes) || (openSes.startsWith('live-') ? ses.find(x => x.envivo) : null); if (s) return renderDetail(el, s); openSes = null; }
+  if (!ses.length) { el.innerHTML = '<div class="card empty">No hay sesiones ese día.</div>'; return; }
+  el.innerHTML = `<div class="card scroll"><div class="mini" style="margin-bottom:6px">Pulsa una sesión para ver todos sus datos.</div><table><thead><tr><th class="l">Hora</th><th class="l">Sesión</th><th>Pilotos</th><th>Vueltas</th><th>Mejor vuelta</th><th class="l">Origen</th></tr></thead><tbody>
   ${ses.slice().sort((a, b) => b.time.localeCompare(a.time)).map(s => { const laps = s.stints.flatMap(t => t.laps);
-    return `<tr><td class="l">${esc(s.time)}</td><td class="l">${esc(s.title || s.type)}</td><td class="num">${s.stints.length}</td><td class="num">${laps.length}</td><td class="num purple">${fmtT(Math.min(...laps))}</td>
+    return `<tr class="click" data-sid="${esc(sid(s))}"><td class="l">${esc(s.time)}</td><td class="l"><b>${esc(s.title || s.type)}</b></td><td class="num">${s.stints.length}</td><td class="num">${laps.length}</td><td class="num purple">${fmtT(Math.min(...laps))}</td>
     <td class="l mini">${s.envivo ? '<span style="color:var(--vslow)">● en curso</span>' : s.source === 'directo' ? 'vista en directo' : 'grabada'}</td></tr>`; }).join('')}</tbody></table></div>`;
+  el.querySelectorAll('tr[data-sid]').forEach(tr => tr.onclick = () => { openSes = tr.dataset.sid; subTab = 'clas'; renderSes(sessionsToday()); window.scrollTo(0, 0); });
+}
+function renderDetail(el, s) {
+  const st = s.stints.slice().sort((a, b) => (a.pos ?? 99) - (b.pos ?? 99));
+  const allLaps = st.flatMap(t => t.laps), sbest = Math.min(...allLaps);
+  const keff = {}; (A ? A.karts : []).forEach(k => keff[String(k.kart)] = k.effect);
+  const tabs = [['clas', 'Clasificación'], ['vueltas', 'Vuelta a vuelta'], ['pos', 'Posiciones'], ['karts', 'Karts'], ['com', 'Comentarios']];
+  const mean = a => a.reduce((x, y) => x + y, 0) / a.length;
+  let body = '';
+  if (subTab === 'clas') {
+    if (s.columnas && s.clasificacion && s.clasificacion.length) {
+      body = `<table><thead><tr>${s.columnas.map(c => `<th class="${['dr', 'no'].includes(c.tipo) ? 'l' : ''}">${esc(c.titulo)}</th>`).join('')}</tr></thead><tbody>
+      ${s.clasificacion.map(r => `<tr>${r.map((v, i) => `<td class="${['dr', 'no'].includes(s.columnas[i].tipo) ? 'l' : 'num'} ${s.columnas[i].tipo === 'blp' ? 'purple' : ''}">${esc(v)}</td>`).join('')}</tr>`).join('')}</tbody></table>
+      <div class="mini" style="margin-top:6px">Clasificación tal como la mostraba Apex al terminar la sesión.</div>`;
+    } else {
+      body = `<table><thead><tr><th class="l">Pos</th><th style="text-align:center">Kart</th><th class="l">Piloto</th><th>Vueltas</th><th>Mejor</th><th>Media 5 mejores</th><th>Última</th></tr></thead><tbody>
+      ${st.map(t => { const so = t.laps.slice().sort((a, b) => a - b); return `<tr><td class="l">${t.pos ?? ''}</td><td class="k">${esc(t.kart)}</td><td class="l">${esc(t.driver)}${t.team ? `<div class="mini">${esc(t.team)}</div>` : ''}</td><td class="num">${t.laps.length}</td><td class="num purple">${fmtT(so[0])}</td><td class="num">${fmtT(mean(so.slice(0, 5)))}</td><td class="num">${fmtT(t.laps[t.laps.length - 1])}</td></tr>`; }).join('')}</tbody></table>`;
+    }
+  } else if (subTab === 'vueltas') {
+    const n = Math.max(...st.map(t => t.laps.length));
+    body = `<table class="lt"><thead><tr><th class="l">Piloto</th><th>Kart</th>${Array.from({ length: n }, (_, i) => `<th>${i + 1}</th>`).join('')}<th>Mejor</th><th>Media</th></tr></thead><tbody>
+    ${st.map(t => { const best = Math.min(...t.laps); return `<tr><td class="l">${esc(t.driver)}${t.team ? `<div class="mini">${esc(t.team)}</div>` : ''}</td><td class="num">${esc(t.kart)}</td>
+      ${Array.from({ length: n }, (_, i) => { const x = t.laps[i]; if (x == null) return '<td></td>'; const off = i === 0 || x > best * (1 + opts.cutPct / 100) || (opts.noTraffic && t.gaps && t.gaps[i] != null && t.gaps[i] < 0.5);
+        const tip = [t.posv && t.posv[i] ? 'P' + t.posv[i] : '', t.gaps && t.gaps[i] != null ? 'a ' + t.gaps[i].toFixed(2) + ' s del de delante' : ''].filter(Boolean).join(' · ');
+        return `<td class="num ${x === best ? 'best' : ''} ${x === sbest ? 'sbest' : ''} ${off ? 'off' : ''}" title="${tip}">${fmtT(x)}</td>`; }).join('')}
+      <td class="num purple">${fmtT(best)}</td><td class="num">${fmtT(mean(t.laps))}</td></tr>`; }).join('')}</tbody></table>
+    <div class="mini" style="margin-top:6px"><span class="purple">Morado</span> = mejor vuelta del piloto · fondo morado = mejor de la sesión · <span style="text-decoration:line-through">tachadas</span> = vueltas que no cuentan para el ranking (1ª vuelta, trompos, tráfico…)</div>`;
+  } else if (subTab === 'pos') {
+    const has = st.some(t => t.posv && t.posv.some(Boolean));
+    const n = Math.max(...st.map(t => t.laps.length));
+    body = has ? `<table class="lt"><thead><tr><th class="l">Piloto</th>${Array.from({ length: n }, (_, i) => `<th>${i + 1}</th>`).join('')}</tr></thead><tbody>
+      ${st.map(t => `<tr><td class="l">${esc(t.driver)}</td>${Array.from({ length: n }, (_, i) => `<td class="num">${t.posv && t.posv[i] ? t.posv[i] : ''}</td>`).join('')}</tr>`).join('')}</tbody></table>`
+      : '<div class="empty">Esta sesión se grabó antes de que guardáramos la posición en cada vuelta.</div>';
+  } else if (subTab === 'karts') {
+    body = `<table><thead><tr><th style="text-align:center">Kart</th><th class="l">Piloto</th><th>Ritmo (5 mejores)</th><th>Calidad del kart (día)</th></tr></thead><tbody>
+    ${st.slice().sort((a, b) => (keff[a.kart] ?? 9) - (keff[b.kart] ?? 9)).map(t => { const e = keff[String(t.kart)], [c] = e != null ? tier(e) : [''];
+      return `<tr><td class="k ${c}">${esc(t.kart)}</td><td class="l">${esc(t.driver)}</td><td class="num">${fmtT(mean(t.laps.slice().sort((a, b) => a - b).slice(0, 5)))}</td><td class="num ${c}">${e != null ? fmt(e) + ' s' : '–'}</td></tr>`; }).join('')}</tbody></table>`;
+  } else {
+    body = s.comentarios && s.comentarios.length ? `<table><tbody>${s.comentarios.map(c => `<tr><td class="l num" style="width:60px">${esc(c.hora)}</td><td class="l" style="white-space:normal">${esc(c.texto)}</td></tr>`).join('')}</tbody></table>` : '<div class="empty">Sin comentarios de dirección de carrera.</div>';
+  }
+  el.innerHTML = `<div class="card scroll">
+    <div class="row"><button class="back" id="back">← Sesiones</button><div><b style="font:700 20px 'Barlow Condensed'">${esc(s.title || s.type)}</b>
+    <div class="mini">${esc(s.time)} · ${esc(s.pista || '')} · ${st.length} pilotos · ${allLaps.length} vueltas · mejor ${fmtT(sbest)}${s.envivo ? ' · <span style="color:var(--vslow)">en curso</span>' : ''}</div></div></div>
+    <div class="sub">${tabs.map(([k, l]) => `<button data-t="${k}" class="${k === subTab ? 'on' : ''}">${l}</button>`).join('')}</div>
+    ${body}</div>`;
+  $('back').onclick = () => { openSes = null; renderSes(sessionsToday()); };
+  el.querySelectorAll('.sub button').forEach(b => b.onclick = () => { subTab = b.dataset.t; renderDetail(el, s); });
 }
 loadCircuits();
 })();

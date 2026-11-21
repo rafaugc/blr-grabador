@@ -32,29 +32,35 @@ def same(a, b):
     return len(ka & kb) >= 0.5 * min(len(ka), len(kb))
 
 
+ARR = ('laps', 'gaps', 'ts', 'posv', 'lider', 'pitsv')
+
+
 def merge(a, b):
     by = {}
     for s in a['stints'] + b['stints']:
         key = (str(s['kart']), s['driver'])
-        cur = by.setdefault(key, {'kart': s['kart'], 'driver': s['driver'], 'cls': s.get('cls', ''),
-                                  'pos': s.get('pos'), 'laps': [], 'gaps': [], 'ts': []})
+        cur = by.setdefault(key, dict({k: v for k, v in s.items() if k not in ARR}, **{k: [] for k in ARR}))
         for i, t in enumerate(s['laps']):
             ts = s['ts'][i] if i < len(s.get('ts', [])) else None
             dup = any(abs(t - t2) < 0.002 and (ts is None or ts2 is None or abs(ts - ts2) < 5)
                       for t2, ts2 in zip(cur['laps'], cur['ts']))
             if not dup:
-                cur['laps'].append(t)
-                cur['gaps'].append(s['gaps'][i] if i < len(s.get('gaps', [])) else None)
-                cur['ts'].append(ts)
+                for k in ARR:
+                    src = s.get(k, [])
+                    cur[k].append(src[i] if i < len(src) else (t if k == 'laps' else None))
         if s.get('pos') is not None:
             cur['pos'] = s['pos']
     for s in by.values():
         order = sorted(range(len(s['laps'])), key=lambda i: s['ts'][i] or 0)
-        for k in ('laps', 'gaps', 'ts'):
+        for k in ARR:
             s[k] = [s[k][i] for i in order]
-    out = dict(a if span(a)[0] <= span(b)[0] else b)
+    first, last = (a, b) if span(a)[0] <= span(b)[0] else (b, a)
+    out = dict(first)
+    for k in ('columnas', 'clasificacion', 'comentarios', 'pista'):
+        if last.get(k):
+            out[k] = last[k]
     out['stints'] = sorted(by.values(), key=lambda s: (s['pos'] is None, s['pos'] or 0))
-    out['partial'] = False
+    out['partial'] = bool(last.get('partial'))
     return out
 
 
