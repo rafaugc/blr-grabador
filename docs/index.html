@@ -354,6 +354,7 @@ function askClaude(s) {
 }
 function renderRanking(ses) {
   const el = $('rankOut');
+  if (opts.method === 'driver' && A && !A.karts.length) { el.innerHTML = `<div class="card empty">"Vs. su media" compara a cada piloto consigo mismo con karts distintos, y en esta selección <b>ningún piloto ha llevado más de un kart</b>. Usa "Modelo", o añade días en los que hayan repetido pilotos.</div>`; return; }
   if (!A || !A.karts.length) { el.innerHTML = `<div class="card empty">No hay vueltas en la selección (${daysLabel()}) en ${esc(C.nombre)}. En cuanto ruede alguna sesión aparecerá aquí.</div>`; return; }
   const ks = A.karts, rel = ks.filter(k => conf(k.se, k.drivers)[0] !== 'baja');
   const pool = rel.length >= 3 ? rel : ks, best = pool.slice(0, 3), worst = pool.slice(-3).reverse().filter(k => !best.includes(k));
@@ -418,11 +419,11 @@ function renderDetail(el, s) {
   if (subTab === 'clas') {
     if (s.columnas && s.clasificacion && s.clasificacion.length) {
       body = `<table><thead><tr>${s.columnas.map(c => `<th class="${['dr', 'no'].includes(c.tipo) ? 'l' : ''}">${esc(c.titulo)}</th>`).join('')}</tr></thead><tbody>
-      ${s.clasificacion.map(r => `<tr>${r.map((v, i) => `<td class="${['dr', 'no'].includes(s.columnas[i].tipo) ? 'l' : 'num'} ${s.columnas[i].tipo === 'blp' ? 'purple' : ''}">${esc(v)}</td>`).join('')}</tr>`).join('')}</tbody></table>
+      ${s.clasificacion.map(r => `<tr>${r.map((v, i) => `<td class="${['dr', 'no'].includes(s.columnas[i].tipo) ? 'l' : 'num'} ${s.columnas[i].tipo === 'blp' && parseT(v) === sbest ? 'purple' : ''}">${esc(v)}</td>`).join('')}</tr>`).join('')}</tbody></table>
       <div class="mini" style="margin-top:6px">Clasificación tal como la mostraba Apex al terminar la sesión.</div>`;
     } else {
       body = `<table><thead><tr><th class="l">Pos</th><th style="text-align:center">Kart</th><th class="l">Piloto</th><th>Vueltas</th><th>Mejor</th><th>Media 5 mejores</th><th>Última</th></tr></thead><tbody>
-      ${st.map(t => { const so = t.laps.slice().sort((a, b) => a - b); return `<tr><td class="l">${t.pos ?? ''}</td><td class="k">${esc(t.kart)}</td><td class="l">${esc(t.driver)}${t.team ? `<div class="mini">${esc(t.team)}</div>` : ''}</td><td class="num">${t.laps.length}</td><td class="num purple">${fmtT(so[0])}</td><td class="num">${fmtT(mean(so.slice(0, 5)))}</td><td class="num">${fmtT(t.laps[t.laps.length - 1])}</td></tr>`; }).join('')}</tbody></table>`;
+      ${st.map(t => { const so = t.laps.slice().sort((a, b) => a - b); return `<tr><td class="l">${t.pos ?? ''}</td><td class="k">${esc(t.kart)}</td><td class="l">${esc(t.driver)}${t.team ? `<div class="mini">${esc(t.team)}</div>` : ''}</td><td class="num">${t.laps.length}</td><td class="num ${so[0] === sbest ? 'purple' : ''}">${fmtT(so[0])}</td><td class="num">${fmtT(mean(so.slice(0, 5)))}</td><td class="num">${fmtT(t.laps[t.laps.length - 1])}</td></tr>`; }).join('')}</tbody></table>`;
     }
   } else if (subTab === 'vueltas') {
     const n = Math.max(...st.map(t => t.laps.length));
@@ -430,9 +431,9 @@ function renderDetail(el, s) {
     ${st.map(t => { const best = Math.min(...t.laps); return `<tr><td class="l">${esc(t.driver)}${t.team ? `<div class="mini">${esc(t.team)}</div>` : ''}</td><td class="num">${esc(t.kart)}</td>
       ${Array.from({ length: n }, (_, i) => { const x = t.laps[i]; if (x == null) return '<td></td>'; const off = i === 0 || x > best * (1 + opts.cutPct / 100) || (opts.noTraffic && t.gaps && t.gaps[i] != null && t.gaps[i] < 0.5);
         const tip = [t.posv && t.posv[i] ? 'P' + t.posv[i] : '', t.gaps && t.gaps[i] != null ? 'a ' + t.gaps[i].toFixed(2) + ' s del de delante' : ''].filter(Boolean).join(' · ');
-        return `<td class="num ${x === best ? 'best' : ''} ${x === sbest ? 'sbest' : ''} ${off ? 'off' : ''}" title="${tip}">${fmtT(x)}</td>`; }).join('')}
-      <td class="num purple">${fmtT(best)}</td><td class="num">${fmtT(mean(t.laps))}</td></tr>`; }).join('')}</tbody></table>
-    <div class="mini" style="margin-top:6px"><span class="purple">Morado</span> = mejor vuelta del piloto · fondo morado = mejor de la sesión · <span style="text-decoration:line-through">tachadas</span> = vueltas que no cuentan para el ranking (1ª vuelta, trompos, tráfico…)</div>`;
+        return `<td class="num ${x === sbest ? 'best sbest' : ''} ${off ? 'off' : ''}" title="${tip}">${fmtT(x)}</td>`; }).join('')}
+      <td class="num ${best === sbest ? 'purple' : ''}">${fmtT(best)}</td><td class="num">${fmtT(mean(t.laps))}</td></tr>`; }).join('')}</tbody></table>
+    <div class="mini" style="margin-top:6px"><span class="purple">Morado</span> = mejor vuelta de la sesión · <span style="text-decoration:line-through">tachadas</span> = vueltas que no cuentan para el ranking (1ª vuelta, trompos, tráfico…)</div>`;
   } else if (subTab === 'pos') {
     const has = st.some(t => t.posv && t.posv.some(Boolean));
     const n = Math.max(...st.map(t => t.laps.length));
