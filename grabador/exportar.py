@@ -47,6 +47,22 @@ def build():
         if days:
             nombre = load(next(cdir.rglob('*.json')), {}).get('circuit') or cdir.name
             index['circuitos'][cdir.name] = {'nombre': nombre, 'dias': days}
+    # sesiones en curso (foto cada 10 min): se añaden a su día si aún no hay versión terminada
+    for f in sorted((ROOT / 'data' / 'envivo').glob('*.json')):
+        s = load(f, None)
+        if not s or time.time() - f.stat().st_mtime > 6 * 3600:
+            continue
+        for st in s['stints']:
+            st.pop('ts', None)
+        rel = f"datos/{s['slug']}/{s['date']}.json"
+        sess = json.loads(files[rel]) if rel in files else []
+        if any(x['title'] == s['title'] and x['time'] == s['time'] for x in sess):
+            continue
+        sess.append(s)
+        body = json.dumps(sess, ensure_ascii=False, separators=(',', ':'))
+        files[rel] = body
+        c = index['circuitos'].setdefault(s['slug'], {'nombre': s['circuit'], 'dias': {}})
+        c['dias'][s['date']] = {'n': len(sess), 'archivo': rel, 'hash': hashlib.sha1(body.encode()).hexdigest()[:12]}
     files['datos/indice.json'] = json.dumps(index, ensure_ascii=False, separators=(',', ':'))
     return files
 

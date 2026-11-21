@@ -84,7 +84,7 @@ class Publisher:
 def publish_git():
     cmds = [
         [sys.executable, '-m', 'grabador.unir'],
-        ['git', 'add', 'data/'],
+        ["git", "add", "-A", "data/"],
     ]
     for c in cmds:
         subprocess.run(c, cwd=ROOT, capture_output=True)
@@ -103,6 +103,31 @@ def publish_git():
 
 
 PUB: 'Publisher | None' = None
+LIVE_EVERY = 10 * 60
+
+
+def live_path(slug):
+    return ROOT / 'data' / 'envivo' / f'{slug}.json'
+
+
+def save_live(state: ApexState, stats: dict):
+    """Foto de la sesión en curso (se sobrescribe); así se ve en la app antes de que termine."""
+    p = live_path(state.slug)
+    if not state.laps:
+        if p.exists():
+            p.unlink()
+            if PUB:
+                PUB.mark()
+        return
+    if time.time() - stats.get('live_ts', 0) < LIVE_EVERY:
+        return
+    stats['live_ts'] = time.time()
+    s = state._build(partial=True)
+    s['envivo'] = True
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(s, ensure_ascii=False, separators=(',', ':')))
+    if PUB:
+        PUB.mark()
 
 
 def save_sessions(state: ApexState, stats: dict):
@@ -176,6 +201,7 @@ async def record(c: dict, deadline: float, stats: dict, raw_dir: Path):
                         state.tick(now)
                         save_sessions(state, stats)
                         stats['en_sesion'] = len(state.laps)
+                        save_live(state, stats)
                         if PUB:
                             await PUB.maybe()
             except Exception as e:
@@ -186,6 +212,8 @@ async def record(c: dict, deadline: float, stats: dict, raw_dir: Path):
     finally:
         state.close_session(partial=True)
         save_sessions(state, stats)
+        if live_path(slug).exists():
+            live_path(slug).unlink()
         raw.close()
 
 
@@ -218,6 +246,7 @@ async def main_async(minutes: float, only: list[str] | None):
         prev = estado.get(slug, {})
         s.pop('ultimo_mensaje_ts', None)
         s.pop('en_sesion', None)
+        s.pop('live_ts', None)
         s['ultima_ejecucion'] = fin
         s['sesiones_total'] = prev.get('sesiones_total', 0) + s['sesiones']
         if s['conectado']:
