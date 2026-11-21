@@ -1,0 +1,26 @@
+[
+ {
+  "slug": "ariza-racing-circuit",
+  "nombre": "Ariza Racing Circuit",
+  "port": 8973,
+  "tz": "Europe/Madrid",
+  "grabar": true,
+  "url": "https://www.apex-timing.com/live-timing/ariza-racing-circuit/index.html"
+ },
+ {
+  "slug": "kartodromo-lucas-guerrero",
+  "nombre": "Kartódromo Lucas Guerrero (Chiva, Valencia)",
+  "port": 9953,
+  "tz": "Europe/Madrid",
+  "grabar": true,
+  "url": "https://www.apex-timing.com/live-timing/kartodromo-lucas-guerrero/index.html"
+ },
+ {
+  "slug": "kartodromodeviana",
+  "nombre": "Kartódromo de Viana do Castelo",
+  "port": 8983,
+  "tz": "Europe/Lisbon",
+  "grabar": true,
+  "url": "https://www.apex-timing.com/live-timing/kartodromodeviana/index.html"
+ }
+]

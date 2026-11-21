@@ -1,0 +1,54 @@
+name: Grabar circuitos
+
+# Cada 30 min se lanza un turno. Si ya hay un grabador en marcha (de hace menos de 5 h)
+# el turno se cierra solo en unos segundos. Así siempre hay uno escuchando, y el
+# siguiente se conecta ~50 min antes de que el anterior termine: no se pierde nada.
+# El grabador está siempre atento, pero solo guarda cuando hay vueltas.
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+    inputs:
+      minutos:
+        description: 'Minutos de grabación (para una prueba rápida, pon 5)'
+        default: '350'
+      forzar:
+        description: 'Grabar aunque ya haya otro grabador en marcha'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  grabar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 358
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: ¿Hace falta grabar?
+        id: turno
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FORZAR: ${{ github.event.inputs.forzar || 'false' }}
+        run: python -m grabador.turno
+      - if: steps.turno.outputs.grabar == 'true'
+        run: pip install -r requirements.txt
+      - name: Grabar
+        if: steps.turno.outputs.grabar == 'true'
+        run: |
+          git config user.name "blr-grabador"
+          git config user.email "blr-grabador@users.noreply.github.com"
+          python -m grabador.grabar --minutos "${{ github.event.inputs.minutos || '350' }}"
+      - name: Guardar copia en bruto (30 días)
+        if: always() && steps.turno.outputs.grabar == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: bruto-${{ github.run_id }}
+          path: raw/
+          retention-days: 30
+          if-no-files-found: ignore
