@@ -3,14 +3,14 @@
   "nombre": "Ariza Racing Circuit",
   "conectado": true,
   "conexiones": 1,
-  "mensajes": 341,
+  "mensajes": 2048,
   "sesiones": 1,
   "errores_lectura": 0,
   "titulo": "4 HORAS POR EQUIPOS  - Final",
-  "ultima_sesion": "2026-11-21 10:53 4 HORAS POR EQUIPOS  - Final",
-  "ultima_ejecucion": "2026-11-21 09:57 UTC",
-  "sesiones_total": 1,
-  "ultima_conexion_ok": "2026-11-21 09:57 UTC"
+  "ultima_sesion": "2026-11-21 11:17 4 HORAS POR EQUIPOS  - Final",
+  "ultima_ejecucion": "2026-11-21 10:36 UTC",
+  "sesiones_total": 2,
+  "ultima_conexion_ok": "2026-11-21 10:36 UTC"
  },
  "kartodromo-lucas-guerrero": {
   "nombre": "Kartódromo Lucas Guerrero (Chiva, Valencia)",
