@@ -40,3 +40,175 @@ r3338c1|sr| ⏎ r3338c5|tn|46.828 ⏎ r3338c6|ib|20.250 ⏎ r3338c7|in|11.547 �
 r3337c1|sr| ⏎ r3337c5|tn|47.429 ⏎ r3337c6|ib|22.746 ⏎ r3337c7|in|2.496 ⏎ r3337|*|44018| ⏎ 
 r3335c1|sr| ⏎ r3335c5|tn|49.179 ⏎ r3335c6|ib|12.941 ⏎ r3335c7|in|12.941 ⏎ r3335|*|44847| ⏎ 
 r3330c1|sr| ⏎ r3330c5|tn|47.821 ⏎ r3330c6|ib|25.528 ⏎ r3330c7|in|2.782 ⏎ r3330|*|44225| ⏎ 
+r3340c1|sr| ⏎ r3340c5|tn|47.961 ⏎ r3340|*|44521| ⏎ 
+r3344c1|sr| ⏎ r3344c5|tn|48.207 ⏎ r3344c6|ib|0.481 ⏎ r3344c7|in|0.481 ⏎ r3344|*|44695| ⏎ 
+r3339c4|dr|NEO LEVELAP ⏎ r3342c4|dr|ESCUELADEKART.COM ⏎ r3334c4|dr|KARTING NOW ⏎ r3338c4|dr|IMK ⏎ r3337c4|dr|CREATIA LTDL RACING ⏎ r3330c4|dr|AD OVERDRIVE ⏎ r3331c4|dr|LMKC SCUDERIA ⏎ r3379c4|dr|KARTINGNOW ENDURANCE ⏎ r3341c4|dr|PDT RACING ⏎ r3333c4|dr|SKAT ⏎ r3335c4|dr|ASR MOTORSPORT BLACK ⏎ r3336c4|dr|ASR MOTORSPORT WHITE ⏎ r3343c4|dr|LASAGRATEAM ⏎ r3340c4|dr|CKM FARMACIA ZENITH ⏎ r3344c4|dr|ASR MOTORSPORT GREY ⏎ r3332c4|dr|TARTARUGAS RC ⏎ 
+dyn1|countdown|12691490 ⏎ 
+com||<p><b>11:18</b><span data-flag="msg"></span><span class="com_no no2">38</span>Sancion pit cerrado. Proxima parada 4min</p><p><b>11:06</b><span data-flag="msg"></span><span class="com_no no2">30</span>Sancion 10seg, proximo pit 2:40:00</p><p><b>11:03</b><span data-flag="warning"></span><span class="com_no no2">43</span>Advertencia - Toque en la salida</p><p><b>10:49</b><span data-flag="green"></span>Start</p> ⏎ msg|msgt|Nº.38 CKM FARMACIA ZENITH : Sancion pit cerrado. Proxima parada 4min ⏎ 
+r3343c1|sr| ⏎ r3343c5|tn|50.468 ⏎ r3343c7|in|44.769 ⏎ r3343|*|46723| ⏎ 
+r3340c9|in|0:19 ⏎ 
+r3379c1|su| ⏎ r3379c2||7 ⏎ r3379c5|tn|48.957 ⏎ r3379c6|ib|34.824 ⏎ r3379c7|in|9.296 ⏎ r3331c1|sd| ⏎ r3331c2||8 ⏎ r3331c7|in| ⏎ r3341c7|in|11.328 ⏎ r3331|#|8 ⏎ r3379|*|44184| ⏎ r3379|#|7 ⏎ 
+r3331c5|tn|49.328 ⏎ r3331c6|ib|34.934 ⏎ r3331c7|in|0.110 ⏎ r3331|*|44208| ⏎ 
+r3336c1|sr| ⏎ r3336c5|tn|51.137 ⏎ r3336c6|ib|26.598 ⏎ r3336c7|in|13.657 ⏎ r3336|*|45299| ⏎ 
+r3332c9|in|0:01 ⏎ 
+r3339c4|drteam|JON DEL VALLE [0:28] ⏎ r3342c4|drteam|DIEGO FUIZ [0:28] ⏎ r3334c4|drteam|JAVIER LLAVE [0:28] ⏎ r3338c4|drteam|DARÍO FERRERAS [0:28] ⏎ r3337c4|drteam|ALEX CUBAS [0:28] ⏎ r3330c4|drteam|GERMÁN MUÑOZ [0:28] ⏎ r3379c4|drteam|PABLO REH [0:28] ⏎ r3331c4|drteam|MATÍAS GARCÍA  [0:28] ⏎ r3341c4|drteam|CRISTIAN [0:28] ⏎ r3333c4|drteam|JAVIER SÁNCHEZ VAQUERIZO [0:28] ⏎ r3335c4|drteam|ALFONSO SAGARRUY [0:28] ⏎ r3336c4|drteam|IVÁN RODRÍGUEZ [0:28] ⏎ r3343c4|drteam|RODRIGUEZ [0:28] ⏎ r3340c4|drteam|GUILLERMO PANIAGUA [0:19] ⏎ r3344c4|drteam|CARLOS MULHERN LÓPEZ-OLIVA [0:26] ⏎ r3332c4|drteam|CARLOS MORENO [0:01] ⏎ 
+r3332c1|sr| ⏎ r3332c5|tn|58.879 ⏎ r3332|*|52490| ⏎ 
+r3341c1|sr| ⏎ r3341c5|tn|53.484 ⏎ r3341c6|ib|50.418 ⏎ r3341c7|in|15.484 ⏎ r3341|*|44689| ⏎ 
+r3344c9|in|0:20 ⏎ 
+r3339c5|tn|52.422 ⏎ r3339c6|in|Vuelta 39 ⏎ r3342c1|in| ⏎ r3334c1|in| ⏎ r3338c1|in| ⏎ r3337c1|in| ⏎ r3330c1|in| ⏎ r3341c1|in| ⏎ r3333c1|in| ⏎ r3335c1|in| ⏎ r3336c1|in| ⏎ r3343c1|in| ⏎ r3340c1|in| ⏎ r3344c1|in| ⏎ r3332c1|in| ⏎ r3339|*|43702| ⏎ 
+r3339c4|dr|NEO LEVELAP ⏎ r3342c4|dr|ESCUELADEKART.COM ⏎ r3334c4|dr|KARTING NOW ⏎ r3338c4|dr|IMK ⏎ r3337c4|dr|CREATIA LTDL RACING ⏎ r3330c4|dr|AD OVERDRIVE ⏎ r3379c4|dr|KARTINGNOW ENDURANCE ⏎ r3331c4|dr|LMKC SCUDERIA ⏎ r3341c4|dr|PDT RACING ⏎ r3333c4|dr|SKAT ⏎ r3335c4|dr|ASR MOTORSPORT BLACK ⏎ r3336c4|dr|ASR MOTORSPORT WHITE ⏎ r3343c4|dr|LASAGRATEAM ⏎ r3340c4|dr|CKM FARMACIA ZENITH ⏎ r3344c4|dr|ASR MOTORSPORT GREY ⏎ r3332c4|dr|TARTARUGAS RC ⏎ 
+dyn1|countdown|12661384 ⏎ 
+r3339c9|in|0:29 ⏎ r3342c9|in|0:29 ⏎ r3334c9|in|0:29 ⏎ r3338c9|in|0:29 ⏎ r3337c9|in|0:29 ⏎ r3330c9|in|0:29 ⏎ r3379c9|in|0:29 ⏎ r3331c9|in|0:29 ⏎ r3341c9|in|0:29 ⏎ r3333c9|in|0:29 ⏎ r3335c9|in|0:29 ⏎ r3336c9|in|0:29 ⏎ r3343c9|in|0:29 ⏎ 
+r3342c1|sr| ⏎ r3342c5|tn|54.027 ⏎ r3342c6|ib|9.613 ⏎ r3342c7|in|9.613 ⏎ r3342|*|44104| ⏎ 
+r3334c1|sr| ⏎ r3334c5|tn|53.825 ⏎ r3334c6|ib|10.106 ⏎ r3334c7|in|0.493 ⏎ r3334|*|44394| ⏎ 
+msg||Mejor vuelta : NEO LEVELAP - 43.394 (58.07 Km/h) ⏎ 
+r3338c1|si| ⏎ r3338c9|to|00. ⏎ r3338c10|in|1 ⏎ r3338|*in|0 ⏎ 
+r3338c9|to|01. ⏎ 
+r3338c9|to|02. ⏎ 
+r3338c9|to|03. ⏎ 
+com||<p><b>11:18</b><span data-flag="msg"></span><span class="com_no no2">34</span>Sancion pit cerrado. Proxima parada 4min</p><p><b>11:18</b><span data-flag="msg"></span><span class="com_no no2">38</span>Sancion pit cerrado. Proxima parada 4min</p><p><b>11:06</b><span data-flag="msg"></span><span class="com_no no2">30</span>Sancion 10seg, proximo pit 2:40:00</p><p><b>11:03</b><span data-flag="warning"></span><span class="com_no no2">43</span>Advertencia - Toque en la salida</p><p><b>10:49</b><span data-flag="green"></span>Start</p> ⏎ msg|msgt|Nº.34 ASR MOTORSPORT GREY : Sancion pit cerrado. Proxima parada 4min ⏎ 
+r3338c9|to|04. ⏎ 
+r3338c9|to|05. ⏎ 
+r3333c1|sr| ⏎ r3333c5|tn|58.961 ⏎ r3333c7|in|19.219 ⏎ r3333|*|45366| ⏎ 
+r3338c9|to|06. ⏎ 
+r3379c1|in| ⏎ r3331c1|in| ⏎ 
+r3338c9|to|07. ⏎ 
+r3338c9|to|08. ⏎ 
+r3338c9|to|09. ⏎ 
+r3338c9|to|10. ⏎ 
+r3338c9|to|11. ⏎ 
+r3338c9|to|12. ⏎ 
+r3338c9|to|13. ⏎ 
+r3339c4|drteam|JON DEL VALLE [0:29] ⏎ r3342c4|drteam|DIEGO FUIZ [0:29] ⏎ r3334c4|drteam|JAVIER LLAVE [0:29] ⏎ r3338c4|drteam|DARÍO FERRERAS [0:29] ⏎ r3337c4|drteam|ALEX CUBAS [0:29] ⏎ r3330c4|drteam|GERMÁN MUÑOZ [0:29] ⏎ r3379c4|drteam|PABLO REH [0:29] ⏎ r3331c4|drteam|MATÍAS GARCÍA  [0:29] ⏎ r3341c4|drteam|CRISTIAN [0:29] ⏎ r3333c4|drteam|JAVIER SÁNCHEZ VAQUERIZO [0:29] ⏎ r3335c4|drteam|ALFONSO SAGARRUY [0:29] ⏎ r3336c4|drteam|IVÁN RODRÍGUEZ [0:29] ⏎ r3343c4|drteam|RODRIGUEZ [0:29] ⏎ r3340c4|drteam|GUILLERMO PANIAGUA [0:19] ⏎ r3344c4|drteam|CARLOS MULHERN LÓPEZ-OLIVA [0:26] ⏎ r3332c4|drteam|CARLOS MORENO [0:01] ⏎ 
+r3338c9|to|14. ⏎ 
+r3337c1|su| ⏎ r3337c2||4 ⏎ r3337c5|tn|55.973 ⏎ r3337c6|ib|26.297 ⏎ r3337c7|in|16.191 ⏎ r3338c2||5 ⏎ r3338c7|in| ⏎ r3330c7|in|5.278 ⏎ r3337|*|45742| ⏎ r3337|#|4 ⏎ r3338|#|5 ⏎ 
+r3338c9|to|15. ⏎ 
+r3338c9|to|16. ⏎ 
+r3379c1|si| ⏎ r3379c9|to|00. ⏎ r3379c10|in|1 ⏎ r3379|*in|0 ⏎ 
+r3338c9|to|17. ⏎ 
+r3379c9|to|01. ⏎ r3338c9|to|18. ⏎ 
+r3340c1|sr| ⏎ r3340c5|tn|56.586 ⏎ r3340|*|46244| ⏎ 
+r3379c9|to|02. ⏎ r3338c9|to|19. ⏎ 
+r3379c9|to|03. ⏎ r3338c9|to|20. ⏎ 
+r3344c1|sr| ⏎ r3344c5|tn|57.816 ⏎ r3344c6|ib|1.711 ⏎ r3344c7|in|1.711 ⏎ r3344|*|46465| ⏎ 
+r3379c9|to|04. ⏎ r3338c9|to|21. ⏎ 
+r3379c9|to|05. ⏎ 
+r3338c9|to|22. ⏎ 
+r3330c1|su| ⏎ r3330c2||5 ⏎ r3330c5|tn|1:01.175 ⏎ r3330c6|ib|34.281 ⏎ r3330c7|in|7.984 ⏎ r3338c2||6 ⏎ r3379c7|in|14.574 ⏎ r3330|*|46045| ⏎ r3330|#|5 ⏎ r3338|#|6 ⏎ 
+r3379c9|to|06. ⏎ 
+r3338c9|to|23. ⏎ 
+r3339c4|dr|NEO LEVELAP ⏎ r3342c4|dr|ESCUELADEKART.COM ⏎ r3334c4|dr|KARTING NOW ⏎ r3337c4|dr|CREATIA LTDL RACING ⏎ r3330c4|dr|AD OVERDRIVE ⏎ r3338c4|dr|IMK ⏎ r3379c4|dr|KARTINGNOW ENDURANCE ⏎ r3331c4|dr|LMKC SCUDERIA ⏎ r3341c4|dr|PDT RACING ⏎ r3333c4|dr|SKAT ⏎ r3335c4|dr|ASR MOTORSPORT BLACK ⏎ r3336c4|dr|ASR MOTORSPORT WHITE ⏎ r3343c4|dr|LASAGRATEAM ⏎ r3340c4|dr|CKM FARMACIA ZENITH ⏎ r3344c4|dr|ASR MOTORSPORT GREY ⏎ r3332c4|dr|TARTARUGAS RC ⏎ 
+r3338c9|to|24. ⏎ r3379c9|to|07. ⏎ 
+dyn1|countdown|12631299 ⏎ 
+r3379c9|to|08. ⏎ r3338c9|to|25. ⏎ 
+r3379c9|to|09. ⏎ 
+r3338c9|to|26. ⏎ 
+r3343c1|sr| ⏎ r3343c5|tn|1:00.391 ⏎ r3343c7|in|54.023 ⏎ r3343|*|48599| ⏎ r3379c9|to|10. ⏎ 
+r3338c9|to|27. ⏎ 
+r3379c9|to|11. ⏎ 
+r3338c9|to|28. ⏎ 
+r3331c1|su| ⏎ r3331c2||6 ⏎ r3331c5|tn|57.836 ⏎ r3331c6|ib|40.348 ⏎ r3331c7|in|6.067 ⏎ r3338c2||7 ⏎ r3379c2||8 ⏎ r3341c7|in|15.594 ⏎ r3331|*|46761| ⏎ r3331|#|6 ⏎ r3338|#|7 ⏎ r3379|#|8 ⏎ 
+r3340c9|in|0:20 ⏎ 
+r3338c9|to|29. ⏎ r3379c9|to|12. ⏎ 
+r3335c1|sr| ⏎ r3335c5|tn|1:10.020 ⏎ r3335c6|ib|24.000 ⏎ r3335c7|in|24.000 ⏎ r3335|*|47014| ⏎ 
+r3338c9|to|30. ⏎ r3379c9|to|13. ⏎ 
+r3379c9|to|14. ⏎ 
+r3338c9|to|31. ⏎ 
+r3379c9|to|15. ⏎ 
+r3338c9|to|32. ⏎ 
+r3379c9|to|16. ⏎ 
+r3338c9|to|33. ⏎ 
+r3379c9|to|17. ⏎ 
+r3338c9|to|34. ⏎ 
+r3379c9|to|18. ⏎ r3338c9|to|35. ⏎ 
+r3379c9|to|19. ⏎ r3338c9|to|36. ⏎ 
+r3332c9|in|0:02 ⏎ 
+r3379c9|to|20. ⏎ r3338c9|to|37. ⏎ 
+r3338c9|to|38. ⏎ r3379c9|to|21. ⏎ 
+r3379c9|to|22. ⏎ 
+r3338c9|to|39. ⏎ 
+r3336c1|sr| ⏎ 
+r3336c5|tn|1:06.769 ⏎ r3336c6|ib|34.406 ⏎ r3336c7|in|10.406 ⏎ r3336|*|48241| ⏎ 
+r3338c9|to|40. ⏎ r3379c9|to|23. ⏎ 
+r3338c9|to|41. ⏎ r3379c9|to|24. ⏎ 
+msg||Mejor vuelta : NEO LEVELAP - 43.394 (58.07 Km/h) ⏎ 
+r3379c9|to|25. ⏎ 
+r3338c9|to|42. ⏎ 
+r3379c9|to|26. ⏎ 
+r3338c9|to|43. ⏎ r3339c5|tn|55.168 ⏎ r3339c6|in|Vuelta 40 ⏎ r3342c1|in| ⏎ r3334c1|in| ⏎ r3338c6|ib|1 Vuelta ⏎ r3379c6|ib|14.574 ⏎ r3341c6|ib|30.168 ⏎ r3333c1|in| ⏎ r3333c6|ib|49.387 ⏎ r3335c1|in| ⏎ r3335c6|ib|1:13.387 ⏎ r3336c1|in| ⏎ r3336c6|ib|1:23.793 ⏎ r3343c1|in| ⏎ r3340c1|in| ⏎ r3344c1|in| ⏎ r3332c6|ib|6 Vueltas ⏎ r3339|*|48087| ⏎ 
+r3341c1|su| ⏎ r3341c2||7 ⏎ r3341c5|tn|57.543 ⏎ r3341c6|ib|1 Vuelta ⏎ r3341c7|in|15.191 ⏎ r3338c2||8 ⏎ r3338c6|ib| ⏎ r3379c2||9 ⏎ r3379c6|ib| ⏎ r3333c6|ib|19.219 ⏎ r3333c7|in|34.813 ⏎ r3335c6|ib|43.219 ⏎ r3336c6|ib|53.625 ⏎ r3341|*|49117| ⏎ r3341|#|7 ⏎ r3338|#|8 ⏎ r3379|#|9 ⏎ 
+r3339c4|drteam|JON DEL VALLE [0:29] ⏎ r3342c4|drteam|DIEGO FUIZ [0:29] ⏎ r3334c4|drteam|JAVIER LLAVE [0:29] ⏎ r3337c4|drteam|ALEX CUBAS [0:29] ⏎ r3330c4|drteam|GERMÁN MUÑOZ [0:29] ⏎ r3331c4|drteam|MATÍAS GARCÍA  [0:29] ⏎ r3341c4|drteam|CRISTIAN [0:29] ⏎ r3338c4|drteam|DARÍO FERRERAS [0:29] ⏎ r3379c4|drteam|PABLO REH [0:29] ⏎ r3333c4|drteam|JAVIER SÁNCHEZ VAQUERIZO [0:29] ⏎ r3335c4|drteam|ALFONSO SAGARRUY [0:29] ⏎ r3336c4|drteam|IVÁN RODRÍGUEZ [0:29] ⏎ r3343c4|drteam|RODRIGUEZ [0:29] ⏎ r3340c4|drteam|GUILLERMO PANIAGUA [0:20] ⏎ r3344c4|drteam|CARLOS MULHERN LÓPEZ-OLIVA [0:27] ⏎ r3332c4|drteam|CARLOS MORENO [0:02] ⏎ 
+r3379c9|to|27. ⏎ 
+r3338c9|to|44. ⏎ 
+r3379c9|to|28. ⏎ 
+r3338c9|to|45. ⏎ 
+r3379c9|to|29. ⏎ r3338c9|to|46. ⏎ 
+r3344c9|in|0:21 ⏎ 
+r3379c9|to|30. ⏎ r3338c9|to|47. ⏎ 
+r3379c9|to|31. ⏎ r3338c9|to|48. ⏎ 
+r3332c1|sr| ⏎ r3332c5|tn|1:03.504 ⏎ r3332|*|55298| ⏎ 
+r3379c4|drteam|JORGE IZCUE [0:00] ⏎ 
+r3379c9|to|32. ⏎ r3338c9|to|49. ⏎ 
+r3338c9|to|50. ⏎ r3379c9|to|33. ⏎ 
+r3337c1|in| ⏎ 
+r3338c9|to|51. ⏎ r3379c9|to|34. ⏎ 
+r3379c9|to|35. ⏎ r3338c9|to|52. ⏎ 
+r3379c9|to|36. ⏎ 
+r3338c9|to|53. ⏎ 
+r3342c1|sr| ⏎ r3342c5|tn|55.641 ⏎ r3342c6|ib|10.086 ⏎ r3342c7|in|10.086 ⏎ r3342|*|49081| ⏎ 
+r3334c1|sr| ⏎ r3334c5|tn|55.496 ⏎ r3334c6|ib|10.434 ⏎ r3334c7|in|0.348 ⏎ r3334|*|49107| ⏎ 
+r3339c4|dr|NEO LEVELAP ⏎ r3342c4|dr|ESCUELADEKART.COM ⏎ r3334c4|dr|KARTING NOW ⏎ r3337c4|dr|CREATIA LTDL RACING ⏎ r3330c4|dr|AD OVERDRIVE ⏎ r3331c4|dr|LMKC SCUDERIA ⏎ r3341c4|dr|PDT RACING ⏎ r3338c4|dr|IMK ⏎ r3379c4|dr|KARTINGNOW ENDURANCE ⏎ r3333c4|dr|SKAT ⏎ r3335c4|dr|ASR MOTORSPORT BLACK ⏎ r3336c4|dr|ASR MOTORSPORT WHITE ⏎ r3343c4|dr|LASAGRATEAM ⏎ r3340c4|dr|CKM FARMACIA ZENITH ⏎ r3344c4|dr|ASR MOTORSPORT GREY ⏎ r3332c4|dr|TARTARUGAS RC ⏎ r3379c9|to|37. ⏎ 
+r3338c9|to|54. ⏎ 
+dyn1|countdown|12601224 ⏎ r3379c9|to|38. ⏎ 
+r3338c9|to|55. ⏎ 
+r3339c9|in|0:30 ⏎ r3342c9|in|0:30 ⏎ r3334c9|in|0:30 ⏎ r3337c9|in|0:30 ⏎ r3330c9|in|0:30 ⏎ r3331c9|in|0:30 ⏎ r3341c9|in|0:30 ⏎ r3333c9|in|0:30 ⏎ r3335c9|in|0:30 ⏎ r3336c9|in|0:30 ⏎ r3343c9|in|0:30 ⏎ 
+r3379c9|to|39. ⏎ 
+r3338c9|to|56. ⏎ 
+r3379c9|to|40. ⏎ 
+r3338c9|to|57. ⏎ 
+r3379c9|to|41. ⏎ r3338c9|to|58. ⏎ 
+r3330c1|in| ⏎ 
+r3338c9|to|59. ⏎ r3379c9|to|42. ⏎ 
+r3338c9|to|1:00. ⏎ r3379c9|to|43. ⏎ 
+r3379c9|to|44. ⏎ 
+r3338c9|to|1:01. ⏎ 
+r3379c9|to|45. ⏎ r3338c9|to|1:02. ⏎ 
+r3379c9|to|46. ⏎ r3338c9|to|1:03. ⏎ 
+r3379c9|to|47. ⏎ r3333c1|su| ⏎ r3333c2||8 ⏎ r3333c5|tn|58.758 ⏎ r3333c6|ib|20.434 ⏎ r3333c7|in|20.434 ⏎ r3338c2||9 ⏎ r3338c9|to|1:04. ⏎ r3379c2||10 ⏎ r3335c7|in|58.813 ⏎ r3338|#|9 ⏎ r3379|#|10 ⏎ r3333|*|52099| ⏎ r3333|#|8 ⏎ 
+r3331c1|in| ⏎ 
+r3379c9|to|48. ⏎ 
+r3338c9|to|1:05. ⏎ 
+r3379c9|to|49. ⏎ 
+r3338c9|to|1:06. ⏎ 
+r3379c9|to|50. ⏎ 
+r3338c9|to|1:07. ⏎ 
+r3338c9|to|1:08. ⏎ r3379c9|to|51. ⏎ 
+r3379c9|to|52. ⏎ 
+r3330c1|si| ⏎ r3330c9|to|00. ⏎ r3330c10|in|1 ⏎ r3338c9|to|1:09. ⏎ r3330|*in|0 ⏎ 
+r3379c9|to|53. ⏎ r3330c9|to|01. ⏎ r3338c9|to|1:10. ⏎ 
+r3337c1|sr| ⏎ r3337c5|tn|56.719 ⏎ r3337c6|ib|27.848 ⏎ r3337c7|in|17.414 ⏎ r3379c9|to|54. ⏎ r3337|*|50782| ⏎ r3330c9|to|02. ⏎ r3338c9|to|1:11. ⏎ 
+r3379c9|to|55. ⏎ 
+r3330c9|to|03. ⏎ r3338c9|to|1:12. ⏎ 
+r3379c9|to|56. ⏎ 
+r3330c9|to|04. ⏎ r3338c9|to|1:13. ⏎ 
+r3339c4|drteam|JON DEL VALLE [0:30] ⏎ r3342c4|drteam|DIEGO FUIZ [0:30] ⏎ r3334c4|drteam|JAVIER LLAVE [0:30] ⏎ r3337c4|drteam|ALEX CUBAS [0:30] ⏎ r3330c4|drteam|GERMÁN MUÑOZ [0:30] ⏎ r3331c4|drteam|MATÍAS GARCÍA  [0:30] ⏎ r3341c4|drteam|CRISTIAN [0:30] ⏎ r3333c4|drteam|JAVIER SÁNCHEZ VAQUERIZO [0:30] ⏎ r3338c4|drteam|JORGE PARRA CORCHADO [0:00] ⏎ r3379c4|drteam|JORGE IZCUE [0:00] ⏎ r3335c4|drteam|ALFONSO SAGARRUY [0:30] ⏎ r3336c4|drteam|IVÁN RODRÍGUEZ [0:30] ⏎ r3343c4|drteam|RODRIGUEZ [0:30] ⏎ r3340c4|drteam|GUILLERMO PANIAGUA [0:20] ⏎ r3344c4|drteam|CARLOS MULHERN LÓPEZ-OLIVA [0:27] ⏎ r3332c4|drteam|CARLOS MORENO [0:02] ⏎ r3379c9|to|57. ⏎ 
+r3330c9|to|05. ⏎ r3338c9|to|1:14. ⏎ 
+r3338c9|to|1:15. ⏎ r3379c9|to|58. ⏎ r3330c9|to|06. ⏎ 
+r3338c9|to|1:16. ⏎ r3379c9|to|59. ⏎ 
+r3330c9|to|07. ⏎ 
+r3340c1|sr| ⏎ r3340c5|tn|58.395 ⏎ r3340|*|51360| ⏎ r3338c9|to|1:17. ⏎ r3379c9|to|1:00. ⏎ 
+r3330c9|to|08. ⏎ 
+r3379c9|to|1:01. ⏎ 
+r3330c9|to|09. ⏎ r3338c9|to|1:18. ⏎ 
+r3338c9|to|1:19. ⏎ r3379c9|to|1:02. ⏎ 
+r3330c9|to|10. ⏎ 
+r3341c1|sr| ⏎ 
+r3379c9|to|1:03. ⏎ r3330c9|to|11. ⏎ r3338c9|to|1:20. ⏎ 
+r3379c9|to|1:04. ⏎ r3330c9|to|12. ⏎ r3338c9|to|1:21. ⏎ 
+r3344c1|sr| ⏎ r3344c5|tn|1:01.020 ⏎ r3344c6|ib|4.336 ⏎ r3344c7|in|4.336 ⏎ r3344|*|52066| ⏎ 
+r3379c9|to|1:05. ⏎ r3330c9|to|13. ⏎ r3338c9|to|1:22. ⏎ 
+r3379c9|to|1:06. ⏎ 
+r3330c9|to|14. ⏎ r3338c9|to|1:23. ⏎ 
+r3339c4|dr|NEO LEVELAP ⏎ r3342c4|dr|ESCUELADEKART.COM ⏎ r3334c4|dr|KARTING NOW ⏎ r3337c4|dr|CREATIA LTDL RACING ⏎ r3330c4|dr|AD OVERDRIVE ⏎ r3331c4|dr|LMKC SCUDERIA ⏎ r3341c4|dr|PDT RACING ⏎ r3333c4|dr|SKAT ⏎ r3338c4|dr|IMK ⏎ r3379c4|dr|KARTINGNOW ENDURANCE ⏎ r3379c9|to|1:07. ⏎ r3335c4|dr|ASR MOTORSPORT BLACK ⏎ r3336c4|dr|ASR MOTORSPORT WHITE ⏎ r3343c4|dr|LASAGRATEAM ⏎ r3340c4|dr|CKM FARMACIA ZENITH ⏎ r3344c4|dr|ASR MOTORSPORT GREY ⏎ r3332c4|dr|TARTARUGAS RC ⏎ 
+r3330c9|to|15. ⏎ r3338c9|to|1:24. ⏎ 
+dyn1|countdown|12571163 ⏎ r3338c9|to|1:25. ⏎ r3379c9|to|1:08. ⏎ r3330c9|to|16. ⏎ 
