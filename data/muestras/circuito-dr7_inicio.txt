@@ -1,3 +1,131 @@
 init|r| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no2|border-bottom-color:#80FF00 !important; color:#000000 !important; ⏎ css|pena1|color:#f00; font-size:11px; font-weight: bold; text-align:center; ⏎ effects||Mostrar Efectos ⏎ comments||Comentarios ⏎ title1|| ⏎ title2||Carrera rookies ⏎ dyn1|countdown|400032 ⏎ light|lg| ⏎ wth1|| ⏎ wth2|| ⏎ wth3|| ⏎ track||Pista Principal (1075m) ⏎ com|| ⏎ grid||<tbody><tr data-id="r0" class="head" data-pos="0"><td data-id="c1" data-type="grp" data-pr="6"></td><td data-id="c2" data-type="rk" data-pr="1">Clasif.</td><td data-id="c3" data-type="no" data-pr="1">Kart</td><td data-id="c4" data-type="dr" data-pr="1" data-width="28" data-min="16">Piloto</td><td data-id="c5" data-type="llp" data-pr="2" data-width="14" data-min="7">Última vuelta</td><td data-id="c6" data-type="gap" data-pr="1" data-width="14" data-min="8">Gap</td><td data-id="c7" data-type="int" data-pr="5" data-width="9" data-min="7">Interv.</td><td data-id="c8" data-type="blp" data-pr="6" data-width="11" data-min="7">Mejor vuelta</td><td data-id="c9" data-type="otr" data-pr="2" data-width="9" data-min="8">Tiempo en PIT</td><td data-id="c10" data-type="pit" data-pr="2" data-width="7" data-min="7">Pits</td><td data-id="c11" data-type="tlp" data-pr="5" data-width="5" data-min="4">Vueltas</td></tr><tr data-id="r28" data-pos="1"><td data-id="r28c1" class="gs"></td><td class="rk"><div><p data-id="r28c2" class="">1</p></div></td><td class="no"><div data-id="r28c3" class="no1">44</div></td><td data-id="r28c4" class="dr">66-ANTONIO PARRA</td><td data-id="r28c5" class="tb">1:11.410</td><td data-id="r28c6" class="in">Vuelta 27</td><td data-id="r28c7" class="in"></td><td data-id="r28c8" class="tb">1:11.410</td><td data-id="r28c9" class="in">0:08</td><td data-id="r28c10" class="in">1</td><td data-id="r28c11" class="in">27</td></tr><tr data-id="r29" data-pos="11"><td data-id="r29c1" class="gf"></td><td class="rk"><div><p data-id="r29c2" class="">11</p></div></td><td class="no"><div data-id="r29c3" class="no1">43</div></td><td data-id="r29c4" class="dr">87-SERGIO POZA</td><td data-id="r29c5" class="tn">1:14.268</td><td data-id="r29c6" class="ib">1:05.958</td><td data-id="r29c7" class="in">11.964</td><td data-id="r29c8" class="in">1:13.763</td><td data-id="r29c9" class="in">0:06</td><td data-id="r29c10" class="in">1</td><td data-id="r29c11" class="in">26</td></tr><tr data-id="r30" data-pos="7"><td data-id="r30c1" class="gf"></td><td class="rk"><div><p data-id="r30c2" class="">7</p></div></td><td class="no"><div data-id="r30c3" class="no1">32</div></td><td data-id="r30c4" class="dr">17-RODRIGO GARCIA</td><td data-id="r30c5" class="tn">1:14.829</td><td data-id="r30c6" class="ib">45.618</td><td data-id="r30c7" class="in">9.049</td><td data-id="r30c8" class="in">1:14.650</td><td data-id="r30c9" class="in">0:24</td><td data-id="r30c10" class="in">1</td><td data-id="r30c11" class="in">26</td></tr><tr data-id="r31" data-pos="10"><td data-id="r31c1" class="gs"></td><td class="rk"><div><p data-id="r31c2" class="">10</p></div></td><td class="no"><div data-id="r31c3" class="no1">35</div></td><td data-id="r31c4" class="dr">26-JORGE FACHA</td><td data-id="r31c5" class="tn">1:15.045</td><td data-id="r31c6" class="ib">53.994</td><td data-id="r31c7" class="in">4.127</td><td data-id="r31c8" class="in">1:14.590</td><td data-id="r31c9" class="in">0:24</td><td data-id="r31c10" class="in">1</td><td data-id="r31c11" class="in">26</td></tr><tr data-id="r32" data-pos="3"><td data-id="r32c1" class="gf"></td><td class="rk"><div><p data-id="r32c2" class="">3</p></div></td><td class="no"><div data-id="r32c3" class="no1">53</div></td><td data-id="r32c4" class="dr">10-JAVIER PEÑUELAS</td><td data-id="r32c5" class="ti">1:13.044</td><td data-id="r32c6" class="ib">28.617</td><td data-id="r32c7" class="in">3.024</td><td data-id="r32c8" class="in">1:13.044</td><td data-id="r32c9" class="in">0:24</td><td data-id="r32c10" class="in">1</td><td data-id="r32c11" class=
 r40c9|in|0:19 ⏎ 
 r45c5|ti|1:12.739 ⏎ r45c8|in|1:12.739 ⏎ r45c11|in|23 ⏎ r45|*|72739| ⏎ 
+r44c9|in|0:13 ⏎ 
+r28c9|in|0:09 ⏎ dyn1|countdown|369990 ⏎ 
+r46c5|ti|1:12.083 ⏎ 
+r46c6|ib|26.266 ⏎ r46c7|in|26.266 ⏎ r46c8|in|1:12.083 ⏎ r46c11|in|27 ⏎ r46|*|72083| ⏎ 
+r36c9|in|0:08 ⏎ 
+r34c1|gf| ⏎ r34c2||3 ⏎ r34c5|tn|1:12.834 ⏎ r34c6|ib|30.490 ⏎ r34c7|in|4.224 ⏎ r34c11|in|27 ⏎ r32c1|gl| ⏎ r32c2||4 ⏎ r32c7|in| ⏎ r35c7|in|7.461 ⏎ r33c5|tn|1:16.405 ⏎ r33c6|ib|27.731 ⏎ r33c7|in|25.877 ⏎ r33c11|in|26 ⏎ r32|#|4 ⏎ r33|*|76375| ⏎ r34|*|72090| ⏎ r34|#|3 ⏎ 
+r32c5|tn|1:13.805 ⏎ r32c6|ib|31.012 ⏎ r32c7|in|0.522 ⏎ r32c11|in|27 ⏎ r32|*|73044| ⏎ 
+r33c1|gf| ⏎ 
+r40c1|gl| ⏎ r40c5|tn|1:13.298 ⏎ r40c6|ib|28.629 ⏎ r40c7|in|0.898 ⏎ r40c11|in|26 ⏎ r40|*|72832| ⏎ 
+r39c9|in|0:08 ⏎ 
+r43c9|in|0:07 ⏎ 
+r29c9|in|0:07 ⏎ 
+r34c9|in|0:23 ⏎ 
+r33c9|in|0:16 ⏎ 
+r35c9|in|0:17 ⏎ 
+r35c5|tn|1:14.809 ⏎ r35c6|ib|39.477 ⏎ r35c7|in|8.465 ⏎ r35c11|in|27 ⏎ r35|*|74609| ⏎ 
+r37c5|tn|1:15.063 ⏎ 
+r37c6|ib|40.222 ⏎ r37c7|in|0.745 ⏎ r37c11|in|27 ⏎ r47c5|tn|1:14.111 ⏎ r47c6|ib|37.468 ⏎ r47c7|in|8.839 ⏎ r47c11|in|26 ⏎ r37|*|72885| ⏎ r47|*|73164| ⏎ 
+r46c9|in|0:22 ⏎ 
+r38c1|gf| ⏎ 
+r38c2||7 ⏎ r38c5|ti|1:13.177 ⏎ r38c6|ib|48.132 ⏎ r38c7|in|7.910 ⏎ r38c8|in|1:13.177 ⏎ r38c11|in|27 ⏎ r30c1|gl| ⏎ r30c2||8 ⏎ r30c7|in| ⏎ r41c7|in|4.249 ⏎ r30|#|8 ⏎ r38|*|73177| ⏎ r38|#|7 ⏎ 
+r30c5|tn|1:14.745 ⏎ 
+r30c6|ib|48.953 ⏎ r30c7|in|0.821 ⏎ r30c11|in|27 ⏎ r30|*|74697| ⏎ 
+r41c5|ti|1:13.617 ⏎ r41c6|ib|52.074 ⏎ r41c7|in|3.121 ⏎ r41c8|in|1:13.617 ⏎ r41c11|in|27 ⏎ r41|*|73617| ⏎ 
+r42c5|ti|1:16.344 ⏎ r42c6|ib|50.196 ⏎ r42c7|in|12.728 ⏎ r42c8|in|1:16.344 ⏎ r42c11|in|26 ⏎ r42|*|76344| ⏎ 
+dyn1|countdown|339902 ⏎ 
+r31c5|ti|1:12.935 ⏎ r31c6|ib|55.519 ⏎ r31c7|in|3.445 ⏎ r31c8|in|1:12.935 ⏎ r31c11|in|27 ⏎ r31|*|72935| ⏎ 
+r38c9|in|0:22 ⏎ 
+r45c9|in|0:07 ⏎ 
+r42c9|in|0:12 ⏎ 
+r32c9|in|0:25 ⏎ 
+r31c9|in|0:25 ⏎ 
+r30c9|in|0:25 ⏎ 
+r47c9|in|0:13 ⏎ 
+r37c9|in|0:13 ⏎ 
+r41c9|in|0:04 ⏎ 
+r29c5|ti|1:12.862 ⏎ r29c6|ib|1:07.410 ⏎ r29c7|in|11.891 ⏎ r29c8|in|1:12.862 ⏎ r29c11|in|27 ⏎ r29|*|72862| ⏎ 
+r43c5|ti|1:13.105 ⏎ r43c6|ib|1:08.150 ⏎ r43c7|in|0.740 ⏎ r43c8|in|1:13.105 ⏎ r43c11|in|27 ⏎ r43|*|73105| ⏎ 
+r39c5|ti|1:12.030 ⏎ 
+r39c6|ib|1:10.273 ⏎ r39c7|in|2.123 ⏎ r39c8|in|1:12.030 ⏎ r39c11|in|27 ⏎ r39|*|72030| ⏎ 
+r28c5|tn|1:11.468 ⏎ 
+r28c6|in|Vuelta 28 ⏎ r28c11|in|28 ⏎ r28|*|71410| ⏎ r40c9|in|0:20 ⏎ 
+r36c5|tn|1:13.141 ⏎ r36c7|in|5.556 ⏎ r36c11|in|27 ⏎ r36|*|73134| ⏎ 
+r44c5|tn|1:12.839 ⏎ r44c6|ib|1.552 ⏎ r44c7|in|1.552 ⏎ r44c11|in|27 ⏎ r44|*|72622| ⏎ 
+r44c9|in|0:14 ⏎ 
+r28c9|in|0:10 ⏎ 
+dyn1|countdown|309886 ⏎ 
+r45c5|ti|1:12.135 ⏎ 
+r45c8|in|1:12.135 ⏎ r45c11|in|24 ⏎ r45|*|72135| ⏎ 
+r36c9|in|0:09 ⏎ 
+r39c9|in|0:09 ⏎ 
+r43c9|in|0:08 ⏎ 
+r29c9|in|0:08 ⏎ 
+r34c9|in|0:24 ⏎ 
+r33c9|in|0:17 ⏎ 
+r46c5|tn|1:12.089 ⏎ r46c6|ib|26.887 ⏎ r46c7|in|26.887 ⏎ r46c11|in|28 ⏎ r46|*|72083| ⏎ 
+r35c9|in|0:18 ⏎ 
+r34c5|tn|1:12.126 ⏎ r34c6|ib|31.148 ⏎ r34c7|in|4.261 ⏎ r34c11|in|28 ⏎ r34|*|72108| ⏎ 
+r32c5|ti|1:12.437 ⏎ r32c6|ib|31.981 ⏎ r32c7|in|0.833 ⏎ r32c8|in|1:12.437 ⏎ r32c11|in|28 ⏎ r32|*|72437| ⏎ 
+r40c1|gf| ⏎ r40c2||16 ⏎ r40c5|tn|1:13.273 ⏎ r40c6|ib|28.761 ⏎ r40c7|in|27.209 ⏎ r40c11|in|27 ⏎ r33c1|gl| ⏎ r33c2||17 ⏎ r33c7|in| ⏎ r47c7|in|9.737 ⏎ r33|#|17 ⏎ r40|*|73017| ⏎ r40|#|16 ⏎ 
+r40c1|gs| ⏎ 
+r33c1|gs| ⏎ r33c5|ti|1:15.836 ⏎ r33c6|ib|30.426 ⏎ r33c7|in|1.665 ⏎ r33c8|in|1:15.836 ⏎ r33c11|in|27 ⏎ r33|*|75836| ⏎ 
+r46c9|in|0:23 ⏎ 
+r37c1|gf| ⏎ 
+r37c2||5 ⏎ r37c5|tn|1:14.579 ⏎ r37c6|ib|43.333 ⏎ r37c7|in|11.352 ⏎ r37c11|in|28 ⏎ r35c1|gl| ⏎ r35c2||6 ⏎ r35c7|in| ⏎ r38c7|in|8.655 ⏎ r35|#|6 ⏎ r37|*|73738| ⏎ r37|#|5 ⏎ 
+r35c5|tn|1:15.661 ⏎ r35c6|ib|43.670 ⏎ r35c7|in|0.337 ⏎ r35c11|in|28 ⏎ r35|*|74709| ⏎ 
+dyn1|countdown|279777 ⏎ 
+r47c5|tn|1:17.069 ⏎ 
+r47c6|ib|41.396 ⏎ r47c7|in|10.970 ⏎ r47c11|in|27 ⏎ r47|*|73637| ⏎ 
+r38c9|in|0:23 ⏎ 
+r45c9|in|0:08 ⏎ 
+r32c9|in|0:26 ⏎ r42c9|in|0:13 ⏎ 
+r38c5|ti|1:12.060 ⏎ 
+r38c6|ib|48.724 ⏎ r38c7|in|5.054 ⏎ r38c8|in|1:12.060 ⏎ r38c11|in|28 ⏎ r38|*|72060| ⏎ 
+r31c9|in|0:26 ⏎ 
+r30c9|in|0:26 ⏎ 
+r47c9|in|0:14 ⏎ 
+r38c1|gs| ⏎ 
+r30c1|gs| ⏎ r30c5|ti|1:13.646 ⏎ r30c6|ib|51.131 ⏎ r30c7|in|2.407 ⏎ r30c8|in|1:13.646 ⏎ r30c11|in|28 ⏎ r30|*|73646| ⏎ 
+r37c9|in|0:14 ⏎ 
+r41c9|in|0:05 ⏎ 
+r41c5|tn|1:13.660 ⏎ 
+r41c6|ib|54.266 ⏎ r41c7|in|3.135 ⏎ r41c11|in|28 ⏎ r41|*|73617| ⏎ 
+r31c5|ti|1:12.624 ⏎ r31c6|ib|56.675 ⏎ r31c7|in|2.409 ⏎ r31c8|in|1:12.624 ⏎ r31c11|in|28 ⏎ r31|*|72624| ⏎ 
+r42c5|ti|1:15.948 ⏎ r42c6|ib|53.003 ⏎ r42c7|in|11.607 ⏎ r42c8|in|1:15.948 ⏎ r42c11|in|27 ⏎ r42|*|75948| ⏎ 
+r40c9|in|0:21 ⏎ 
+r29c5|ti|1:12.702 ⏎ 
+r29c6|ib|1:08.644 ⏎ r29c7|in|11.969 ⏎ r29c8|in|1:12.702 ⏎ r29c11|in|28 ⏎ r29|*|72702| ⏎ 
+r29c1|gs| ⏎ r43c1|gs| ⏎ r43c5|ti|1:13.089 ⏎ r43c6|ib|1:09.771 ⏎ r43c7|in|1.127 ⏎ r43c8|in|1:13.089 ⏎ r43c11|in|28 ⏎ r43|*|73089| ⏎ 
+r43c1|gf| ⏎ r39c1|gl| ⏎ r39c5|ti|1:11.660 ⏎ r39c6|ib|1:10.465 ⏎ r39c7|in|0.694 ⏎ r39c8|in|1:11.660 ⏎ r39c11|in|28 ⏎ r39|*|71660| ⏎ r44c9|in|0:15 ⏎ 
+r28c5|tb|1:10.935 ⏎ 
+r28c6|in|Vuelta 29 ⏎ r28c8|tb|1:10.935 ⏎ r28c11|in|29 ⏎ r28|*|70935| ⏎ msg||Mejor vuelta : 66-ANTONIO PARRA - 1:10.935 (54.56 Km/h) ⏎ 
+r28c9|in|0:11 ⏎ 
+dyn1|countdown|249590 ⏎ 
+r36c5|ti|1:12.965 ⏎ r36c7|in|6.861 ⏎ r36c8|in|1:12.965 ⏎ r36c11|in|28 ⏎ r36|*|72965| ⏎ 
+r36c9|in|0:10 ⏎ 
+r44c5|ti|1:12.559 ⏎ r44c6|ib|1.146 ⏎ r44c7|in|1.146 ⏎ r44c8|in|1:12.559 ⏎ r44c11|in|28 ⏎ r44|*|72559| ⏎ 
+r39c9|in|0:10 ⏎ 
+r43c9|in|0:09 ⏎ 
+r29c9|in|0:09 ⏎ 
+r34c9|in|0:25 ⏎ 
+r33c9|in|0:18 ⏎ 
+r45c5|tn|1:12.212 ⏎ 
+r45c11|in|25 ⏎ r45|*|72135| ⏎ 
+r35c9|in|0:19 ⏎ 
+r46c9|in|0:24 ⏎ 
+r46c5|ti|1:11.675 ⏎ r46c6|ib|27.627 ⏎ r46c7|in|27.627 ⏎ r46c8|in|1:11.675 ⏎ r46c11|in|29 ⏎ r46|*|71675| ⏎ 
+r34c5|ti|1:11.448 ⏎ r34c6|ib|31.661 ⏎ r34c7|in|4.034 ⏎ r34c8|in|1:11.448 ⏎ r34c11|in|29 ⏎ r34|*|71448| ⏎ 
+r34c1|gs| ⏎ 
+r32c1|gs| ⏎ r32c5|ti|1:11.864 ⏎ r32c6|ib|32.910 ⏎ r32c7|in|1.249 ⏎ r32c8|in|1:11.864 ⏎ r32c11|in|29 ⏎ r32|*|71864| ⏎ dyn1|countdown|219578 ⏎ 
+r40c5|ti|1:12.208 ⏎ 
+r40c6|ib|28.004 ⏎ r40c7|in|26.858 ⏎ r40c8|in|1:12.208 ⏎ r40c11|in|28 ⏎ r40|*|72208| ⏎ 
+r38c9|in|0:24 ⏎ 
+r45c9|in|0:09 ⏎ 
+r42c9|in|0:14 ⏎ 
+r32c9|in|0:27 ⏎ 
+r31c9|in|0:27 ⏎ r33c5|ti|1:14.636 ⏎ r33c6|ib|32.097 ⏎ r33c7|in|4.093 ⏎ r33c8|in|1:14.636 ⏎ r33c11|in|28 ⏎ r33|*|74636| ⏎ 
+r30c9|in|0:27 ⏎ 
+r47c9|in|0:15 ⏎ 
+r37c9|in|0:15 ⏎ 
+r41c9|in|0:06 ⏎ 
+r37c5|ti|1:11.916 ⏎ r37c6|ib|44.314 ⏎ r37c7|in|11.404 ⏎ r37c8|in|1:11.916 ⏎ r37c11|in|29 ⏎ r37|*|71916| ⏎ 
+r37c1|gs| ⏎ r35c1|gs| ⏎ r35c5|ti|1:13.514 ⏎ r35c6|ib|46.249 ⏎ r35c7|in|1.935 ⏎ r35c8|in|1:13.514 ⏎ r35c11|in|29 ⏎ r35|*|73514| ⏎ 
+r47c5|ti|1:11.770 ⏎ r47c6|ib|40.201 ⏎ r47c7|in|8.104 ⏎ r47c8|in|1:11.770 ⏎ r47c11|in|28 ⏎ r47|*|71770| ⏎ 
+r40c9|in|0:22 ⏎ 
+r38c5|ti|1:11.860 ⏎ 
+r38c6|ib|49.649 ⏎ r38c7|in|3.400 ⏎ r38c8|in|1:11.860 ⏎ r38c11|in|29 ⏎ r38|*|71860| ⏎ 
+r30c5|ti|1:13.172 ⏎ r30c6|ib|53.368 ⏎ r30c7|in|3.719 ⏎ r30c8|in|1:13.172 ⏎ r30c11|in|29 ⏎ r30|*|73172| ⏎ 
