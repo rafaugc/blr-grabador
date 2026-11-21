@@ -120,6 +120,8 @@
      Devuelve {karts, drivers, stints, sessions} */
   function analyze(sessions, opts) {
     opts = Object.assign({ dropFirst: true, cutPct: 3, pace: 'top5', method: 'model', minLaps: 4, noTraffic: false, trafficGap: 0.5 }, opts || {});
+    const clean = d => String(d || '').replace(/^\d{1,3}\s*-\s*/, '').replace(/\s*\[\d{1,2}:\d{2}(?::\d{2})?\]\s*$/, '').trim().toUpperCase();
+    sessions.forEach(s => s.stints.forEach(t => { t.driver = clean(t.driver); }));
     const nm = nameMap(sessions.flatMap(s => s.stints.map(t => t.driver)));
     const stints = [];
     for (const s of sessions) {
