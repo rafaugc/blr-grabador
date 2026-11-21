@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BLR · En directo</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="core.js"></script>
+<style>
+:root{--bg:#0c0d10;--panel:#14161b;--panel2:#1b1e25;--line:#262a33;--text:#e9ebf0;--mute:#8a909c;--dim:#5d636e;--fast:#3ddc84;--good:#a6e36a;--slow:#ffa24c;--vslow:#ff5f5f;--purple:#b38cff;--accent:#ffd23f}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,system-ui,sans-serif}
+button,input,select{font:inherit;color:inherit}
+.num{font-family:"JetBrains Mono",monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto;padding:14px}
+header{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.logo{font:700 24px "Barlow Condensed";letter-spacing:.5px}.logo span{color:var(--accent)}
+select,input[type=text]{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
+.pill{font-size:12px;padding:4px 10px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);color:var(--mute)}
+.pill.ok{color:var(--fast);border-color:#1f4a33}.pill.warn{color:var(--slow);border-color:#4a3520}.pill.live{color:#fff;background:#b3261e;border-color:#b3261e}
+.grow{flex:1}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:12px;overflow-x:auto}
+.tabs a{padding:10px 14px;color:var(--mute);text-decoration:none;border-bottom:2px solid transparent;white-space:nowrap;font-weight:500;cursor:pointer}
+.tabs a.on{color:var(--text);border-color:var(--accent)}
+.view{display:none}.view.on{display:block}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.summary{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:640px){.summary{grid-template-columns:1fr}}
+.bigk{display:flex;gap:8px}.bk{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}
+.bk b{display:block;font:700 32px/1 "Barlow Condensed"}.bk span{font-size:12px}
+h4{margin:0 0 8px;font:600 13px Inter;color:var(--mute)}
+table{width:100%;border-collapse:collapse}
+th{font:600 11px Inter;text-transform:uppercase;letter-spacing:.05em;color:var(--dim);text-align:right;padding:7px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:8px 7px;border-bottom:1px solid #1d2027;text-align:right;white-space:nowrap}
+th.l,td.l{text-align:left}td.k{font:700 21px/1 "Barlow Condensed";text-align:center}
+.scroll{overflow-x:auto}
+.t-fast{color:var(--fast)}.t-good{color:var(--good)}.t-slow{color:var(--slow)}.t-vslow{color:var(--vslow)}.purple{color:var(--purple)}
+.badge{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--mute)}
+.badge.alta{color:var(--fast);border-color:#1f4a33}.badge.media{color:var(--accent);border-color:#4d4317}.badge.baja{color:var(--slow);border-color:#4a3520}
+.mini{font-size:12px;color:var(--mute)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.seg{display:inline-flex;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px}
+.seg button{border:0;background:transparent;border-radius:7px;padding:5px 10px;cursor:pointer;color:var(--mute);font-size:13px}.seg button.on{background:#2c3039;color:var(--text)}
+iframe{width:100%;height:78vh;border:1px solid var(--line);border-radius:12px;background:#fff}
+.flash{animation:fl 1.2s}@keyframes fl{from{background:#2a2410}to{background:transparent}}
+.empty{padding:30px;text-align:center;color:var(--mute)}
+@media(max-width:640px){.hm{display:none}td,th{padding:7px 4px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">BLR <span>en directo</span></div>
+    <select id="circ"></select>
+    <div class="grow"></div>
+    <span class="pill" id="wsState">Conectando…</span>
+    <span class="pill" id="dataState">Cargando sesiones…</span>
+  </header>
+  <nav class="tabs" id="tabs">
+    <a data-v="ranking" class="on">Karts hoy</a>
+    <a data-v="pista">En pista ahora</a>
+    <a data-v="sesiones">Sesiones de hoy</a>
+    <a data-v="apex">Live timing de Apex</a>
+  </nav>
+
+  <section class="view on" id="v-ranking">
+    <div class="card row">
+      <span class="mini">Nivelar pilotos:</span>
+      <span class="seg" id="method"><button data-v="raw">Sin nivelar</button><button data-v="driver">Vs. su media</button><button data-v="model" class="on">Modelo</button></span>
+      <label class="mini"><input type="checkbox" id="traffic"> Quitar vueltas con tráfico</label>
+      <label class="mini">Descartar vueltas &gt; <input type="text" id="cut" value="3" style="width:46px;padding:3px 6px">% de la mejor</label>
+    </div>
+    <div id="rankOut"></div>
+  </section>
+  <section class="view" id="v-pista"><div id="pistaOut"></div></section>
+  <section class="view" id="v-sesiones"><div id="sesOut"></div></section>
+  <section class="view" id="v-apex">
+    <div class="mini" style="margin-bottom:8px">El live timing oficial del circuito, tal cual. Si no se ve, <a id="apexLink" target="_blank" style="color:var(--accent)">ábrelo aquí</a>.</div>
+    <iframe id="apexFrame" title="Live timing Apex" loading="lazy"></iframe>
+  </section>
+  <div class="mini" style="margin-top:8px">Datos: grabador automático (sesiones terminadas) + conexión directa con Apex (sesión en curso). Se actualiza solo.</div>
+</div>
+
+<script>
+(() => {
+const REPO = 'rafaugc/blr-grabador';
+const RAW = `https://raw.githubusercontent.com/${REPO}/main/`;
+const API = `https://api.github.com/repos/${REPO}/contents/`;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const fmt = (x, d = 2) => (x < 0 ? '−' : x > 0 ? '+' : '±') + Math.abs(x).toFixed(d).replace('.', ',');
+const fmtT = x => { if (!isFinite(x)) return '–'; const m = Math.floor(x / 60), s = x - m * 60; return (m ? m + ':' + (s < 10 ? '0' : '') : '') + s.toFixed(3).replace('.', ','); };
+const tier = e => e <= -0.15 ? ['t-fast', 'Rápido'] : e <= -0.05 ? ['t-good', 'Buen ritmo'] : e < 0.05 ? ['', 'Normal'] : e < 0.15 ? ['t-slow', 'Lento'] : ['t-vslow', 'Muy lento'];
+const conf = (se, dr) => se < 0.09 && dr >= 3 ? ['alta', 'Alta'] : se < 0.16 && dr >= 2 ? ['media', 'Media'] : ['baja', 'Baja'];
+const store = { get(k, d) { try { const v = localStorage.getItem('blr_' + k); return v === null ? d : JSON.parse(v); } catch { return d; } }, set(k, v) { try { localStorage.setItem('blr_' + k, JSON.stringify(v)); } catch {} } };
+const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+
+let CIRCS = [], C = null;
+let recorded = {};      // nombre de archivo -> sesión grabada hoy
+let live = null;        // estado de la conexión en directo
+const opts = { method: 'model', noTraffic: false, cutPct: 3 };
+
+// ---------- pestañas ----------
+document.querySelectorAll('#tabs a').forEach(a => a.onclick = () => {
+  document.querySelectorAll('#tabs a').forEach(x => x.classList.toggle('on', x === a));
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.id === 'v-' + a.dataset.v));
+  if (a.dataset.v === 'apex' && !$('apexFrame').src && C) $('apexFrame').src = baseUrl(C);
+});
+$('method').onclick = e => { const b = e.target.closest('button'); if (!b) return; opts.method = b.dataset.v; document.querySelectorAll('#method button').forEach(x => x.classList.toggle('on', x === b)); render(); };
+$('traffic').onchange = e => { opts.noTraffic = e.target.checked; render(); };
+$('cut').onchange = e => { opts.cutPct = parseFloat(e.target.value.replace(',', '.')) || 3; render(); };
+
+const baseUrl = c => (c.url || `https://www.apex-timing.com/live-timing/${c.slug}/index.html`).split('index.html')[0].split('#')[0].replace(/\/?$/, '/');
+
+// ---------- circuitos ----------
+async function loadCircuits() {
+  try { CIRCS = await (await fetch(RAW + 'circuitos.json?t=' + Date.now())).json(); } catch { CIRCS = []; }
+  const fav = store.get('circ', 'circuito-dr7');
+  $('circ').innerHTML = CIRCS.map(c => `<option value="${esc(c.slug)}" ${c.slug === fav ? 'selected' : ''}>${esc(c.nombre)}</option>`).join('');
+  $('circ').onchange = () => { store.set('circ', $('circ').value); start(); };
+  start();
+}
+
+function start() {
+  C = CIRCS.find(c => c.slug === $('circ').value) || CIRCS[0];
+  if (!C) return;
+  recorded = {};
+  $('apexFrame').removeAttribute('src');
+  $('apexLink').href = baseUrl(C);
+  if (document.querySelector('#tabs a.on').dataset.v === 'apex') $('apexFrame').src = baseUrl(C);
+  connect();
+  refreshRecorded();
+}
+
+// ---------- sesiones grabadas hoy (desde el grabador) ----------
+let refreshTimer = null;
+async function refreshRecorded() {
+  clearTimeout(refreshTimer);
+  const slug = C.slug, path = `data/sesiones/${slug}/${today()}`;
+  try {
+    const r = await fetch(API + path + '?ref=main', { headers: { Accept: 'application/vnd.github+json' } });
+    const list = r.ok ? await r.json() : [];
+    const jobs = (Array.isArray(list) ? list : []).filter(f => f.name.endsWith('.json') && !recorded[f.name + f.sha]).map(f =>
+      fetch(RAW + path + '/' + f.name + '?s=' + f.sha).then(x => x.json()).then(s => { recorded[f.name + f.sha] = s; }).catch(() => {}));
+    await Promise.all(jobs);
+    // quitar versiones viejas del mismo archivo
+    const byName = {}; Object.keys(recorded).forEach(k => { const n = k.slice(0, k.indexOf('.json') + 5); (byName[n] = byName[n] || []).push(k); });
+    const names = new Set((Array.isArray(list) ? list : []).map(f => f.name + f.sha));
+    Object.keys(recorded).forEach(k => { if (!names.has(k)) delete recorded[k]; });
+    $('dataState').textContent = `${Object.keys(recorded).length} sesiones grabadas hoy`; $('dataState').className = 'pill ok';
+  } catch (e) { $('dataState').textContent = 'Sin acceso a lo grabado'; $('dataState').className = 'pill warn'; }
+  render();
+  if (slug === C.slug) refreshTimer = setTimeout(refreshRecorded, 150000);
+}
+
+// ---------- conexión directa con Apex ----------
+function connect() {
+  if (live && live.ws) { live.closed = true; try { live.ws.close(); } catch {} }
+  live = { slug: C.slug, cols: {}, rows: {}, laps: [], last: {}, title1: '', title2: '', sessions: [], closed: false };
+  $('wsState').textContent = 'Conectando…'; $('wsState').className = 'pill';
+  const port = C.port_fijo ? C.port : null;
+  const go = p => {
+    const url = `wss://${C.host || 'live-data.apex-timing.com'}:${p}/`;
+    const L = live;
+    try { L.ws = new WebSocket(url); } catch (e) { return fail(); }
+    L.ws.onopen = () => { $('wsState').textContent = '● En directo'; $('wsState').className = 'pill live'; try { L.ws.send('init'); } catch {} };
+    L.ws.onmessage = ev => { if (L === live) { feed(String(ev.data)); scheduleRender(); } };
+    L.ws.onclose = L.ws.onerror = () => { if (L === live && !L.closed) { $('wsState').textContent = 'Reconectando…'; $('wsState').className = 'pill warn'; setTimeout(() => { if (L === live && !L.closed) go(p); }, 8000); } };
+  };
+  const fail = () => { $('wsState').textContent = 'Directo no disponible'; $('wsState').className = 'pill warn'; };
+  if (port) return go(port);
+  // el puerto está en el config.js del circuito: lo cargamos como script
+  delete window.configPort; delete window.configHost;
+  const sc = document.createElement('script');
+  sc.src = baseUrl(C) + 'javascript/config.js?t=' + Date.now();
+  sc.onload = () => { if (window.configPort) { C.host = window.configHost || C.host; go(+window.configPort + 3); } else if (C.port) go(C.port); else fail(); };
+  sc.onerror = () => C.port ? go(C.port) : fail();
+  document.head.appendChild(sc);
+}
+
+const parseT = s => { s = (s || '').trim().replace(',', '.'); const m = s.match(/^(?:(\d{1,2}):)?(\d{1,2}\.\d{1,3})$/); if (!m) return null; const t = +m[2] + (m[1] ? +m[1] * 60 : 0); return t > 5 && t < 600 ? Math.round(t * 1000) / 1000 : null; };
+const parseG = s => { s = (s || '').trim().replace(',', '.').replace(/^\+/, ''); const m = s.match(/^(?:(\d{1,2}):)?(\d{1,2}\.\d{1,3})$/); return m ? +m[2] + (m[1] ? +m[1] * 60 : 0) : null; };
+
+function closeLive() {
+  if (live.laps.length >= 5) live.sessions.push(buildLive(true));
+  live.laps = []; live.last = {}; live.sessTitle = [live.title1, live.title2];
+}
+function buildLive(done) {
+  const by = {};
+  live.laps.forEach(l => (by[l.row] = by[l.row] || []).push(l));
+  const first = Math.min(...live.laps.map(l => l.ts)), d = new Date(first);
+  const t = (live.sessTitle || [live.title1, live.title2]).filter(Boolean).join(' - ');
+  return { id: 'live-' + first, circuit: C.nombre, slug: C.slug, date: today(), time: d.toTimeString().slice(0, 5), title: t, group: live.title2 || '',
+    type: /CRONO|QUALI|CLASIF|ENTREN|PRACT|LIBRE/i.test(t) ? 'Cronos' : 'Carrera', source: done ? 'directo' : 'en curso', envivo: !done,
+    stints: Object.entries(by).map(([rid, ls]) => ({ kart: +String(ls[ls.length - 1].kart).replace(/\D/g, '') || ls[ls.length - 1].kart, driver: (ls[ls.length - 1].driver || '').toUpperCase(),
+      pos: +live.rows[rid]?.rk || null, laps: ls.map(l => l.t), gaps: ls.map(l => l.gap) })) };
+}
+function feed(msg) {
+  const now = Date.now();
+  for (const line of msg.split('\n')) {
+    const i1 = line.indexOf('|'); if (i1 < 0) continue;
+    const i2 = line.indexOf('|', i1 + 1);
+    const cmd = line.slice(0, i1), param = i2 < 0 ? line.slice(i1 + 1) : line.slice(i1 + 1, i2), val = i2 < 0 ? '' : line.slice(i2 + 1);
+    if ((cmd === 'init' || cmd === 'grid') && val.includes('<tr')) grid(val);
+    else if (cmd === 'title1' || cmd === 'title2') { if (live[cmd] !== val) { live[cmd] = val; if (live.laps.length && live.sessTitle && (live.title1 + live.title2) !== live.sessTitle.join('')) closeLive(); if (!live.laps.length) live.sessTitle = [live.title1, live.title2]; } }
+    else if (cmd === 'clear' && param === 'grid') { closeLive(); live.rows = {}; }
+    else { let m = cmd.match(/^r(\d+)c(\d+)$/); if (m) cell('r' + m[1], +m[2], val, now); else if ((m = cmd.match(/^r(\d+)$/)) && param === '#') (live.rows[cmd] = live.rows[cmd] || {}).rk = val; }
+  }
+}
+function grid(html) {
+  const doc = new DOMParser().parseFromString('<table>' + html.replace(/^.*?<table[^>]*>/is, '') , 'text/html');
+  const trs = [...doc.querySelectorAll('tr')];
+  const head = trs.find(tr => tr.classList.contains('head') || tr.dataset.id === 'r0');
+  if (head) { live.cols = {}; [...head.children].forEach((td, i) => live.cols[i + 1] = td.dataset.type || ''); }
+  const rows = {};
+  trs.forEach(tr => { if (tr === head || !tr.dataset.id) return; const d = {}; [...tr.children].forEach((td, i) => { const t = live.cols[i + 1]; if (t) d[t] = td.textContent.trim(); }); rows[tr.dataset.id] = d; });
+  if (live.laps.length && Object.keys(rows).length && !Object.keys(rows).some(r => live.last[r])) closeLive();
+  live.rows = rows;
+}
+function cell(rid, col, val, ts) {
+  const row = live.rows[rid] = live.rows[rid] || {}, type = live.cols[col];
+  if (!type) return;
+  row[type] = val; row['_' + type] = ts;
+  if (type === 'int') { for (let i = live.laps.length - 1; i >= Math.max(0, live.laps.length - 40); i--) if (live.laps[i].row === rid) { if (ts - live.laps[i].ts < 3000) live.laps[i].gap = parseG(val); break; } return; }
+  if (type !== 'llp') return;
+  const t = parseT(val); if (t === null) return;
+  const p = live.last[rid]; if (p && p[0] === t && ts - p[1] < t * 600) return;
+  live.last[rid] = [t, ts];
+  live.laps.push({ row: rid, t, ts, kart: row.no || '', driver: row.dr || '', gap: parseG(row.int) });
+}
+
+// ---------- análisis ----------
+let rTimer = null;
+const scheduleRender = () => { if (!rTimer) rTimer = setTimeout(() => { rTimer = null; render(); }, 3000); };
+function sessionsToday() {
+  const rec = Object.values(recorded);
+  const liveS = live && live.slug === C.slug ? live.sessions.slice() : [];
+  if (live && live.laps.length >= 5) liveS.push(buildLive(false));
+  const dup = s => rec.some(r => r.title === s.title && Math.abs(toMin(r.time) - toMin(s.time)) <= 3);
+  return rec.concat(liveS.filter(s => !dup(s)));
+}
+const toMin = t => { const [h, m] = (t || '0:0').split(':'); return +h * 60 + +m; };
+
+let A = null;
+function render() {
+  if (!C) return;
+  const ses = sessionsToday();
+  A = ses.length ? KartCore.analyze(ses.map(s => Object.assign({ id: s.id || s.title + s.time }, s)), { method: opts.method, noTraffic: opts.noTraffic, cutPct: opts.cutPct, dropFirst: true }) : null;
+  renderRanking(ses); renderPista(); renderSes(ses);
+}
+function renderRanking(ses) {
+  const el = $('rankOut');
+  if (!A || !A.karts.length) { el.innerHTML = `<div class="card empty">Todavía no hay vueltas de hoy en ${esc(C.nombre)}. En cuanto ruede alguna sesión aparecerá aquí.</div>`; return; }
+  const ks = A.karts, rel = ks.filter(k => conf(k.se, k.drivers)[0] !== 'baja');
+  const pool = rel.length >= 3 ? rel : ks, best = pool.slice(0, 3), worst = pool.slice(-3).reverse().filter(k => !best.includes(k));
+  const bk = k => { const [c] = tier(k.effect); return `<div class="bk"><b class="${c}">${k.kart}</b><span class="num ${c}">${fmt(k.effect)} s</span></div>`; };
+  el.innerHTML = `<div class="summary"><div class="card"><h4>Pide estos karts</h4><div class="bigk">${best.map(bk).join('')}</div></div>
+    <div class="card"><h4>Evita estos karts</h4><div class="bigk">${worst.map(bk).join('')}</div></div></div>
+  <div class="card scroll"><div class="mini" style="margin-bottom:6px">Hoy · ${ses.length} sesiones · ${A.stints.length} tandas. Segundos por vuelta frente a un kart medio (negativo = más rápido).</div>
+  <table><thead><tr><th class="l">#</th><th style="text-align:center">Kart</th><th>Ventaja</th><th class="hm">±</th><th>Fiabilidad</th><th class="hm">Tandas</th><th class="hm">Pilotos</th><th>Mejor vuelta</th><th class="l hm">Lo llevaron</th></tr></thead><tbody>
+  ${ks.map((k, i) => { const [c] = tier(k.effect), [cc, cl] = conf(k.se, k.drivers);
+    return `<tr><td class="l mini">${i + 1}</td><td class="k ${c}">${k.kart}</td><td class="num ${c}">${fmt(k.effect)} s</td><td class="num hm mini">${k.se.toFixed(2).replace('.', ',')}</td>
+    <td><span class="badge ${cc}">${cl}</span></td><td class="num hm">${k.n}</td><td class="num hm">${k.drivers}</td><td class="num purple">${fmtT(k.best)}</td><td class="l hm mini" style="max-width:260px;overflow:hidden;text-overflow:ellipsis">${esc(k.luckyDrivers.join(', '))}</td></tr>`; }).join('')}
+  </tbody></table></div>`;
+}
+function renderPista() {
+  const el = $('pistaOut');
+  if (!live || !Object.keys(live.rows).length) { el.innerHTML = `<div class="card empty">${live && live.ws && live.ws.readyState === 1 ? 'Conectado. Ahora mismo no hay nadie en pista.' : 'Sin conexión directa con Apex en este momento. Usa la pestaña "Live timing de Apex".'}</div>`; return; }
+  const keff = {}; (A ? A.karts : []).forEach(k => keff[String(k.kart)] = k);
+  const rows = Object.entries(live.rows).filter(([, r]) => r.no || r.dr).sort((a, b) => (+a[1].rk || 99) - (+b[1].rk || 99));
+  const lapsBy = {}; live.laps.forEach(l => (lapsBy[l.row] = lapsBy[l.row] || []).push(l.t));
+  el.innerHTML = `<div class="card scroll"><div class="mini" style="margin-bottom:6px">${esc([live.title1, live.title2].filter(Boolean).join(' – ') || 'Sesión actual')} · columna "Kart hoy" = calidad del kart según todo lo de hoy</div>
+  <table><thead><tr><th class="l">Pos</th><th style="text-align:center">Kart</th><th class="l">Piloto</th><th>Última</th><th>Mejor</th><th class="hm">Vueltas vistas</th><th>Kart hoy</th></tr></thead><tbody>
+  ${rows.map(([rid, r]) => { const k = keff[String(+String(r.no).replace(/\D/g, '') || r.no)]; const [c] = k ? tier(k.effect) : [''];
+    const ls = lapsBy[rid] || [], fresh = Date.now() - (r._llp || 0) < 4000;
+    return `<tr class="${fresh ? 'flash' : ''}"><td class="l">${esc(r.rk || '')}</td><td class="k ${c}">${esc(r.no || '')}</td><td class="l">${esc(r.dr || '')}</td>
+    <td class="num">${esc(r.llp || '')}</td><td class="num purple">${esc(r.blp || '')}</td><td class="num hm">${ls.length}</td><td class="num ${c}">${k ? fmt(k.effect) + ' s' : '–'}</td></tr>`; }).join('')}
+  </tbody></table></div>`;
+}
+function renderSes(ses) {
+  const el = $('sesOut');
+  if (!ses.length) { el.innerHTML = '<div class="card empty">Aún no hay sesiones hoy.</div>'; return; }
+  el.innerHTML = `<div class="card scroll"><table><thead><tr><th class="l">Hora</th><th class="l">Sesión</th><th>Pilotos</th><th>Vueltas</th><th>Mejor vuelta</th><th class="l">Origen</th></tr></thead><tbody>
+  ${ses.slice().sort((a, b) => b.time.localeCompare(a.time)).map(s => { const laps = s.stints.flatMap(t => t.laps);
+    return `<tr><td class="l">${esc(s.time)}</td><td class="l">${esc(s.title || s.type)}</td><td class="num">${s.stints.length}</td><td class="num">${laps.length}</td><td class="num purple">${fmtT(Math.min(...laps))}</td>
+    <td class="l mini">${s.envivo ? '<span style="color:var(--vslow)">● en curso</span>' : s.source === 'directo' ? 'vista en directo' : 'grabada'}</td></tr>`; }).join('')}</tbody></table></div>`;
+}
+loadCircuits();
+})();
+</script>
+</body>
+</html>
