@@ -44,7 +44,7 @@ iframe{width:100%;height:78vh;border:1px solid var(--line);border-radius:12px;ba
 .empty{padding:30px;text-align:center;color:var(--mute)}
 body.pilot header,body.pilot nav.tabs,body.pilot .foot{display:none}
 body.pilot .wrap{max-width:none;padding:6px}
-.pv{height:calc(100vh - 12px);height:calc(100dvh - 12px);display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr 1fr;gap:8px}
+.pv{height:calc(100vh - 12px);height:calc(100dvh - 12px);display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1.05fr 1fr;gap:8px}
 .pv .bar{grid-column:1/3;display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--mute);font-size:clamp(12px,2.2vh,16px);padding:0 6px;flex-wrap:wrap}
 .pv .tile{background:var(--panel);border-radius:16px;padding:1.2vh 1.6vw;display:flex;flex-direction:column;justify-content:center;min-width:0;overflow:hidden}
 .pv .lab{color:var(--mute);font-size:clamp(11px,2.4vh,16px)}
@@ -55,6 +55,11 @@ body.pilot .wrap{max-width:none;padding:6px}
 .pv .gap{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:clamp(18px,7vh,56px);line-height:1.05}
 .pv .msg{border-radius:16px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:700;font-family:"Barlow Condensed"}
 .pv .x{background:none;border:1px solid var(--line);border-radius:8px;color:var(--mute);padding:2px 10px;cursor:pointer}
+.pv .xx{width:clamp(44px,11vh,72px);height:clamp(44px,11vh,72px);border-radius:14px;border:2px solid var(--line);background:var(--panel2);color:var(--text);font-size:clamp(22px,6vh,40px);cursor:pointer;line-height:1}
+.pv .kbtn{height:clamp(40px,10vh,64px);padding:0 14px;border-radius:14px;border:2px solid #6b5a1a;background:#2a2410;color:var(--accent);font:700 clamp(18px,5vh,34px) 'Barlow Condensed';cursor:pointer;white-space:nowrap}
+.pv .clock{font:700 clamp(28px,10vh,78px)/1 'JetBrains Mono',monospace;color:var(--text)}
+.pv .top{grid-column:1/3;display:grid;grid-template-columns:1fr minmax(90px,.5fr) 1fr;gap:8px;min-height:0}
+.pv .posbig{font:700 clamp(40px,20vh,170px)/.9 'Barlow Condensed';color:var(--text)}
 .up{color:#3ddc84!important}.down{color:#ff5f5f!important}
 .kp{display:grid;grid-template-columns:repeat(3,64px);gap:8px;justify-content:center}.kp button{height:52px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;cursor:pointer}
 .rot{display:none}@media (orientation:portrait){body.pilot .rot{display:block}}
@@ -74,6 +79,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#171a20}
     <select id="circ"></select>
     <select id="dia"></select>
     <div class="grow"></div>
+    <a class="pill" href="mensajes.html" target="_blank" style="text-decoration:none;color:var(--accent)">Mensaje al piloto</a>
     <span class="pill" id="wsState">Conectando…</span>
     <span class="pill" id="dataState">Cargando sesiones…</span>
   </header>
@@ -202,7 +208,7 @@ async function refreshRecorded() {
   try {
     await Promise.all([...DAYS].filter(d => d === today() || !recorded[d]).map(d => loadDay(slug, d)));
     envivo = null;
-    if (isToday() && !(live && live.ws && live.ws.readyState === 1 && live.laps.length)) {
+    if (isToday()) {
       try {
         const e = await fetch(API + 'data/envivo?ref=main', { headers: { Accept: 'application/vnd.github+json' } });
         const files = e.ok ? await e.json() : [];
@@ -318,7 +324,7 @@ function cell(rid, col, val, ts, cls) {
 let rTimer = null;
 const scheduleRender = () => { if (!rTimer) rTimer = setTimeout(() => { rTimer = null; render(); }, 3000); };
 function sessionsToday() {
-  const rec = [...DAYS].flatMap(d => Object.values(recorded[d] || {})).concat(envivo && !(live && live.laps.length >= 5) ? [envivo] : []);
+  const rec = [...DAYS].flatMap(d => Object.values(recorded[d] || {})).concat(envivo && !(live && live.laps.length >= 5 && live.ws && live.ws.readyState === 1) ? [envivo] : []);
   const liveS = isToday() && live && live.slug === C.slug ? live.sessions.slice() : [];
   if (isToday() && live && live.laps.length >= 5) liveS.push(buildLive(false));
   const dup = s => rec.some(r => r.date === s.date && r.title === s.title && Math.abs(toMin(r.time) - toMin(s.time)) <= 3);
@@ -392,7 +398,7 @@ function renderRanking(ses) {
 const FLAGS = { lg: ['Bandera verde', '#1f7a3a'], ly: ['Bandera amarilla', '#b58b00'], lr: ['Bandera roja', '#b3261e'], lf: ['Bandera a cuadros', '#444'], lc: ['Bandera a cuadros', '#444'], ls: ['Safety car', '#b58b00'] };
 const STA = { si: '⬇ entra a boxes', so: '⬆ sale de boxes', su: '▲', sd: '▼', sf: '🏁' };
 function fmtClock(ms) { if (ms < 0) ms = 0; const t = Math.round(ms / 1000), h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), x = t % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0'); }
-setInterval(() => { const el = document.getElementById('clk'); if (el && live && live.dyn && live.dyn.type === 'countdown') el.textContent = fmtClock(+live.dyn.val - (Date.now() - live.dyn.at)); }, 1000);
+setInterval(() => { const pc = document.getElementById('pclk'); if (pc && live && live.dyn && live.dyn.type === 'countdown') pc.textContent = fmtClock(+live.dyn.val - (Date.now() - live.dyn.at)); const el = document.getElementById('clk'); if (el && live && live.dyn && live.dyn.type === 'countdown') el.textContent = fmtClock(+live.dyn.val - (Date.now() - live.dyn.at)); }, 1000);
 function renderPista() {
   const el = $('pistaOut');
   if (!live || !Object.keys(live.rows).length) { el.innerHTML = `<div class="card empty">${live && live.ws && live.ws.readyState === 1 ? 'Conectado. Ahora mismo no hay nadie en pista.' : 'Sin conexión directa con Apex en este momento. Usa la pestaña "Live timing de Apex".'}</div>`; return; }
@@ -483,7 +489,24 @@ let flash = { until: 0, cls: '' }, wake = null, pTimer = null;
 const kartOf = r => String(+String(r.no || '').replace(/\D/g, '') || r.no || '');
 const pilotSoon = () => { if (!pTimer && document.body.classList.contains('pilot')) pTimer = setTimeout(() => { pTimer = null; renderPilot(); }, 250); };
 setInterval(() => { if (document.querySelector('#tabs a.on')?.dataset.v === 'piloto') renderPilot(); }, 1000);
-function lapsOf(rid) { return live ? live.laps.filter(l => l.row === rid) : []; }
+function lapsOf(rid) {
+  if (!live) return [];
+  const own = live.laps.filter(l => l.row === rid);
+  // completar con lo que el grabador ya vio de esta sesión (foto cada 3 min), por si la página se abrió tarde
+  const r = live.rows[rid]; const k = r ? kartOf(r) : null;
+  if (envivo && k && envivo.date === today()) {
+    const titleNow = [live.title1, live.title2].filter(Boolean).join(' - ');
+    if (!titleNow || envivo.title === titleNow) {
+      const st = envivo.stints.find(t => String(t.kart) === k);
+      if (st && st.ts) {
+        const first = own.length ? own[0].ts : Date.now();
+        const seed = st.laps.map((t, i) => ({ row: rid, t, ts: st.ts[i] * 1000, pits: (st.pitsv || [])[i] ?? '' })).filter(l => l.ts < first - 2000);
+        return seed.concat(own);
+      }
+    }
+  }
+  return own;
+}
 function pilotFlash(rid) {
   const ls = lapsOf(rid); if (ls.length < 2) return;
   const a = ls[ls.length - 1].t, b = ls[ls.length - 2].t;
@@ -503,6 +526,7 @@ function validLaps(rid) {
   return c.filter(t => t <= m * 1.03);
 }
 function paceOf(rid) { const v = validLaps(rid).slice(-5); return v.length >= 2 ? v.reduce((a, b) => a + b, 0) / v.length : null; }
+const paceN = rid => Math.min(5, validLaps(rid).length);
 const fmtGap = v => { v = (v || '').trim(); if (!v) return '–'; if (/vuelta|lap|tour|v$/i.test(v)) { const n = v.match(/\d+/); return n ? '+' + n[0] + ' V' : v; } return v.replace('.', ','); };
 function pilotSetup(el) {
   const onTrack = live ? Object.values(live.rows).filter(r => r.no).map(kartOf).sort((a, b) => a - b) : [];
@@ -533,10 +557,13 @@ function renderPilot(force) {
   const me = rows.find(([, r]) => kartOf(r) === pilotKart);
   const fl = live && FLAGS[live.light];
   const clockTxt = live && live.dyn ? (live.dyn.type === 'countdown' ? 'Quedan ' + fmtClock(+live.dyn.val - (Date.now() - live.dyn.at)) : esc(live.dyn.val)) : '';
-  const head = (pos) => `<div class="bar"><span style="display:flex;gap:10px;align-items:center"><button class="x" id="chgK" style="color:var(--accent);font-weight:600">Kart ${esc(pilotKart)}</button>${pos}<span>${esc(C.nombre)} · ${esc([live?.title1, live?.title2].filter(Boolean).join(' – '))}</span></span>
-    <span style="display:flex;gap:10px;align-items:center">${fl ? `<span class="flag" style="background:${fl[1]}">${(t => t.charAt(0).toUpperCase() + t.slice(1))(fl[0].replace('Bandera ', ''))}</span>` : ''}<span style="color:var(--text)">${clockTxt}</span>${me && me[1].tlp ? `<span>Vuelta ${esc(me[1].tlp)}</span>` : ''}<button class="x" id="exitP">✕</button></span></div>`;
+  const head = () => `<div class="bar">
+    <span style="display:flex;gap:10px;align-items:center;min-width:0"><button class="kbtn" id="chgK" title="Cambiar de kart">⇄ Kart ${esc(pilotKart)}</button>
+      <span style="min-width:0"><div>${esc(C.nombre)}</div><div style="color:var(--text)">${esc([live?.title1, live?.title2].filter(Boolean).join(' – '))}${me && me[1].tlp ? ' · vuelta ' + esc(me[1].tlp) : ''}</div></span>
+      ${fl ? `<span class="flag" style="background:${fl[1]};font-size:clamp(12px,2.6vh,18px)">${(t => t.charAt(0).toUpperCase() + t.slice(1))(fl[0].replace('Bandera ', ''))}</span>` : ''}</span>
+    <span style="display:flex;gap:12px;align-items:center"><span class="clock" id="pclk">${clockTxt.replace('Quedan ', '')}</span><button class="xx" id="exitP" title="Salir">✕</button></span></div>`;
   if (!me) {
-    el.innerHTML = `<div class="pv">${head('')}<div class="tile" style="grid-column:1/3;grid-row:2/4;align-items:center;text-align:center">
+    el.innerHTML = `<div class="pv">${head()}<div class="tile" style="grid-column:1/3;grid-row:2/4;align-items:center;text-align:center">
       <div class="mid">Esperando al kart ${esc(pilotKart)}…</div><div class="sub2" style="color:var(--mute);margin-top:8px">${live && live.ws && live.ws.readyState === 1 ? 'Aún no aparece en el live timing de Apex.' : 'Sin conexión con Apex. Reconectando…'}</div>
       <div class="rot sub2" style="margin-top:10px;color:var(--accent)">Gira el móvil en horizontal</div></div></div>`;
     return bindPilot();
@@ -559,19 +586,23 @@ function renderPilot(force) {
   const flashing = Date.now() < flash.until ? flash.cls : '';
   const isPB = last != null && last === myBest && Date.now() < flash.until;
   const dMean = last != null && mean ? last - mean : null;
+  const n = paceN(rid);
   el.innerHTML = `<div class="pv">
-    ${head(myPos ? `<span style="background:var(--text);color:var(--bg);border-radius:6px;padding:1px 9px;font-weight:700">P ${myPos}/${N}</span>` : '')}
-    <div class="tile"><div class="lab">Última vuelta</div>
-      <div class="big ${isPB ? '' : flashing}" style="${isPB ? 'color:var(--purple)' : ''}">${last != null ? fmtT(last).replace(',', '.') : '–'}</div>
-      <div class="sub2" style="color:${dMean == null ? 'var(--mute)' : dMean <= 0 ? 'var(--fast)' : 'var(--vslow)'}">${dMean == null ? '&nbsp;' : fmt(dMean) + ' vs tu media'}</div></div>
-    <div class="tile" style="flex-direction:row;justify-content:space-between;align-items:center"><div style="min-width:0"><div class="lab">Mi VR</div><div class="big" style="color:var(--purple)">${isFinite(myBest) ? fmtT(myBest).replace(',', '.') : '–'}</div></div>
-      <div style="text-align:right"><div class="lab">entre VRs</div><div class="mid">${vrRank ? vrRank + '/' + bests.length : '–'}</div></div></div>
+    ${head()}
+    <div class="top">
+      <div class="tile"><div class="lab">Última vuelta</div>
+        <div class="big ${isPB ? '' : flashing}" style="${isPB ? 'color:var(--purple)' : ''}">${last != null ? fmtT(last).replace(',', '.') : '–'}</div>
+        <div class="sub2" style="color:${dMean == null ? 'var(--mute)' : dMean <= 0 ? 'var(--fast)' : 'var(--vslow)'}">${dMean == null ? '&nbsp;' : fmt(dMean) + ' vs tu media'}</div></div>
+      <div class="tile" style="align-items:center;text-align:center;padding-left:4px;padding-right:4px"><div class="lab">Posición</div><div class="posbig">${myPos ? 'P' + myPos : '–'}</div><div class="mid" style="color:var(--mute)">/${N}</div></div>
+      <div class="tile" style="flex-direction:row;justify-content:space-between;align-items:center"><div style="min-width:0"><div class="lab">Mi VR</div><div class="big" style="color:var(--purple)">${isFinite(myBest) ? fmtT(myBest).replace(',', '.') : '–'}</div></div>
+        <div style="text-align:right"><div class="lab">entre VRs</div><div class="mid">${vrRank ? vrRank + '/' + bests.length : '–'}</div></div></div>
+    </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;min-height:0">
-      <div class="tile"><div class="lab">Pos ritmo</div><div class="huge">${pr ? 'P' + pr : '–'}</div><div class="sub2">${pr ? pr + '/' + paces.length : 'calculando…'}</div></div>
+      <div class="tile"><div class="lab">Pos ritmo${n ? ` · ${n} v` : ''}</div><div class="huge">${pr ? 'P' + pr : '–'}</div><div class="sub2">${pr ? pr + '/' + paces.length : 'esperando 2 vueltas válidas'}</div></div>
       <div class="tile" style="padding-top:.6vh;padding-bottom:.6vh"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;border-bottom:1px solid var(--line)"><div class="lab">Delante</div><div class="gap" style="color:#ff8a6b">${esc(ahead === 'LÍDER' || ahead === '–' ? ahead : (ahead.startsWith('+') ? ahead : '+' + ahead))}</div></div>
         <div style="flex:1;display:flex;flex-direction:column;justify-content:center"><div class="lab">Detrás</div><div class="gap" style="color:var(--fast)">${esc(behind === '–' ? behind : (behind.startsWith('+') ? behind.replace('+', '−') : '−' + behind))}</div></div></div>
     </div>
-    <div class="msg" style="background:var(--panel);color:var(--dim);font-size:clamp(14px,3vh,22px)">sin mensaje</div>
+    ${msgTile()}
   </div>`;
   bindPilot();
 }
@@ -580,6 +611,38 @@ function bindPilot() {
   const k = $('chgK'); if (k) k.onclick = () => { document.body.classList.remove('pilot'); pilotSetup($('pilotOut')); };
 }
 document.addEventListener('visibilitychange', async () => { if (document.visibilityState === 'visible' && document.body.classList.contains('pilot')) { try { wake = await navigator.wakeLock?.request('screen'); } catch {} } });
+// ================= MENSAJES AL PILOTO (ntfy.sh, gratis y al instante) =================
+const MSG_TOPIC = 'blr-b0be61bf7279e5e3';
+let pilotMsg = null, msgES = null;
+const MSG_TTL = 90000;
+function msgTile() {
+  const m = pilotMsg && Date.now() - pilotMsg.at < MSG_TTL ? pilotMsg.m : null;
+  if (!m) return `<div class="msg" style="background:var(--panel);color:var(--dim);font-size:clamp(14px,3vh,22px)">sin mensaje</div>`;
+  const box = /^BOX/i.test(m);
+  return `<div class="msg" style="background:${box ? '#FAC775' : '#5F5E5A'};color:${box ? '#412402' : '#F1EFE8'};font-size:${box ? 'clamp(40px,22vh,170px)' : 'clamp(22px,9vh,72px)'};line-height:1;padding:6px">${esc(m)}</div>`;
+}
+function parseMsg(txt) {
+  try { const j = JSON.parse(txt); if (j && j.m) return j; } catch {}
+  const m = String(txt).trim().match(/^(\d{1,3})\s+(.+)$/); // también vale escribir "43 BOX" desde la app ntfy
+  return m ? { k: m[1], m: m[2].toUpperCase() } : null;
+}
+function startMsgs() {
+  if (msgES) return;
+  try {
+    msgES = new EventSource(`https://ntfy.sh/${MSG_TOPIC}/sse?since=${Math.floor((Date.now() - MSG_TTL) / 1000)}`);
+    msgES.onmessage = ev => {
+      let d; try { d = JSON.parse(ev.data); } catch { return; }
+      if (d.event !== 'message' || Date.now() - d.time * 1000 > MSG_TTL) return;
+      const j = parseMsg(d.message); if (!j || j.ack) return;
+      if (String(j.k) !== String(pilotKart) && j.k !== 'todos') return;
+      pilotMsg = /^(CLEAR|BORRAR)$/i.test(j.m) ? null : { m: j.m, at: d.time * 1000 };
+      if (pilotMsg) { try { navigator.vibrate?.([300, 100, 300]); } catch {} fetch(`https://ntfy.sh/${MSG_TOPIC}`, { method: 'POST', body: JSON.stringify({ ack: d.id, k: pilotKart, m: j.m }) }).catch(() => {}); }
+      renderPilot();
+    };
+    msgES.onerror = () => {}; // EventSource reconecta solo
+  } catch {}
+}
+startMsgs();
 loadCircuits();
 })();
 </script>

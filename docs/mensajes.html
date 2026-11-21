@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mensaje al piloto</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0c0d10;color:#e9ebf0;font:15px Inter,system-ui,sans-serif}
+.w{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:12px;min-height:100vh}
+h1{font:700 24px 'Barlow Condensed';margin:0}
+.row{display:flex;gap:8px;align-items:center}
+input{flex:1;background:#1b1e25;border:1px solid #3a3d45;border-radius:12px;color:#ffd23f;font:700 34px 'Barlow Condensed';padding:6px 14px;width:100%}
+button.m{border:0;border-radius:18px;font:700 'Barlow Condensed';cursor:pointer;width:100%;font-family:'Barlow Condensed';font-weight:700}
+.box{background:#FAC775;color:#412402;font-size:64px;height:150px}
+.dbl{background:#5F5E5A;color:#F1EFE8;font-size:32px;height:96px}
+.clr{background:none;border:1px solid #3a3d45!important;color:#8a909c;font-size:20px;height:56px}
+button.m:active{transform:scale(.98)}
+.st{font-size:13px;color:#8a909c;text-align:center;min-height:20px}
+.ok{color:#3ddc84}
+</style></head><body><div class="w">
+<div class="row" style="justify-content:space-between"><h1>Mensaje al piloto</h1><span class="st" id="conn">conectando…</span></div>
+<div class="row"><span style="color:#8a909c">Kart</span><input id="kart" inputmode="numeric" maxlength="3" placeholder="43"></div>
+<button class="m box" data-m="BOX">BOX</button>
+<button class="m dbl" data-m="DELANTE DOBLADO">DELANTE DOBLADO</button>
+<button class="m dbl" data-m="DETRÁS DOBLADO">DETRÁS DOBLADO</button>
+<button class="m clr" data-m="CLEAR">Borrar mensaje</button>
+<div class="st" id="st">&nbsp;</div>
+<div class="st" style="margin-top:auto">El piloto lo ve al instante en su "Vista piloto". El mensaje se borra solo a los 90 s.</div>
+</div>
+<script>
+const TOPIC='blr-b0be61bf7279e5e3';
+const $=id=>document.getElementById(id);
+try{$('kart').value=localStorage.getItem('blr_msgKart')||''}catch{}
+$('kart').oninput=e=>{try{localStorage.setItem('blr_msgKart',e.target.value)}catch{}};
+let lastId=null;
+document.querySelectorAll('button.m').forEach(b=>b.onclick=async()=>{
+  const k=$('kart').value.trim(); if(!k){$('st').textContent='Escribe primero el número de kart';$('kart').focus();return;}
+  $('st').textContent='Enviando…';
+  try{const r=await fetch('https://ntfy.sh/'+TOPIC,{method:'POST',body:JSON.stringify({k,m:b.dataset.m})});const j=await r.json();lastId=j.id;
+    $('st').innerHTML=(b.dataset.m==='CLEAR'?'Mensaje borrado':'Enviado <b>'+b.dataset.m+'</b> al kart '+k)+' · '+new Date().toLocaleTimeString().slice(0,8)+(b.dataset.m==='CLEAR'?'':' · esperando que lo vea…');
+    try{navigator.vibrate?.(60)}catch{}
+  }catch(e){$('st').textContent='No se pudo enviar. Revisa la conexión y reinténtalo.';}
+});
+const es=new EventSource('https://ntfy.sh/'+TOPIC+'/sse');
+es.onopen=()=>{$('conn').innerHTML='<span class="ok">● conectado</span>'};
+es.onerror=()=>{$('conn').textContent='reconectando…'};
+es.onmessage=ev=>{let d;try{d=JSON.parse(ev.data)}catch{return}if(d.event!=='message')return;let j;try{j=JSON.parse(d.message)}catch{return}
+  if(j.ack&&j.ack===lastId){$('st').innerHTML+=' <span class="ok">· visto ✓</span>'.replace('· esperando que lo vea…','');$('st').innerHTML=$('st').innerHTML.replace(' · esperando que lo vea…','');}};
+</script></body></html>
