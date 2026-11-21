@@ -212,3 +212,189 @@ r3330c9|to|14. ⏎ r3338c9|to|1:23. ⏎
 r3339c4|dr|NEO LEVELAP ⏎ r3342c4|dr|ESCUELADEKART.COM ⏎ r3334c4|dr|KARTING NOW ⏎ r3337c4|dr|CREATIA LTDL RACING ⏎ r3330c4|dr|AD OVERDRIVE ⏎ r3331c4|dr|LMKC SCUDERIA ⏎ r3341c4|dr|PDT RACING ⏎ r3333c4|dr|SKAT ⏎ r3338c4|dr|IMK ⏎ r3379c4|dr|KARTINGNOW ENDURANCE ⏎ r3379c9|to|1:07. ⏎ r3335c4|dr|ASR MOTORSPORT BLACK ⏎ r3336c4|dr|ASR MOTORSPORT WHITE ⏎ r3343c4|dr|LASAGRATEAM ⏎ r3340c4|dr|CKM FARMACIA ZENITH ⏎ r3344c4|dr|ASR MOTORSPORT GREY ⏎ r3332c4|dr|TARTARUGAS RC ⏎ 
 r3330c9|to|15. ⏎ r3338c9|to|1:24. ⏎ 
 dyn1|countdown|12571163 ⏎ r3338c9|to|1:25. ⏎ r3379c9|to|1:08. ⏎ r3330c9|to|16. ⏎ 
+r3331c1|su| ⏎ r3331c2||5 ⏎ r3331c5|tn|57.379 ⏎ r3331c6|ib|42.559 ⏎ r3331c7|in|14.711 ⏎ r3330c2||6 ⏎ r3330c7|in| ⏎ r3341c7|in|21.258 ⏎ r3330|#|6 ⏎ r3331|*|51983| ⏎ r3331|#|5 ⏎ 
+r3338c9|to|1:26. ⏎ r3379c9|to|1:09. ⏎ r3330c9|to|17. ⏎ 
+r3379c9|to|1:10. ⏎ 
+r3330c9|to|18. ⏎ r3338c9|to|1:27. ⏎ 
+r3343c1|sr| ⏎ r3343c5|tn|1:00.774 ⏎ r3343c7|in|48.028 ⏎ r3343|*|54461| ⏎ 
+r3379c9|to|1:11. ⏎ 
+r3330c9|to|19. ⏎ r3338c9|to|1:28. ⏎ 
+r3336c1|si| ⏎ r3336c9|to|00. ⏎ r3336c10|in|1 ⏎ r3336|*in|0 ⏎ 
+r3340c9|in|0:21 ⏎ 
+r3379c9|to|1:12. ⏎ 
+r3330c9|to|20. ⏎ r3338c9|to|1:29. ⏎ 
+r3336c9|to|01. ⏎ 
+r3338c9|to|1:30. ⏎ r3379c9|to|1:13. ⏎ r3330c9|to|21. ⏎ 
+r3336c9|to|02. ⏎ 
+r3338c9|to|1:31. ⏎ r3379c9|to|1:14. ⏎ 
+r3330c9|to|22. ⏎ 
+r3336c9|to|03. ⏎ 
+r3379c9|to|1:15. ⏎ 
+r3330c9|to|23. ⏎ r3338c9|to|1:32. ⏎ 
+r3336c9|to|04. ⏎ 
+r3379c9|to|1:16. ⏎ 
+r3330c9|to|24. ⏎ r3335c1|su| ⏎ r3335c2||9 ⏎ r3335c5|tn|1:03.887 ⏎ r3335c6|ib|49.563 ⏎ r3335c7|in|29.129 ⏎ r3338c2||10 ⏎ r3338c9|to|1:33. ⏎ r3379c2||11 ⏎ r3336c7|in|1:09.219 ⏎ r3338|#|10 ⏎ r3379|#|11 ⏎ r3335|*|55398| ⏎ r3335|#|9 ⏎ 
+r3336c9|to|05. ⏎ 
+r3379c9|to|1:17. ⏎ 
+r3330c9|to|25. ⏎ r3338c9|to|1:34. ⏎ 
+r3336c9|to|06. ⏎ 
+r3379c9|to|1:18. ⏎ r3330c9|to|26. ⏎ r3338c9|to|1:35. ⏎ 
+r3336c9|to|07. ⏎ 
+r3379c9|to|1:19. ⏎ r3330c9|to|27. ⏎ r3338c9|to|1:36. ⏎ 
+r3336c9|to|08. ⏎ 
+r3332c9|in|0:03 ⏎ 
+r3338c9|to|1:37. ⏎ r3379c9|to|1:20. ⏎ 
+r3330c9|to|28. ⏎ 
+r3336c9|to|09. ⏎ 
+r3338c9|to|1:38. ⏎ r3379c9|to|1:21. ⏎ 
+r3330c9|to|29. ⏎ 
+r3336c9|to|10. ⏎ 
+r3379c9|to|1:22. ⏎ r3330c9|to|30. ⏎ r3338c9|to|1:39. ⏎ 
+r3339c5|tn|56.125 ⏎ r3339c6|in|Vuelta 41 ⏎ r3342c1|in| ⏎ r3334c1|in| ⏎ r3337c1|in| ⏎ r3330c6|ib|1 Vuelta ⏎ r3341c1|in| ⏎ r3341c6|ib|21.258 ⏎ r3333c6|ib|41.692 ⏎ r3335c6|ib|1:10.821 ⏎ r3338c6|ib|2 Vueltas ⏎ r3379c6|ib|14.574 ⏎ r3336c6|ib|1:23.793 ⏎ r3343c1|in| ⏎ r3343c6|ib|2:11.821 ⏎ r3340c1|in| ⏎ r3344c1|in| ⏎ r3332c1|in| ⏎ r3339|*|51386| ⏎ 
+r3336c9|to|11. ⏎ 
+r3379c9|to|1:23. ⏎ r3330c9|to|31. ⏎ r3333c1|in| ⏎ r3338c9|to|1:40. ⏎ 
+r3336c9|to|12. ⏎ 
+r3341c1|su| ⏎ r3341c2||6 ⏎ r3341c5|tn|57.313 ⏎ r3341c6|ib|1 Vuelta ⏎ r3341c7|in|15.125 ⏎ r3330c2||7 ⏎ r3330c6|ib| ⏎ r3333c6|ib|20.434 ⏎ r3333c7|in|41.692 ⏎ r3335c6|ib|49.563 ⏎ r3330|#|7 ⏎ r3341|*|52987| ⏎ r3341|#|6 ⏎ 
+r3338c9|to|1:41. ⏎ r3379c9|to|1:24. ⏎ 
+r3330c9|to|32. ⏎ 
+r3336c9|to|13. ⏎ 
+r3338c9|to|1:42. ⏎ r3379c9|to|1:25. ⏎ r3330c9|to|33. ⏎ 
+r3336c9|to|14. ⏎ 
+r3379c9|to|1:26. ⏎ r3330c9|to|34. ⏎ r3338c9|to|1:43. ⏎ 
+r3336c9|to|15. ⏎ 
+r3339c4|drteam|JON DEL VALLE [0:30] ⏎ r3342c4|drteam|DIEGO FUIZ [0:30] ⏎ r3334c4|drteam|JAVIER LLAVE [0:30] ⏎ r3337c4|drteam|ALEX CUBAS [0:30] ⏎ r3331c4|drteam|MATÍAS GARCÍA  [0:30] ⏎ r3341c4|drteam|CRISTIAN [0:30] ⏎ r3330c4|drteam|GERMÁN MUÑOZ [0:30] ⏎ r3333c4|drteam|JAVIER SÁNCHEZ VAQUERIZO [0:30] ⏎ r3335c4|drteam|ALFONSO SAGARRUY [0:30] ⏎ r3338c4|drteam|JORGE PARRA CORCHADO [0:00] ⏎ r3379c4|drteam|JORGE IZCUE [0:00] ⏎ r3336c4|drteam|IVÁN RODRÍGUEZ [0:30] ⏎ r3343c4|drteam|RODRIGUEZ [0:30] ⏎ r3340c4|drteam|GUILLERMO PANIAGUA [0:21] ⏎ r3344c4|drteam|CARLOS MULHERN LÓPEZ-OLIVA [0:28] ⏎ r3332c4|drteam|CARLOS MORENO [0:03] ⏎ 
+r3379c9|to|1:27. ⏎ r3330c9|to|35. ⏎ r3338c9|to|1:44. ⏎ 
+r3336c9|to|16. ⏎ 
+r3379c9|to|1:28. ⏎ r3330c9|to|36. ⏎ r3338c9|to|1:45. ⏎ 
+r3336c9|to|17. ⏎ 
+r3379c9|to|1:29. ⏎ 
+r3330c9|to|37. ⏎ r3338c9|to|1:46. ⏎ 
+r3344c9|in|0:22 ⏎ 
+r3336c9|to|18. ⏎ 
+r3379c9|to|1:30. ⏎ 
+r3330c9|to|38. ⏎ r3338c9|to|1:47. ⏎ 
+r3336c9|to|19. ⏎ 
+r3338c9|to|1:48. ⏎ r3379c9|to|1:31. ⏎ r3330c9|to|39. ⏎ 
+r3336c9|to|20. ⏎ 
+r3330c9|to|40. ⏎ r3338c9|to|1:49. ⏎ r3379c4|drteam|JORGE IZCUE [0:01] ⏎ r3379c9|to|1:32. ⏎ 
+r3342c1|sr| ⏎ r3342c5|tn|55.957 ⏎ r3342c6|ib|9.918 ⏎ r3342c7|in|9.918 ⏎ r3330c4|drteam|EDU KRYSTIA ⏎ r3342|*|52090| ⏎ 
+r3330c4|drteam|EDU KRYSTIA [0:00] ⏎ r3336c9|to|21. ⏎ 
+r3379c9|to|1:33. ⏎ r3330c9|to|41. ⏎ r3338c9|to|1:50. ⏎ 
+r3334c1|sr| ⏎ r3334c5|tn|56.715 ⏎ r3334c6|ib|11.024 ⏎ r3334c7|in|1.106 ⏎ r3334|*|52078| ⏎ r3336c9|to|22. ⏎ 
+r3338c9|to|1:51. ⏎ r3379c9|to|1:34. ⏎ 
+r3330c9|to|42. ⏎ 
+r3336c9|to|23. ⏎ 
+r3330c9|to|43. ⏎ r3338c9|to|1:52. ⏎ r3379c9|to|1:35. ⏎ r3332c1|sr| ⏎ r3332c5|tn|1:03.726 ⏎ r3332|*|59947| ⏎ 
+r3336c9|to|24. ⏎ 
+r3338c9|to|1:53. ⏎ r3379c9|to|1:36. ⏎ 
+r3330c9|to|44. ⏎ 
+r3336c9|to|25. ⏎ 
+r3339c4|dr|NEO LEVELAP ⏎ r3342c4|dr|ESCUELADEKART.COM ⏎ r3334c4|dr|KARTING NOW ⏎ r3337c4|dr|CREATIA LTDL RACING ⏎ r3331c4|dr|LMKC SCUDERIA ⏎ r3341c4|dr|PDT RACING ⏎ r3330c4|dr|AD OVERDRIVE ⏎ r3333c4|dr|SKAT ⏎ r3335c4|dr|ASR MOTORSPORT BLACK ⏎ r3338c4|dr|IMK ⏎ r3338c9|to|1:54. ⏎ r3379c4|dr|KARTINGNOW ENDURANCE ⏎ r3379c9|to|1:37. ⏎ r3336c4|dr|ASR MOTORSPORT WHITE ⏎ r3343c4|dr|LASAGRATEAM ⏎ r3340c4|dr|CKM FARMACIA ZENITH ⏎ r3344c4|dr|ASR MOTORSPORT GREY ⏎ r3332c4|dr|TARTARUGAS RC ⏎ r3330c9|to|45. ⏎ 
+r3336c9|to|26. ⏎ 
+dyn1|countdown|12541179 ⏎ r3338c9|to|1:55. ⏎ r3379c9|to|1:38. ⏎ r3330c9|to|46. ⏎ 
+r3339c9|in|0:31 ⏎ r3342c9|in|0:31 ⏎ r3334c9|in|0:31 ⏎ r3337c9|in|0:31 ⏎ r3331c9|in|0:31 ⏎ r3341c9|in|0:31 ⏎ r3333c9|in|0:31 ⏎ r3335c9|in|0:31 ⏎ r3343c9|in|0:31 ⏎ 
+r3336c9|to|27. ⏎ 
+r3379c9|to|1:39. ⏎ r3330c9|to|47. ⏎ r3338c9|to|1:56. ⏎ 
+r3336c9|to|28. ⏎ 
+r3379c9|to|1:40. ⏎ r3330c9|to|48. ⏎ r3338c9|to|1:57. ⏎ 
+r3336c9|to|29. ⏎ 
+r3379c9|to|1:41. ⏎ 
+r3330c9|to|49. ⏎ r3338c9|to|1:58. ⏎ 
+r3336c9|to|30. ⏎ 
+r3379c9|to|1:42. ⏎ 
+r3330c9|to|50. ⏎ r3338c9|to|1:59. ⏎ 
+r3336c9|to|31. ⏎ 
+r3338c9|to|2:00. ⏎ r3379c9|to|1:43. ⏎ r3330c9|to|51. ⏎ 
+r3336c9|to|32. ⏎ 
+r3379c9|to|1:44. ⏎ r3330c9|to|52. ⏎ r3338c9|to|2:01. ⏎ 
+r3336c9|to|33. ⏎ 
+r3331c1|in| ⏎ 
+r3379c9|to|1:45. ⏎ 
+r3330c9|to|53. ⏎ r3338c9|to|2:02. ⏎ 
+r3336c9|to|34. ⏎ 
+r3379c9|to|1:46. ⏎ 
+r3330c9|to|54. ⏎ r3338c9|to|2:03. ⏎ 
+r3336c9|to|35. ⏎ 
+r3379c9|to|1:47. ⏎ 
+r3330c9|to|55. ⏎ r3338c9|to|2:04. ⏎ 
+r3336c9|to|36. ⏎ 
+r3379c9|to|1:48. ⏎ 
+r3330c9|to|56. ⏎ r3338c9|to|2:05. ⏎ 
+r3336c9|to|37. ⏎ 
+r3338c9|to|2:06. ⏎ r3379c9|to|1:49. ⏎ 
+r3330c9|to|57. ⏎ 
+r3336c9|to|38. ⏎ 
+r3338c9|to|2:07. ⏎ r3379c9|to|1:50. ⏎ 
+r3330c9|to|58. ⏎ 
+r3336c9|to|39. ⏎ 
+r3379c9|to|1:51. ⏎ 
+r3330c9|to|59. ⏎ r3338c9|to|2:08. ⏎ 
+r3336c9|to|40. ⏎ 
+r3337c1|sr| ⏎ r3337c5|tn|57.929 ⏎ r3337c6|ib|29.652 ⏎ r3337c7|in|18.628 ⏎ r3337|*|53616| ⏎ 
+r3379c9|to|1:52. ⏎ 
+r3330c9|to|1:00. ⏎ r3335c1|in| ⏎ r3338c9|to|2:09. ⏎ 
+r3344c1|si| ⏎ r3344c9|to|00. ⏎ r3344c10|in|2 ⏎ r3344|*in|0 ⏎ r3336c9|to|41. ⏎ 
+r3379c9|to|1:53. ⏎ r3344c9|to|01. ⏎ r3330c9|to|1:01. ⏎ r3338c9|to|2:10. ⏎ 
+r3336c9|to|42. ⏎ 
+r3379c9|to|1:54. ⏎ r3344c9|to|02. ⏎ r3330c9|to|1:02. ⏎ r3338c9|to|2:11. ⏎ 
+r3336c9|to|43. ⏎ 
+r3379c9|to|1:55. ⏎ r3344c9|to|03. ⏎ r3333c1|su| ⏎ r3333c2||7 ⏎ r3333c5|tn|1:08.148 ⏎ r3333c6|ib|31.269 ⏎ r3333c7|in|31.269 ⏎ r3330c2||8 ⏎ r3330c9|to|1:03. ⏎ r3335c7|in|1:10.821 ⏎ r3338c9|to|2:12. ⏎ r3330|#|8 ⏎ r3333|*|55066| ⏎ r3333|#|7 ⏎ 
+r3336c9|to|44. ⏎ 
+r3379c9|to|1:56. ⏎ r3344c9|to|04. ⏎ 
+r3330c9|to|1:04. ⏎ r3338c9|to|2:13. ⏎ 
+r3336c9|to|45. ⏎ 
+r3379c9|to|1:57. ⏎ r3344c9|to|05. ⏎ 
+r3339c4|drteam|JON DEL VALLE [0:31] ⏎ r3342c4|drteam|DIEGO FUIZ [0:31] ⏎ r3334c4|drteam|JAVIER LLAVE [0:31] ⏎ r3337c4|drteam|ALEX CUBAS [0:31] ⏎ r3331c4|drteam|MATÍAS GARCÍA  [0:31] ⏎ r3341c4|drteam|CRISTIAN [0:31] ⏎ r3333c4|drteam|JAVIER SÁNCHEZ VAQUERIZO [0:31] ⏎ r3330c4|drteam|EDU KRYSTIA [0:00] ⏎ r3330c9|to|1:05. ⏎ r3335c4|drteam|ALFONSO SAGARRUY [0:31] ⏎ r3338c4|drteam|JORGE PARRA CORCHADO [0:01] ⏎ r3338c9|to|2:14. ⏎ r3379c4|drteam|JORGE IZCUE [0:01] ⏎ r3336c4|drteam|IVÁN RODRÍGUEZ [0:31] ⏎ r3343c4|drteam|RODRIGUEZ [0:31] ⏎ r3340c4|drteam|GUILLERMO PANIAGUA [0:21] ⏎ r3344c4|drteam|CARLOS MULHERN LÓPEZ-OLIVA [0:28] ⏎ r3332c4|drteam|CARLOS MORENO [0:03] ⏎ 
+r3336c9|to|46. ⏎ 
+r3379c9|to|1:58. ⏎ r3344c9|to|06. ⏎ 
+r3330c9|to|1:06. ⏎ r3338c9|to|2:15. ⏎ 
+r3340c1|sr| ⏎ r3340c5|tn|58.453 ⏎ r3340|*|54756| ⏎ 
+r3336c9|to|47. ⏎ 
+r3379c9|to|1:59. ⏎ r3344c9|to|07. ⏎ 
+r3330c9|to|1:07. ⏎ r3338c9|to|2:16. ⏎ 
+r3336c9|to|48. ⏎ 
+r3341c1|sr| ⏎ r3344c9|to|08. ⏎ r3338c9|to|2:17. ⏎ 
+r3379c9|to|2:00. ⏎ r3330c9|to|1:08. ⏎ 
+r3336c9|to|49. ⏎ 
+r3379c9|to|2:01. ⏎ r3344c9|to|09. ⏎ 
+r3330c9|to|1:09. ⏎ r3338c9|to|2:18. ⏎ 
+r3336c9|to|50. ⏎ 
+r3379c9|to|2:02. ⏎ r3344c9|to|10. ⏎ 
+r3330c9|to|1:10. ⏎ r3338c9|to|2:19. ⏎ 
+r3336c9|to|51. ⏎ 
+r3379c9|to|2:03. ⏎ r3344c9|to|11. ⏎ 
+r3330c9|to|1:11. ⏎ r3338c9|to|2:20. ⏎ 
+r3336c9|to|52. ⏎ 
+r3379c9|to|2:04. ⏎ r3344c9|to|12. ⏎ r3330c9|to|1:12. ⏎ 
+r3338c9|to|2:21. ⏎ 
+r3336c9|to|53. ⏎ 
+r3379c9|to|2:05. ⏎ r3344c9|to|13. ⏎ r3330c9|to|1:13. ⏎ r3338c9|to|2:22. ⏎ 
+r3336c9|to|54. ⏎ 
+r3331c1|sr| ⏎ r3331c5|tn|56.906 ⏎ r3331c6|ib|43.340 ⏎ r3331c7|in|13.688 ⏎ r3331|*|54311| ⏎ 
+r3379c9|to|2:06. ⏎ r3344c9|to|14. ⏎ r3330c9|to|1:14. ⏎ r3338c9|to|2:23. ⏎ 
+r3336c9|to|55. ⏎ 
+r3338c9|to|2:24. ⏎ r3379c9|to|2:07. ⏎ r3344c9|to|15. ⏎ 
+r3339c4|dr|NEO LEVELAP ⏎ r3342c4|dr|ESCUELADEKART.COM ⏎ r3334c4|dr|KARTING NOW ⏎ r3337c4|dr|CREATIA LTDL RACING ⏎ r3331c4|dr|LMKC SCUDERIA ⏎ r3341c4|dr|PDT RACING ⏎ r3333c4|dr|SKAT ⏎ r3330c4|dr|AD OVERDRIVE ⏎ r3330c9|to|1:15. ⏎ r3335c4|dr|ASR MOTORSPORT BLACK ⏎ r3338c4|dr|IMK ⏎ r3379c4|dr|KARTINGNOW ENDURANCE ⏎ r3336c4|dr|ASR MOTORSPORT WHITE ⏎ r3343c4|dr|LASAGRATEAM ⏎ r3340c4|dr|CKM FARMACIA ZENITH ⏎ r3344c4|dr|ASR MOTORSPORT GREY ⏎ r3332c4|dr|TARTARUGAS RC ⏎ 
+r3336c9|to|56. ⏎ 
+r3338c9|to|2:25. ⏎ r3379c9|to|2:08. ⏎ r3344c9|to|16. ⏎ dyn1|countdown|12511064 ⏎ 
+r3330c9|to|1:16. ⏎ 
+r3336c9|to|57. ⏎ 
+r3338c9|to|2:26. ⏎ r3379c9|to|2:09. ⏎ r3344c9|to|17. ⏎ r3330c9|to|1:17. ⏎ 
+r3336c9|to|58. ⏎ 
+r3379c9|to|2:10. ⏎ r3344c9|to|18. ⏎ r3330c9|to|1:18. ⏎ r3338c9|to|2:27. ⏎ 
+r3336c9|to|59. ⏎ 
+r3379c9|to|2:11. ⏎ 
+r3344c9|to|19. ⏎ r3330c9|to|1:19. ⏎ r3338c9|to|2:28. ⏎ 
+r3336c9|to|1:00. ⏎ 
+r3340c9|in|0:22 ⏎ 
+r3343c1|su| ⏎ r3343c2||10 ⏎ r3343c5|tn|1:01.257 ⏎ r3343c6|ib|2 Vueltas ⏎ r3343c7|in|55.804 ⏎ r3338c2||11 ⏎ r3338c6|ib| ⏎ r3379c2||12 ⏎ r3379c6|ib| ⏎ r3336c2||13 ⏎ r3336c6|ib| ⏎ r3338|#|11 ⏎ r3379|#|12 ⏎ r3336|#|13 ⏎ r3343|*|57470| ⏎ r3343|#|10 ⏎ r3379c9|to|2:12. ⏎ 
+r3344c9|to|20. ⏎ r3330c9|to|1:20. ⏎ r3338c9|to|2:29. ⏎ 
+r3336c9|to|1:01. ⏎ 
+r3379c9|to|2:13. ⏎ r3344c9|to|21. ⏎ r3330c9|to|1:21. ⏎ r3338c9|to|2:30. ⏎ 
+r3336c9|to|1:02. ⏎ 
+r3379c9|to|2:14. ⏎ r3344c9|to|22. ⏎ r3330c9|to|1:22. ⏎ r3338c9|to|2:31. ⏎ 
+r3336c9|to|1:03. ⏎ 
+r3379c9|to|2:15. ⏎ 
+r3344c9|to|23. ⏎ r3330c9|to|1:23. ⏎ r3338c9|to|2:32. ⏎ 
+r3336c9|to|1:04. ⏎ 
+r3338c1|so| ⏎ r3338|*out|0 ⏎ 
