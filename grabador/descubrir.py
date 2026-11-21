@@ -53,6 +53,19 @@ cabodomundokarting kartodromo-de-baltar kartodromo-braga kartodromo-de-leiria ka
 """.split()
 
 
+PT = re.compile(r'sess[aã]o|qualifica[cç][aã]o|bombarral|kartevora|estoril|baltar|viana|braga|cabo do mundo|cabodomundo|leiria|palmela|portim|algarve|famalic', re.I)
+ES = re.compile(r'carrera|clasificaci|entreno|manga|tanda|sesi[oó]n|campillos|alcarr|calafat|fortuna|ckrm|vendrell|sevilla|rivas|henakart|ariza|lucas guerrero|zuera|alca[nñ]iz|motorland|recas|jarama|cheste|madrid|valencia|barcelona|murcia|m[aá]laga|campeonato', re.I)
+
+
+def pais(c):
+    txt = ' '.join(str(c.get(k, '')) for k in ('slug', 'titulo_web', 'track', 'title1', 'title2'))
+    if PT.search(txt):
+        return 'PT'
+    if ES.search(txt) or (c.get('slug') and c['slug'] in BASE_SET):
+        return 'ES'
+    return ''
+
+
 def candidates():
     extra = ROOT / 'candidatos.txt'
     names = BASE + (extra.read_text().split() if extra.exists() else [])
@@ -158,7 +171,7 @@ def main():
             by_slug.append({'slug': c['slug'], 'port': c['port'], 'url': c.get('url', ''), 'titulo_web': c['nombre']})
 
     print('2) Recorriendo puertos del servidor de Apex…', flush=True)
-    ports = list(range(6003, 10000, 10))
+    ports = list(range(6003, 12000, 10))
     live = asyncio.run(scan_ports(ports))
 
     merged = {}
@@ -166,9 +179,26 @@ def main():
         merged[r['port']] = dict(r)
     for l in live:
         merged.setdefault(l['port'], {'port': l['port']}).update({k: v for k, v in l.items() if k != 'port'})
-    out = sorted(merged.values(), key=lambda x: x['port'])
     dest = ROOT / 'data' / 'circuitos_detectados.json'
     dest.parent.mkdir(exist_ok=True)
+    hoy = time.strftime('%Y-%m-%d')
+    try:
+        prev = {c['port']: c for c in json.loads(dest.read_text()).get('circuitos', [])}
+    except Exception:
+        prev = {}
+    for port, c in merged.items():
+        if c.get('title1') or c.get('title2') or c.get('track'):
+            c['visto'] = hoy
+        old = prev.get(port, {})
+        for k in ('slug', 'url', 'titulo_web', 'gmt', 'track', 'title1', 'title2', 'visto'):
+            if not c.get(k) and old.get(k):
+                c[k] = old[k]
+    for port, old in prev.items():
+        if port not in merged and (old.get('track') or old.get('slug')):
+            merged[port] = dict(old, vivo=False)
+    for c in merged.values():
+        c['pais'] = pais(c)
+    out = sorted(merged.values(), key=lambda x: x['port'])
     dest.write_text(json.dumps({'fecha': time.strftime('%Y-%m-%d %H:%M UTC', time.gmtime()), 'circuitos': out},
                                ensure_ascii=False, indent=1))
     print(f"Listo: {len(by_slug)} por nombre, {len(live)} canales en directo. Guardado en {dest}")

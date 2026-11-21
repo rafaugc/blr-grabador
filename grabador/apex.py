@@ -205,6 +205,14 @@ class ApexState:
         if not dtype:
             return
         row[dtype] = value
+        if dtype == 'int':
+            # el intervalo suele llegar justo después de la vuelta: se lo asignamos a esa vuelta
+            for l in reversed(self.laps[-40:]):
+                if l['row'] == rid:
+                    if ts - l['ts'] < 3:
+                        l['gap'] = parse_gap(value)
+                    break
+            return
         if dtype == 'llp':
             t = parse_time(value)
             if t is None:
