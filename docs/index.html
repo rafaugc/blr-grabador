@@ -2,7 +2,12 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0c0d10">
+<link rel="manifest" href="manifest.json">
 <title>BLR · En directo</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="core.js"></script>
@@ -43,8 +48,9 @@ iframe{width:100%;height:78vh;border:1px solid var(--line);border-radius:12px;ba
 .flash{animation:fl 1.2s}@keyframes fl{from{background:#2a2410}to{background:transparent}}
 .empty{padding:30px;text-align:center;color:var(--mute)}
 body.pilot header,body.pilot nav.tabs,body.pilot .foot{display:none}
-body.pilot .wrap{max-width:none;padding:6px}
-.pv{height:calc(100vh - 12px);height:calc(100dvh - 12px);display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1.05fr 1fr;gap:8px}
+body.pilot .wrap{max-width:none;padding:0}
+body.pilot{overflow:hidden;position:fixed;inset:0}
+.pv{width:var(--pw,100vw);height:var(--ph,100vh);box-sizing:border-box;padding:max(6px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1.05fr 1fr;gap:8px}
 .pv .bar{grid-column:1/3;display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--mute);font-size:clamp(11px,1.9vh,14px);padding:0 6px;flex-wrap:nowrap;overflow:hidden}
 .pv .fv{flex:1;min-height:0;min-width:0;display:flex;align-items:center;overflow:hidden}
 .pv .fv.c{justify-content:center;text-align:center}
@@ -69,7 +75,7 @@ body.pilot .wrap{max-width:none;padding:6px}
 .pv .posbig{font:700 clamp(40px,20vh,170px)/.9 'Barlow Condensed';color:var(--text)}
 .up{color:#3ddc84!important}.down{color:#ff5f5f!important}
 .kp{display:grid;grid-template-columns:repeat(3,64px);gap:8px;justify-content:center}.kp button{height:52px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;cursor:pointer}
-.ks{height:calc(100vh - 12px);height:calc(100dvh - 12px);display:grid;grid-template-columns:1fr 1.15fr;gap:12px}
+.ks{width:var(--pw,100vw);height:var(--ph,100vh);box-sizing:border-box;padding:max(6px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));display:grid;grid-template-columns:1fr 1.15fr;gap:12px}
 .ksl{display:flex;flex-direction:column;gap:1.2vh;justify-content:center;min-width:0}
 .kst{font:700 clamp(18px,6vh,34px) 'Barlow Condensed'}
 .ksv{font:700 clamp(48px,26vh,180px)/1 'Barlow Condensed';color:var(--accent)}
@@ -79,7 +85,13 @@ body.pilot .wrap{max-width:none;padding:6px}
 .kp2 button{border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font:600 clamp(22px,8vh,46px) Inter,sans-serif;cursor:pointer}
 .kp2 button:active{background:#2a2410}
 .xx2{width:44px;height:44px;border-radius:12px;border:2px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;cursor:pointer}
-.rot{display:none}@media (orientation:portrait){body.pilot .rot{display:block}}
+.rot{display:none}
+body.prot .pv,body.prot .ks{position:fixed;top:0;left:0;transform-origin:0 0}
+body.prot[data-rd="r"] .pv,body.prot[data-rd="r"] .ks{transform:translateX(var(--ph)) rotate(90deg)}
+body.prot[data-rd="l"] .pv,body.prot[data-rd="l"] .ks{transform:translateY(var(--pw)) rotate(-90deg)}
+.lockb{height:clamp(34px,8.5vh,54px);min-width:clamp(34px,8.5vh,54px);border-radius:12px;border:2px solid var(--line);background:var(--panel2);color:var(--mute);font-size:clamp(16px,4.2vh,26px);cursor:pointer;padding:0 8px}
+.lockb.on{border-color:#6b5a1a;background:#2a2410;color:var(--accent)}
+body.plock #chgK,body.plock #exitP{opacity:.25;pointer-events:none}@media (orientation:portrait){body.pilot .rot{display:block}}
 tr.click{cursor:pointer}tr.click:hover td{background:#171a20}
 .sub{display:flex;gap:4px;margin:10px 0;flex-wrap:wrap}.sub button{border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:5px 12px;cursor:pointer;color:var(--mute);font-size:13px}.sub button.on{color:var(--accent);border-color:#6b5a1a;background:#2a2410}
 .lt td{padding:5px 6px;font-size:12px}.lt .best{color:var(--purple);font-weight:600}.lt .sbest{background:#2a1f45}.lt .off{color:var(--dim);text-decoration:line-through}
@@ -553,7 +565,7 @@ function paceOf(rid) { const v = validLaps(rid).slice(-5); return v.length >= 2 
 const paceN = rid => Math.min(5, validLaps(rid).length);
 const fmtGap = v => { v = (v || '').trim(); if (!v) return '–'; if (/vuelta|lap|tour|v$/i.test(v)) { const n = v.match(/\d+/); return n ? '+' + n[0] + ' V' : v; } return v.replace('.', ','); };
 function pilotSetup(el) {
-  document.body.classList.add('pilot');
+  document.body.classList.add('pilot'); setTimeout(onViewport, 0);
   const onTrack = live ? [...new Set(Object.values(live.rows).filter(r => r.no).map(kartOf))].sort((a, b) => a - b) : [];
   let val = pilotKart || '';
   el.innerHTML = `<div class="ks">
@@ -592,7 +604,7 @@ function renderPilot(force) {
     <span style="display:flex;gap:10px;align-items:center;min-width:0"><button class="kbtn" id="chgK" title="Cambiar de kart">⇄ Kart ${esc(pilotKart)}</button>
       <span style="min-width:0"><div>${esc(C.nombre)}</div><div style="color:var(--text)">${esc([live?.title1, live?.title2].filter(Boolean).join(' – '))}${me && me[1].tlp ? ' · vuelta ' + esc(me[1].tlp) : ''}</div></span>
       ${fl ? `<span class="flag" style="background:${fl[1]};font-size:clamp(12px,2.6vh,18px)">${(t => t.charAt(0).toUpperCase() + t.slice(1))(fl[0].replace('Bandera ', ''))}</span>` : ''}</span>
-    <span style="display:flex;gap:12px;align-items:center"><span class="clock" id="pclk">${clockTxt.replace('Quedan ', '')}</span><button class="xx" id="exitP" title="Salir">✕</button></span></div>`;
+    <span style="display:flex;gap:12px;align-items:center"><span class="clock" id="pclk">${clockTxt.replace('Quedan ', '')}</span>${pilotLock ? '<button class="lockb" id="flipP" title="Girar 180°">⟲</button>' : ''}<button class="lockb ${pilotLock ? 'on' : ''}" id="lockP" title="${pilotLock ? 'Mantén pulsado para desbloquear' : 'Bloquear en horizontal'}">${pilotLock ? '🔒' : '🔓'}</button><button class="xx" id="exitP" title="Salir">✕</button></span></div>`;
   if (!me) {
     el.innerHTML = `<div class="pv">${head()}<div class="tile" style="grid-column:1/3;grid-row:2/4;align-items:center;text-align:center">
       <div class="mid">Esperando al kart ${esc(pilotKart)}…</div><div class="sub2" style="color:var(--mute);margin-top:8px">${live && live.ws && live.ws.readyState === 1 ? 'Aún no aparece en el live timing de Apex.' : 'Sin conexión con Apex. Reconectando…'}</div>
@@ -643,6 +655,26 @@ function renderPilot(force) {
   </div>`;
   bindPilot();
 }
+// ---- tamaño de pantalla, giro y bloqueo en horizontal ----
+let pilotLock = store.get('pilotLock', false), lockDir = store.get('lockDir', 'r');
+function curAngle() { const a = (screen.orientation && screen.orientation.angle) ?? window.orientation ?? 0; return ((+a % 360) + 360) % 360; }
+function applyViewport() {
+  const vv = window.visualViewport;
+  const w = Math.round(vv ? vv.width : innerWidth), h = Math.round(vv ? vv.height : innerHeight);
+  const portrait = h > w;
+  const rotate = pilotLock && portrait && document.body.classList.contains('pilot');
+  if (!portrait && pilotLock) { const a = curAngle(); if (a === 90) lockDir = 'r'; else if (a === 270) lockDir = 'l'; store.set('lockDir', lockDir); }
+  document.documentElement.style.setProperty('--pw', (rotate ? h : w) + 'px');
+  document.documentElement.style.setProperty('--ph', (rotate ? w : h) + 'px');
+  document.body.classList.toggle('prot', rotate);
+  document.body.dataset.rd = lockDir;
+  document.body.classList.toggle('plock', pilotLock && document.body.classList.contains('pilot'));
+}
+function onViewport() { applyViewport(); for (const t of [60, 250, 600, 1200]) setTimeout(() => { applyViewport(); if (pilotReady) renderPilot(); else if (document.body.classList.contains('pilot')) fitAll(); }, t); }
+window.addEventListener('orientationchange', onViewport);
+window.visualViewport?.addEventListener('resize', onViewport);
+screen.orientation?.addEventListener?.('change', onViewport);
+applyViewport();
 // ajusta cada texto al máximo tamaño que cabe en su hueco
 const fitCache = {};
 function fitAll() {
@@ -657,10 +689,22 @@ function fitAll() {
     sp.style.fontSize = lo + 'px'; fitCache[key] = lo;
   });
 }
-window.addEventListener('resize', () => { if (pilotReady) renderPilot(); });
+window.addEventListener('resize', onViewport);
 function bindPilot() {
-  fitAll();
-  const x = $('exitP'); if (x) x.onclick = () => { pilotReady = false; document.body.classList.remove('pilot'); try { document.exitFullscreen?.(); } catch {} try { wake?.release(); } catch {} document.querySelector('#tabs a[data-v=ranking]').click(); };
+  applyViewport(); fitAll();
+  const lk = $('lockP');
+  if (lk) {
+    let timer = null;
+    const toggle = async () => { pilotLock = !pilotLock; store.set('pilotLock', pilotLock); if (pilotLock) { try { await screen.orientation?.lock?.('landscape'); } catch {} } else { try { screen.orientation?.unlock?.(); } catch {} } onViewport(); renderPilot(); };
+    if (!pilotLock) lk.onclick = toggle;
+    else { // bloqueado: mantener pulsado 1 s para quitar el bloqueo (evita toques sin querer)
+      const down = e => { e.preventDefault(); timer = setTimeout(toggle, 900); lk.style.transform = 'scale(.92)'; };
+      const up = () => { clearTimeout(timer); lk.style.transform = ''; };
+      lk.onpointerdown = down; lk.onpointerup = up; lk.onpointerleave = up; lk.oncontextmenu = e => e.preventDefault();
+    }
+  }
+  const fp = $('flipP'); if (fp) fp.onclick = () => { lockDir = lockDir === 'r' ? 'l' : 'r'; store.set('lockDir', lockDir); applyViewport(); };
+  const x = $('exitP'); if (x) x.onclick = () => { pilotReady = false; document.body.classList.remove('pilot'); try { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } catch {} try { wake?.release(); } catch {} document.querySelector('#tabs a[data-v=ranking]').click(); };
   const k = $('chgK'); if (k) k.onclick = () => { pilotReady = false; pilotSetup($('pilotOut')); };
 }
 document.addEventListener('visibilitychange', async () => { if (document.visibilityState === 'visible' && document.body.classList.contains('pilot')) { try { wake = await navigator.wakeLock?.request('screen'); } catch {} } });

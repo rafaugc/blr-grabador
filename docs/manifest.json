@@ -1,0 +1,10 @@
+{
+ "name": "BLR en directo",
+ "short_name": "BLR",
+ "start_url": "./",
+ "display": "fullscreen",
+ "orientation": "landscape",
+ "background_color": "#0c0d10",
+ "theme_color": "#0c0d10",
+ "icons": []
+}
