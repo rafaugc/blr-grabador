@@ -848,3 +848,17 @@ dyn1|countdown|227983 ⏎
 r25c2|sr| ⏎ r25c6|tn|1:01.262 ⏎ r25c9|in|7 ⏎ r25|*|61262| ⏎ 
 r25c2|in| ⏎ 
 dyn1|countdown|197884 ⏎ 
+r24c2|sr| ⏎ r24c6|ti|1:09.577 ⏎ r24c7|ib|1:09.577 ⏎ r24c8|in|58.877 ⏎ r24c9|in|5 ⏎ r24|*|69577| ⏎ 
+r24c2|in| ⏎ 
+dyn1|countdown|167892 ⏎ 
+r25c2|sr| ⏎ 
+r25c6|tn|1:00.029 ⏎ r25c9|in|8 ⏎ r25|*|60029| ⏎ 
+r25c2|in| ⏎ 
+dyn1|countdown|137719 ⏎ 
+r24c2|sr| ⏎ 
+r24c6|ti|1:06.880 ⏎ r24c7|ib|1:06.880 ⏎ r24c8|in|56.180 ⏎ r24c9|in|6 ⏎ r24|*|66880| ⏎ 
+r24c2|in| ⏎ 
+dyn1|countdown|107715 ⏎ 
+r25c2|sr| ⏎ r25c6|tn|58.334 ⏎ r25c9|in|9 ⏎ r25|*|58334| ⏎ 
+r25c2|in| ⏎ 
+dyn1|countdown|77703 ⏎ 

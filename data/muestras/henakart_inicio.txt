@@ -845,3 +845,10 @@ r9791c13|in|1:13 ⏎
 r9791c8|in|122 ⏎ r9791c9|tn|35.766 ⏎ r9791c11|in|Vuelta 122 ⏎ r9789c1|in| ⏎ r9791|*|35727| ⏎ 
 light|lf| ⏎ com||<p><b>13:37</b><span data-flag="chequered"></span>Llegada</p> ⏎ 
 dyn1|text| ⏎ 
+r9789c1|sf| ⏎ 
+r9789c10|in|1 Vuelta ⏎ r9789c11|ib|1 Vuelta ⏎ 
+r9789c13|in|1:14 ⏎ 
+r9791c13|in|1:14 ⏎ 
+r9791c1|sf| ⏎ 
+r9789c13|in|1:15 ⏎ 
+r9791c13|in|1:15 ⏎ 
