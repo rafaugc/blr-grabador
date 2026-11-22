@@ -83,27 +83,62 @@ class Publisher:
             await asyncio.to_thread(publish_git)
 
 
+# Archivos que este grabador ha escrito y aún no ha subido: ruta -> contenido (None = borrado)
+MINE: dict = {}
+
+
+def write_mine(path: Path, text: str):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text)
+    MINE[str(path.relative_to(ROOT))] = text
+
+
+def remove_mine(path: Path):
+    if path.exists():
+        path.unlink()
+    MINE[str(path.relative_to(ROOT))] = None
+
+
+def _git(*args):
+    return subprocess.run(['git', *args], cwd=ROOT, capture_output=True, text=True)
+
+
 def publish_git():
-    cmds = [
-        ['git', 'pull', '-q', '--rebase', '-X', 'theirs'],
-        [sys.executable, '-m', 'grabador.unir'],
-        [sys.executable, '-m', 'grabador.indice'],
-        ["git", "add", "-A", "data/"],
-    ]
-    for c in cmds:
-        subprocess.run(c, cwd=ROOT, capture_output=True)
-    if subprocess.run(['git', 'diff', '--cached', '--quiet'], cwd=ROOT).returncode == 0:
-        return
-    subprocess.run(['git', 'commit', '-q', '-m', f"Sesiones {time.strftime('%Y-%m-%d %H:%M', time.gmtime())}"],
-                   cwd=ROOT, capture_output=True)
-    for _ in range(5):
-        r1 = subprocess.run(['git', 'pull', '-q', '--rebase', '-X', 'theirs'], cwd=ROOT, capture_output=True, text=True)
-        r2 = subprocess.run(['git', 'push', '-q'], cwd=ROOT, capture_output=True, text=True)
-        if r2.returncode == 0:
+    """Sube a GitHub sin poder atascarse aunque haya otro grabador a la vez:
+    parte siempre de la versión más reciente de GitHub y pone encima solo lo que ha escrito este grabador."""
+    snap = dict(MINE)
+    for attempt in range(6):
+        if _git('fetch', '-q', 'origin', 'main').returncode != 0:
+            time.sleep(5)
+            continue
+        _git('rebase', '--abort')
+        _git('merge', '--abort')
+        _git('reset', '-q', '--hard', 'origin/main')
+        for rel, text in snap.items():
+            p = ROOT / rel
+            if text is None:
+                if p.exists():
+                    p.unlink()
+            else:
+                p.parent.mkdir(parents=True, exist_ok=True)
+                p.write_text(text)
+        subprocess.run([sys.executable, '-m', 'grabador.unir'], cwd=ROOT, capture_output=True)
+        subprocess.run([sys.executable, '-m', 'grabador.indice'], cwd=ROOT, capture_output=True)
+        _git('add', '-A', 'data/')
+        if _git('diff', '--cached', '--quiet').returncode == 0:
+            break
+        _git('commit', '-q', '-m', f"Sesiones {time.strftime('%Y-%m-%d %H:%M', time.gmtime())}")
+        r = _git('push', '-q', 'origin', 'HEAD:main')
+        if r.returncode == 0:
             log('Subido a GitHub')
-            return
-        time.sleep(8)
-    log('No pude subir a GitHub ahora:', (r1.stderr + r2.stderr)[-300:])
+            break
+        time.sleep(4 + attempt * 3)
+    else:
+        log('No pude subir a GitHub ahora; lo reintento en la próxima subida')
+        return
+    for rel, text in snap.items():  # lo subido ya no está pendiente
+        if MINE.get(rel, object()) == text:
+            MINE.pop(rel, None)
 
 
 PUB: 'Publisher | None' = None
@@ -119,7 +154,7 @@ def save_live(state: ApexState, stats: dict):
     p = live_path(state.slug)
     if not state.laps:
         if p.exists():
-            p.unlink()
+            remove_mine(p)
             if PUB:
                 PUB.mark()
         return
@@ -128,8 +163,7 @@ def save_live(state: ApexState, stats: dict):
     stats['live_ts'] = time.time()
     s = state._build(partial=True)
     s['envivo'] = True
-    p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(s, ensure_ascii=False, separators=(',', ':')))
+    write_mine(p, json.dumps(s, ensure_ascii=False, separators=(',', ':')))
     if PUB:
         PUB.mark()
 
@@ -139,7 +173,7 @@ def sample_write(slug, msg, stats):
     d = ROOT / 'data' / 'muestras'
     if ('grid||' in msg or 'init|grid|' in msg) and not stats.get('muestra_grid'):
         d.mkdir(parents=True, exist_ok=True)
-        (d / f'{slug}_tabla.txt').write_text(msg[:200000])
+        write_mine(d / f'{slug}_tabla.txt', msg[:200000])
         stats['muestra_grid'] = True
     n = stats.get('muestra_n', 0)
     if n < 600:
@@ -147,6 +181,8 @@ def sample_write(slug, msg, stats):
         with open(d / f'{slug}_inicio.txt', 'w' if n == 0 else 'a') as f:
             f.write(msg[:20000].replace('\n', ' ⏎ ') + '\n')
         stats['muestra_n'] = n + 1
+        fp = d / f'{slug}_inicio.txt'
+        MINE[str(fp.relative_to(ROOT))] = fp.read_text()
 
 
 def save_sessions(state: ApexState, stats: dict):
@@ -156,11 +192,11 @@ def save_sessions(state: ApexState, stats: dict):
         d.mkdir(parents=True, exist_ok=True)
         path = d / f"{s['id']}.json"
         n = 2
-        while path.exists():
+        while path.exists() or str(path.relative_to(ROOT)) in MINE:
             path = d / f"{s['id']}-{n}.json"
             n += 1
         s['id'] = path.stem
-        path.write_text(json.dumps(s, ensure_ascii=False, separators=(',', ':')))
+        write_mine(path, json.dumps(s, ensure_ascii=False, separators=(',', ':')))
         stats['sesiones'] += 1
         if PUB:
             PUB.mark()
@@ -233,7 +269,7 @@ async def record(c: dict, deadline: float, stats: dict, raw_dir: Path):
         state.close_session(partial=True)
         save_sessions(state, stats)
         if live_path(slug).exists():
-            live_path(slug).unlink()
+            remove_mine(live_path(slug))
         raw.close()
 
 
@@ -303,7 +339,7 @@ async def main_async(minutes: float, only: list[str] | None):
         if not s.get('ultima_sesion'):
             s['ultima_sesion'] = prev.get('ultima_sesion')
         estado[slug] = s
-    estado_path.write_text(json.dumps(estado, ensure_ascii=False, indent=1))
+    write_mine(estado_path, json.dumps(estado, ensure_ascii=False, indent=1))
     if PUB and PUB.enabled:
         PUB.pending = True
         await PUB.maybe(force=True)

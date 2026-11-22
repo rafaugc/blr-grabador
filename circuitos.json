@@ -21,12 +21,26 @@
   "url": "https://www.apex-timing.com/live-timing/henakart/index.html"
  },
  {
+  "slug": "karting-cabanillas",
+  "nombre": "Karting Cabanillas",
+  "url": "https://live.apex-timing.com/karting-cabanillas/index.html",
+  "tz": "Europe/Madrid",
+  "grabar": true
+ },
+ {
   "slug": "karting-campillos",
   "nombre": "Karting Campillos",
   "tz": "Europe/Madrid",
   "grabar": true,
   "port": 9373,
   "port_fijo": true
+ },
+ {
+  "slug": "karting-los-santos",
+  "nombre": "Karting Los Santos",
+  "url": "https://www.apex-timing.com/live-timing/karting-lossantos/index.html",
+  "tz": "Europe/Madrid",
+  "grabar": true
  },
  {
   "slug": "karting-rivas",
