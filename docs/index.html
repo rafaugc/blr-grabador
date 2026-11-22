@@ -11,6 +11,8 @@
 <title>BLR · En directo</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="core.js"></script>
+<script src="ingeniero.js"></script>
+<script src="ingeniero-ui.js"></script>
 <style>
 :root{--bg:#0c0d10;--panel:#14161b;--panel2:#1b1e25;--line:#262a33;--text:#e9ebf0;--mute:#8a909c;--dim:#5d636e;--fast:#3ddc84;--good:#a6e36a;--slow:#ffa24c;--vslow:#ff5f5f;--purple:#b38cff;--accent:#ffd23f}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,system-ui,sans-serif}
@@ -141,6 +143,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#171a20}
   <div class="mini foot" style="margin-top:8px">Datos: grabador automático (sesiones terminadas) + conexión directa con Apex (sesión en curso). Se actualiza solo.</div>
 </div>
 
+<div class="modal" id="kmodal" hidden><div class="box" id="kmbox"></div></div>
 <script>
 (() => {
 const REPO = 'rafaugc/blr-grabador';
@@ -164,6 +167,10 @@ let ALLDAYS = [];       // días con datos
 const excluded = new Set(); // sesiones quitadas a mano de la selección
 let clock = null;       // cuenta atrás de la sesión en directo
 let openSes = null, subTab = 'clas';
+const openTeams = new Set(), openDetTeams = new Set();
+document.head.insertAdjacentHTML('beforeend', '<style>' + IngUI.CSS + '</style>');
+$('kmodal').onclick = e => { if (e.target.id === 'kmodal' || e.target.closest('[data-close]')) $('kmodal').hidden = true; };
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $('kmodal').hidden = true; });
 const opts = { method: 'model', noTraffic: false, cutPct: 3 };
 
 // ---------- pestañas ----------
@@ -355,7 +362,7 @@ function cell(rid, col, val, ts, cls) {
   const row = live.rows[rid] = live.rows[rid] || {}, type = live.cols[col];
   if (!type) return;
   row[type] = val; row['_' + type] = ts;
-  if (type === 'sta') { row.sta_cls = cls; return; }
+  if (type === 'sta') { if (cls === 'si' && row.sta_cls !== 'si' && (!row.pitIns || ts - row.pitIns[row.pitIns.length - 1] > 30000)) (row.pitIns = row.pitIns || []).push(ts); row.sta_cls = cls; return; }
   if (type === 'dr') { setName(row, val, teamCol() || cls === 'drteam'); const m = (val || '').match(STINT); if (m) row.stint = m[2]; return; }
   if (type === 'int') { for (let i = live.laps.length - 1; i >= Math.max(0, live.laps.length - 40); i--) if (live.laps[i].row === rid) { if (ts - live.laps[i].ts < 3000) live.laps[i].gap = parseG(val); break; } return; }
   if (type !== 'llp') return;
@@ -430,21 +437,41 @@ function renderRanking(ses) {
   if (opts.method === 'driver' && A && !A.karts.length) { el.innerHTML = `<div class="card empty">"Vs. su media" compara a cada piloto consigo mismo con karts distintos, y en esta selección <b>ningún piloto ha llevado más de un kart</b>. Usa "Modelo", o añade días en los que hayan repetido pilotos.</div>`; return; }
   if (!A || !A.karts.length) { el.innerHTML = `<div class="card empty">No hay vueltas en la selección (${daysLabel()}) en ${esc(C.nombre)}. En cuanto ruede alguna sesión aparecerá aquí.</div>`; return; }
   const ks = A.karts, rel = ks.filter(k => conf(k.se, k.drivers)[0] !== 'baja');
+  const dayBest = Math.min(...ks.map(k => k.best));
   const pool = rel.length >= 3 ? rel : ks, best = pool.slice(0, 3), worst = pool.slice(-3).reverse().filter(k => !best.includes(k));
   const bk = k => { const [c] = tier(k.effect); return `<div class="bk"><b class="${c}">${k.kart}</b><span class="num ${c}">${fmt(k.effect)} s</span></div>`; };
   el.innerHTML = `<div class="summary"><div class="card"><h4>Pide estos karts</h4><div class="bigk">${best.map(bk).join('')}</div></div>
     <div class="card"><h4>Evita estos karts</h4><div class="bigk">${worst.map(bk).join('')}</div></div></div>
   <div class="card scroll"><div class="mini" style="margin-bottom:6px">${daysLabel()} · ${ses.length} sesiones · ${A.stints.length} tandas. Segundos por vuelta frente a un kart medio (negativo = más rápido).</div>
-  <table><thead><tr><th class="l">#</th><th style="text-align:center">Kart</th><th>Ventaja</th><th class="hm">±</th><th>Fiabilidad</th><th class="hm">Tandas</th><th class="hm">Pilotos</th><th>Mejor vuelta</th><th class="l hm">Lo llevaron</th></tr></thead><tbody>
+  <table><thead><tr><th class="l">#</th><th style="text-align:center">Kart</th><th class="l">Clase</th><th>Ventaja</th><th class="hm">±</th><th>Fiabilidad</th><th class="hm">Tandas</th><th class="hm">Pilotos</th><th>Mejor vuelta</th><th class="l hm">Lo llevaron</th></tr></thead><tbody>
   ${ks.map((k, i) => { const [c] = tier(k.effect), [cc, cl] = conf(k.se, k.drivers);
-    return `<tr><td class="l mini">${i + 1}</td><td class="k ${c}">${k.kart}</td><td class="num ${c}">${fmt(k.effect)} s</td><td class="num hm mini">${k.se.toFixed(2).replace('.', ',')}</td>
-    <td><span class="badge ${cc}">${cl}</span></td><td class="num hm">${k.n}</td><td class="num hm">${k.drivers}</td><td class="num purple">${fmtT(k.best)}</td><td class="l hm mini" style="max-width:260px;overflow:hidden;text-overflow:ellipsis">${esc(k.luckyDrivers.join(', '))}</td></tr>`; }).join('')}
-  </tbody></table></div>`;
+    k.qcls = IngUI.quintile(i, ks.length);
+    const vd = (k.stints.find(t => t.best === k.best) || {}).driver, others = k.luckyDrivers.filter(d => d !== vd);
+    return `<tr class="click" data-k="${esc(k.kart)}"><td class="l mini">${i + 1}</td><td class="k ${c}">${k.kart}</td><td class="l">${IngUI.badge(k.qcls)}</td><td class="num ${c}">${fmt(k.effect)} s</td><td class="num hm mini">${k.se.toFixed(2).replace('.', ',')}</td>
+    <td><span class="badge ${cc}">${cl}</span></td><td class="num hm">${k.n}</td><td class="num hm">${k.drivers}</td><td class="num ${k.best === dayBest ? 'purple' : ''}">${fmtT(k.best)}</td><td class="l hm mini" style="max-width:260px;overflow:hidden;text-overflow:ellipsis"><span class="purple">${esc(vd || '')}</span>${others.length ? ', ' + esc(others.join(', ')) : ''}</td></tr>`; }).join('')}
+  </tbody></table>
+  <div class="mini" style="margin-top:6px"><span class="purple">Morado</span>: en “Mejor vuelta” solo la VR del día; en “Lo llevaron”, quien hizo la VR con ese kart · Clase por quintiles: Pepino, Bueno, Medio, Malo, Cepo · Pulsa un kart para ver el detalle.</div></div>`;
+  el.querySelectorAll('tr[data-k]').forEach(tr => tr.onclick = () => {
+    const k = ks.find(x => String(x.kart) === tr.dataset.k); if (!k) return;
+    $('kmbox').innerHTML = IngUI.kartPopup(k, A, ses, null, tier(k.effect)[0]); $('kmodal').hidden = false;
+  });
 }
 const FLAGS = { lg: ['Bandera verde', '#1f7a3a'], ly: ['Bandera amarilla', '#b58b00'], lr: ['Bandera roja', '#b3261e'], lf: ['Bandera a cuadros', '#444'], lc: ['Bandera a cuadros', '#444'], ls: ['Safety car', '#b58b00'] };
 const STA = { si: '⬇ entra a boxes', so: '⬆ sale de boxes', su: '▲', sd: '▼', sf: '🏁' };
 function fmtClock(ms) { if (ms < 0) ms = 0; const t = Math.round(ms / 1000), h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), x = t % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0'); }
 setInterval(() => { const pc = document.getElementById('pclk'); if (pc && live && live.dyn && live.dyn.type === 'countdown') pc.textContent = fmtClock(+live.dyn.val - (Date.now() - live.dyn.at)); const el = document.getElementById('clk'); if (el && live && live.dyn && live.dyn.type === 'countdown') el.textContent = fmtClock(+live.dyn.val - (Date.now() - live.dyn.at)); }, 1000);
+const avg = a => a.reduce((x, y) => x + y, 0) / (a.length || 1);
+// desglose por piloto de un equipo en directo
+function teamSub(rid, r, span, allPace) {
+  const ls = lapsOf(rid);
+  const laps = ls.map(l => ({ t: l.t, ts: l.ts / 1000, driver: (l.driver || '').replace(/^\d{1,3}\s*-\s*/, '').toUpperCase() || '(antes de abrir la página)' }));
+  let pits = (r.pitIns || []).map(x => x / 1000);
+  if (!pits.length) for (let i = 1; i < ls.length; i++) if (ls[i].pits !== '' && ls[i - 1].pits !== '' && ls[i].pits != null && String(ls[i].pits) !== String(ls[i - 1].pits)) pits.push(ls[i - 1].ts / 1000);
+  const head = `<tr><th></th><th class="l" colspan="2">Piloto</th><th>Conducido</th><th>Vueltas</th><th>VR</th><th>Ritmo 3v</th><th>Ritmo 5v</th><th>Mejor 3v</th><th>Mejor 5v</th><th>Pos. ritmo</th><th>Relevos</th></tr>`;
+  const cur = (r.driver || '').toUpperCase();
+  return `<tr class="sub-row"><td colspan="${span}" style="padding:0 0 8px 24px"><table>${head}${IngUI.driverRows(laps, Date.now() / 1000, pits, cur, 0, allPace)}</table>
+    <div class="mini" style="padding:4px 8px">${pits.length ? `Paradas: ${pits.length} · última hace ${Ingeniero.clockFmt(Date.now() / 1000 - pits[pits.length - 1])}` : 'Sin paradas vistas desde que abriste la página'}${r.stint ? ' · relevo según Apex ' + esc(r.stint) : ''}</div></td></tr>`;
+}
 function renderPista() {
   const el = $('pistaOut');
   if (!live || !Object.keys(live.rows).length) { el.innerHTML = `<div class="card empty">${live && live.ws && live.ws.readyState === 1 ? 'Conectado. Ahora mismo no hay nadie en pista.' : 'Sin conexión directa con Apex en este momento. Usa la pestaña "Live timing de Apex".'}</div>`; return; }
@@ -456,21 +483,32 @@ function renderPista() {
   const dyn = live.dyn ? (live.dyn.type === 'countdown' ? `⏱ Quedan <b id="clk" class="num">${fmtClock(+live.dyn.val - (Date.now() - live.dyn.at))}</b>` : `⏱ ${esc(live.dyn.val)}`) : '';
   const coms = []; (live.com || '').replace(/<p><b>([^<]*)<\/b>(.*?)<\/p>/g, (_, h, t) => { coms.push([h, t.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()]); });
   const left = l => ['dr', 'no'].includes(l);
+  // ritmo de las últimas 3 y 5 vueltas válidas y puesto por ritmo
+  const pace = {};
+  rows.forEach(([rid]) => { const v = validLaps(rid); pace[rid] = { p3: v.length >= 2 ? avg(v.slice(-3)) : null, p5: v.length >= 2 ? avg(v.slice(-5)) : null }; });
+  const ord = rows.map(([rid]) => rid).filter(rid => pace[rid].p5 != null).sort((a, b) => pace[a].p5 - pace[b].p5);
+  ord.forEach((rid, i) => pace[rid].rank = i + 1);
+  const allPace = [];
+  { const by = {}; live.laps.forEach(l => (by[l.row + '|' + l.driver] = by[l.row + '|' + l.driver] || []).push(l.t)); Object.values(by).forEach(ls => { const b = Ingeniero.bestN(ls, 5); if (b) allPace.push(b); }); }
   el.innerHTML = `<div class="card scroll">
     <div class="row" style="margin-bottom:8px"><b style="font:700 20px 'Barlow Condensed'">${esc([live.title1, live.title2].filter(Boolean).join(' – ') || 'Sesión actual')}</b>
       ${fl ? `<span class="flag" style="background:${fl[1]}">${fl[0]}</span>` : ''}<span>${dyn}</span><span class="mini">${esc(live.track || '')}</span></div>
-    <table><thead><tr>${cols.map(([i, t]) => `<th class="${left(t) ? 'l' : ''}">${t === 'sta' ? '' : esc(live.titles?.[i] || t)}</th>`).join('')}<th>Kart hoy</th></tr></thead><tbody>
-    ${rows.map(([rid, r]) => { const k = keff[String(+String(r.no).replace(/\D/g, '') || r.no)]; const [c] = k ? tier(k.effect) : [''];
+    <table><thead><tr>${cols.map(([i, t]) => `<th class="${left(t) ? 'l' : ''}">${t === 'sta' ? '' : esc(live.titles?.[i] || t)}</th>`).join('')}<th>Ritmo 3v</th><th>Ritmo 5v</th><th>Pos. ritmo</th><th>Kart hoy</th></tr></thead><tbody>
+    ${rows.map(([rid, r]) => {
+      const pc = pace[rid] || {}, isTeam = !!r.team, open = isTeam && openTeams.has(rid); const k = keff[String(+String(r.no).replace(/\D/g, '') || r.no)]; const [c] = k ? tier(k.effect) : [''];
       const fresh = Date.now() - (r._llp || 0) < 4000;
-      return `<tr class="${fresh ? 'flash' : ''}">${cols.map(([, t]) => {
+      return `<tr class="${fresh ? 'flash' : ''} ${isTeam ? 'team' : ''} ${open ? 'open' : ''}" data-rid="${rid}">${cols.map(([, t]) => {
         if (t === 'sta') return `<td class="l mini">${STA[r.sta_cls] || ''}</td>`;
         if (t === 'no') return `<td class="k ${c}">${esc(r.no || '')}</td>`;
         if (t === 'dr') return `<td class="l">${esc(r.driver || r.dr || '')}${r.team ? `<div class="mini">${esc(r.team)}${r.stint ? ' · relevo ' + esc(r.stint) : ''}</div>` : ''}</td>`;
         return `<td class="num ${t === 'blp' ? 'purple' : ''}">${esc(r[t] || '')}</td>`; }).join('')}
-        <td class="num ${c}">${k ? fmt(k.effect) + ' s' : '–'}</td></tr>`; }).join('')}
+        <td class="num">${fmtT(pc.p3)}</td><td class="num">${fmtT(pc.p5)}</td><td class="num">${pc.rank ? pc.rank + 'º' : '–'}</td>
+        <td class="num ${c}">${k ? fmt(k.effect) + ' s' : '–'}</td></tr>${open ? teamSub(rid, r, cols.length + 4, allPace) : ''}`; }).join('')}
     </tbody></table>
+    ${rows.some(([, r]) => r.team) ? '<div class="mini" style="margin-top:6px">Carrera por equipos: pulsa un equipo para ver el tiempo conducido, la VR y el ritmo de cada piloto.</div>' : ''}
     ${coms.length ? `<div style="margin-top:10px"><h4>Dirección de carrera</h4>${coms.slice(0, 8).map(([h, t]) => `<div class="mini"><b>${esc(h)}</b> ${esc(t)}</div>`).join('')}</div>` : ''}
   </div>`;
+  el.querySelectorAll('tr.team').forEach(tr => tr.onclick = () => { const id = tr.dataset.rid; openTeams.has(id) ? openTeams.delete(id) : openTeams.add(id); renderPista(); });
 }
 function renderSes(ses) {
   const el = $('sesOut');
@@ -486,7 +524,9 @@ function renderDetail(el, s) {
   const st = s.stints.slice().sort((a, b) => (a.pos ?? 99) - (b.pos ?? 99));
   const allLaps = st.flatMap(t => t.laps), sbest = Math.min(...allLaps);
   const keff = {}; (A ? A.karts : []).forEach(k => keff[String(k.kart)] = k.effect);
-  const tabs = [['clas', 'Clasificación'], ['vueltas', 'Vuelta a vuelta'], ['pos', 'Posiciones'], ['karts', 'Karts'], ['com', 'Comentarios']];
+  const hasTeams = st.some(t => t.team);
+  const tabs = [['clas', 'Clasificación']].concat(hasTeams ? [['equipos', 'Equipos y pilotos']] : [], [['vueltas', 'Vuelta a vuelta'], ['pos', 'Posiciones'], ['karts', 'Karts'], ['com', 'Comentarios']]);
+  if (subTab === 'equipos' && !hasTeams) subTab = 'clas';
   const mean = a => a.reduce((x, y) => x + y, 0) / a.length;
   let body = '';
   if (subTab === 'clas') {
@@ -498,6 +538,15 @@ function renderDetail(el, s) {
       body = `<table><thead><tr><th class="l">Pos</th><th style="text-align:center">Kart</th><th class="l">Piloto</th><th>Vueltas</th><th>Mejor</th><th>Media 5 mejores</th><th>Última</th></tr></thead><tbody>
       ${st.map(t => { const so = t.laps.slice().sort((a, b) => a - b); return `<tr><td class="l">${t.pos ?? ''}</td><td class="k">${esc(t.kart)}</td><td class="l">${esc(t.driver)}${t.team ? `<div class="mini">${esc(t.team)}</div>` : ''}</td><td class="num">${t.laps.length}</td><td class="num ${so[0] === sbest ? 'purple' : ''}">${fmtT(so[0])}</td><td class="num">${fmtT(mean(so.slice(0, 5)))}</td><td class="num">${fmtT(t.laps[t.laps.length - 1])}</td></tr>`; }).join('')}</tbody></table>`;
     }
+  } else if (subTab === 'equipos') {
+    const T = {}; st.forEach(t => { const k = t.team || t.driver; (T[k] = T[k] || { team: k, kart: t.kart, pos: t.pos, stints: [] }).stints.push(t); if (t.pos != null && (T[k].pos == null || t.pos < T[k].pos)) T[k].pos = t.pos; });
+    const allPace = st.map(t => Ingeniero.bestN(t.laps, 5)).filter(Boolean);
+    body = `<table><thead><tr><th class="l">Pos</th><th style="text-align:center">Kart</th><th class="l">Equipo</th><th>Pilotos</th><th>Vueltas</th><th>Conducido</th><th>Mejor</th><th>Mejor 5v</th></tr></thead><tbody>
+    ${Object.values(T).sort((a, b) => (a.pos ?? 99) - (b.pos ?? 99)).map(g => { const laps = g.stints.flatMap(t => t.laps), best = Math.min(...laps), open = openDetTeams.has(g.team);
+      return `<tr class="team ${open ? 'open' : ''}" data-team="${esc(g.team)}"><td class="l">${g.pos ?? ''}</td><td class="k">${esc(g.kart)}</td><td class="l"><b>${esc(g.team)}</b></td><td class="num">${g.stints.length}</td><td class="num">${laps.length}</td><td class="num">${Ingeniero.clockFmt(laps.reduce((a, b) => a + b, 0))}</td><td class="num ${best === sbest ? 'purple' : ''}">${fmtT(best)}</td><td class="num">${fmtT(Math.min(...g.stints.map(t => Ingeniero.bestN(t.laps, 5) ?? Infinity)))}</td></tr>
+      ${open ? `<tr class="sub-row"><td colspan="8" style="padding:0 0 8px 24px"><table><tr><th class="l">Piloto</th><th>Conducido</th><th>Vueltas</th><th>VR</th><th>Mejor 3v</th><th>Mejor 5v</th><th>Media</th><th>Pos. ritmo</th></tr>
+        ${g.stints.slice().sort((a, b) => b.laps.length - a.laps.length).map(t => { const b5 = Ingeniero.bestN(t.laps, 5); return `<tr><td class="l">${esc(t.driver)}</td><td class="num">${Ingeniero.clockFmt(t.laps.reduce((a, b) => a + b, 0))}</td><td class="num">${t.laps.length}</td><td class="num purple">${fmtT(Math.min(...t.laps))}</td><td class="num">${fmtT(Ingeniero.bestN(t.laps, 3))}</td><td class="num">${fmtT(b5)}</td><td class="num">${fmtT(mean(t.laps))}</td><td class="num">${b5 ? allPace.filter(x => x < b5 - 1e-9).length + 1 + 'º' : '–'}</td></tr>`; }).join('')}</table></td></tr>` : ''}`; }).join('')}</tbody></table>
+    <div class="mini" style="margin-top:6px">Pulsa un equipo para ver a sus pilotos. Si Apex solo daba el nombre del equipo (sin cambio de piloto), aparece una sola línea.</div>`;
   } else if (subTab === 'vueltas') {
     const n = Math.max(...st.map(t => t.laps.length));
     body = `<table class="lt"><thead><tr><th class="l">Piloto</th><th>Kart</th>${Array.from({ length: n }, (_, i) => `<th>${i + 1}</th>`).join('')}<th>Mejor</th><th>Media</th></tr></thead><tbody>
@@ -528,6 +577,7 @@ function renderDetail(el, s) {
   $('back').onclick = () => { openSes = null; renderSes(sessionsToday()); };
   $('askS').onclick = () => askClaude(s);
   el.querySelectorAll('.sub button').forEach(b => b.onclick = () => { subTab = b.dataset.t; renderDetail(el, s); });
+  el.querySelectorAll('tr.team[data-team]').forEach(tr => tr.onclick = () => { const k = tr.dataset.team; openDetTeams.has(k) ? openDetTeams.delete(k) : openDetTeams.add(k); renderDetail(el, s); });
 }
 // ================= VISTA PILOTO =================
 let pilotKart = store.get('pilotKart', '');
