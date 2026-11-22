@@ -1117,3 +1117,23 @@ r33c2|in| ⏎
 r32c2|in| ⏎ 
 r34c2|in| ⏎ 
 dyn1|countdown|382919 ⏎ 
+dyn1|countdown|352868 ⏎ 
+r32c2|sr| ⏎ 
+r32c6|tn|1:01.387 ⏎ r32c9|in|4 ⏎ r32|*|58751| ⏎ 
+r33c2|sr| ⏎ 
+r33c6|tn|1:02.542 ⏎ r33c9|in|4 ⏎ r33|*|60145| ⏎ 
+r34c2|sr| ⏎ r34c6|ti|1:02.328 ⏎ r34c7|ib|1:02.328 ⏎ r34c8|in|3.577 ⏎ r34c9|in|3 ⏎ r34|*|62328| ⏎ 
+r32c2|in| ⏎ 
+r33c2|in| ⏎ 
+r34c2|in| ⏎ 
+dyn1|countdown|322698 ⏎ 
+dyn1|countdown|292672 ⏎ 
+r33c1|gf| ⏎ 
+r33c2|su| ⏎ r33c3||1 ⏎ r33c6|tb|57.756 ⏎ r33c7|ib|57.756 ⏎ r33c8|in| ⏎ r33c9|in|5 ⏎ r32c1|gl| ⏎ r32c3||2 ⏎ r32c8|in|0.995 ⏎ r34c8|in|4.572 ⏎ r32|#|2 ⏎ r33|*|57756| ⏎ r33|#|1 ⏎ 
+r32c2|sr| ⏎ r32c6|tn|1:02.329 ⏎ r32c9|in|5 ⏎ r32|*|60079| ⏎ 
+r34c2|sr| ⏎ 
+r34c6|ti|1:01.961 ⏎ r34c7|ib|1:01.961 ⏎ r34c8|in|4.205 ⏎ r34c9|in|4 ⏎ r34|*|61961| ⏎ 
+r33c2|in| ⏎ 
+r32c2|in| ⏎ 
+r34c2|in| ⏎ 
+dyn1|countdown|262567 ⏎ 
