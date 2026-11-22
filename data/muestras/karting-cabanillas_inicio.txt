@@ -253,3 +253,39 @@ init|p| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#FF8000 !important; color
  ⏎ 
  ⏎ 
  ⏎ 
+ ⏎ 
+light|lg| ⏎ com||<p><b>10:39</b><span data-flag="green"></span>Start</p> ⏎ r2396c2|sr| ⏎ r2396|*|| ⏎ dyn1|countdown|120353 ⏎ 
+r2395c2|sr| ⏎ r2395|*|| ⏎ 
+r2425c2|sr| ⏎ 
+r2425|*|| ⏎ 
+r2325c2|sr| ⏎ r2325|*|| ⏎ 
+r2377c2|sr| ⏎ r2377|*|| ⏎ 
+r2396c2|in| ⏎ 
+r2324c2|sr| ⏎ r2388c2|sr| ⏎ r2324|*|| ⏎ r2388|*|| ⏎ 
+r2326c2|sr| ⏎ 
+r2326|*|| ⏎ 
+r2395c2|in| ⏎ r2327c2|sr| ⏎ 
+r2327|*|| ⏎ 
+r2425c2|in| ⏎ 
+r2325c2|in| ⏎ 
+r2421c2|sr| ⏎ r2421|*|| ⏎ 
+r2418c2|sr| ⏎ r2418|*|| ⏎ 
+r2404c2|sr| ⏎ 
+r2404|*|| ⏎ r2409c2|sr| ⏎ r2409|*|| ⏎ 
+r2321c2|sr| ⏎ r2321|*|| ⏎ 
+r2377c2|in| ⏎ 
+r2324c2|in| ⏎ 
+r2388c2|in| ⏎ r2319c2|sr| ⏎ r2355c2|sr| ⏎ r2319|*|| ⏎ r2355|*|| ⏎ 
+r2323c2|sr| ⏎ 
+r2326c2|in| ⏎ r2323|*|| ⏎ 
+r2327c2|in| ⏎ 
+r2320c2|sr| ⏎ r2421c2|in| ⏎ r2320|*|| ⏎ 
+r2418c2|in| ⏎ 
+r2404c2|in| ⏎ r2409c2|in| ⏎ 
+r2322c2|sr| ⏎ r2322|*|| ⏎ 
+r2321c2|in| ⏎ 
+r2319c2|in| ⏎ 
+r2355c2|in| ⏎ 
+dyn1|countdown|90351 ⏎ r2323c2|in| ⏎ 
+r2320c2|in| ⏎ 
+r2322c2|in| ⏎ 
