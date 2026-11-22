@@ -215,3 +215,31 @@ dyn1|countdown|25842 ⏎
 r6c2|in| ⏎ 
 r8c2|in| ⏎ 
 r1c2|sr| ⏎ r1c6|ti|50.315 ⏎ r1c7|ib|50.315 ⏎ r1c8|in|0.765 ⏎ r1c9|in|11 ⏎ r1|*|50315| ⏎ 
+r10c2|sr| ⏎ 
+r10c6|ti|49.628 ⏎ r10c7|ib|49.628 ⏎ r10c8|in|0.078 ⏎ r10c9|in|11 ⏎ r10|*|49628| ⏎ 
+r9c2|su| ⏎ r9c3||3 ⏎ r9c6|ti|49.773 ⏎ r9c7|ib|49.773 ⏎ r9c8|in|0.223 ⏎ r9c9|in|11 ⏎ r8c3||4 ⏎ r9|*|49773| ⏎ r9|#|3 ⏎ r8|#|4 ⏎ 
+r7c2|su| ⏎ r7c3||4 ⏎ r7c6|ti|49.887 ⏎ r7c7|ib|49.887 ⏎ r7c8|in|0.337 ⏎ r7c9|in|11 ⏎ r8c3||5 ⏎ r8|#|5 ⏎ r7|*|49887| ⏎ r7|#|4 ⏎ 
+r5c1|gm| ⏎ r5c2|su| ⏎ r5c3||7 ⏎ r5c6|ti|50.398 ⏎ r5c7|ib|50.398 ⏎ r5c8|in|0.848 ⏎ r5c9|in|11 ⏎ r4c1|gl| ⏎ r4c2|sr| ⏎ r4c3||8 ⏎ r4c6|tn|50.945 ⏎ r4c9|in|11 ⏎ r4|*|50810| ⏎ r4|#|8 ⏎ r5|*|50398| ⏎ r5|#|7 ⏎ 
+r1c2|in| ⏎ 
+r10c2|in| ⏎ 
+r9c2|in| ⏎ 
+r7c2|in| ⏎ 
+light|lf| ⏎ com||<p><b>10:26</b><span data-flag="chequered"></span>Llegada</p> ⏎ dyn1|text| ⏎ 
+r3c2|sf| ⏎ 
+r3c6|ti|51.631 ⏎ r3c7|ib|51.631 ⏎ r3c8|in|2.081 ⏎ r3c9|in|11 ⏎ r3|*|| ⏎ 
+r5c2|in| ⏎ r4c2|in| ⏎ 
+r2c2|sf| ⏎ 
+r2c6|tn|49.694 ⏎ r2c9|in|12 ⏎ r2|*|| ⏎ 
+r6c2|sf| ⏎ r6c6|tn|51.289 ⏎ r6c9|in|11 ⏎ r6|*|| ⏎ 
+r8c2|sf| ⏎ 
+r8c6|tn|50.113 ⏎ r8c9|in|12 ⏎ r8|*|| ⏎ 
+r1c2|sf| ⏎ r1c3||5 ⏎ r1c6|ti|49.887 ⏎ r1c7|ib|49.887 ⏎ r1c8|in|0.337 ⏎ r1c9|in|12 ⏎ r8c3||6 ⏎ r1|*|| ⏎ r1|#|5 ⏎ r8|#|6 ⏎ 
+r10c2|sf| ⏎ r10c6|tn|49.802 ⏎ r10c9|in|12 ⏎ r10|*|| ⏎ 
+r9c2|sf| ⏎ r9c3||2 ⏎ r9c6|ti|49.559 ⏎ r9c7|ib|49.559 ⏎ r9c8|in|0.009 ⏎ r9c9|in|12 ⏎ r10c3||3 ⏎ r9|*|| ⏎ r9|#|2 ⏎ r10|#|3 ⏎ 
+r7c2|sf| ⏎ 
+r7c6|tn|50.074 ⏎ r7c9|in|12 ⏎ r7|*|| ⏎ 
+r5c2|sf| ⏎ 
+r5c3||6 ⏎ r5c6|ti|49.887 ⏎ r5c7|ib|49.887 ⏎ r5c8|in|0.337 ⏎ r5c9|in|12 ⏎ r8c3||7 ⏎ r8|#|7 ⏎ r5|*|| ⏎ r5|#|6 ⏎ 
+r4c2|sf| ⏎ 
+r4c6|tn|50.885 ⏎ r4c9|in|12 ⏎ r4|*|| ⏎ 
+ ⏎ 
