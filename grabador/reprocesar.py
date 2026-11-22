@@ -43,6 +43,7 @@ def main():
     ap.add_argument('raw_dir')
     ap.add_argument('--circuitos', nargs='*', default=[])
     ap.add_argument('--volcar', nargs=3, metavar=('SLUG', 'DESDE', 'HASTA'))
+    ap.add_argument('--reemplazar', action='store_true', help='sustituir sesiones ya guardadas por la versión reprocesada')
     a = ap.parse_args()
     circuits = {c['slug']: c for c in json.loads((ROOT / 'circuitos.json').read_text())}
     files = sorted(Path(a.raw_dir).rglob('*.jsonl.gz'))
@@ -89,7 +90,13 @@ def main():
         got += state.finished
         added = 0
         for s in got:
-            if exists_like(s):
+            old = exists_like(s)
+            if old and not a.reemplazar:
+                continue
+            if old:
+                s['id'] = old.stem
+                old.write_text(json.dumps(s, ensure_ascii=False, separators=(',', ':')))
+                print(f'  sustituida: {old.name} · {s["title"]}')
                 continue
             d = ROOT / 'data' / 'sesiones' / s['slug'] / s['date']
             d.mkdir(parents=True, exist_ok=True)

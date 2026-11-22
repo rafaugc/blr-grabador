@@ -9,6 +9,10 @@ on:
       circuitos:
         description: 'Circuitos a recuperar (separados por espacios)'
         default: ''
+      reemplazar:
+        description: 'Sustituir sesiones ya guardadas por la versión reprocesada'
+        type: boolean
+        default: false
       volcar:
         description: 'Opcional: "circuito HH:MM HH:MM" (UTC) para guardar mensajes en bruto'
         default: ''
@@ -37,6 +41,7 @@ jobs:
           ARGS=""
           if [ -n "${{ github.event.inputs.circuitos }}" ]; then ARGS="$ARGS --circuitos ${{ github.event.inputs.circuitos }}"; fi
           if [ -n "${{ github.event.inputs.volcar }}" ]; then ARGS="$ARGS --volcar ${{ github.event.inputs.volcar }}"; fi
+          if [ "${{ github.event.inputs.reemplazar }}" = "true" ]; then ARGS="$ARGS --reemplazar"; fi
           python -m grabador.reprocesar bruto $ARGS
           python -m grabador.unir
           python -m grabador.indice

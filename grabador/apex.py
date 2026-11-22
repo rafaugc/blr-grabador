@@ -100,6 +100,8 @@ class ApexState:
         self.title1 = self.title2 = self.track = ''
         self.comments = ''
         self.finished: list[dict] = []
+        self.unknown: list[dict] = []  # vueltas de filas que Apex no ha anunciado todavía (sin kart ni piloto)
+        self.unknown_title = ('', '')
         self._new_session()
 
     # ---------- sesiones ----------
@@ -109,9 +111,48 @@ class ApexState:
         self.session_title = (self.title1, self.title2)
 
     def close_session(self, partial=False):
+        known = [l for l in self.laps if l['kart'] or l['driver']]
+        unk = [l for l in self.laps if not (l['kart'] or l['driver'])]
+        if unk:
+            # sesión arrancada sin anunciar en Apex: la apartamos hasta que llegue la lista con nombres
+            self._stash(unk, own=not known)
+        self.laps = known
         if len(self.laps) >= 5:
             self.finished.append(self._build(partial))
+        if partial and len(self.unknown) >= 5:
+            self.laps = self.unknown
+            self.session_title = self.unknown_title or (self.title1, 'Sin anunciar')
+            self.finished.append(self._build(True))
+            self.unknown = []
         self._new_session()
+
+    def _stash(self, unk, own):
+        if not self.unknown:
+            # own=True: la sesión anunciada no tenía vueltas propias -> estas vueltas SON esa sesión (lista de pilotos tardía)
+            self.unknown_title = (self.session_title if any(self.session_title) else (self.title1, self.title2)) if own else None
+        self.unknown += unk
+
+    def _resolve_unknown(self, new_rows: dict):
+        """Llega una lista de pilotos: si incluye filas que corrieron sin anunciar, les ponemos nombre y las guardamos aparte."""
+        if not self.unknown:
+            return
+        hit = [l for l in self.unknown if l['row'] in new_rows]
+        if not hit:
+            if time.time() - max(l['ts'] for l in self.unknown) > 3600:
+                self.unknown = []
+            return
+        for l in hit:
+            r = new_rows[l['row']]
+            l['kart'] = r.get('no', '')
+            l['driver'] = r.get('driver') or r.get('dr', '')
+            l['team'] = r.get('team', '')
+        saved_laps, saved_title = self.laps, self.session_title
+        self.laps = hit
+        self.session_title = self.unknown_title or (self.title1, 'Previa (sin anunciar)')
+        if len(hit) >= 5:
+            self.finished.append(self._build(False))
+        self.laps, self.session_title = saved_laps, saved_title
+        self.unknown = [l for l in self.unknown if l['row'] not in new_rows]
 
     def _build(self, partial):
         by_row: dict[str, list] = {}
@@ -251,6 +292,12 @@ class ApexState:
         # si cambia el conjunto de filas por completo, es otra sesión
         if self.laps and new_rows and not (set(new_rows) & set(self.last_lap)):
             self.close_session()
+        # vueltas de filas desconocidas dentro de la sesión actual: apartarlas
+        if self.laps and any(not (l['kart'] or l['driver']) for l in self.laps):
+            unk = [l for l in self.laps if not (l['kart'] or l['driver'])]
+            self.laps = [l for l in self.laps if l['kart'] or l['driver']]
+            self._stash(unk, own=not self.laps)
+        self._resolve_unknown(new_rows)
         self.rows = new_rows
 
     def team_col(self):
