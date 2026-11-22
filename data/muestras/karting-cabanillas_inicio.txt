@@ -46,3 +46,11 @@ r35c2|sr| ⏎ r35c6|tb|1:19.108 ⏎ r35c7|ib|1:19.108 ⏎ r35c9|in|6 ⏎ r36c8|i
 r35c2|in| ⏎ 
 dyn1|countdown|74750 ⏎ 
 dyn1|countdown|44703 ⏎ 
+r36c2|in| ⏎ 
+r35c2|sr| ⏎ 
+r35c6|tn|1:19.903 ⏎ r35c9|in|7 ⏎ r35|*|79108| ⏎ 
+dyn1|countdown|14683 ⏎ 
+r35c2|in| ⏎ 
+light|lf| ⏎ 
+com||<p><b>17:55</b><span data-flag="chequered"></span>Llegada</p><p><b>17:45</b><span data-flag="green"></span>Start</p> ⏎ dyn1|text| ⏎ 
+r36c2|sf| ⏎ r36c6|tn|1:33.983 ⏎ r36c9|in|6 ⏎ r36|*|| ⏎ 
