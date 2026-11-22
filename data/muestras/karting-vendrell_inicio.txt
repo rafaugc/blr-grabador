@@ -57,3 +57,32 @@ init|p| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#FF8040 !important; color
  ⏎ 
  ⏎ 
  ⏎ 
+ ⏎ 
+wth1|ws| ⏎ 
+wth2||21- ⏎ 
+light|lg| ⏎ com||<p><b>08:26</b><span data-flag="green"></span>Start</p> ⏎ 
+dyn1|countdown|600860 ⏎ 
+dyn1|countdown|570688 ⏎ 
+light|lr| ⏎ 
+dyn1|text|00:10:00 ⏎ 
+light|lg| ⏎ com||<p><b>08:27</b><span data-flag="green"></span>Start</p><p><b>08:26</b><span data-flag="green"></span>Start</p> ⏎ 
+dyn1|countdown|600873 ⏎ 
+r10c2|sr| ⏎ 
+r10|*|| ⏎ 
+r9c2|sr| ⏎ r9|*|| ⏎ 
+r104c2|sr| ⏎ r104|*|| ⏎ 
+r10c2|in| ⏎ 
+r12c2|sr| ⏎ 
+r12|*|| ⏎ 
+dyn1|countdown|570818 ⏎ 
+r9c2|in| ⏎ 
+r104c2|in| ⏎ 
+r12c2|in| ⏎ 
+r2c2|sr| ⏎ 
+r2|*|| ⏎ 
+r3c2|sr| ⏎ r3|*|| ⏎ 
+r8c2|sr| ⏎ 
+r8|*|| ⏎ 
+r2c2|in| ⏎ 
+r3c2|in| ⏎ 
+r110c2|sr| ⏎ 
