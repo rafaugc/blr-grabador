@@ -822,3 +822,16 @@ r25c2|in| ⏎
 r24c2|sr| ⏎ 
 r24c6|ti|1:14.653 ⏎ r24c7|ib|1:14.653 ⏎ r24c8|in|1:03.953 ⏎ r24c9|in|2 ⏎ r24|*|74653| ⏎ 
 dyn1|countdown|438343 ⏎ 
+r25c2|ss| ⏎ 
+r24c2|in| ⏎ 
+r25c2|sr| ⏎ r25c6|tn|1:06.559 ⏎ r25c9|in|4 ⏎ r25|*|38852| ⏎ 
+dyn1|countdown|408309 ⏎ 
+r25c2|in| ⏎ 
+dyn1|countdown|378305 ⏎ 
+r25c2|ss| ⏎ 
+dyn1|countdown|348287 ⏎ 
+r25c2|sr| ⏎ r25c6|tn|1:04.730 ⏎ r25c9|in|5 ⏎ r25|*|49601| ⏎ 
+r24c2|sr| ⏎ r24c6|tn|1:39.702 ⏎ r24c9|in|3 ⏎ r24|*|74653| ⏎ 
+r25c2|in| ⏎ 
+r24c2|in| ⏎ 
+dyn1|countdown|318211 ⏎ 
