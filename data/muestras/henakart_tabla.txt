@@ -1,0 +1,17 @@
+init|r|
+best|hide|
+css|no1|border-bottom-color:#000000 !important; color:#FFFFFF !important;
+css|pena1|color:#f00; font-size:11px; font-weight: bold; text-align:center;
+effects||Mostrar Efectos
+comments||Comentarios
+title1||INDIVIDUAL 1H
+title2||CARRERA
+dyn1|countdown|2975482
+light|lg|
+wth1||
+wth2||
+wth3||
+track||Pista Principal (590m)
+com||
+grid||<tbody><tr data-id="r0" class="head" data-pos="0"><td data-id="c1" data-type="sta" data-pr="1"></td><td data-id="c2" data-type="rk" data-pr="1">Clasif.</td><td data-id="c3" data-type="no" data-pr="1">Kart</td><td data-id="c4" data-type="dr" data-pr="1" data-width="20" data-min="16">Equipo</td><td data-id="c5" data-type="" data-pr="6" data-width="13" data-min="12">Categoría</td><td data-id="c6" data-type="tlp" data-pr="5" data-width="4" data-min="4">Vueltas</td><td data-id="c7" data-type="llp" data-pr="2" data-width="11" data-min="7">Última vuelta</td><td data-id="c8" data-type="int" data-pr="5" data-width="8" data-min="7">Interv.</td><td data-id="c9" data-type="gap" data-pr="1" data-width="11" data-min="8">Gap</td><td data-id="c10" data-type="blp" data-pr="6" data-width="9" data-min="7">Mejor vuelta</td><td data-id="c11" data-type="otr" data-pr="2" data-width="8" data-min="8">Tiempo en PIT</td><td data-id="c12" data-type="pit" data-pr="2" data-width="5" data-min="7">Pits</td><td data-id="c13" data-type="" data-pr="6" data-width="6" data-min="5">Penalización</td></tr><tr data-id="r9789" data-pos="1"><td data-id="r9789c1" class="in"></td><td class="rk"><div><p data-id="r9789c2" class=""></p></div></td><td class="no"><div data-id="r9789c3" class="no1">1</div></td><td data-id="r9789c4" class="dr">PRUEBA 1</td><td data-id="r9789c5" class="in"></td><td data-id="r9789c6" class="in"></td><td data-id="r9789c7" class=""></td><td data-id="r9789c8" class="in"></td><td data-id="r9789c9" class="ib"></td><td data-id="r9789c10" class="in"></td><td data-id="r9789c11" class="in">0:00</td><td data-id="r9789c12" class="in"></td><td data-id="r9789c13" class=""></td></tr><tr data-id="r9791" data-pos="2"><td data-id="r9791c1" class="in"></td><td class="rk"><div><p data-id="r9791c2" class=""></p></div></td><td class="no"><div data-id="r9791c3" class="no1">2</div></td><td data-id="r9791c4" class="dr">PRUEBA  2</td><td data-id="r9791c5" class="in"></td><td data-id="r9791c6" class="in"></td><td data-id="r9791c7" class=""></td><td data-id="r9791c8" class="in"></td><td data-id="r9791c9" class="ib"></td><td data-id="r9791c10" class="in"></td><td data-id="r9791c11" class="in">0:00</td><td data-id="r9791c12" class="in"></td><td data-id="r9791c13" class=""></td></tr></tbody>
+msg||
