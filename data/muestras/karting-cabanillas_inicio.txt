@@ -634,3 +634,16 @@ r18c2|sr| ⏎ r18c6|tn|59.277 ⏎ r18c9|in|3 ⏎ r18|*|58731| ⏎
 dyn1|countdown|356940 ⏎ 
 r18c2|in| ⏎ 
 r17c2|sr| ⏎ r17c6|ti|1:00.792 ⏎ r17c7|ib|1:00.792 ⏎ r17c8|in|2.615 ⏎ r17c9|in|4 ⏎ r17|*|60792| ⏎ 
+dyn1|countdown|326903 ⏎ 
+r17c2|in| ⏎ 
+r18c2|sr| ⏎ 
+r18c6|tb|54.860 ⏎ r18c7|ib|54.860 ⏎ r18c9|in|4 ⏎ r17c8|in|5.932 ⏎ r18|*|54860| ⏎ 
+r18c2|in| ⏎ 
+dyn1|countdown|296799 ⏎ 
+r17c2|sr| ⏎ r17c6|ti|1:00.588 ⏎ r17c7|ib|1:00.588 ⏎ r17c8|in|5.728 ⏎ r17c9|in|5 ⏎ r17|*|60588| ⏎ 
+dyn1|countdown|266700 ⏎ 
+r17c2|in| ⏎ 
+r18c2|sr| ⏎ r18c6|tn|58.364 ⏎ r18c9|in|5 ⏎ r18|*|54860| ⏎ 
+r18c2|in| ⏎ 
+dyn1|countdown|236582 ⏎ 
+r17c2|sr| ⏎ r17c6|ti|1:00.160 ⏎ r17c7|ib|1:00.160 ⏎ r17c8|in|5.300 ⏎ r17c9|in|6 ⏎ r17|*|60160| ⏎ 
