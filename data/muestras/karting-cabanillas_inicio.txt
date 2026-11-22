@@ -54,3 +54,5 @@ r35c2|in| ⏎
 light|lf| ⏎ 
 com||<p><b>17:55</b><span data-flag="chequered"></span>Llegada</p><p><b>17:45</b><span data-flag="green"></span>Start</p> ⏎ dyn1|text| ⏎ 
 r36c2|sf| ⏎ r36c6|tn|1:33.983 ⏎ r36c9|in|6 ⏎ r36|*|| ⏎ 
+r35c2|sf| ⏎ 
+ ⏎ 
