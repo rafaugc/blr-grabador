@@ -224,3 +224,117 @@ init|p| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#FFFF00 !important; color
 r67c2|in| ⏎ 
 r68c2|in| ⏎ 
 r69c2|in| ⏎ 
+r70c2|in| ⏎ 
+r71c2|in| ⏎ 
+init|p| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no2|border-bottom-color:#80FF00 !important; color:#000000 !important; ⏎ css|pena1|color:#f00; font-size:11px; font-weight: bold; text-align:center; ⏎ effects||Mostrar Efectos ⏎ comments||Comentarios ⏎ title1|| ⏎ title2||Clasi +70 +90 ⏎ dyn1|countdown|256668 ⏎ light|lg| ⏎ wth1|| ⏎ wth2|| ⏎ wth3|| ⏎ track||Pista Principal (1075m) ⏎ com||<p><b>10:17</b><span data-flag="green"></span>Start</p> ⏎ grid||<tbody><tr data-id="r0" class="head" data-pos="0"><td data-id="c1" data-type="grp" data-pr="6"></td><td data-id="c2" data-type="sta" data-pr="1"></td><td data-id="c3" data-type="rk" data-pr="1">Clasif.</td><td data-id="c4" data-type="no" data-pr="1">Kart</td><td data-id="c5" data-type="dr" data-pr="1" data-width="24" data-min="16">Piloto</td><td data-id="c6" data-type="llp" data-pr="2" data-width="17" data-min="7">Última vuelta</td><td data-id="c7" data-type="blp" data-pr="1" data-width="17" data-min="7">Mejor vuelta</td><td data-id="c8" data-type="gap" data-pr="4" data-width="12" data-min="7">Gap</td><td data-id="c9" data-type="tlp" data-pr="5" data-width="7" data-min="4">Vueltas</td><td data-id="c10" data-type="otr" data-pr="2" data-width="12" data-min="4">Tiempo en PIT</td><td data-id="c11" data-type="pit" data-pr="2" data-width="8" data-min="7">Pits</td></tr><tr data-id="r53" data-pos="1"><td data-id="r53c1" class="in"></td><td data-id="r53c2" class="in"></td><td class="rk"><div><p data-id="r53c3" class=""></p></div></td><td class="no"><div data-id="r53c4" class="no1">33</div></td><td data-id="r53c5" class="dr">KART 33</td><td data-id="r53c6" class=""></td><td data-id="r53c7" class="ib"></td><td data-id="r53c8" class="in"></td><td data-id="r53c9" class="in"></td><td data-id="r53c10" class="in">0:00</td><td data-id="r53c11" class="in"></td></tr><tr data-id="r54" data-pos="2"><td data-id="r54c1" class="in"></td><td data-id="r54c2" class="in"></td><td class="rk"><div><p data-id="r54c3" class=""></p></div></td><td class="no"><div data-id="r54c4" class="no1">31</div></td><td data-id="r54c5" class="dr">KART 31</td><td data-id="r54c6" class=""></td><td data-id="r54c7" class="ib"></td><td data-id="r54c8" class="in"></td><td data-id="r54c9" class="in"></td><td data-id="r54c10" class="in">0:00</td><td data-id="r54c11" class="in"></td></tr><tr data-id="r55" data-pos="3"><td data-id="r55c1" class="in"></td><td data-id="r55c2" class="in"></td><td class="rk"><div><p data-id="r55c3" class=""></p></div></td><td class="no"><div data-id="r55c4" class="no1">50</div></td><td data-id="r55c5" class="dr">KART 50</td><td data-id="r55c6" class=""></td><td data-id="r55c7" class="ib"></td><td data-id="r55c8" class="in"></td><td data-id="r55c9" class="in"></td><td data-id="r55c10" class="in">0:00</td><td data-id="r55c11" class="in"></td></tr><tr data-id="r56" data-pos="4"><td data-id="r56c1" class="in"></td><td data-id="r56c2" class="in"></td><td class="rk"><div><p data-id="r56c3" class=""></p></div></td><td class="no"><div data-id="r56c4" class="no1">54</div></td><td data-id="r56c5" class="dr">KART 54</td><td data-id="r56c6" class=""></td><td data-id="r56c7" class="ib"></td><td data-id="r56c8" class="in"></td><td data-id="r56c9" class="in"></td><td data-id="r56c10" class="in">0:00</td><td data-id="r56c11" class="in"></td></tr><tr data-id="r57" data-pos="5"><td data-id="r57c1" class="in"></td><td data-id="r57c2" class="in"></td><td class="rk"><div><p data-id="r57c3" class=""></p></div></td><td class="no"><div data-id="r57c4" class="no1">47</div></td><td data-id="r57c5" class="dr">KART 47</td><td data-id="r57c6" class=""></td><td data-id="r57c7" class="ib"></td><td data-id="r57c8" class="in"></td><td data-id="r57c9" class="in"></td><td data-id="r57c10" class="in">0:00</td><td data-id="r57c11" class="in"></td></tr><tr data-id="r58" data-pos="6"><td data-id="r58c1" class="in"></td><td data-id="r58c2" class="in"></td><td class="rk"><div><p data-id="r58c3" class=""></p></div></td><td class="no"><div data-id="r58c4" class="no1">55</div></td><td data-id="r58c5" class="dr">KART 55</td><td data-id="r58c6" class=""></td><td data-id="r58c7" class="ib"></td><td data-id="r58c8" class="in"></td><td data-id="r58c9" class="in"></td><td data-id="r58c10" class="in">0:00</td><td data-id="r58c11" class="in"></td></tr><tr data-id="r59" data-pos="7"><td data-id="r59c1" class="in"></td><td data-id="r59c2" class="in"></td><td class="rk"><div><p data-id="r59c3" class=""></p></div></td><td class="no"><div data-id="r59c4" class="no1">45</div></td><td data-id="r59c5" class="dr">KART 45</td><td data-id="r59c6" class=""></td><td data-id="r59c7" class="ib"></td><td data-id="r59c8" class="in"></td><td data-id="r59c9" class="in"></td><td data-id="r59c10" class="in">0:00</td><td data-id="r59c11" class="in"></td></tr><tr data-id="r60" data-pos="8"><td data-id="r60c1" class="in"></td><td data-id="r60c2" class="in"></td><td class="rk"><div><p data-id="r60c3" class=""></p></div></td><td class="no"><div data-id="r60c4" class="no1">30</div></td><td data-id="r60c5" class="dr">KART 30</td><td data-id="r60c6" class=""></td><td data-id="r60c7" class="ib"></td><td data-id="r60c8" class="in"></td><td data-id="r60c9" class="in"></td><td data-id="r60c10" class="in">0:00</td><td data-id="r60c11" class="in"></td></tr><tr data-id="r61" data-pos="9"><td data-id="r61c1" class="in"></td><td data-id="r61c2" class="in"></td><td class="rk"><div><p data-id="r61c3" class=""></p></div></td><td class="no"><div data-id="r61c4" class="no1">41</div></td><td data-id="r61c5" class="dr">KART 41</td><td data-id="r61c6" class=""></td><td data-id="r61c7" class="ib"></td><td data-id="r61c8" class="in"></td><td data-id="r61c9" class="in"></td><td data-id="r61c10" class="in">0:00</td><td data-id="r61c11" class="in"></td></tr><tr data-id="r62" data-pos="10"><td data-id="r62c1" class="in"></td><td data-id="r62c2" class="in"></td><td class="rk"><div><p data-id="r62c3" class=""></p></div></td><td class="no"><div data-id="r62c4" class="no1">42</div></td><td data-id="r62c5" class="dr">KART 42</td><td data-id="r62c6" class=""></td><td data-id="r62c7" class="ib"></td><td data-id="r62c8" class="in"></td><td data-id="r62c9" class="in"></td><td data-id="r62c10" class="in">0:00</td><td data-id="r62c11" class="in"></td></tr><tr data-id="r63" data-pos="11"><td data-id="r63c1" class="in"></td><td data-id="r63c2" class="in"></td><td class="rk"><div><p data-id="r63c3" class=""></p></div></td><td class="no"><div data-id="r63c4" class="no1">56</div></td><td data-id="r63c5" class="dr">KART 56</td><td data-id="r63c6" class=""></td><td data-id="r63c7" class="ib"></td><td data-id="r63c8" class="in"></td><td data-id="r63c9" class="in"></td><td data-id="r63c10" class="in">0:00</td><td data-id="r63c11" class="in"></td></tr><tr data-id="r64" data-pos="12"><td data-id="r64c1" class="in"></td><td data-id="r64c2" class="in"></td><td class="rk"><div><p data-id="r64c3" class=""></p></div></td><td class="no"><div data-id="r64c4" class="no1">51</div></td><td data-id="r64c5" class="dr">KART 51</td><td data-id="r64c6" class=""></td><td data-id="r64c7" class="ib"></td><td data-id="r64c8" class="in"></td><td data-id="r64c9" class="in"></td><td data-id="r64c10" class="in">0:00</td><td data-id="r64c11" class="in"></td></tr><tr data-id="r65" data-pos="13"><td data-id="r65c1" class="in"></td><td data-id="r65c2" class="in"></td><td class="rk"><div><p data-id="r65c3" class=""></p></div></td><td class="no"><div data-id="r65c4" class="no1">36</div></td><td data-id="r65c5" class="dr">KART 36</td><td data-id="r65c6" class=""></td><td data-id="r65c7" class="ib"></td><td data-id="r65c8" class="in"></td><td data-id="r65c9" class="in"></td><td data-id="r65c10" class="in">0:00</td><td data-id="r65c11" class="in"></td></tr><tr data-id="r66" data-pos="14"><td data-id="r66c1" class="in"></td><td data-id="r66c2" class="in"></td><td class="rk"><div><p data-id="r66c3" class=""></p></div></td><td class="no"><div data-id="r66c4" class="no1">34</div></td><td data-id="r66c5" class="dr">KART 34</td><td data-id="r66c6" class=""></td><td data-id="r66c7" class="ib"></td><td data-id="r66c8" class="in"></td><td data-id="r66c9" class="in"></td><td data-id="r66c10" class="in">0:00</td><td data-id="r66c11" class="in"></td></tr><tr data-id="r67" data-pos="15"><td data-id="r67c1" class="in"></td><td data-id="r67c2" class="in"></td><td class="rk"><div><p data-id="r67c3" class=""></p></div></td><td class="no"><div data-id="r67c4" class="no1">40</div></td><td data-id="r67c5" class="dr">KART 40</td><td data-id="r67c6" class=""></td><td data-id="r67c7" class="ib"></td><td data-id="r67c8" class="in"></td><td data-id="r67c9" class="in"></td><td data-id="r67c10" class="in">0:00</td><td data-id="r67c11" class="in"></td></tr><tr data-id="r68" data-pos="16"><td data-id="r68c1" class="in"></td><td data-id="r68c2" class="in"></td><td class="rk"><div><p data-id="r68c3" class=""></p></div></td><td class="no"><div data-id="r68c4" class="no1">52</div></td><td data-id="r68c5" class="dr">KART 52</td><td data-id="r68c6" class=""></td><td data-id="r68c7" class="ib"></td><td data-id="r68c8" class="in"></td><td data-id="r68c9" class="in"></td><td data-id="r68c10" class="in">0:00</td><td data-id="r68c11" class="in"></td></tr><tr data-id="r69" data-pos="17"><td data-id="r69c1" class="in"></td><td data-id="r69c2" class="in"></td><td class="rk"><div><p data-id="r69c3" class=""></p></div></td><td class="no"><div data-id="r69c4" class="no1">37</div></td><td data-id="r69c5" class="dr">KART 37</td><td data-id="r69c6" class=""></td><td data-id="r69c7" class="ib"></td><td data-id="r69c8" class="in"></td><td data-id="r69c9" class="in"></td><td data-id="r69c10" class="in">0:00</td><td data-id="r69c11" class="in"></td></tr><tr data-id="r70" data-pos="18"><td data-id="r70c1" class="in"></td><td data-id="r70c2" class="in"></td><td class="rk"><div><p data-id="r70c3" class=""></p></div></td><td class="no"><div data-id="r70c4" class="no1">48</div></td><td data-id="r70c5" class="dr">KART 48</td><td data-id="r70c6" class=""></td><td data-id="r70c7" class="ib"></td><td data-id="r70c8" class="in"></td><td data-id="r70c9" class="in"></td><td data-id="r70c10" class="in">0:00</td><td data-id="r70c11" class="in"></td></tr><tr data-id="r71" data-pos="19"><td data-id="r71c1" class="in"></td><td data-id="r71c2" class="in"></td><td class="rk"><div><p data-id="r71c3" class=""></p></div></td><td class="no"><div data-id="r71c4" class="no1">32</div></td><td data-id="r71c5" class="dr">KART 32</td><td data-id="r71c6" class=""></td><td data-id="r71c7" class="ib"></td><td data-id="r71c8" class="in"></td><td data-id="r71c9" class="in"></td><td data-id="r71c10" class="in">0:00</td><td data-id="r71c11" class="in"></td></tr><tr data-id="r72" data-pos="20"><td data-id="r72c1" class="in"></td><td data-id="r72c2" class="sr"></td><td class="rk"><div><p data-id="r72c3" class=""></p></div></td><td class="no"><div data-id="r72c4" class="no1">53</div></td><td data-id="r72c5" class="dr">KART 53</td><td data-id="r72c6" class=""></td><td data-id="r72c7" class="ib"></td><td data-id="r72c8" class="in"></td><td data-id="r72c9" class="in"></td><td data-id="r72c10" class="in">0:00</td><td data-id="r72c11" class="in"></td></tr><tr data-id="r73" data-pos="21"><td data-id="r73c1" class="in"></td><td data-id="r73c2" class="sr"></td><td class="rk"><div><p data-id="r73c3" class=""></p></div></td><td class="no"><div data-id="r73c4" class="no1">38</div></td><td data-id="r73c5" class="dr">KART 38</td><td data-id="r73c6" class=""></td><td data-id="r73c7" class="ib"></td><td data-id="r73c8" class="in"></td><td data-id="r73c9" class="in"></td><td data-id="r73c10" class="in">0:00</td><td data-id="r73c11" class="in"></td></tr></tbody> ⏎ msg|| ⏎ 
+r72c2|in| ⏎ 
+r73c2|in| ⏎ 
+r53c10|in|0:01 ⏎ 
+r54c10|in|0:01 ⏎ 
+r55c10|in|0:01 ⏎ 
+r56c10|in|0:01 ⏎ 
+r57c10|in|0:01 ⏎ 
+r58c10|in|0:01 ⏎ 
+r59c10|in|0:01 ⏎ 
+r60c10|in|0:01 ⏎ 
+r61c10|in|0:01 ⏎ 
+r62c10|in|0:01 ⏎ 
+r54c1|gs| ⏎ 
+r54c2|su| ⏎ r54c3||1 ⏎ r54c6|tb|1:07.855 ⏎ r54c7|ib|1:07.855 ⏎ r54c9|in|1 ⏎ r53|#|2 ⏎ r54|*|67855| ⏎ r54|#|1 ⏎ 
+r55c1|gf| ⏎ r55c2|su| ⏎ r55c3||1 ⏎ r55c6|tb|1:07.280 ⏎ r55c7|ib|1:07.280 ⏎ r55c9|in|1 ⏎ r54c1|gl| ⏎ r54c2|sr| ⏎ r54c3||2 ⏎ r54c6|ti|1:07.855 ⏎ r54c8|in|0.575 ⏎ r53|#|3 ⏎ r54|#|2 ⏎ r55|*|67280| ⏎ r55|#|1 ⏎ r63c10|in|0:01 ⏎ 
+r53c1|gs| ⏎ 
+r53c2|su| ⏎ r53c3||3 ⏎ r53c6|ti|1:09.194 ⏎ r53c7|ib|1:09.194 ⏎ r53c8|in|1.914 ⏎ r53c9|in|1 ⏎ r53|*|69194| ⏎ 
+r64c10|in|0:01 ⏎ 
+r56c1|gm| ⏎ r56c2|su| ⏎ r56c3||2 ⏎ r56c6|ti|1:07.410 ⏎ r56c7|ib|1:07.410 ⏎ r56c8|in|0.130 ⏎ r56c9|in|1 ⏎ r54c3||3 ⏎ r53c2|sr| ⏎ r53c3||4 ⏎ r53|#|4 ⏎ r54|#|3 ⏎ r56|*|67410| ⏎ r56|#|2 ⏎ 
+dyn1|countdown|226549 ⏎ 
+r54c1|gm| ⏎ 
+r57c1|gl| ⏎ r57c2|su| ⏎ r57c3||4 ⏎ r57c6|ti|1:07.866 ⏎ r57c7|ib|1:07.866 ⏎ r57c8|in|0.586 ⏎ r57c9|in|1 ⏎ r53c3||5 ⏎ r53|#|5 ⏎ r57|*|67866| ⏎ r57|#|4 ⏎ 
+r57c1|gm| ⏎ r58c1|gl| ⏎ r58c2|su| ⏎ r58c3||5 ⏎ r58c6|ti|1:08.151 ⏎ r58c7|ib|1:08.151 ⏎ r58c8|in|0.871 ⏎ r58c9|in|1 ⏎ r53c3||6 ⏎ r53|#|6 ⏎ r58|*|68151| ⏎ r58|#|5 ⏎ 
+r65c10|in|0:01 ⏎ 
+r66c10|in|0:01 ⏎ 
+r60c1|gf| ⏎ 
+r60c2|su| ⏎ r60c3||6 ⏎ r60c6|ti|1:08.829 ⏎ r60c7|ib|1:08.829 ⏎ r60c8|in|1.549 ⏎ r60c9|in|1 ⏎ r53c1|gl| ⏎ r53c3||7 ⏎ r53|#|7 ⏎ r59|#|8 ⏎ r60|*|68829| ⏎ r60|#|6 ⏎ r59c1|gs| ⏎ 
+r59c2|su| ⏎ r59c3||8 ⏎ r59c6|ti|1:10.032 ⏎ r59c7|ib|1:10.032 ⏎ r59c8|in|2.752 ⏎ r59c9|in|1 ⏎ r59|*|70032| ⏎ 
+r62c1|gm| ⏎ r62c2|su| ⏎ r62c3||7 ⏎ r62c6|ti|1:09.010 ⏎ r62c7|ib|1:09.010 ⏎ r62c8|in|1.730 ⏎ r62c9|in|1 ⏎ r53c3||8 ⏎ r59c2|sr| ⏎ r59c3||9 ⏎ r53|#|8 ⏎ r59|#|9 ⏎ r61|#|10 ⏎ r62|*|69010| ⏎ r62|#|7 ⏎ 
+r63c1|gf| ⏎ 
+r63c2|su| ⏎ r63c3||6 ⏎ r63c6|ti|1:08.544 ⏎ r63c7|ib|1:08.544 ⏎ r63c8|in|1.264 ⏎ r63c9|in|1 ⏎ r60c1|gm| ⏎ r60c2|sr| ⏎ r60c3||7 ⏎ r62c2|sr| ⏎ r62c3||8 ⏎ r53c3||9 ⏎ r59c3||10 ⏎ r53|#|9 ⏎ r59|#|10 ⏎ r60|#|7 ⏎ r61|#|11 ⏎ r62|#|8 ⏎ r63|*|68544| ⏎ r63|#|6 ⏎ 
+r61c1|gf| ⏎ 
+r61c2|su| ⏎ r61c3||10 ⏎ r61c6|ti|1:09.957 ⏎ r61c7|ib|1:09.957 ⏎ r61c8|in|2.677 ⏎ r61c9|in|1 ⏎ r59c1|gl| ⏎ r59c3||11 ⏎ r59|#|11 ⏎ r61|*|69957| ⏎ r61|#|10 ⏎ 
+r54c2|in| ⏎ 
+r55c2|in| ⏎ 
+r53c2|in| ⏎ 
+r64c1|gs| ⏎ 
+r64c2|su| ⏎ r64c3||12 ⏎ r64c6|ti|1:10.292 ⏎ r64c7|ib|1:10.292 ⏎ r64c8|in|3.012 ⏎ r64c9|in|1 ⏎ r67c10|in|0:01 ⏎ r64|*|70292| ⏎ 
+r56c2|in| ⏎ 
+r68c10|in|0:01 ⏎ 
+r57c2|in| ⏎ 
+r69c10|in|0:01 ⏎ 
+r58c2|in| ⏎ 
+r64c1|gf| ⏎ 
+r65c1|gl| ⏎ r65c2|su| ⏎ r65c3||13 ⏎ r65c6|ti|1:10.696 ⏎ r65c7|ib|1:10.696 ⏎ r65c8|in|3.416 ⏎ r65c9|in|1 ⏎ r70c10|in|0:01 ⏎ r65|*|70696| ⏎ 
+r60c2|in| ⏎ 
+r59c2|in| ⏎ 
+r65c1|gm| ⏎ r66c1|gl| ⏎ r66c2|su| ⏎ r66c3||14 ⏎ r66c6|ti|1:10.783 ⏎ r66c7|ib|1:10.783 ⏎ r66c8|in|3.503 ⏎ r66c9|in|1 ⏎ r66|*|70783| ⏎ 
+r62c2|in| ⏎ 
+r63c2|in| ⏎ 
+r61c2|in| ⏎ 
+r67c1|gm| ⏎ r67c2|su| ⏎ r67c3||3 ⏎ r67c6|ti|1:07.473 ⏎ r67c7|ib|1:07.473 ⏎ r67c8|in|0.193 ⏎ r67c9|in|1 ⏎ r54c3||4 ⏎ r57c3||5 ⏎ r58c3||6 ⏎ r63c3||7 ⏎ r60c3||8 ⏎ r62c3||9 ⏎ r53c3||10 ⏎ r61c3||11 ⏎ r59c3||12 ⏎ r64c2|sr| ⏎ r64c3||13 ⏎ r65c2|sr| ⏎ r65c3||14 ⏎ r66c2|sr| ⏎ r66c3||15 ⏎ r71c10|in|0:01 ⏎ r53|#|10 ⏎ r54|#|4 ⏎ r57|#|5 ⏎ r58|#|6 ⏎ r59|#|12 ⏎ r60|#|8 ⏎ r61|#|11 ⏎ r62|#|9 ⏎ r63|#|7 ⏎ r64|#|13 ⏎ r65|#|14 ⏎ r66|#|15 ⏎ r67|*|67473| ⏎ r67|#|3 ⏎ 
+r68c1|gf| ⏎ 
+r68c2|su| ⏎ r68c3||7 ⏎ r68c6|ti|1:08.457 ⏎ r68c7|ib|1:08.457 ⏎ r68c8|in|1.177 ⏎ r68c9|in|1 ⏎ r63c1|gm| ⏎ r63c3||8 ⏎ r60c3||9 ⏎ r62c3||10 ⏎ r53c3||11 ⏎ r61c3||12 ⏎ r59c3||13 ⏎ r64c3||14 ⏎ r65c3||15 ⏎ r66c3||16 ⏎ r53|#|11 ⏎ r59|#|13 ⏎ r60|#|9 ⏎ r61|#|12 ⏎ r62|#|10 ⏎ r63|#|8 ⏎ r64|#|14 ⏎ r65|#|15 ⏎ r66|#|16 ⏎ r68|*|68457| ⏎ r68|#|7 ⏎ 
+r64c2|in| ⏎ 
+r69c1|gm| ⏎ r69c2|su| ⏎ r69c3||9 ⏎ r69c6|ti|1:08.723 ⏎ r69c7|ib|1:08.723 ⏎ r69c8|in|1.443 ⏎ r69c9|in|1 ⏎ r60c3||10 ⏎ r62c3||11 ⏎ r53c3||12 ⏎ r61c3||13 ⏎ r59c3||14 ⏎ r64c3||15 ⏎ r65c3||16 ⏎ r66c3||17 ⏎ r53|#|12 ⏎ r59|#|14 ⏎ r60|#|10 ⏎ r61|#|13 ⏎ r62|#|11 ⏎ r64|#|15 ⏎ r65|#|16 ⏎ r66|#|17 ⏎ r69|*|68723| ⏎ r69|#|9 ⏎ 
+r72c10|in|0:01 ⏎ 
+r71c1|gf| ⏎ 
+r71c2|su| ⏎ r71c3||1 ⏎ r71c6|tb|1:07.189 ⏎ r71c7|ib|1:07.189 ⏎ r71c9|in|1 ⏎ r55c1|gm| ⏎ r55c3||2 ⏎ r55c6|ti|1:07.280 ⏎ r55c8|in|0.091 ⏎ r56c3||3 ⏎ r56c8|in|0.221 ⏎ r67c2|sr| ⏎ r67c3||4 ⏎ r67c8|in|0.284 ⏎ r54c3||5 ⏎ r54c8|in|0.666 ⏎ r57c3||6 ⏎ r57c8|in|0.677 ⏎ r58c3||7 ⏎ r58c8|in|0.962 ⏎ r68c2|sr| ⏎ r68c3||8 ⏎ r68c8|in|1.268 ⏎ r63c3||9 ⏎ r63c8|in|1.355 ⏎ r69c2|sr| ⏎ r69c3||10 ⏎ r69c8|in|1.534 ⏎ r60c3||11 ⏎ r60c8|in|1.640 ⏎ r62c1|gl| ⏎ r62c3||12 ⏎ r62c8|in|1.821 ⏎ r53c1|gf| ⏎ r53c3||13 ⏎ r53c8|in|2.005 ⏎ r61c1|gm| ⏎ r61c3||14 ⏎ r61c8|in|2.768 ⏎ r59c3||15 ⏎ r59c8|in|2.843 ⏎ r64c3||16 ⏎ r64c8|in|3.103 ⏎ r65c3||17 ⏎ r65c8|in|3.507 ⏎ r66c3||18 ⏎ r66c8|in|3.594 ⏎ r53|#|13 ⏎ r54|#|5 ⏎ r55|#|2 ⏎ r56|#|3 ⏎ r57|#|6 ⏎ r58|#|7 ⏎ r59|#|15 ⏎ r60|#|11 ⏎ r61|#|14 ⏎ r62|#|12 ⏎ r63|#|9 ⏎ r64|#|16 ⏎ r65|#|17 ⏎ r66|#|18 ⏎ r67|#|4 ⏎ r68|#|8 ⏎ r69|#|10 ⏎ r70|#|19 ⏎ r71|*|67189| ⏎ r71|#|1 ⏎ 
+r65c2|in| ⏎ 
+r70c1|gm| ⏎ r70c2|su| ⏎ r70c3||17 ⏎ r70c6|ti|1:10.497 ⏎ r70c7|ib|1:10.497 ⏎ r70c8|in|3.308 ⏎ r70c9|in|1 ⏎ r65c3||18 ⏎ r66c2|in| ⏎ r66c3||19 ⏎ r65|#|18 ⏎ r66|#|19 ⏎ r70|*|70497| ⏎ r70|#|17 ⏎ 
+r67c2|in| ⏎ 
+r68c2|in| ⏎ 
+r73c10|in|0:01 ⏎ 
+dyn1|countdown|196451 ⏎ 
+r69c2|in| ⏎ 
+r72c1|gm| ⏎ 
+r72c2|su| ⏎ r72c3||10 ⏎ r72c6|ti|1:08.608 ⏎ r72c7|ib|1:08.608 ⏎ r72c8|in|1.419 ⏎ r72c9|in|1 ⏎ r69c3||11 ⏎ r60c3||12 ⏎ r62c3||13 ⏎ r53c3||14 ⏎ r61c3||15 ⏎ r59c3||16 ⏎ r64c3||17 ⏎ r70c2|sr| ⏎ r70c3||18 ⏎ r65c3||19 ⏎ r66c3||20 ⏎ r53|#|14 ⏎ r59|#|16 ⏎ r60|#|12 ⏎ r61|#|15 ⏎ r62|#|13 ⏎ r64|#|17 ⏎ r65|#|19 ⏎ r66|#|20 ⏎ r69|#|11 ⏎ r70|#|18 ⏎ r72|*|68608| ⏎ r72|#|10 ⏎ 
+r71c2|in| ⏎ 
+r70c2|in| ⏎ 
+r72c2|in| ⏎ 
+r73c1|gs| ⏎ r73c2|su| ⏎ r73c3||21 ⏎ r73c6|ti|1:12.038 ⏎ r73c7|ib|1:12.038 ⏎ r73c8|in|4.849 ⏎ r73c9|in|1 ⏎ r73|*|72038| ⏎ 
+r53c10|in|0:02 ⏎ 
+r54c10|in|0:02 ⏎ 
+r55c10|in|0:02 ⏎ 
+r73c2|in| ⏎ 
+r56c10|in|0:02 ⏎ 
+r57c10|in|0:02 ⏎ 
+r58c10|in|0:02 ⏎ 
+r59c10|in|0:02 ⏎ 
+r60c10|in|0:02 ⏎ 
+r61c10|in|0:02 ⏎ 
+r62c10|in|0:02 ⏎ 
+r63c10|in|0:02 ⏎ 
+r64c10|in|0:02 ⏎ 
+dyn1|countdown|166373 ⏎ 
+r65c10|in|0:02 ⏎ 
+r54c1|gf| ⏎ r54c2|su| ⏎ r54c3||1 ⏎ r54c6|tb|1:07.055 ⏎ r54c7|ib|1:07.055 ⏎ r54c8|in| ⏎ r54c9|in|2 ⏎ r71c1|gm| ⏎ r71c3||2 ⏎ r71c6|ti|1:07.189 ⏎ r71c8|in|0.134 ⏎ r55c3||3 ⏎ r55c8|in|0.225 ⏎ r56c3||4 ⏎ r56c8|in|0.355 ⏎ r67c3||5 ⏎ r67c8|in|0.418 ⏎ r57c1|gl| ⏎ r57c8|in|0.811 ⏎ r58c1|gf| ⏎ r58c8|in|1.096 ⏎ r68c1|gm| ⏎ r68c8|in|1.402 ⏎ r63c8|in|1.489 ⏎ r72c8|in|1.553 ⏎ r69c8|in|1.668 ⏎ r60c8|in|1.774 ⏎ r62c8|in|1.955 ⏎ r53c8|in|2.139 ⏎ r61c8|in|2.902 ⏎ r59c8|in|2.977 ⏎ r64c8|in|3.237 ⏎ r70c8|in|3.442 ⏎ r65c8|in|3.641 ⏎ r66c8|in|3.728 ⏎ r73c8|in|4.983 ⏎ r54|*|67055| ⏎ r54|#|1 ⏎ r55|#|3 ⏎ r56|#|4 ⏎ r67|#|5 ⏎ r71|#|2 ⏎ 
+r66c10|in|0:02 ⏎ 
+r55c2|sr| ⏎ 
+r55c6|tn|1:07.321 ⏎ r55c9|in|2 ⏎ r55|*|67280| ⏎ 
+r53c1|gm| ⏎ r53c2|su| ⏎ r53c3||3 ⏎ r53c6|ti|1:07.194 ⏎ r53c7|ib|1:07.194 ⏎ r53c8|in|0.139 ⏎ r53c9|in|2 ⏎ r55c3||4 ⏎ r56c3||5 ⏎ r67c3||6 ⏎ r57c3||7 ⏎ r58c3||8 ⏎ r68c3||9 ⏎ r63c3||10 ⏎ r72c3||11 ⏎ r69c3||12 ⏎ r60c3||13 ⏎ r62c3||14 ⏎ r61c1|gf| ⏎ r53|*|67194| ⏎ r53|#|3 ⏎ r55|#|4 ⏎ r56|#|5 ⏎ r57|#|7 ⏎ r58|#|8 ⏎ r60|#|13 ⏎ r62|#|14 ⏎ r63|#|10 ⏎ r67|#|6 ⏎ r68|#|9 ⏎ r69|#|12 ⏎ r72|#|11 ⏎ 
+r56c2|sr| ⏎ 
+r56c6|ti|1:07.322 ⏎ r56c7|ib|1:07.322 ⏎ r56c8|in|0.267 ⏎ r56c9|in|2 ⏎ r56|*|67322| ⏎ 
+r67c10|in|0:02 ⏎ 
+r57c2|sr| ⏎ r57c6|tn|1:08.095 ⏎ r57c9|in|2 ⏎ r57|*|67866| ⏎ 
+r58c1|gm| ⏎ r58c2|su| ⏎ r58c3||7 ⏎ r58c6|ti|1:07.782 ⏎ r58c7|ib|1:07.782 ⏎ r58c8|in|0.727 ⏎ r58c9|in|2 ⏎ r57c3||8 ⏎ r68c1|gf| ⏎ r57|#|8 ⏎ r58|*|67782| ⏎ r58|#|7 ⏎ 
+r68c10|in|0:02 ⏎ 
+r69c10|in|0:02 ⏎ 
+r54c2|in| ⏎ r62c1|gm| ⏎ r62c2|su| ⏎ r62c3||12 ⏎ r62c6|ti|1:08.627 ⏎ r62c7|ib|1:08.627 ⏎ r62c8|in|1.572 ⏎ r62c9|in|2 ⏎ r69c3||13 ⏎ r60c1|gl| ⏎ r60c3||14 ⏎ r60|#|14 ⏎ r62|*|68627| ⏎ r62|#|12 ⏎ r69|#|13 ⏎ 
+r55c2|in| ⏎ r70c10|in|0:02 ⏎ 
+r60c1|gm| ⏎ 
+r61c1|gl| ⏎ r61c2|sr| ⏎ r61c6|ti|1:08.854 ⏎ r61c7|ib|1:08.854 ⏎ r61c8|in|1.799 ⏎ r61c9|in|2 ⏎ r59c1|gs| ⏎ r61|*|68854| ⏎ r53c2|in| ⏎ 
+r71c10|in|0:02 ⏎ 
+r56c2|in| ⏎ r60c2|sr| ⏎ 
+r60c6|tn|1:12.209 ⏎ r60c9|in|2 ⏎ r60|*|68829| ⏎ 
+r64c2|su| ⏎ r64c3||16 ⏎ r64c6|ti|1:09.632 ⏎ r64c7|ib|1:09.632 ⏎ r64c8|in|2.577 ⏎ r64c9|in|2 ⏎ r59c1|gl| ⏎ r59c3||17 ⏎ r70c1|gf| ⏎ r59|#|17 ⏎ r64|*|69632| ⏎ r64|#|16 ⏎ 
+r57c2|in| ⏎ 
+r63c2|sr| ⏎ r63c6|tn|1:13.727 ⏎ r63c9|in|2 ⏎ r63|*|68544| ⏎ 
+r58c2|in| ⏎ 
+r59c2|sr| ⏎ r59c6|tn|1:15.872 ⏎ r59c9|in|2 ⏎ r59|*|70032| ⏎ 
