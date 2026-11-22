@@ -124,7 +124,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#171a20}
     <a data-v="piloto">Vista piloto</a>
   </nav>
 
-  <section class="view on" id="v-ranking">
+  <div id="selWrap">
     <div class="card row">
       <span class="mini">Nivelar pilotos:</span>
       <span class="seg" id="method"><button data-v="raw">Sin nivelar</button><button data-v="driver">Vs. su media</button><button data-v="model" class="on">Modelo</button></span>
@@ -132,6 +132,8 @@ tr.click{cursor:pointer}tr.click:hover td{background:#171a20}
       <label class="mini">Descartar vueltas &gt; <input type="text" id="cut" value="3" style="width:46px;padding:3px 6px">% de la mejor</label>
     </div>
     <div id="selOut"></div>
+  </div>
+  <section class="view on" id="v-ranking">
     <div id="rankOut"></div>
   </section>
   <section class="view" id="v-pilotos"><div id="pilOut"></div></section>
@@ -181,6 +183,7 @@ document.querySelectorAll('#tabs a').forEach(a => a.onclick = () => {
   document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.id === 'v-' + a.dataset.v));
   if (a.dataset.v === 'apex' && !$('apexFrame').src && C) $('apexFrame').src = baseUrl(C);
   if (a.dataset.v !== 'piloto') document.body.classList.remove('pilot');
+  $('selWrap').style.display = ['ranking', 'pilotos'].includes(a.dataset.v) ? '' : 'none';
   if (a.dataset.v === 'piloto') { pilotReady = false; renderPilot(true); }
 });
 $('method').onclick = e => { const b = e.target.closest('button'); if (!b) return; opts.method = b.dataset.v; document.querySelectorAll('#method button').forEach(x => x.classList.toggle('on', x === b)); render(); };
@@ -396,21 +399,40 @@ function render() {
   A = ses.length ? KartCore.analyze(ses.map(s => Object.assign({ id: s.id || s.title + s.time }, s)), { method: opts.method, noTraffic: opts.noTraffic, cutPct: opts.cutPct, dropFirst: true }) : null;
   renderSel(all); renderRanking(ses); renderPilotos(ses); renderPista(); renderSes(all);
 }
+let selOpen = store.get('selOpen', true);
 function renderSel(all) {
   const el = $('selOut');
   const order = all.slice().sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+  const on = order.filter(x => !excluded.has(sid(x)));
+  const isRace = x => (x.type || '') !== 'Cronos' && !/clasi|crono|quali|entren|libre|pract/i.test(x.title || '');
   el.innerHTML = `<div class="card">
-    <div class="row" style="margin-bottom:8px"><b style="font-size:13px">Días:</b>${ALLDAYS.slice(0, 30).map(d => `<span class="chipd ${DAYS.has(d) ? 'on' : ''}" data-d="${d}">${fmtD(d)}</span>`).join('')}</div>
-    <div class="row"><b style="font-size:13px">Sesiones:</b>
-      <span class="chipd" data-all="1">Todas</span><span class="chipd" data-none="1">Ninguna</span>
-      ${order.map(x => `<span class="chipd ${excluded.has(sid(x)) ? '' : 'on'}" data-s="${esc(sid(x))}" title="${esc(x.title)}">${DAYS.size > 1 ? fmtD(x.date) + ' ' : ''}${esc(x.time)} ${esc((x.title || x.type).slice(0, 22))}${x.envivo ? ' ●' : ''}</span>`).join('')}
+    <div class="row" style="justify-content:space-between">
+      <b style="font:700 18px 'Barlow Condensed'">Qué sesiones cuentan para el ranking</b>
+      <button class="back" id="selTog">${selOpen ? 'Ocultar lista ▴' : `Elegir sesiones (${on.length} de ${order.length}) ▾`}</button>
     </div>
+    <div class="row" style="margin-top:8px"><span class="mini">Días:</span>${ALLDAYS.slice(0, 30).map(d => `<span class="chipd ${DAYS.has(d) ? 'on' : ''}" data-d="${d}">${fmtD(d)}</span>`).join('')}</div>
+    ${selOpen ? `<div class="row" style="margin-top:10px">
+      <button class="back" data-q="all">✓ Todas</button><button class="back" data-q="none">✕ Ninguna</button>
+      <button class="back" data-q="race">Solo carreras</button><button class="back" data-q="crono">Solo cronos / clasificación</button>
+      <span class="mini">${on.length} de ${order.length} sesiones seleccionadas · los cambios se aplican al momento a Karts del día y a Pilotos</span></div>
+    <div class="scroll" style="margin-top:8px;max-height:340px;overflow:auto"><table><thead><tr><th class="l" style="width:34px"></th><th class="l">Día</th><th class="l">Hora</th><th class="l">Sesión</th><th>Pilotos</th><th>Vueltas</th><th>Mejor vuelta</th><th class="l">Estado</th></tr></thead><tbody>
+    ${order.map(x => { const k = sid(x), inn = !excluded.has(k), laps = x.stints.flatMap(t => t.laps || []);
+      return `<tr class="click" data-s="${esc(k)}" style="${inn ? '' : 'opacity:.45'}"><td class="l"><input type="checkbox" ${inn ? 'checked' : ''} style="width:18px;height:18px;accent-color:var(--accent);pointer-events:none"></td>
+      <td class="l">${fmtD(x.date)}</td><td class="l num">${esc(x.time)}</td><td class="l"><b>${esc(x.title || x.type)}</b></td><td class="num">${x.stints.length}</td><td class="num">${laps.length}</td>
+      <td class="num">${laps.length ? fmtT(Math.min(...laps)) : '–'}</td><td class="l mini">${x.envivo ? '<span style="color:var(--vslow)">● en curso</span>' : isRace(x) ? 'carrera' : 'cronos'}</td></tr>`; }).join('')}
+    </tbody></table></div>` : ''}
     <div class="row" style="margin-top:10px"><button class="back" id="askC">💬 Pregunta a Claude sobre esta selección</button></div>
   </div>`;
   el.querySelectorAll('[data-d]').forEach(b => b.onclick = () => { const d = b.dataset.d; if (DAYS.has(d) && DAYS.size > 1) DAYS.delete(d); else DAYS.add(d); loadDays(); refreshRecorded(); });
-  el.querySelectorAll('[data-s]').forEach(b => b.onclick = () => { const k = b.dataset.s; excluded.has(k) ? excluded.delete(k) : excluded.add(k); render(); });
-  el.querySelector('[data-all]').onclick = () => { excluded.clear(); render(); };
-  el.querySelector('[data-none]').onclick = () => { all.forEach(x => excluded.add(sid(x))); render(); };
+  el.querySelectorAll('tr[data-s]').forEach(b => b.onclick = () => { const k = b.dataset.s; excluded.has(k) ? excluded.delete(k) : excluded.add(k); render(); });
+  el.querySelectorAll('[data-q]').forEach(b => b.onclick = () => {
+    const q = b.dataset.q; excluded.clear();
+    if (q === 'none') order.forEach(x => excluded.add(sid(x)));
+    if (q === 'race') order.filter(x => !isRace(x)).forEach(x => excluded.add(sid(x)));
+    if (q === 'crono') order.filter(isRace).forEach(x => excluded.add(sid(x)));
+    render();
+  });
+  $('selTog').onclick = () => { selOpen = !selOpen; store.set('selOpen', selOpen); renderSel(all); };
   $('askC').onclick = () => askClaude(null);
 }
 function askClaude(s) {
@@ -441,7 +463,7 @@ function renderPilotos(ses) {
   const el = $('pilOut');
   if (!A || !A.drivers.length) { el.innerHTML = `<div class="card empty">No hay vueltas en la selección (${daysLabel()}).</div>`; return; }
   const keff = {}; A.karts.forEach(k => keff[k.kart] = k.effect);
-  const all = A.drivers.filter(d => d.n >= pilMin && !/^KART\s*\d+$/.test(d.driver));
+  const all = A.drivers.filter(d => d.n >= pilMin && d.driver && !/^KART\s*\d+$/.test(d.driver));
   const best5 = {}; ses.forEach(s => s.stints.forEach(t => { const d = String(t.driver || '').replace(/^\d{1,3}\s*-\s*/, '').replace(/\s*\[[\d:]+\]\s*$/, '').trim().toUpperCase(); const b = Ingeniero.bestN(t.laps || [], 5); if (b && (!best5[d] || b < best5[d])) best5[d] = b; }));
   const dayBest = Math.min(...all.map(d => d.best));
   const rel = d => d.n >= 4 ? ['alta', 'Alta'] : d.n >= 2 ? ['media', 'Media'] : ['baja', 'Baja'];
