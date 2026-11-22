@@ -297,3 +297,13 @@ dyn1|countdown|2914997 ⏎
 dyn1|countdown|2884877 ⏎ 
 r9789c11|in|0:02 ⏎ r9791c11|in|0:02 ⏎ 
 dyn1|countdown|2854831 ⏎ 
+dyn1|countdown|2824703 ⏎ 
+r9789c11|in|0:03 ⏎ r9791c11|in|0:03 ⏎ 
+dyn1|countdown|2794650 ⏎ 
+r9789c1|so| ⏎ r9789c11|in| ⏎ r9789|*out|0 ⏎ 
+r9791c1|so| ⏎ r9791c11|in| ⏎ r9791|*out|0 ⏎ 
+dyn1|countdown|2764568 ⏎ 
+r9789c1|sr| ⏎ r9789c2||1 ⏎ r9789c6|in|1 ⏎ r9789c7|tn|37.739 ⏎ r9789c9|in|Vuelta 1 ⏎ r9789c11|in|0:00 ⏎ r9789|*|| ⏎ 
+r9791c1|sr| ⏎ r9791c2||2 ⏎ r9791c6|in|1 ⏎ r9791c7|tn|37.754 ⏎ r9791c8|in|0.155 ⏎ r9791c9|ib|0.155 ⏎ r9791c11|in|0:00 ⏎ r9791|*|| ⏎ 
+dyn1|countdown|2734561 ⏎ 
+r9789c11|in|0:01 ⏎ 
