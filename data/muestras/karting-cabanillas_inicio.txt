@@ -675,3 +675,5 @@ light|lf| ⏎
 com||<p><b>12:58</b><span data-flag="chequered"></span>Llegada</p><p><b>12:48</b><span data-flag="green"></span>Start</p> ⏎ dyn1|text| ⏎ 
 r17c2|sf| ⏎ r17c6|ti|54.337 ⏎ r17c7|ib|54.337 ⏎ r17c8|in|2.544 ⏎ r17c9|in|10 ⏎ r17|*|| ⏎ 
 r18c2|sf| ⏎ r18c6|tn|53.134 ⏎ r18c9|in|10 ⏎ r18|*|| ⏎ 
+ ⏎ 
+ ⏎ 
