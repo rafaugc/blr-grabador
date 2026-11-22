@@ -1,0 +1,50 @@
+name: Reprocesar copia en bruto
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'Número del turno de grabación cuya copia en bruto se procesa'
+        required: true
+      circuitos:
+        description: 'Circuitos a recuperar (separados por espacios)'
+        default: ''
+      volcar:
+        description: 'Opcional: "circuito HH:MM HH:MM" (UTC) para guardar mensajes en bruto'
+        default: ''
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  reprocesar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: bruto-${{ github.event.inputs.run_id }}
+          path: bruto
+          run-id: ${{ github.event.inputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Reprocesar
+        run: |
+          ARGS=""
+          if [ -n "${{ github.event.inputs.circuitos }}" ]; then ARGS="$ARGS --circuitos ${{ github.event.inputs.circuitos }}"; fi
+          if [ -n "${{ github.event.inputs.volcar }}" ]; then ARGS="$ARGS --volcar ${{ github.event.inputs.volcar }}"; fi
+          python -m grabador.reprocesar bruto $ARGS
+          python -m grabador.unir
+          python -m grabador.indice
+      - name: Subir
+        run: |
+          git config user.name "blr-grabador"
+          git config user.email "blr-grabador@users.noreply.github.com"
+          git add -A data/
+          if git diff --cached --quiet; then echo "Nada nuevo"; exit 0; fi
+          git commit -m "Reprocesado turno ${{ github.event.inputs.run_id }}"
+          for i in 1 2 3 4 5; do git pull --rebase -X theirs && git push && break; sleep 8; done
