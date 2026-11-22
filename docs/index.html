@@ -593,12 +593,13 @@ function renderRanking(ses) {
   <div class="card scroll"><div class="mini" style="margin-bottom:6px">${daysLabel()} · ${ses.length} sesiones · ${A.stints.length} tandas. Segundos por vuelta frente a un kart medio (negativo = más rápido).</div>
   <table><thead><tr><th class="l">#</th><th style="text-align:center">Kart</th><th class="l">Clase</th><th>Ventaja</th><th class="hm">±</th><th>Fiabilidad</th><th class="hm">Tandas</th><th class="hm">Pilotos</th><th>Mejor vuelta</th><th class="l hm">Lo llevaron</th></tr></thead><tbody>
   ${ks.map((k, i) => { const [c] = tier(k.effect), [cc, cl] = conf(k.se, k.drivers);
-    k.qcls = IngUI.quintile(i, ks.length);
+    const TC = { 't-fast': '#3ddc84', 't-good': '#a6e36a', '': '#c9cdd6', 't-slow': '#ffa24c', 't-vslow': '#ff5f5f' };
+    k.qcls = i < 2 && ks.length > 4 ? { n: '✈ Avión', c: '#4cc3ff' } : i >= ks.length - 2 && ks.length > 4 ? { n: 'Cepo', c: '#ff5f5f' } : { n: tier(k.effect)[1], c: TC[tier(k.effect)[0]] || '#c9cdd6' };
     const vd = (k.stints.find(t => t.best === k.best) || {}).driver, others = k.luckyDrivers.filter(d => d !== vd);
     return `<tr class="click" data-k="${esc(k.kart)}"><td class="l mini">${i + 1}</td><td class="k ${c}">${k.kart}</td><td class="l">${IngUI.badge(k.qcls)}</td><td class="num ${c}">${fmt(k.effect)} s</td><td class="num hm mini">${k.se.toFixed(2).replace('.', ',')}</td>
     <td><span class="badge ${cc}">${cl}</span></td><td class="num hm">${k.n}</td><td class="num hm">${k.drivers}</td><td class="num ${k.best === dayBest ? 'purple' : ''}">${fmtT(k.best)}</td><td class="l hm mini" style="max-width:260px;overflow:hidden;text-overflow:ellipsis"><span class="purple">${esc(vd || '')}</span>${others.length ? ', ' + esc(others.join(', ')) : ''}</td></tr>`; }).join('')}
   </tbody></table>
-  <div class="mini" style="margin-top:6px"><span class="purple">Morado</span>: en “Mejor vuelta” solo la VR del día; en “Lo llevaron”, quien hizo la VR con ese kart · Clase por quintiles: Pepino, Bueno, Medio, Malo, Cepo · Pulsa un kart para ver el detalle.</div></div>`;
+  <div class="mini" style="margin-top:6px"><span class="purple">Morado</span>: en “Mejor vuelta” solo la VR del día; en “Lo llevaron”, quien hizo la VR con ese kart · Clase: los 2 mejores son ✈ Avión y los 2 peores Cepo; el resto según su ventaja (Rápido ≤ −0,15 · Buen ritmo · Normal ±0,05 · Lento · Muy lento ≥ +0,15) · Pulsa un kart para ver el detalle.</div></div>`;
   el.querySelectorAll('tr[data-k]').forEach(tr => tr.onclick = () => {
     const k = ks.find(x => String(x.kart) === tr.dataset.k); if (!k) return;
     $('kmbox').innerHTML = IngUI.kartPopup(k, A, ses, null, tier(k.effect)[0]); $('kmodal').hidden = false;
