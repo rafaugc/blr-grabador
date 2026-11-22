@@ -758,3 +758,30 @@ r48c2|ss| ⏎ r48c6|ib|29.273 ⏎ r48c7|ib|38.951 ⏎ r48c8|ib|24.311 ⏎
 r57c2|ss| ⏎ 
 r57c6|ib|30.871 ⏎ r57c7|ib|39.072 ⏎ r57c8|ib|24.502 ⏎ 
 r67c2|ss| ⏎ 
+r67c6|ib|34.844 ⏎ r67c7|ib|44.552 ⏎ r67c8|ib|27.178 ⏎ 
+dyn1|count|723001 ⏎ 
+r51c2|ss| ⏎ r51c6|ib|32.476 ⏎ r51c7|ib|41.065 ⏎ r51c8|ib|25.475 ⏎ 
+light|lf| ⏎ 
+com||<p><b>12:43</b><span data-flag="chequered"></span>Llegada</p> ⏎ r48c2|sf| ⏎ r57c2|sf| ⏎ r51c2|sf| ⏎ r67c2|sf| ⏎ dyn1|text| ⏎ 
+r60c2|sf| ⏎ 
+r60c6|ib|31.663 ⏎ r60c7|ib|40.790 ⏎ r60c8|ib|24.744 ⏎ 
+r61c2|sf| ⏎ 
+r61c6|ib|27.507 ⏎ r61c7|ib|36.355 ⏎ r61c8|ib|22.524 ⏎ r62c2|sf| ⏎ r62c6|ib|27.510 ⏎ r62c7|ib|37.505 ⏎ r62c8|ib|22.170 ⏎ 
+r53c2|sf| ⏎ r53c6|ib|31.565 ⏎ r53c7|ib|40.807 ⏎ r53c8|ib|24.999 ⏎ 
+init|p| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#0000FF !important; color:#FFFFFF !important; ⏎ css|no2|border-bottom-color:#FF0000 !important; color:#FFFFFF !important; ⏎ css|no3|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no4|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no5|border-bottom-color:#E67300 !important; color:#FFFFFF !important; ⏎ css|no8|border-bottom-color:#FFB062 !important; color:#000000 !important; ⏎ css|no9|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no10|border-bottom-color:#59FF83 !important; color:#000000 !important; ⏎ css|no6|border-bottom-color:#00FF00 !important; color:#000000 !important; ⏎ css|no7|border-bottom-color:#000000 !important; color:#FFFFFF !important; ⏎ css|pena1|color:#f00; font-size:11px; font-weight: bold; text-align:center; ⏎ effects||Mostrar Efectos ⏎ comments||Comentarios ⏎ title1|| ⏎ title2||Sesión 16 ⏎ dyn1|count|1163 ⏎ light|lg| ⏎ wth1|| ⏎ wth2|| ⏎ wth3|| ⏎ track||Karting Campillos ⏎ com|| ⏎ grid||<tbody><tr data-id="r0" class="head" data-pos="0"><td data-id="c1" data-type="grp" data-pr="6"></td><td data-id="c2" data-type="sta" data-pr="1"></td><td data-id="c3" data-type="rk" data-pr="1">Clasif.</td><td data-id="c4" data-type="no" data-pr="1">Kart</td><td data-id="c5" data-type="dr" data-pr="1" data-width="18" data-min="16">Piloto</td><td data-id="c6" data-type="s1" data-pr="3" data-width="10" data-min="6">S1</td><td data-id="c7" data-type="s2" data-pr="3" data-width="10" data-min="6">S2</td><td data-id="c8" data-type="s3" data-pr="3" data-width="12" data-min="6">S3</td><td data-id="c9" data-type="llp" data-pr="2" data-width="10" data-min="7">Última vuelta</td><td data-id="c10" data-type="blp" data-pr="1" data-width="10" data-min="7">Mejor vuelta</td><td data-id="c11" data-type="gap" data-pr="4" data-width="10" data-min="7">Gap</td><td data-id="c12" data-type="int" data-pr="5" data-width="10" data-min="7">Interv.</td><td data-id="c13" data-type="tlp" data-pr="5" data-width="6" data-min="4">Vueltas</td></tr><tr data-id="r63" data-pos="1"><td data-id="r63c1" class="in"></td><td data-id="r63c2" class="in"></td><td class="rk"><div><p data-id="r63c3" class=""></p></div></td><td class="no"><div data-id="r63c4" class="no3">74</div></td><td data-id="r63c5" class="dr">RENEE</td><td data-id="r63c6" class=""></td><td data-id="r63c7" class=""></td><td data-id="r63c8" class=""></td><td data-id="r63c9" class=""></td><td data-id="r63c10" class="ib"></td><td data-id="r63c11" class="in"></td><td data-id="r63c12" class="in"></td><td data-id="r63c13" class="in"></td></tr><tr data-id="r64" data-pos="2"><td data-id="r64c1" class="in"></td><td data-id="r64c2" class="in"></td><td class="rk"><div><p data-id="r64c3" class=""></p></div></td><td class="no"><div data-id="r64c4" class="no3">85</div></td><td data-id="r64c5" class="dr">RIKS</td><td data-id="r64c6" class=""></td><td data-id="r64c7" class=""></td><td data-id="r64c8" class=""></td><td data-id="r64c9" class=""></td><td data-id="r64c10" class="ib"></td><td data-id="r64c11" class="in"></td><td data-id="r64c12" class="in"></td><td data-id="r64c13" class="in"></td></tr><tr data-id="r65" data-pos="3"><td data-id="r65c1" class="in"></td><td data-id="r65c2" class="in"></td><td class="rk"><div><p data-id="r65c3" class=""></p></div></td><td class="no"><div data-id="r65c4" class="no3">72</div></td><td data-id="r65c5" class="dr">KOLK</td><td data-id="r65c6" class=""></td><td data-id="r65c7" class=""></td><td data-id="r65c8" class=""></td><td data-id="r65c9" class=""></td><td data-id="r65c10" class="ib"></td><td data-id="r65c11" class="in"></td><td data-id="r65c12" class="in"></td><td data-id="r65c13" class="in"></td></tr><tr data-id="r74" data-pos="4"><td data-id="r74c1" class="in"></td><td data-id="r74c2" class="in"></td><td class="rk"><div><p data-id="r74c3" class=""></p></div></td><td class="no"><div data-id="r74c4" class="no3">92</div></td><td data-id="r74c5" class="dr">AINHOA3</td><td data-id="r74c6" class=""></td><td data-id="r74c7" class=""></td><td data-id="r74c8" class=""></td><td data-id="r74c9" class=""></td><td data-id="r74c10" class="ib"></td><td data-id="r74c11" class="in"></td><td data-id="r74c12" class="in"></td><td data-id="r74c13" class="in"></td></tr></tbody> ⏎ msg|| ⏎ 
+dyn1|count|31218 ⏎ 
+r64c2|sr| ⏎ 
+r64|*|| ⏎ 
+r63c2|sr| ⏎ 
+r63|*|| ⏎ 
+dyn1|count|61289 ⏎ 
+r64c2|in| ⏎ 
+r65c2|sr| ⏎ 
+r65|*|| ⏎ 
+r63c2|in| ⏎ 
+r65c2|in| ⏎ 
+r64c6|tb|24.838 ⏎ r64|*i1| ⏎ 
+r63c6|tb|24.069 ⏎ r64c6|ti|24.838 ⏎ r63|*i1| ⏎ 
+dyn1|count|91377 ⏎ 
+r65c6|ti|27.540 ⏎ r65|*i1| ⏎ 
+r74c2|sr| ⏎ r74|*|| ⏎ 
