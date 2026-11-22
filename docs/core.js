@@ -107,12 +107,19 @@
 
   // Une nombres que son el mismo piloto (p.ej. nombre cortado en el PDF)
   function nameMap(names) {
+    // mismo piloto escrito en otro orden ("OSCAR PEREZ" / "PEREZ OSCAR"): se usa la forma más repetida
+    const cnt = {}; names.forEach(n => cnt[n] = (cnt[n] || 0) + 1);
+    const key = n => n.replace(/-/g, ' ').split(/\s+/).filter(Boolean).sort().join(' ');
+    const rep = {}; Object.keys(cnt).forEach(n => { const k = key(n); if (!(k in rep) || cnt[n] > cnt[rep[k]]) rep[k] = n; });
+    const order = {}; Object.keys(cnt).forEach(n => order[n] = rep[key(n)]);
+    names = names.map(n => order[n]);
     const uniq = [...new Set(names)].sort((a, b) => b.length - a.length);
     const map = {};
     for (const n of uniq) {
       const longer = uniq.find(o => o !== n && o.length > n.length && n.length >= 12 && o.startsWith(n));
       map[n] = longer ? (map[longer] || longer) : n;
     }
+    Object.keys(order).forEach(n => { if (!(n in map)) map[n] = map[order[n]]; });
     return map;
   }
 
