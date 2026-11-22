@@ -1,19 +1,13 @@
 // ===== Ingeniero de pista: reglamento, cola de karts en box, clases por quintiles y recomendación de parada =====
 // Necesita KartCore (core.js). Todo en segundos salvo el reglamento (minutos).
 (function (root) {
-  const DEF = {
-    dur: 120,        // duración de la carrera (min)
-    minDriver: 30,   // tiempo mínimo por piloto (min)
-    stintMin: 10,    // relevo mínimo (min)
-    stintMax: 40,    // relevo máximo (min)
-    pitOpen: 10,     // el pit abre a los X min de carrera
-    pitClose: 10,    // el pit cierra a falta de X min
-    stopsMin: 4,     // paradas obligatorias
-    rows: 1,         // filas de karts en el box (1 o 2)
-    boxKarts: 4,     // karts esperando en el box al empezar
-    pitLoss: 55,     // segundos que pierdes en una parada (entrada + cambio + salida)
-    drivers: ['PILOTO 1', 'PILOTO 2', 'PILOTO 3']
+  // Plantillas de reglamento
+  const PRESETS = {
+    ckh: { name: 'CKH Henakart 2026 · individual 50′', dur: 50, minDriver: 0, stintMin: 5, stintMax: 50, pitOpen: 5, pitClose: 0, stopsMin: 2, rows: 1, boxKarts: 4, pitLoss: 105, drivers: ['TÚ'],
+      notes: 'Reglamento CKH 2026: carrera de 50′ (bandera al pasar el líder tras 50′), mínimo 5′ con cada kart antes de entrar, mínimo 2 paradas, cambio de kart por orden de llegada, cada pasada por pit lane mínimo 2′ (si no: tiempo adelantado + 1 vuelta). Sanciones por relevo corto: <2′ 1 vuelta · 2–5′ 2 vueltas · >5′ 5 vueltas. Parada no hecha: 6 vueltas. El último relevo se mide hasta el crono de 50′.' },
+    equipos: { name: 'Resistencia por equipos · ejemplo 2 h', dur: 120, minDriver: 30, stintMin: 10, stintMax: 40, pitOpen: 10, pitClose: 10, stopsMin: 4, rows: 1, boxKarts: 4, pitLoss: 55, drivers: ['PILOTO 1', 'PILOTO 2', 'PILOTO 3'], notes: 'Valores de ejemplo.' }
   };
+  const DEF = Object.assign({ preset: 'ckh' }, PRESETS.ckh);
   // Clases por quintiles de ritmo (de mejor a peor)
   const CLASSES = [
     { k: 'pepino', n: 'Pepino', c: '#3ddc84' },
@@ -44,10 +38,11 @@
     const N = TEAM_NAMES.length;
     const used = new Set();
     const pname = () => { let n; do { n = FIRST[Math.floor(r() * FIRST.length)] + ' ' + LAST[Math.floor(r() * LAST.length)]; } while (used.has(n)); used.add(n); return n; };
-    const teams = TEAM_NAMES.map((name, i) => ({
-      id: i, name, dorsal: i + 1,
-      drivers: (i === 0 ? cfg.drivers.slice(0, 3) : [0, 1, 2].map(pname)).map((n, j) => ({ name: n, lvl: (i === 0 ? -0.25 : 0) + gauss(r) * 0.38 + (j === 2 ? 0.1 : 0) }))
-    }));
+    const nD = Math.max(1, Math.min(4, cfg.drivers.length));
+    const teams = TEAM_NAMES.map((tn, i) => {
+      const drivers = (i === 0 ? cfg.drivers.slice(0, nD) : Array.from({ length: nD }, pname)).map((n, j) => ({ name: n, lvl: (i === 0 ? -0.25 : 0) + gauss(r) * 0.38 + (j === 2 ? 0.1 : 0) }));
+      return { id: i, name: nD === 1 ? drivers[0].name : (i === 0 ? 'BLR Racing' : tn), dorsal: i + 1, drivers };
+    });
     // karts físicos: los que salen con dorsal 1..N y los que esperan en el box (N+1..)
     const karts = [];
     const nk = N + cfg.boxKarts;
@@ -70,7 +65,7 @@
     const T = W.teams.map((tm, i) => {
       const r = rng(W.seed * 100 + i + 1);
       const stops = cfg.stopsMin + (r() < 0.25 ? 1 : 0);
-      return { id: i, r, kart: tm.dorsal, drv: 0, stintStart: 0, stops: 0, plannedStops: stops, plan: 0, next: 0, laps: 0, lastLap: 0, done: false, drive: [0, 0, 0] };
+      return { id: i, r, kart: tm.dorsal, drv: 0, stintStart: 0, stops: 0, plannedStops: stops, plan: 0, next: 0, laps: 0, lastLap: 0, done: false, drive: tm.drivers.map(() => 0) };
     });
     const planStint = t => {
       const left = D - t.stintStart, stintsLeft = Math.max(1, t.plannedStops - t.stops + 1);
@@ -106,8 +101,8 @@
         events.push({ type: 'pit', team: t.id, ts, row, out: t.kart, in: take });
         t.kart = take; t.stops++;
         // cambio de piloto: el que menos ha conducido
-        const nd = [0, 1, 2].filter(j => j !== t.drv).sort((a, b) => t.drive[a] - t.drive[b])[0];
-        t.drv = nd; t.stintStart = ts + cfg.pitLoss; t.plan = planStint(t);
+        const nds = t.drive.map((_, j) => j).filter(j => j !== t.drv).sort((a, b) => t.drive[a] - t.drive[b]);
+        if (nds.length) t.drv = nds[0]; t.stintStart = ts + cfg.pitLoss; t.plan = planStint(t);
         t.curLap = lapT(t, cfg.pitLoss + 1.5);
       } else t.curLap = lapT(t);
       t.next = ts + t.curLap;
@@ -228,7 +223,9 @@
     out.stintT = Math.max(0, now - stintStart);
     out.stops = T.stops;
     out.stopsLeft = Math.max(0, cfg.stopsMin - T.stops);
-    out.pitOpenAt = cfg.pitOpen * 60; out.pitCloseAt = D - cfg.pitClose * 60;
+    out.pitOpenAt = cfg.pitOpen * 60;
+    // cierre efectivo: el pit, y que el último relevo también cumpla el mínimo
+    out.pitCloseAt = Math.min(D - cfg.pitClose * 60, D - cfg.stintMin * 60 - cfg.pitLoss);
     out.windowNow = now >= out.pitOpenAt && now <= out.pitCloseAt;
     out.minAt = stintStart + cfg.stintMin * 60;
     // último momento posible: relevo máximo, cierre del pit y que quepan las paradas que faltan
@@ -265,8 +262,11 @@
     out.soon = Object.values(TR.teams).filter(x => x.id !== myId).map(x => {
       const xs = x.stints[x.stints.length - 1];
       const t = Math.max(0, now - xs.start);
-      return { name: x.name, stintT: t, toMax: cfg.stintMax * 60 - t, cls: (TR.karts[x.cur] || {}).cls || UNKNOWN };
-    }).filter(x => x.stintT >= cfg.stintMin * 60 && now >= out.pitOpenAt).sort((a, b) => a.toMax - b.toMax).slice(0, 5);
+      const left = Math.max(0, cfg.stopsMin - x.stops);
+      const fit = left > 0 ? out.pitCloseAt - (left - 1) * (cfg.stintMin * 60 + cfg.pitLoss) : Infinity;
+      const dl = Math.min(xs.start + cfg.stintMax * 60 < D ? xs.start + cfg.stintMax * 60 : Infinity, fit);
+      return { name: x.name, stintT: t, toMax: dl - now, left, cls: (TR.karts[x.cur] || {}).cls || UNKNOWN };
+    }).filter(x => x.stintT >= cfg.stintMin * 60 && now >= out.pitOpenAt && isFinite(x.toMax)).sort((a, b) => a.toMax - b.toMax).slice(0, 5);
     // decisión
     const pc = p => Math.round(100 * (p || 0));
     const good = (nextProbs.pepino || 0) + (nextProbs.bueno || 0);
@@ -278,7 +278,7 @@
     if (out.canPit && out.toMax <= lap * 1.2) { out.level = 'must'; out.title = 'ENTRA ESTA VUELTA'; out.text = 'Se acaba el tiempo máximo de relevo o la ventana para cumplir las paradas.'; return out; }
     if (!out.windowNow && now < out.pitOpenAt) { out.level = 'wait'; out.title = 'Pit cerrado'; out.text = `Abre en ${clockFmt(out.pitOpenAt - now)}.`; return out; }
     if (now < out.minAt) { out.level = 'wait'; out.title = 'Aún no puedes parar'; out.text = `Relevo mínimo cumplido en ${clockFmt(out.minAt - now)}.`; return out; }
-    if (now > out.pitCloseAt) { out.level = 'ok'; out.title = 'Pit cerrado'; out.text = 'Ya no se puede entrar.'; return out; }
+    if (now > out.pitCloseAt) { if (out.stopsLeft > 0) { out.level = 'must'; out.title = `Faltan ${out.stopsLeft} parada${out.stopsLeft > 1 ? 's' : ''}`; out.text = 'Ya no da tiempo a cumplirlas con el relevo mínimo: cada parada no hecha penaliza (en CKH, 6 vueltas).'; } else { out.level = 'ok'; out.title = 'Pit cerrado'; out.text = 'Paradas cumplidas: hasta el final.'; } return out; }
     if (out.canPit && good >= 0.5 && (out.gainPerLap == null || out.gainPerLap > 0.08)) {
       out.level = 'go'; out.title = fronts.length === 1 ? `PARA YA: te espera un ${out.nextCls.n.toUpperCase()}` : `BUEN MOMENTO: ${pc(good)}% de coger kart bueno`;
       out.text = out.gainTotal != null ? `Ganarías unos ${Math.max(0, out.gainTotal).toFixed(1).replace('.', ',')} s en el próximo relevo frente a tu kart actual.` : 'Kart bueno en cabeza del box.';
@@ -306,5 +306,5 @@
     return best;
   }
 
-  root.Ingeniero = { DEF, CLASSES, UNKNOWN, makeWorld, simulate, simulateSprints, track, advise, clockFmt, lastN, bestN, validOf };
+  root.Ingeniero = { DEF, PRESETS, CLASSES, UNKNOWN, makeWorld, simulate, simulateSprints, track, advise, clockFmt, lastN, bestN, validOf };
 })(typeof window !== 'undefined' ? window : globalThis);

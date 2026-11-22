@@ -16,7 +16,7 @@
   function kartPopup(k, A, sessions, idOf, cls) {
     const dmap = {}; A.drivers.forEach(d => dmap[d.driver] = d);
     const keff = {}; A.karts.forEach(x => keff[x.kart] = x.effect);
-    const clean = d => String(d || '').replace(/^\d{1,3}\s*-\s*/, '').replace(/\s*\[\d{1,2}:\d{2}(?::\d{2})?\]\s*$/, '').trim().toUpperCase();
+    const clean = d => String(d || '').replace(/^\d{1,3}\s*-\s*/, '').replace(/\s*\[\d{1,2}:\d{2}(?::\d{2})?\]\s*$/, '').trim().toUpperCase().replace(/[ÁÀÂÄ]/g, 'A').replace(/[ÉÈÊË]/g, 'E').replace(/[ÍÌÎÏ]/g, 'I').replace(/[ÓÒÔÖ]/g, 'O').replace(/[ÚÙÛÜ]/g, 'U').replace(/\s+/g, ' ');
     const label = s => (s.title || s.type || '') + ' · ' + (s.time || '');
     const by = {};
     sessions.forEach(s => s.stints.forEach(t => {
@@ -113,14 +113,14 @@
     const drvColor = {}; const pal = ['#ffd23f', '#4cc3ff', '#ff8fb1', '#a6e36a'];
     cfg.drivers.forEach((d, i) => drvColor[d] = pal[i % 4]);
     const tl = `<div class="tl">
-      <div class="tlwin" style="left:${pct(cfg.pitOpen * 60)}%;width:${pct(D - cfg.pitClose * 60) - pct(cfg.pitOpen * 60)}%"></div>
+      <div class="tlwin" style="left:${pct(cfg.pitOpen * 60)}%;width:${pct(adv.pitCloseAt) - pct(cfg.pitOpen * 60)}%"></div>
       ${stints.map((s, i) => { const a = s.start, b = s.end ?? now; const d = (s.laps[0] || {}).driver || ''; return `<div class="tlst" style="left:${pct(a)}%;width:${Math.max(0.3, pct(b) - pct(a))}%;background:${drvColor[d] || '#8a909c'}" title="${esc(d)} ${clk(b - a)}"><span>${esc(d)}</span></div>`; }).join('')}
       ${T ? T.pitTimes.map(p => `<div class="tlpit" style="left:${pct(p)}%"></div>`).join('') : ''}
       ${isFinite(adv.maxAt) && adv.maxAt > now ? `<div class="tlmax" style="left:${pct(adv.maxAt)}%" title="Último momento para parar"></div>` : ''}
       ${adv.earliest > now ? `<div class="tlmin" style="left:${pct(adv.earliest)}%"></div>` : ''}
       <div class="tlnow" style="left:${pct(now)}%"></div>
     </div>
-    <div class="tlax"><span>0:00</span><span>pit abre ${clk(cfg.pitOpen * 60)}</span><span>${clk(D / 2)}</span><span>pit cierra ${clk(D - cfg.pitClose * 60)}</span><span>${clk(D)}</span></div>`;
+    <div class="tlax"><span>0:00</span><span>pit abre ${clk(cfg.pitOpen * 60)}</span><span>${clk(D / 2)}</span><span>última entrada ${clk(adv.pitCloseAt)}</span><span>${clk(D)}</span></div>`;
     // barra del relevo actual
     const sMax = cfg.stintMax * 60, sMin = cfg.stintMin * 60;
     const stBar = `<div class="sbar"><div class="sfill" style="width:${Math.min(100, adv.stintT / sMax * 100)}%;background:${adv.stintT < sMin ? '#5d636e' : adv.stintT > sMax - 180 ? '#ff5f5f' : '#3ddc84'}"></div><div class="smin" style="left:${sMin / sMax * 100}%"></div></div>
@@ -145,7 +145,7 @@
     const need = cfg.minDriver * 60;
     const drvHTML = drv.map(d => `<div class="drow"><span class="dname"><i style="background:${drvColor[d.name] || '#8a909c'}"></i>${esc(d.name)}${d.name === adv.driverNow ? ' <span class="mini">(al volante)</span>' : ''}</span>
       <div class="dbar"><div style="width:${Math.min(100, d.t / Math.max(need * 1.6, 1) * 100)}%;background:${d.need > 0 ? '#ffa24c' : '#3ddc84'}"></div><div class="dmin" style="left:${100 / 1.6}%"></div></div>
-      <span class="num">${clk(d.t)}</span><span class="mini">${d.need > 0 ? 'faltan ' + clk(d.need) : '✓ mínimo'}</span></div>`).join('');
+      <span class="num">${clk(d.t)}</span><span class="mini">${!cfg.minDriver ? '' : d.need > 0 ? 'faltan ' + clk(d.need) : '✓ mínimo'}</span></div>`).join('');
     // ranking de karts en tiempo real
     const ks = Object.values(TR.karts).filter(k => k.est != null && !k.guess).sort((a, b) => a.est - b.est);
     const where = k => k.inBox ? `box ${TR.box.length > 1 ? 'fila ' + 'AB'[+k.inBox[0] - 1] + ' ' : ''}${k.inBox.split('·')[1]}º` : k.team ? esc(k.team) : k.boxP > 0.05 ? `box (${Math.round(Math.min(1, k.boxP) * 100)}% prob.)` : 'en pista (equipo no seguro)';
@@ -171,12 +171,12 @@
         <div class="vsarrow">➜</div>
         <div><span class="mini">Si entras ya</span><div class="vsk" style="color:${adv.nextCls ? adv.nextCls.c : '#888'}">${adv.nextCls ? (adv.fronts.length > 1 ? '~' : '') + adv.nextCls.n : '–'}</div><div class="mini num">${adv.nextEst != null ? fmt(adv.nextEst) + ' s/v' : 'sin datos'}</div></div></div>
         ${adv.gainTotal != null ? `<div class="mini" style="text-align:center;margin-top:6px">Diferencia en el próximo relevo: <b class="${adv.gainTotal > 0 ? 't-fast' : 't-slow'}">${adv.gainTotal > 0 ? 'ganas' : 'pierdes'} ~${Math.abs(adv.gainTotal).toFixed(1).replace('.', ',')} s</b></div>` : ''}
-        <h4 style="margin-top:14px">Pilotos · mínimo ${cfg.minDriver}′</h4>${drvHTML}
+        <h4 style="margin-top:14px">${cfg.drivers.length > 1 ? `Pilotos · mínimo ${cfg.minDriver}′` : 'Tiempo al volante'}</h4>${drvHTML}
         ${adv.driverWarn ? `<div class="mini t-vslow">${esc(adv.driverWarn)}</div>` : ''}</div>
     </div>
     <div class="grid2">
-      <div class="card"><h4>Rivales que tienen que parar pronto</h4>
-        ${adv.soon && adv.soon.length ? `<table><thead><tr><th class="l">Equipo</th><th>Relevo</th><th>Debe parar en</th><th class="l">Su kart</th></tr></thead><tbody>${adv.soon.map(x => `<tr><td class="l">${esc(x.name)}</td><td class="num">${clk(x.stintT)}</td><td class="num ${x.toMax < 120 ? 't-vslow' : ''}">${clk(x.toMax)}</td><td class="l">${badge(x.cls)}</td></tr>`).join('')}</tbody></table>` : '<div class="mini">Nadie cerca de su máximo.</div>'}
+      <div class="card"><h4>Rivales que tienen que parar pronto</h4><div class="mini" style="margin:-4px 0 6px">Por relevo máximo o porque si no, no les da tiempo a hacer las paradas que les faltan.</div>
+        ${adv.soon && adv.soon.length ? `<table><thead><tr><th class="l">${cfg.drivers.length > 1 ? 'Equipo' : 'Piloto'}</th><th>Relevo</th><th>Debe parar en</th><th class="l">Su kart</th></tr></thead><tbody>${adv.soon.map(x => `<tr><td class="l">${esc(x.name)}</td><td class="num">${clk(x.stintT)}</td><td class="num ${x.toMax < 120 ? 't-vslow' : ''}">${clk(x.toMax)}</td><td class="l">${badge(x.cls)}</td></tr>`).join('')}</tbody></table>` : '<div class="mini">Nadie cerca de su máximo.</div>'}
         <div class="mini" style="margin-top:6px">Cada uno que entre antes que tú se lleva el primer kart del box.</div></div>
       <div class="card"><h4>Ranking de karts en tiempo real</h4><div class="scroll" style="max-height:300px">
         <table><thead><tr><th class="l">#</th><th class="l">Kart</th><th class="l">Clase</th><th>s/vuelta</th><th class="l">Dónde está</th></tr></thead><tbody>
@@ -188,25 +188,29 @@
 
   function rulesForm(cfg) {
     const f = (k, l, h, step) => `<label class="fld"><span>${l}</span><input type="number" data-cfg="${k}" value="${cfg[k]}" step="${step || 1}" min="0"><small>${h || ''}</small></label>`;
-    return `<div class="card"><h4>Reglamento de la carrera</h4>
+    const P = I.PRESETS;
+    return `<div class="card"><h4>Plantilla</h4><div class="row">${Object.entries(P).map(([k, p]) => `<button class="${cfg.preset === k ? 'btn' : 'btn ghost'}" data-preset="${k}">${esc(p.name)}</button>`).join('')}</div>
+      ${P[cfg.preset] ? `<div class="mini" style="margin-top:8px">${esc(P[cfg.preset].notes)}</div>` : ''}</div>
+      <div class="card"><h4>Reglamento de la carrera</h4>
       <div class="flds">
         ${f('dur', 'Duración (min)')}
         ${f('minDriver', 'Mínimo por piloto (min)')}
         ${f('stintMin', 'Relevo mínimo (min)')}
-        ${f('stintMax', 'Relevo máximo (min)')}
+        ${f('stintMax', 'Relevo máximo (min)', 'igual a la duración = sin máximo')}
         ${f('pitOpen', 'El pit abre a los (min)', 'desde la salida')}
-        ${f('pitClose', 'El pit cierra a falta de (min)')}
+        ${f('pitClose', 'El pit cierra a falta de (min)', '0 = abierto hasta el final')}
         ${f('stopsMin', 'Paradas obligatorias')}
-        ${f('pitLoss', 'Tiempo perdido por parada (s)')}
+        ${f('pitLoss', 'Tiempo perdido por parada (s)', 'frente a dar la vuelta normal')}
         <label class="fld"><span>Filas de karts en el box</span><select data-cfg="rows"><option value="1" ${cfg.rows === 1 ? 'selected' : ''}>1 fila</option><option value="2" ${cfg.rows === 2 ? 'selected' : ''}>2 filas</option></select></label>
         ${f('boxKarts', 'Karts esperando en el box')}
-        <label class="fld" style="grid-column:1/-1"><span>Pilotos de tu equipo (separados por comas)</span><input type="text" data-cfg="drivers" value="${esc(cfg.drivers.join(', '))}"></label>
+        <label class="fld" style="grid-column:1/-1"><span>Pilotos de tu equipo (separados por comas; uno solo si es individual)</span><input type="text" data-cfg="drivers" value="${esc(cfg.drivers.join(', '))}"></label>
       </div></div>`;
   }
   function readRules(el, cfg) {
     const c = Object.assign({}, cfg);
     el.querySelectorAll('[data-cfg]').forEach(i => { const k = i.dataset.cfg; c[k] = k === 'drivers' ? i.value.split(',').map(x => x.trim().toUpperCase()).filter(Boolean) : +i.value; });
     if (c.drivers.length < 1) c.drivers = cfg.drivers;
+    c.preset = 'propio';
     return c;
   }
 
