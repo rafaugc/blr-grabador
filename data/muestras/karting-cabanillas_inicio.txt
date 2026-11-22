@@ -862,3 +862,15 @@ dyn1|countdown|107715 ⏎
 r25c2|sr| ⏎ r25c6|tn|58.334 ⏎ r25c9|in|9 ⏎ r25|*|58334| ⏎ 
 r25c2|in| ⏎ 
 dyn1|countdown|77703 ⏎ 
+r24c2|sr| ⏎ r24c6|tn|1:07.324 ⏎ r24c9|in|7 ⏎ r24|*|66880| ⏎ 
+r24c2|in| ⏎ 
+dyn1|countdown|47582 ⏎ 
+r25c2|sr| ⏎ 
+r25c6|tn|58.185 ⏎ r25c9|in|10 ⏎ r25|*|58185| ⏎ 
+r25c2|in| ⏎ 
+dyn1|countdown|17565 ⏎ 
+light|lf| ⏎ 
+com||<p><b>13:40</b><span data-flag="chequered"></span>Llegada</p><p><b>13:30</b><span data-flag="green"></span>Start</p> ⏎ dyn1|text| ⏎ 
+r24c2|sf| ⏎ 
+r24c6|tn|1:09.875 ⏎ r24c9|in|8 ⏎ r24|*|| ⏎ 
+r25c2|sf| ⏎ r25c6|tn|57.583 ⏎ r25c9|in|11 ⏎ r25|*|| ⏎ 
