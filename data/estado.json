@@ -7,9 +7,9 @@
   "sesiones": 0,
   "errores_lectura": 0,
   "titulo": "Sesión 14",
-  "ultima_ejecucion": "2026-11-22 00:29 UTC",
+  "ultima_ejecucion": "2026-11-22 06:41 UTC",
   "sesiones_total": 6,
-  "ultima_conexion_ok": "2026-11-22 00:29 UTC",
+  "ultima_conexion_ok": "2026-11-22 06:41 UTC",
   "ultima_sesion": "2026-11-21 16:47 Q JUNIOR CUP"
  },
  "kartodromo-lucas-guerrero": {
@@ -19,9 +19,9 @@
   "mensajes": 349,
   "sesiones": 0,
   "errores_lectura": 0,
-  "ultima_ejecucion": "2026-11-22 00:29 UTC",
+  "ultima_ejecucion": "2026-11-22 06:41 UTC",
   "sesiones_total": 0,
-  "ultima_conexion_ok": "2026-11-22 00:29 UTC",
+  "ultima_conexion_ok": "2026-11-22 06:41 UTC",
   "ultima_sesion": null
  },
  "kartodromodeviana": {
@@ -32,22 +32,22 @@
   "sesiones": 0,
   "errores_lectura": 0,
   "titulo": "Sessão 1",
-  "ultima_ejecucion": "2026-11-22 00:29 UTC",
+  "ultima_ejecucion": "2026-11-22 06:41 UTC",
   "sesiones_total": 3,
-  "ultima_conexion_ok": "2026-11-22 00:29 UTC",
+  "ultima_conexion_ok": "2026-11-22 06:41 UTC",
   "ultima_sesion": "2026-11-21 11:20 GP 5 + 10+10 - Final"
  },
  "karting-vendrell": {
   "nombre": "Karting Vendrell",
   "conectado": true,
   "conexiones": 1,
-  "mensajes": 360,
+  "mensajes": 350,
   "sesiones": 0,
   "errores_lectura": 0,
   "titulo": "Sesión 4",
-  "ultima_ejecucion": "2026-11-22 00:29 UTC",
+  "ultima_ejecucion": "2026-11-22 06:41 UTC",
   "sesiones_total": 0,
-  "ultima_conexion_ok": "2026-11-22 00:29 UTC",
+  "ultima_conexion_ok": "2026-11-22 06:41 UTC",
   "ultima_sesion": null
  },
  "karting-sevilla": {
@@ -57,9 +57,9 @@
   "mensajes": 349,
   "sesiones": 0,
   "errores_lectura": 0,
-  "ultima_ejecucion": "2026-11-22 00:29 UTC",
+  "ultima_ejecucion": "2026-11-22 06:41 UTC",
   "sesiones_total": 0,
-  "ultima_conexion_ok": "2026-11-22 00:29 UTC",
+  "ultima_conexion_ok": "2026-11-22 06:41 UTC",
   "ultima_sesion": null
  },
  "karting-rivas": {
@@ -69,9 +69,9 @@
   "mensajes": 349,
   "sesiones": 0,
   "errores_lectura": 0,
-  "ultima_ejecucion": "2026-11-22 00:29 UTC",
+  "ultima_ejecucion": "2026-11-22 06:41 UTC",
   "sesiones_total": 0,
-  "ultima_conexion_ok": "2026-11-22 00:29 UTC",
+  "ultima_conexion_ok": "2026-11-22 06:41 UTC",
   "ultima_sesion": null
  },
  "henakart": {
@@ -81,35 +81,35 @@
   "mensajes": 349,
   "sesiones": 0,
   "errores_lectura": 0,
-  "ultima_ejecucion": "2026-11-22 00:29 UTC",
+  "ultima_ejecucion": "2026-11-22 06:41 UTC",
   "sesiones_total": 0,
-  "ultima_conexion_ok": "2026-11-22 00:29 UTC",
+  "ultima_conexion_ok": "2026-11-22 06:41 UTC",
   "ultima_sesion": null
  },
  "karting-campillos": {
   "nombre": "Karting Campillos",
   "conectado": true,
   "conexiones": 1,
-  "mensajes": 968,
-  "sesiones": 1,
+  "mensajes": 350,
+  "sesiones": 0,
   "errores_lectura": 0,
   "titulo": "CARRERA VEINLUC",
-  "ultima_sesion": "2026-11-21 19:40 CARRERA VEINLUC",
-  "ultima_ejecucion": "2026-11-22 00:29 UTC",
+  "ultima_ejecucion": "2026-11-22 06:41 UTC",
   "sesiones_total": 15,
-  "ultima_conexion_ok": "2026-11-22 00:29 UTC"
+  "ultima_conexion_ok": "2026-11-22 06:41 UTC",
+  "ultima_sesion": "2026-11-21 19:40 CARRERA VEINLUC"
  },
  "circuito-dr7": {
   "nombre": "DR7",
   "conectado": true,
   "conexiones": 1,
-  "mensajes": 10518,
-  "sesiones": 7,
+  "mensajes": 350,
+  "sesiones": 0,
   "errores_lectura": 0,
   "titulo": "Carrera +65",
-  "ultima_sesion": "2026-11-21 22:47 Carrera +65",
-  "ultima_ejecucion": "2026-11-22 00:29 UTC",
+  "ultima_ejecucion": "2026-11-22 06:41 UTC",
   "sesiones_total": 14,
-  "ultima_conexion_ok": "2026-11-22 00:29 UTC"
+  "ultima_conexion_ok": "2026-11-22 06:41 UTC",
+  "ultima_sesion": "2026-11-21 22:47 Carrera +65"
  }
 }
