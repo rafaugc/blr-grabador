@@ -8,11 +8,14 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0c0d10">
 <link rel="manifest" href="manifest.json">
-<title>BLR · En directo</title>
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icono-192.png">
+<meta name="apple-mobile-web-app-title" content="KR Karts">
+<title>KR Karts · En directo</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-<script src="core.js?v=20261122c"></script>
-<script src="ingeniero.js?v=20261122c"></script>
-<script src="ingeniero-ui.js?v=20261122c"></script>
+<script src="core.js?v=20261122d"></script>
+<script src="ingeniero.js?v=20261122d"></script>
+<script src="ingeniero-ui.js?v=20261122d"></script>
 <style>
 :root{--bg:#0c0d10;--panel:#14161b;--panel2:#1b1e25;--line:#262a33;--text:#e9ebf0;--mute:#8a909c;--dim:#5d636e;--fast:#3ddc84;--good:#a6e36a;--slow:#ffa24c;--vslow:#ff5f5f;--purple:#b38cff;--accent:#ffd23f}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,system-ui,sans-serif}
@@ -49,6 +52,11 @@ th.l,td.l{text-align:left}td.k{font:700 21px/1 "Barlow Condensed";text-align:cen
 iframe{width:100%;height:78vh;border:1px solid var(--line);border-radius:12px;background:#fff}
 .flash{animation:fl 1.2s}@keyframes fl{from{background:#2a2410}to{background:transparent}}
 .empty{padding:30px;text-align:center;color:var(--mute)}
+.btn{display:inline-block;background:var(--accent);color:#111;border:0;border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer;text-decoration:none}.btn.ghost{background:var(--panel2);color:var(--text);border:1px solid var(--line)}.btn:disabled{opacity:.5}
+.star{cursor:pointer;font-size:18px;color:var(--dim);user-select:none}.star.on{color:var(--accent)}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:28px;text-align:center;cursor:pointer}.drop.over{border-color:var(--accent)}
+.ok-t{color:var(--fast)}.err-t{color:var(--vslow)}
+.steps{margin:8px 0 0 18px;padding:0}.steps li{margin:4px 0}
 body.pilot header,body.pilot nav.tabs,body.pilot .foot{display:none}
 body.pilot .wrap{max-width:none;padding:0}
 body.pilot{overflow:hidden;position:fixed;inset:0}
@@ -107,7 +115,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#171a20}
 <body>
 <div class="wrap">
   <header>
-    <div class="logo">BLR <span>en directo</span></div>
+    <div class="logo">KR <span>en directo</span></div>
     <select id="circ"></select>
     <select id="dia"></select>
     <div class="grow"></div>
@@ -123,6 +131,8 @@ tr.click{cursor:pointer}tr.click:hover td{background:#171a20}
     <a data-v="sesiones">Sesiones</a>
     <a data-v="apex">Live timing de Apex</a>
     <a data-v="piloto">Vista piloto</a>
+    <a data-v="circuitos">Circuitos</a>
+    <a data-v="pdf">Importar PDF</a>
   </nav>
 
   <div id="selWrap">
@@ -142,6 +152,8 @@ tr.click{cursor:pointer}tr.click:hover td{background:#171a20}
   <section class="view" id="v-ing"><div id="ingOut"></div></section>
   <section class="view" id="v-sesiones"><div id="sesOut"></div></section>
   <section class="view" id="v-piloto"><div id="pilotOut"></div></section>
+  <section class="view" id="v-circuitos"><div id="circOut"></div></section>
+  <section class="view" id="v-pdf"><div id="pdfOut"></div></section>
   <section class="view" id="v-apex">
     <div class="mini" style="margin-bottom:8px">El live timing oficial del circuito, tal cual. Si no se ve, <a id="apexLink" target="_blank" style="color:var(--accent)">ábrelo aquí</a>.</div>
     <iframe id="apexFrame" title="Live timing Apex" loading="lazy"></iframe>
@@ -152,7 +164,8 @@ tr.click{cursor:pointer}tr.click:hover td{background:#171a20}
 <div class="modal" id="kmodal" hidden><div class="box" id="kmbox"></div></div>
 <script>
 (() => {
-const REPO = 'rafaugc/blr-grabador';
+const REPO = (() => { const h = location.hostname.match(/^([\w-]+)\.github\.io$/i), seg = location.pathname.split('/')[1]; return h && seg ? h[1] + '/' + seg : 'rafaugc/rafa_krtrnk'; })();
+const GH = 'https://github.com/' + REPO;
 const RAW = `https://raw.githubusercontent.com/${REPO}/main/`;
 const API = `https://api.github.com/repos/${REPO}/contents/`;
 const $ = id => document.getElementById(id);
@@ -188,6 +201,8 @@ document.querySelectorAll('#tabs a').forEach(a => a.onclick = () => {
   $('selWrap').style.display = ['ranking', 'pilotos'].includes(a.dataset.v) ? '' : 'none';
   if (a.dataset.v === 'ing') { ING.editing = false; renderIng(); }
   if (a.dataset.v === 'piloto') { pilotReady = false; renderPilot(true); }
+  if (a.dataset.v === 'circuitos') renderCircs();
+  if (a.dataset.v === 'pdf') renderPdf();
 });
 $('method').onclick = e => { const b = e.target.closest('button'); if (!b) return; opts.method = b.dataset.v; document.querySelectorAll('#method button').forEach(x => x.classList.toggle('on', x === b)); render(); };
 $('traffic').onchange = e => { opts.noTraffic = e.target.checked; render(); };
@@ -198,10 +213,21 @@ const baseUrl = c => (c.url || `https://www.apex-timing.com/live-timing/${c.slug
 // ---------- circuitos ----------
 async function loadCircuits() {
   try { CIRCS = await (await fetch(RAW + 'circuitos.json?t=' + Date.now())).json(); } catch { CIRCS = []; }
-  const fav = store.get('circ', 'circuito-dr7');
-  $('circ').innerHTML = CIRCS.map(c => `<option value="${esc(c.slug)}" ${c.slug === fav ? 'selected' : ''}>${esc(c.nombre)}</option>`).join('');
+  // circuitos que solo tienen PDF (sin live timing) también se pueden elegir
+  const idx = await loadIndex();
+  Object.keys(idx ? idx.circuitos : {}).forEach(slug => { if (!CIRCS.some(c => c.slug === slug)) CIRCS.push({ slug, nombre: slug.replace(/-/g, ' ').replace(/\b\w/g, x => x.toUpperCase()), soloPdf: true }); });
+  fillCircSelect();
   $('circ').onchange = () => { store.set('circ', $('circ').value); start(); };
   start();
+}
+const FAV0 = ['ariza-racing-circuit', 'circuito-dr7', 'henakart', 'karting-cabanillas', 'karting-los-santos', 'kartodromodeviana'];
+const favs = () => new Set(store.get('favs', FAV0));
+function fillCircSelect() {
+  const cur = $('circ').value || store.get('circ', 'circuito-dr7'), F = favs();
+  const opt = c => `<option value="${esc(c.slug)}" ${c.slug === cur ? 'selected' : ''}>${esc(c.nombre)}</option>`;
+  const byName = (a, b) => a.nombre.localeCompare(b.nombre);
+  const f = CIRCS.filter(c => F.has(c.slug)).sort(byName), r = CIRCS.filter(c => !F.has(c.slug)).sort(byName);
+  $('circ').innerHTML = (f.length ? `<optgroup label="★ Favoritos">${f.map(opt).join('')}</optgroup>` : '') + (r.length ? `<optgroup label="Otros">${r.map(opt).join('')}</optgroup>` : '');
 }
 
 function start() {
@@ -229,6 +255,7 @@ async function loadDays() {
   const slug = C.slug;
   const idx = await loadIndex();
   let days = idx && idx.circuitos[slug] ? Object.keys(idx.circuitos[slug].dias) : ALLDAYS.slice();
+  localPdf().filter(s => s.slug === slug).forEach(s => { if (!days.includes(s.date)) days.push(s.date); });
   if (!days.includes(today())) days.push(today());
   days.sort().reverse();
   if (slug !== C.slug) return;
@@ -244,7 +271,7 @@ const daysLabel = () => [...DAYS].sort().map(fmtD).join(', ');
 // ---------- sesiones grabadas (desde el grabador) ----------
 let refreshTimer = null;
 async function loadDay(slug, day) {
-  const idx = await loadIndex(day === today());
+  const idx = (await loadIndex(day === today())) || (localPdf().length ? { circuitos: {} } : null);
   if (!idx) return; // sin índice no tocamos lo ya cargado
   const files = (idx.circuitos[slug] && idx.circuitos[slug].dias[day]) || [];
   const box = recorded[day] = recorded[day] || {};
@@ -254,7 +281,14 @@ async function loadDay(slug, day) {
   const keep = new Set(files.map(f => f.f + f.h));
   // solo quitamos versiones antiguas si la nueva ya está cargada
   Object.keys(box).forEach(k => { const name = k.slice(0, k.indexOf('.json') + 5); if (!keep.has(k) && [...keep].some(n => n.startsWith(name) && box[n])) delete box[k]; });
+  // PDFs importados en este dispositivo que aún no están en la nube
+  const inCloud = new Set(files.map(f => f.f.replace(/\.json$/, '')));
+  const loc = localPdf(), left = loc.filter(s => !inCloud.has(s.id));
+  if (left.length !== loc.length) store.set('pdfLocal', left);
+  Object.keys(box).filter(k => k.startsWith('local:')).forEach(k => delete box[k]);
+  left.filter(s => s.slug === slug && s.date === day).forEach(s => { box['local:' + s.id] = s; });
 }
+const localPdf = () => store.get('pdfLocal', []);
 async function refreshRecorded() {
   clearTimeout(refreshTimer);
   const slug = C.slug;
@@ -278,6 +312,7 @@ async function refreshRecorded() {
 function connect() {
   if (live && live.ws) { live.closed = true; try { live.ws.close(); } catch {} }
   live = { slug: C.slug, cols: {}, rows: {}, laps: [], last: {}, title1: '', title2: '', sessions: [], closed: false };
+  if (C.soloPdf) { $('wsState').textContent = 'Solo PDF'; $('wsState').className = 'pill'; return; }
   $('wsState').textContent = 'Conectando…'; $('wsState').className = 'pill';
   const port = C.port_fijo ? C.port : null;
   const go = p => {
@@ -666,7 +701,7 @@ function renderSes(ses) {
   el.innerHTML = `<div class="card scroll"><div class="mini" style="margin-bottom:6px">Pulsa una sesión para ver todos sus datos.</div><table><thead><tr><th class="l">Hora</th><th class="l">Sesión</th><th>Pilotos</th><th>Vueltas</th><th>Mejor vuelta</th><th class="l">Origen</th></tr></thead><tbody>
   ${ses.slice().sort((a, b) => b.time.localeCompare(a.time)).map(s => { const laps = s.stints.flatMap(t => t.laps);
     return `<tr class="click" data-sid="${esc(sid(s))}"><td class="l">${esc(s.time)}</td><td class="l"><b>${esc(s.title || s.type)}</b></td><td class="num">${s.stints.length}</td><td class="num">${laps.length}</td><td class="num purple">${fmtT(Math.min(...laps))}</td>
-    <td class="l mini">${s.envivo ? '<span style="color:var(--vslow)">● en curso</span>' : s.source === 'directo' ? 'vista en directo' : 'grabada'}</td></tr>`; }).join('')}</tbody></table></div>`;
+    <td class="l mini">${s.envivo ? '<span style="color:var(--vslow)">● en curso</span>' : s.source === 'directo' ? 'vista en directo' : /pdf$/i.test(s.source || '') ? (s.local ? 'PDF (solo en este dispositivo)' : 'PDF') : 'grabada'}</td></tr>`; }).join('')}</tbody></table></div>`;
   el.querySelectorAll('tr[data-sid]').forEach(tr => tr.onclick = () => { openSes = tr.dataset.sid; subTab = 'clas'; renderSes(sessionsToday()); window.scrollTo(0, 0); });
 }
 function renderDetail(el, s) {
@@ -967,6 +1002,142 @@ function startMsgs() {
   } catch {}
 }
 startMsgs();
+// ---------- circuitos (lista, favoritos, añadir y quitar) ----------
+// Las altas y bajas se piden abriendo una "issue" en GitHub ya rellenada: el repositorio la atiende solo en 1-2 minutos.
+let ESTADO = null, quitar = null;
+const ghIssue = (title, body) => window.open(`${GH}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`, '_blank');
+async function renderCircs(reload) {
+  const el = $('circOut');
+  if (reload) {
+    try { const n = await (await fetch(RAW + 'circuitos.json?t=' + Date.now(), { cache: 'no-store' })).json(); CIRCS = n.concat(CIRCS.filter(c => c.soloPdf && !n.some(x => x.slug === c.slug))); fillCircSelect(); } catch {}
+    await loadIndex(true);
+  }
+  if (!ESTADO || reload) { try { ESTADO = await (await fetch(RAW + 'data/estado.json?t=' + Date.now(), { cache: 'no-store' })).json(); } catch { ESTADO = {}; } }
+  const F = favs(), idx = INDEXF ? INDEXF.circuitos : {};
+  const nSes = slug => Object.values((idx[slug] || {}).dias || {}).reduce((a, d) => a + d.length, 0);
+  const st = c => {
+    if (c.soloPdf) return '<span class="badge">Solo PDF</span>';
+    const e = ESTADO[c.slug];
+    if (!e) return '<span class="badge media">Pendiente</span>';
+    const ok = e.ultima_conexion_ok && Date.now() - Date.parse(e.ultima_conexion_ok.replace(' UTC', 'Z').replace(' ', 'T')) < 864e5;
+    return ok ? '<span class="badge alta">Grabando</span>' : '<span class="badge baja">Sin conexión</span>';
+  };
+  const list = CIRCS.slice().sort((a, b) => (F.has(b.slug) - F.has(a.slug)) || a.nombre.localeCompare(b.nombre));
+  el.innerHTML = `<div class="card scroll"><div class="row" style="justify-content:space-between;margin-bottom:6px"><b>Tus circuitos</b><button class="btn ghost" id="cReload">Actualizar lista</button></div>
+  <div class="mini" style="margin-bottom:8px">Pulsa la estrella para marcarlo como favorito: los favoritos salen primero en el selector de arriba.</div>
+  <table><thead><tr><th></th><th class="l">Circuito</th><th class="l">Estado</th><th class="l">Última sesión vista</th><th>Sesiones guardadas</th><th></th></tr></thead><tbody>
+  ${list.map(c => `<tr><td><span class="star ${F.has(c.slug) ? 'on' : ''}" data-fav="${esc(c.slug)}">★</span></td>
+    <td class="l"><b>${esc(c.nombre)}</b>${c.tz === 'Europe/Lisbon' ? ' <span class="mini">· Portugal</span>' : ''}</td><td class="l">${st(c)}</td>
+    <td class="l mini">${esc((ESTADO[c.slug] || {}).ultima_sesion || '–')}</td><td class="num">${nSes(c.slug) || '–'}</td>
+    <td class="l">${c.soloPdf ? '' : quitar === c.slug ? `<button class="btn" data-del="${esc(c.slug)}">Sí, quitar</button> <button class="btn ghost" data-nodel>No</button>` : `<button class="btn ghost" data-ask="${esc(c.slug)}">Quitar</button>`}</td></tr>`).join('')}
+  </tbody></table></div>
+  <div class="card"><b>Añadir un circuito</b>
+    <ol class="steps mini"><li>Abre el live timing del circuito en Apex Timing y copia la dirección de la página.</li><li>Pégala aquí, ponle nombre y pulsa <b>Añadir</b>.</li><li>Se abre GitHub con la petición ya escrita: pulsa el botón verde <b>Create</b> (o <b>Submit new issue</b>). Tienes que tener la sesión de GitHub iniciada.</li><li>En 1–2 minutos pulsa <b>Actualizar lista</b>: el circuito aparecerá y el grabador empezará a escucharlo.</li></ol>
+    <div class="row" style="margin-top:10px;gap:8px;flex-wrap:wrap">
+      <input type="text" id="cUrl" placeholder="https://www.apex-timing.com/live-timing/…" style="flex:2;min-width:240px">
+      <input type="text" id="cName" placeholder="Nombre (p. ej. Karting Rivas)" style="flex:1;min-width:160px">
+      <span class="seg" id="cPais"><button data-v="España" class="on">España</button><button data-v="Portugal">Portugal</button></span>
+      <button class="btn" id="cAdd">Añadir</button>
+    </div><div class="mini" id="cMsg" style="margin-top:8px"></div></div>`;
+  el.querySelectorAll('[data-fav]').forEach(x => x.onclick = () => { const f = favs(), k = x.dataset.fav; f.has(k) ? f.delete(k) : f.add(k); store.set('favs', [...f]); fillCircSelect(); renderCircs(); });
+  el.querySelectorAll('[data-ask]').forEach(x => x.onclick = () => { quitar = x.dataset.ask; renderCircs(); });
+  el.querySelectorAll('[data-nodel]').forEach(x => x.onclick = () => { quitar = null; renderCircs(); });
+  el.querySelectorAll('[data-del]').forEach(x => x.onclick = () => { ghIssue('Quitar circuito: ' + x.dataset.del, 'Petición hecha desde la página. Pulsa Create / Submit new issue.'); quitar = null; renderCircs(); });
+  $('cReload').onclick = () => { $('cReload').textContent = 'Actualizando…'; renderCircs(true); };
+  $('cPais').onclick = e => { const b = e.target.closest('button'); if (b) $('cPais').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); };
+  $('cAdd').onclick = () => {
+    const url = $('cUrl').value.trim(), name = $('cName').value.trim(), pais = $('cPais').querySelector('.on').dataset.v;
+    if (!/apex-timing\.com\/(live-timing\/)?[\w-]+/i.test(url)) { $('cMsg').innerHTML = '<span class="err-t">Ese enlace no parece de Apex Timing. Copia la dirección de la página de live timing del circuito.</span>'; return; }
+    ghIssue('Añadir circuito', `Enlace: ${url}\nNombre: ${name}\nPaís: ${pais}`);
+    $('cMsg').innerHTML = '<span class="ok-t">Se ha abierto GitHub. Pulsa el botón verde para enviarlo y vuelve aquí en 1–2 minutos.</span>';
+  };
+}
+
+// ---------- importar PDF "Resumen" de Apex ----------
+let pdfPending = [];
+function loadPdfLib() {
+  if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+  return new Promise((ok, ko) => { const sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'; sc.onload = () => ok(window.pdfjsLib); sc.onerror = () => ko(new Error('No se pudo cargar el lector de PDF')); document.head.appendChild(sc); });
+}
+async function pdfLines(file) {
+  const lib = await loadPdfLib();
+  lib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const doc = await lib.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+  const lines = [];
+  for (let p = 1; p <= doc.numPages; p++) { const tc = await (await doc.getPage(p)).getTextContent(); lines.push(...KartCore.linesFromItems(tc.items)); }
+  return lines;
+}
+const toUpload = s => ({ slug: s.slug, circuit: s.circuit, date: s.date, time: s.time, group: s.group, type: s.type, source: s.source, stints: s.stints.map(t => ({ kart: t.kart, driver: t.driver, cls: t.cls, pos: t.pos, laps: t.laps })) });
+function uploadParts(list) {
+  const parts = []; let cur = [];
+  for (const s of list) { const next = cur.concat([toUpload(s)]); if (cur.length && JSON.stringify(next).length > 60000) { parts.push(cur); cur = [toUpload(s)]; } else cur = next; }
+  if (cur.length) parts.push(cur);
+  return parts;
+}
+function copyText(t) {
+  try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t).catch(() => fallbackCopy(t)); return; } } catch {}
+  fallbackCopy(t);
+}
+function fallbackCopy(t) { const ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch {} ta.remove(); }
+function renderPdf() {
+  const el = $('pdfOut'), loc = localPdf();
+  const circOpts = CIRCS.slice().sort((a, b) => a.nombre.localeCompare(b.nombre)).map(c => `<option value="${esc(c.slug)}" ${C && c.slug === C.slug ? 'selected' : ''}>${esc(c.nombre)}</option>`).join('');
+  const parts = uploadParts(loc);
+  el.innerHTML = `<div class="card"><b>Importar los PDF “Resumen” de Apex Timing</b>
+    <div class="row" style="margin:10px 0;gap:8px"><span class="mini">Circuito de los PDF:</span><select id="pCirc">${circOpts}<option value="__otro">Otro…</option></select><input type="text" id="pOtro" placeholder="Nombre del circuito" style="display:none"></div>
+    <div class="drop" id="pDrop"><div style="font:600 18px 'Barlow Condensed'">Pulsa aquí (o arrastra) para elegir los PDF</div><div class="mini">Puedes elegir varios a la vez.</div></div>
+    <input type="file" id="pFile" accept="application/pdf" multiple hidden>
+    <div id="pPrev" style="margin-top:12px"></div></div>
+  ${loc.length ? `<div class="card"><b>Pendientes de subir a la nube (${loc.length})</b>
+    <div class="mini" style="margin:6px 0">Ya se ven en esta página, pero solo en este dispositivo. Para guardarlas para siempre y verlas en el móvil:</div>
+    <ol class="steps mini"><li>Pulsa <b>Subir${parts.length > 1 ? ' parte 1' : ''}</b>: se copian los datos y se abre GitHub.</li><li>En GitHub, mantén pulsado el cuadro grande de texto y elige <b>Pegar</b>.</li><li>Pulsa el botón verde <b>Create</b> (o <b>Submit new issue</b>).</li>${parts.length > 1 ? '<li>Repite con cada parte.</li>' : ''}<li>En 1–2 minutos desaparecen de esta lista: ya están en la nube.</li></ol>
+    <div class="row" style="gap:8px;margin-top:10px;flex-wrap:wrap">${parts.map((p, i) => `<button class="btn" data-up="${i}">Subir${parts.length > 1 ? ' parte ' + (i + 1) : ''} (${p.length} sesiones)</button>`).join('')}<button class="btn ghost" id="pClear">Borrar de este dispositivo</button></div>
+    <table style="margin-top:10px"><thead><tr><th class="l">Circuito</th><th class="l">Fecha</th><th class="l">Hora</th><th class="l">Sesión</th><th>Pilotos</th></tr></thead><tbody>
+    ${loc.map(s => `<tr><td class="l">${esc(s.circuit)}</td><td class="l">${fmtD(s.date)}</td><td class="l">${esc(s.time)}</td><td class="l">${esc(s.title)}</td><td class="num">${s.stints.length}</td></tr>`).join('')}</tbody></table></div>` : ''}`;
+  $('pCirc').onchange = () => { $('pOtro').style.display = $('pCirc').value === '__otro' ? '' : 'none'; };
+  const drop = $('pDrop');
+  drop.onclick = () => $('pFile').click();
+  drop.ondragover = e => { e.preventDefault(); drop.classList.add('over'); };
+  drop.ondragleave = () => drop.classList.remove('over');
+  drop.ondrop = e => { e.preventDefault(); drop.classList.remove('over'); readPdfs(e.dataTransfer.files); };
+  $('pFile').onchange = e => readPdfs(e.target.files);
+  el.querySelectorAll('[data-up]').forEach(b => b.onclick = () => { copyText(JSON.stringify(parts[+b.dataset.up])); ghIssue('Sesiones PDF', ''); b.textContent = 'Copiado ✓ — pégalo en GitHub'; });
+  const pc = $('pClear'); if (pc) pc.onclick = () => { if (pc.dataset.sure) { store.set('pdfLocal', []); recorded = {}; refreshRecorded(); loadDays(); renderPdf(); } else { pc.dataset.sure = 1; pc.textContent = '¿Seguro? Pulsa otra vez'; } };
+}
+async function readPdfs(files) {
+  const out = $('pPrev'); pdfPending = [];
+  out.innerHTML = '<div class="mini">Leyendo PDF…</div>';
+  const logs = [];
+  for (const f of files) {
+    try {
+      const r = KartCore.parseResumen(await pdfLines(f), f.name);
+      if (!r.sessions.length) logs.push(`<div class="mini err-t">${esc(f.name)}: no he encontrado sesiones. ¿Es un PDF “Resumen” de Apex Timing?</div>`);
+      r.sessions.forEach(s => pdfPending.push(s));
+    } catch (e) { logs.push(`<div class="mini err-t">${esc(f.name)}: ${esc(e.message || e)}</div>`); }
+  }
+  out.innerHTML = logs.join('') + (pdfPending.length ? `<table><thead><tr><th class="l">Fecha</th><th class="l">Hora</th><th class="l">Grupo</th><th class="l">Sesión</th><th>Pilotos</th><th>Vueltas</th></tr></thead><tbody>
+    ${pdfPending.map(s => `<tr><td class="l">${fmtD(s.date)}</td><td class="l">${esc(s.time)}</td><td class="l">${esc(s.group)}</td><td class="l">${esc(s.type)}</td><td class="num">${s.stints.length}</td><td class="num">${s.stints.reduce((a, t) => a + t.laps.length, 0)}</td></tr>`).join('')}
+    </tbody></table><div class="row" style="margin-top:10px;gap:8px"><button class="btn" id="pSave">Añadir ${pdfPending.length} sesiones</button></div>` : '');
+  const sb = $('pSave'); if (sb) sb.onclick = savePdfs;
+}
+function savePdfs() {
+  let slug = $('pCirc').value, name;
+  if (slug === '__otro') { name = $('pOtro').value.trim(); if (!name) { $('pOtro').focus(); return; } slug = name.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+  else name = (CIRCS.find(c => c.slug === slug) || {}).nombre || slug;
+  const loc = localPdf();
+  for (const s of pdfPending) {
+    const title = ((s.group || '') + ' ' + (s.type || '')).trim();
+    const id = `${s.date}_${s.time.replace(':', '').padStart(4, '0')}_${title.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'pdf'}`;
+    const x = Object.assign({}, s, { id, slug, circuit: name, title, local: true, source: s.source || 'PDF' });
+    if (!/pdf$/i.test(x.source)) x.source += ' PDF';
+    const i = loc.findIndex(o => o.id === id && o.slug === slug); if (i >= 0) loc[i] = x; else loc.push(x);
+  }
+  store.set('pdfLocal', loc); pdfPending = [];
+  if (!CIRCS.some(c => c.slug === slug)) { CIRCS.push({ slug, nombre: name, soloPdf: true }); fillCircSelect(); }
+  renderPdf();
+  recorded = {}; if (C && C.slug === slug) { refreshRecorded(); loadDays(); }
+}
+
 window.__dbg = { get live() { return live; }, get pilotKart() { return pilotKart; }, lapsOf: r => lapsOf(r), validLaps: r => validLaps(r), kartOf: r => kartOf(r), paceOf: r => paceOf(r) };
 loadCircuits();
 })();

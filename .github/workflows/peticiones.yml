@@ -1,0 +1,51 @@
+name: Peticiones desde la página
+
+# La página abre una "issue" con la petición (añadir/quitar circuito, sesiones de PDF).
+# Solo se atienden las del dueño del repositorio.
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: peticiones
+  cancel-in-progress: false
+
+jobs:
+  atender:
+    if: github.event.issue.user.login == github.repository_owner
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Atender la petición
+        run: python -m grabador.peticion "$GITHUB_EVENT_PATH"
+      - name: Guardar
+        env:
+          TITULO: ${{ github.event.issue.title }}
+        run: |
+          git config user.name "blr-grabador"
+          git config user.email "blr-grabador@users.noreply.github.com"
+          python -m grabador.indice || true
+          git add circuitos.json data/sesiones data/indice.json
+          if git diff --cached --quiet; then echo "Nada que guardar"; exit 0; fi
+          git commit -q -m "Petición desde la página: $TITULO"
+          for i in 1 2 3 4 5; do
+            git pull -q --rebase -X theirs origin main && git push -q origin HEAD:main && exit 0
+            sleep 10
+          done
+          echo "No se pudo guardar" >> resultado.txt; exit 1
+      - name: Responder y cerrar
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          [ -f resultado.txt ] || echo "Algo ha fallado. Mira el registro en Actions." > resultado.txt
+          gh issue comment ${{ github.event.issue.number }} --repo ${{ github.repository }} --body-file resultado.txt
+          gh issue close ${{ github.event.issue.number }} --repo ${{ github.repository }}
