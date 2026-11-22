@@ -959,3 +959,8 @@ dyn1|count|632735 ⏎
 dyn1|count|662762 ⏎ 
 dyn1|count|692895 ⏎ 
 dyn1|count|722900 ⏎ 
+dyn1|count|752957 ⏎ 
+dyn1|count|783079 ⏎ 
+dyn1|count|813026 ⏎ 
+light|lf| ⏎ com||<p><b>13:09</b><span data-flag="chequered"></span>Llegada</p> ⏎ 
+dyn1|text| ⏎ 
