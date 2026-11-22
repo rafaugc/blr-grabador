@@ -18,3 +18,11 @@ r36c2|in| ⏎
 dyn1|countdown|435462 ⏎ 
 r35c2|sr| ⏎ r35c6|tb|1:20.272 ⏎ r35c7|ib|1:20.272 ⏎ r35c9|in|2 ⏎ r36c8|in|28.921 ⏎ r35|*|80272| ⏎ 
 r35c2|in| ⏎ 
+dyn1|countdown|405459 ⏎ 
+r36c2|sr| ⏎ 
+r36c6|ti|1:23.574 ⏎ r36c7|ib|1:23.574 ⏎ r36c8|in|3.302 ⏎ r36c9|in|2 ⏎ r36|*|83574| ⏎ dyn1|countdown|375377 ⏎ 
+r36c2|in| ⏎ 
+r35c2|sr| ⏎ 
+r35c6|tn|1:22.545 ⏎ r35c9|in|3 ⏎ r35|*|80272| ⏎ dyn1|countdown|345322 ⏎ 
+r35c2|in| ⏎ 
+dyn1|countdown|315279 ⏎ 
