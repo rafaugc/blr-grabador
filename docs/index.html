@@ -91,7 +91,8 @@ body.prot[data-rd="r"] .pv,body.prot[data-rd="r"] .ks{transform:translateX(var(-
 body.prot[data-rd="l"] .pv,body.prot[data-rd="l"] .ks{transform:translateY(var(--pw)) rotate(-90deg)}
 .lockb{height:clamp(34px,8.5vh,54px);min-width:clamp(34px,8.5vh,54px);border-radius:12px;border:2px solid var(--line);background:var(--panel2);color:var(--mute);font-size:clamp(16px,4.2vh,26px);cursor:pointer;padding:0 8px}
 .lockb.on{border-color:#6b5a1a;background:#2a2410;color:var(--accent)}
-body.plock #chgK,body.plock #exitP{opacity:.25;pointer-events:none}@media (orientation:portrait){body.pilot .rot{display:block}}
+body.plock #chgK{opacity:.25;pointer-events:none}
+.xx.confirm{background:#b3261e;border-color:#b3261e;color:#fff}@media (orientation:portrait){body.pilot .rot{display:block}}
 tr.click{cursor:pointer}tr.click:hover td{background:#171a20}
 .sub{display:flex;gap:4px;margin:10px 0;flex-wrap:wrap}.sub button{border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:5px 12px;cursor:pointer;color:var(--mute);font-size:13px}.sub button.on{color:var(--accent);border-color:#6b5a1a;background:#2a2410}
 .lt td{padding:5px 6px;font-size:12px}.lt .best{color:var(--purple);font-weight:600}.lt .sbest{background:#2a1f45}.lt .off{color:var(--dim);text-decoration:line-through}
@@ -326,7 +327,7 @@ function feed(msg) {
     else if (cmd === 'dyn1') live.dyn = { type: param, val, at: now };
     else if (cmd === 'light') live.light = param;
     else if (cmd === 'com') live.com = val;
-    else { let m = cmd.match(/^r(\d+)c(\d+)$/); if (m) cell('r' + m[1], +m[2], val, now, param); else if ((m = cmd.match(/^r(\d+)$/)) && param === '#') (live.rows[cmd] = live.rows[cmd] || {}).rk = val; }
+    else { let m = cmd.match(/^r(\d+)c(\d+)$/); if (m) cell('r' + m[1], +m[2], val, now, param); else if ((m = cmd.match(/^r(\d+)$/)) && param === '#') (live.rows[cmd] = live.rows[cmd] || {}).rk = val; else if (m && param === '*') starLap(cmd, val, now); }
   }
 }
 function grid(html) {
@@ -339,6 +340,17 @@ function grid(html) {
   if (live.laps.length && Object.keys(rows).length && !Object.keys(rows).some(r => live.last[r])) closeLive();
   live.rows = rows;
 }
+// Apex también avisa de cada paso por meta con "rX|*|milisegundos|": lo usamos como segunda fuente de vueltas
+function starLap(rid, val, ts) {
+  const ms = parseInt(String(val).split('|')[0], 10); if (!ms || ms < 5000 || ms > 600000) return;
+  const t = Math.round(ms) / 1000, row = live.rows[rid]; if (!row) return;
+  const p = live.last[rid];
+  if (p && Math.abs(p[0] - t) < 0.002 && ts - p[1] < 5000) return; // ya contada por la columna "última vuelta"
+  if (p && ts - p[1] < 3000) return;
+  live.last[rid] = [t, ts];
+  live.laps.push({ row: rid, t, ts, kart: row.no || '', driver: row.driver || row.dr || '', team: row.team || '', gap: parseG(row.int), pos: row.rk, pits: row.pit || '' });
+  if (pilotKart && kartOf(row) === pilotKart) pilotFlash(rid);
+}
 function cell(rid, col, val, ts, cls) {
   const row = live.rows[rid] = live.rows[rid] || {}, type = live.cols[col];
   if (!type) return;
@@ -348,7 +360,7 @@ function cell(rid, col, val, ts, cls) {
   if (type === 'int') { for (let i = live.laps.length - 1; i >= Math.max(0, live.laps.length - 40); i--) if (live.laps[i].row === rid) { if (ts - live.laps[i].ts < 3000) live.laps[i].gap = parseG(val); break; } return; }
   if (type !== 'llp') return;
   const t = parseT(val); if (t === null) return;
-  const p = live.last[rid]; if (p && p[0] === t && ts - p[1] < t * 600) return;
+  const p = live.last[rid]; if (p && Math.abs(p[0] - t) < 0.002 && ts - p[1] < t * 600) return; if (p && ts - p[1] < 3000 && Math.abs(p[0] - t) < 0.002) return;
   live.last[rid] = [t, ts];
   live.laps.push({ row: rid, t, ts, kart: row.no || '', driver: row.driver || row.dr || '', team: row.team || '', gap: parseG(row.int), pos: row.rk, pits: row.pit || '' });
   if (pilotKart && kartOf(row) === pilotKart) pilotFlash(rid);
@@ -519,6 +531,8 @@ function renderDetail(el, s) {
 }
 // ================= VISTA PILOTO =================
 let pilotKart = store.get('pilotKart', '');
+let pilotPos = { rid: null, pos: null, lapTs: 0 };
+let exitArm = 0;
 let flash = { until: 0, cls: '' }, wake = null, pTimer = null;
 const fmt1 = x => { if (!isFinite(x)) return '–'; x = Math.round(x * 10) / 10; const m = Math.floor(x / 60), sec = x - m * 60; return (m ? m + ':' + (sec < 10 ? '0' : '') : '') + sec.toFixed(1); };
 const kartOf = r => String(+String(r.no || '').replace(/\D/g, '') || r.no || '');
@@ -612,7 +626,13 @@ function renderPilot(force) {
     return bindPilot();
   }
   const [rid, r] = me;
-  const N = rows.length, myPos = +r.rk || null;
+  const N = rows.length;
+  // posición: se confirma en cada paso por meta (no baila mientras cruzan los demás)
+  const lastMine = lapsOf(rid).slice(-1)[0];
+  if (!pilotPos.rid || pilotPos.rid !== rid) pilotPos = { rid, pos: +r.rk || null, lapTs: 0 };
+  if (lastMine && lastMine.ts !== pilotPos.lapTs && Date.now() - lastMine.ts > 1200) pilotPos = { rid, pos: +r.rk || pilotPos.pos, lapTs: lastMine.ts };
+  if (!pilotPos.pos && +r.rk) pilotPos.pos = +r.rk;
+  const myPos = pilotPos.pos;
   const ls = lapsOf(rid), last = ls.length ? ls[ls.length - 1].t : parseT(r.llp);
   const allMine = ls.map(l => l.t), mean = allMine.length > 2 ? validLaps(rid).reduce((a, b, _, arr) => a + b / arr.length, 0) : null;
   // VR y su posición entre las VR de la sesión
@@ -623,9 +643,14 @@ function renderPilot(force) {
   const paces = rows.map(([id]) => [id, paceOf(id)]).filter(e => e[1] != null).sort((a, b) => a[1] - b[1]);
   const pr = paces.findIndex(e => e[0] === rid) + 1;
   // gaps
-  const ahead = myPos === 1 ? 'LÍDER' : fmtGap(r.int);
-  const behindRow = rows.find(([, x]) => +x.rk === (myPos || 0) + 1);
-  const behind = behindRow ? fmtGap(behindRow[1].int) : '–';
+  const hasInt = Object.values(live.cols).includes('int');
+  const rkNow = +r.rk || myPos;
+  const aheadRow = rows.find(([, x]) => +x.rk === (rkNow || 0) - 1);
+  const behindRow = rows.find(([, x]) => +x.rk === (rkNow || 0) + 1);
+  const g = x => parseG(x && x.gap);
+  const diff = (a, b) => (a != null && b != null) ? (Math.abs(a - b)).toFixed(2).replace('.', ',') : null;
+  const ahead = rkNow === 1 ? 'LÍDER' : hasInt ? fmtGap(r.int) : (diff(g(r), rkNow === 2 ? 0 : g(aheadRow && aheadRow[1])) ?? fmtGap(r.gap));
+  const behind = !behindRow ? '–' : hasInt ? fmtGap(behindRow[1].int) : (diff(g(behindRow[1]), rkNow === 1 ? 0 : g(r)) ?? fmtGap(behindRow[1].gap));
   const flashing = Date.now() < flash.until ? flash.cls : '';
   const isPB = last != null && last === myBest && Date.now() < flash.until;
   const dMean = last != null && mean ? last - mean : null;
@@ -646,7 +671,7 @@ function renderPilot(force) {
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;min-height:0">
       <div class="tile"><div class="lab">Pos ritmo${n ? ` · ${n} v` : ''}</div>
         <div class="fv" style="flex:2.2"><span class="bc" style="color:var(--accent)">${pr ? 'P' + pr : '–'}</span></div>
-        <div class="fv" style="flex:.8"><span>${pr ? pr + '/' + paces.length : '<small style="font-size:.5em">esperando 2 vueltas</small>'}</span></div></div>
+        <div class="fv" style="flex:.8"><span>${pr ? pr + '/' + paces.length : `<small style="font-size:.45em">vistas ${lapsOf(rid).length} · válidas ${validLaps(rid).length}</small>`}</span></div></div>
       <div class="tile" style="padding-top:.6vh;padding-bottom:.6vh">
         <div class="lab">Delante</div><div class="fv" style="border-bottom:1px solid var(--line)"><span class="mono" style="color:#ff8a6b">${esc(ahead === 'LÍDER' || ahead === '–' ? ahead : (ahead.startsWith('+') ? ahead : '+' + ahead))}</span></div>
         <div class="lab">Detrás</div><div class="fv"><span class="mono" style="color:var(--fast)">${esc(behind === '–' ? behind : (behind.startsWith('+') ? behind.replace('+', '−') : '−' + behind))}</span></div></div>
@@ -692,6 +717,7 @@ function fitAll() {
 window.addEventListener('resize', onViewport);
 function bindPilot() {
   applyViewport(); fitAll();
+  if (Date.now() - exitArm < 3000) { const xb = $('exitP'); if (xb) { xb.classList.add('confirm'); xb.textContent = '¿Salir?'; xb.style.width = 'auto'; xb.style.padding = '0 10px'; } }
   const lk = $('lockP');
   if (lk) {
     let timer = null;
@@ -704,7 +730,9 @@ function bindPilot() {
     }
   }
   const fp = $('flipP'); if (fp) fp.onclick = () => { lockDir = lockDir === 'r' ? 'l' : 'r'; store.set('lockDir', lockDir); applyViewport(); };
-  const x = $('exitP'); if (x) x.onclick = () => { pilotReady = false; document.body.classList.remove('pilot'); try { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } catch {} try { wake?.release(); } catch {} document.querySelector('#tabs a[data-v=ranking]').click(); };
+  const x = $('exitP'); if (x) x.onclick = () => {
+    if (pilotLock && !x.classList.contains('confirm')) { x.classList.add('confirm'); x.textContent = '¿Salir?'; x.style.width = 'auto'; x.style.padding = '0 10px'; exitArm = Date.now(); setTimeout(() => { if (Date.now() - exitArm >= 2900) renderPilot(); }, 3000); return; }
+    pilotReady = false; document.body.classList.remove('pilot'); try { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } catch {} try { wake?.release(); } catch {} document.querySelector('#tabs a[data-v=ranking]').click(); };
   const k = $('chgK'); if (k) k.onclick = () => { pilotReady = false; pilotSetup($('pilotOut')); };
 }
 document.addEventListener('visibilitychange', async () => { if (document.visibilityState === 'visible' && document.body.classList.contains('pilot')) { try { wake = await navigator.wakeLock?.request('screen'); } catch {} } });
@@ -740,6 +768,7 @@ function startMsgs() {
   } catch {}
 }
 startMsgs();
+window.__dbg = { get live() { return live; }, get pilotKart() { return pilotKart; }, lapsOf: r => lapsOf(r), validLaps: r => validLaps(r), kartOf: r => kartOf(r), paceOf: r => paceOf(r) };
 loadCircuits();
 })();
 </script>
