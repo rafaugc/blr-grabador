@@ -661,3 +661,17 @@ r18c2|in| ⏎
 dyn1|countdown|116398 ⏎ 
 r17c2|sr| ⏎ 
 r17c6|ti|57.677 ⏎ r17c7|ib|57.677 ⏎ r17c8|in|4.581 ⏎ r17c9|in|8 ⏎ r17|*|57677| ⏎ 
+r17c2|in| ⏎ 
+dyn1|countdown|86287 ⏎ 
+r18c2|sr| ⏎ r18c6|tb|52.084 ⏎ r18c7|ib|52.084 ⏎ r18c9|in|8 ⏎ r17c8|in|5.593 ⏎ r18|*|52084| ⏎ 
+r18c2|in| ⏎ 
+dyn1|countdown|56290 ⏎ 
+r17c2|sr| ⏎ r17c6|ti|56.166 ⏎ r17c7|ib|56.166 ⏎ r17c8|in|4.082 ⏎ r17c9|in|9 ⏎ r17|*|56166| ⏎ 
+r17c2|in| ⏎ r18c2|sr| ⏎ 
+r18c6|tb|51.793 ⏎ r18c7|ib|51.793 ⏎ r18c9|in|9 ⏎ r17c8|in|4.373 ⏎ r18|*|51793| ⏎ 
+dyn1|countdown|26211 ⏎ 
+r18c2|in| ⏎ 
+light|lf| ⏎ 
+com||<p><b>12:58</b><span data-flag="chequered"></span>Llegada</p><p><b>12:48</b><span data-flag="green"></span>Start</p> ⏎ dyn1|text| ⏎ 
+r17c2|sf| ⏎ r17c6|ti|54.337 ⏎ r17c7|ib|54.337 ⏎ r17c8|in|2.544 ⏎ r17c9|in|10 ⏎ r17|*|| ⏎ 
+r18c2|sf| ⏎ r18c6|tn|53.134 ⏎ r18c9|in|10 ⏎ r18|*|| ⏎ 
