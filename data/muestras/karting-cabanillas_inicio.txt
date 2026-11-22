@@ -776,3 +776,16 @@ r20c2|sr| ⏎ r20c6|ti|50.920 ⏎ r20c7|ib|50.920 ⏎ r20c8|in|2.271 ⏎ r20c9|i
 r20c2|in| ⏎ 
 r19c2|sr| ⏎ r19c6|tn|54.081 ⏎ r19c9|in|10 ⏎ r19|*|54032| ⏎ 
 dyn1|countdown|44090 ⏎ 
+r19c2|in| ⏎ 
+r21c2|sr| ⏎ r21c6|tn|48.990 ⏎ r21c9|in|9 ⏎ r21|*|48649| ⏎ 
+r21c2|in| ⏎ 
+r20c2|sr| ⏎ r20c6|ti|50.854 ⏎ r20c7|ib|50.854 ⏎ r20c8|in|2.205 ⏎ r20c9|in|11 ⏎ r20|*|50854| ⏎ 
+dyn1|countdown|14022 ⏎ 
+r20c2|in| ⏎ 
+light|lf| ⏎ 
+com||<p><b>13:20</b><span data-flag="chequered"></span>Llegada</p><p><b>13:10</b><span data-flag="green"></span>Start</p> ⏎ dyn1|text| ⏎ 
+r19c2|sf| ⏎ r19c6|tn|54.715 ⏎ r19c9|in|11 ⏎ r19|*|| ⏎ 
+r21c2|si| ⏎ 
+r21|*in|0 ⏎ 
+r20c2|sf| ⏎ 
+r20c6|ti|50.634 ⏎ r20c7|ib|50.634 ⏎ r20c8|in|1.985 ⏎ r20c9|in|12 ⏎ r20|*|| ⏎ 
