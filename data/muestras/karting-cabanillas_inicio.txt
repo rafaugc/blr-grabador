@@ -713,3 +713,21 @@ r19c2|sr| ⏎ r19c6|ti|55.219 ⏎ r19c7|ib|55.219 ⏎ r19c8|in|3.157 ⏎ r19c9|i
 r19c2|in| ⏎ 
 r20c2|in| ⏎ 
 dyn1|countdown|405110 ⏎ 
+r21c2|sr| ⏎ 
+r21c6|tn|1:35.264 ⏎ r21|*|| ⏎ 
+r21c2|in| ⏎ 
+r19c2|sr| ⏎ r19c6|ti|54.600 ⏎ r19c7|ib|54.600 ⏎ r19c8|in|2.538 ⏎ r19c9|in|4 ⏎ r19|*|54600| ⏎ 
+r20c2|sr| ⏎ r20c6|tn|54.701 ⏎ r20c9|in|4 ⏎ r20|*|53241| ⏎ 
+dyn1|countdown|375007 ⏎ 
+r19c2|in| ⏎ 
+r20c2|in| ⏎ 
+dyn1|countdown|345013 ⏎ 
+r21c1|gs| ⏎ 
+r21c2|su| ⏎ r21c3||3 ⏎ r21c6|ti|1:08.345 ⏎ r21c7|ib|1:08.345 ⏎ r21c8|in|16.283 ⏎ r21c9|in|3 ⏎ r16|#|4 ⏎ r15|#|5 ⏎ r21|*|68345| ⏎ r21|#|3 ⏎ 
+r20c2|sr| ⏎ r20c6|tn|52.766 ⏎ r20c9|in|5 ⏎ r20|*|52568| ⏎ 
+r19c2|sr| ⏎ r19c6|tn|55.623 ⏎ r19c9|in|5 ⏎ r19|*|54600| ⏎ 
+dyn1|countdown|314892 ⏎ 
+r21c2|in| ⏎ 
+r20c2|in| ⏎ 
+r19c2|in| ⏎ 
+dyn1|countdown|284723 ⏎ 
