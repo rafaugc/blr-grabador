@@ -3,14 +3,14 @@
   "nombre": "Ariza Racing Circuit",
   "conectado": true,
   "conexiones": 1,
-  "mensajes": 20792,
-  "sesiones": 4,
+  "mensajes": 350,
+  "sesiones": 0,
   "errores_lectura": 0,
-  "titulo": "Q JUNIOR CUP",
-  "ultima_sesion": "2026-11-21 16:47 Q JUNIOR CUP",
-  "ultima_ejecucion": "2026-11-21 15:50 UTC",
+  "titulo": "Sesión 14",
+  "ultima_ejecucion": "2026-11-22 00:29 UTC",
   "sesiones_total": 6,
-  "ultima_conexion_ok": "2026-11-21 15:50 UTC"
+  "ultima_conexion_ok": "2026-11-22 00:29 UTC",
+  "ultima_sesion": "2026-11-21 16:47 Q JUNIOR CUP"
  },
  "kartodromo-lucas-guerrero": {
   "nombre": "Kartódromo Lucas Guerrero",
@@ -19,34 +19,35 @@
   "mensajes": 349,
   "sesiones": 0,
   "errores_lectura": 0,
-  "ultima_ejecucion": "2026-11-21 15:50 UTC",
+  "ultima_ejecucion": "2026-11-22 00:29 UTC",
   "sesiones_total": 0,
-  "ultima_conexion_ok": "2026-11-21 15:50 UTC",
+  "ultima_conexion_ok": "2026-11-22 00:29 UTC",
   "ultima_sesion": null
  },
  "kartodromodeviana": {
   "nombre": "Kartódromo de Viana do Castelo",
   "conectado": true,
   "conexiones": 1,
-  "mensajes": 778,
-  "sesiones": 3,
+  "mensajes": 350,
+  "sesiones": 0,
   "errores_lectura": 0,
   "titulo": "Sessão 1",
-  "ultima_sesion": "2026-11-21 11:20 GP 5 + 10+10 - Final",
-  "ultima_ejecucion": "2026-11-21 15:50 UTC",
+  "ultima_ejecucion": "2026-11-22 00:29 UTC",
   "sesiones_total": 3,
-  "ultima_conexion_ok": "2026-11-21 15:50 UTC"
+  "ultima_conexion_ok": "2026-11-22 00:29 UTC",
+  "ultima_sesion": "2026-11-21 11:20 GP 5 + 10+10 - Final"
  },
  "karting-vendrell": {
   "nombre": "Karting Vendrell",
   "conectado": true,
   "conexiones": 1,
-  "mensajes": 349,
+  "mensajes": 360,
   "sesiones": 0,
   "errores_lectura": 0,
-  "ultima_ejecucion": "2026-11-21 15:50 UTC",
+  "titulo": "Sesión 4",
+  "ultima_ejecucion": "2026-11-22 00:29 UTC",
   "sesiones_total": 0,
-  "ultima_conexion_ok": "2026-11-21 15:50 UTC",
+  "ultima_conexion_ok": "2026-11-22 00:29 UTC",
   "ultima_sesion": null
  },
  "karting-sevilla": {
@@ -56,9 +57,9 @@
   "mensajes": 349,
   "sesiones": 0,
   "errores_lectura": 0,
-  "ultima_ejecucion": "2026-11-21 15:50 UTC",
+  "ultima_ejecucion": "2026-11-22 00:29 UTC",
   "sesiones_total": 0,
-  "ultima_conexion_ok": "2026-11-21 15:50 UTC",
+  "ultima_conexion_ok": "2026-11-22 00:29 UTC",
   "ultima_sesion": null
  },
  "karting-rivas": {
@@ -68,9 +69,9 @@
   "mensajes": 349,
   "sesiones": 0,
   "errores_lectura": 0,
-  "ultima_ejecucion": "2026-11-21 15:50 UTC",
+  "ultima_ejecucion": "2026-11-22 00:29 UTC",
   "sesiones_total": 0,
-  "ultima_conexion_ok": "2026-11-21 15:50 UTC",
+  "ultima_conexion_ok": "2026-11-22 00:29 UTC",
   "ultima_sesion": null
  },
  "henakart": {
@@ -80,35 +81,35 @@
   "mensajes": 349,
   "sesiones": 0,
   "errores_lectura": 0,
-  "ultima_ejecucion": "2026-11-21 15:50 UTC",
+  "ultima_ejecucion": "2026-11-22 00:29 UTC",
   "sesiones_total": 0,
-  "ultima_conexion_ok": "2026-11-21 15:50 UTC",
+  "ultima_conexion_ok": "2026-11-22 00:29 UTC",
   "ultima_sesion": null
  },
  "karting-campillos": {
   "nombre": "Karting Campillos",
   "conectado": true,
   "conexiones": 1,
-  "mensajes": 6639,
-  "sesiones": 14,
+  "mensajes": 968,
+  "sesiones": 1,
   "errores_lectura": 0,
-  "titulo": "PITBIKES/MINI",
-  "ultima_sesion": "2026-11-21 16:19 Sesión 31",
-  "ultima_ejecucion": "2026-11-21 15:50 UTC",
-  "sesiones_total": 14,
-  "ultima_conexion_ok": "2026-11-21 15:50 UTC"
+  "titulo": "CARRERA VEINLUC",
+  "ultima_sesion": "2026-11-21 19:40 CARRERA VEINLUC",
+  "ultima_ejecucion": "2026-11-22 00:29 UTC",
+  "sesiones_total": 15,
+  "ultima_conexion_ok": "2026-11-22 00:29 UTC"
  },
  "circuito-dr7": {
   "nombre": "DR7",
   "conectado": true,
   "conexiones": 1,
-  "mensajes": 15228,
+  "mensajes": 10518,
   "sesiones": 7,
   "errores_lectura": 0,
-  "titulo": "Carrera +85 pro",
-  "ultima_sesion": "2026-11-21 17:17 Carrera +85 pro",
-  "ultima_ejecucion": "2026-11-21 17:18 UTC",
-  "sesiones_total": 7,
-  "ultima_conexion_ok": "2026-11-21 17:18 UTC"
+  "titulo": "Carrera +65",
+  "ultima_sesion": "2026-11-21 22:47 Carrera +65",
+  "ultima_ejecucion": "2026-11-22 00:29 UTC",
+  "sesiones_total": 14,
+  "ultima_conexion_ok": "2026-11-22 00:29 UTC"
  }
 }
