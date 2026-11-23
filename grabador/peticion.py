@@ -4,6 +4,7 @@ Títulos que entiende:
   - "Añadir circuito"   cuerpo con líneas "Enlace: <url de Apex>", "Nombre: <nombre>", "País: España|Portugal"
   - "Quitar circuito: <slug>"
   - "Sesiones PDF"      cuerpo = JSON con la lista de sesiones leídas de los PDF "Resumen" de Apex
+  - "Pilotos"           cuerpo = JSON {"unir": {alias: nombre que se queda}, "quitar": [nombres]} → data/pilotos.json
 
 Escribe el resultado en resultado.txt (se publica como comentario en la issue).
 Uso: python -m grabador.peticion <evento.json>
@@ -155,6 +156,25 @@ def add_pdf(body: str) -> str:
     return out
 
 
+PIL = ROOT / 'data' / 'pilotos.json'
+
+
+def save_pilotos(body: str) -> str:
+    txt = body.strip().strip('`').strip()
+    if txt.startswith('json'):
+        txt = txt[4:]
+    try:
+        data = json.loads(txt)
+    except Exception:
+        return 'No he podido leer los datos. Vuelve a pulsar "Guardar en la nube" en la página.'
+    nm = lambda x: re.sub(r'\s+', ' ', str(x)).strip().upper()[:60]
+    unir = {nm(a): nm(b) for a, b in (data.get('unir') or {}).items() if nm(a) and nm(b) and nm(a) != nm(b)}
+    quitar = sorted({nm(x) for x in (data.get('quitar') or []) if nm(x)})
+    PIL.parent.mkdir(parents=True, exist_ok=True)
+    PIL.write_text(json.dumps({'unir': dict(sorted(unir.items())), 'quitar': quitar}, ensure_ascii=False, indent=1))
+    return f'Guardado: {len(unir)} nombres juntados con otro y {len(quitar)} pilotos quitados de la comparativa.'
+
+
 def main():
     ev = json.loads(Path(sys.argv[1]).read_text())
     issue = ev['issue']
@@ -166,6 +186,8 @@ def main():
         res = remove_circuit(title)
     elif t.startswith('sesiones pdf'):
         res = add_pdf(body)
+    elif t.startswith('pilotos'):
+        res = save_pilotos(body)
     else:
         res = 'No es una petición que yo entienda.'
     (ROOT / 'resultado.txt').write_text(res)

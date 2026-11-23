@@ -103,6 +103,13 @@
 
   // ---------- utilidades estadísticas ----------
   const mean = a => a.reduce((s, x) => s + x, 0) / (a.length || 1);
+  // mejor media de n vueltas SEGUIDAS de una tanda (sin la 1ª vuelta, que es de salida)
+  function bestN(laps, n) {
+    const c = (laps || []).slice(1); let best = null;
+    for (let i = 0; i + n <= c.length; i++) { const m = mean(c.slice(i, i + n)); if (best == null || m < best) best = m; }
+    return best;
+  }
+  const minN = a => { const v = a.filter(x => x != null && isFinite(x)); return v.length ? Math.min(...v) : null; };
   const median = a => { if (!a.length) return NaN; const b = [...a].sort((x, y) => x - y), m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; };
 
   // Une nombres que son el mismo piloto (p.ej. nombre cortado en el PDF)
@@ -144,18 +151,26 @@
         const pace = opts.pace === 'best' ? sorted[0] : opts.pace === 'median' ? median(sorted) : mean(sorted.slice(0, 5));
         stints.push({ session: s.id, sessionLabel: `${s.date.slice(8, 10)}/${s.date.slice(5, 7)} ${s.time} ${s.group} ${s.type}`,
           date: s.date, kart: t.kart, driver: nm[t.driver], pace, best, top5: mean(sorted.slice(0, 5)),
-          clean: clean.length, total: t.laps.length + 1, pos: t.pos });
+          clean: clean.length, total: t.laps.length + 1, pos: t.pos, b3: bestN(t.laps, 3), b5: bestN(t.laps, 5) });
       }
     }
     // referencia por sesión = mediana de ritmos de esa sesión
     const bySes = {};
     stints.forEach(t => (bySes[t.session] = bySes[t.session] || []).push(t.pace));
-    const ref = {}; for (const k in bySes) ref[k] = median(bySes[k]);
+    let ref = {}; for (const k in bySes) ref[k] = median(bySes[k]);
+    // opcional: fuera las tandas que están muy lejos de la mediana de su sesión (otra categoría de kart en la misma tanda, incidencias…)
+    if (opts.maxDeltaPct) {
+      for (let i = stints.length - 1; i >= 0; i--) { const t = stints[i]; if (Math.abs(t.pace / ref[t.session] - 1) * 100 > opts.maxDeltaPct) stints.splice(i, 1); }
+      for (const k in bySes) delete bySes[k];
+      stints.forEach(t => (bySes[t.session] = bySes[t.session] || []).push(t.pace));
+      ref = {}; for (const k in bySes) ref[k] = median(bySes[k]);
+    }
+    const refLap = median(stints.map(t => t.pace));
     stints.forEach(t => { t.delta = t.pace - ref[t.session]; });
 
     const K = {}, D = {};
     stints.forEach(t => { (K[t.kart] = K[t.kart] || []).push(t); (D[t.driver] = D[t.driver] || []).push(t); });
-    let kEff = {}, dEff = {}, sEff = {}, sigma = 0.3, lamK = 1.5, lamD = 1;
+    let kEff = {}, dEff = {}, sEff = {}, sigma = 0.3, lamK = 1.5, lamD = 1, result_prior = {};
     for (const k in K) kEff[k] = 0; for (const d in D) dEff[d] = 0; for (const s in bySes) sEff[s] = 0;
 
     if (opts.method === 'raw') {
@@ -178,13 +193,18 @@
       // los pilotos se diferencian mucho (~0,7 s), los karts poco (~0,15 s). Si un piloto solo tiene una tanda,
       // su diferencia se reparte entre piloto y kart en esa proporción; un kart que va rápido con varios pilotos distintos destaca.
       const TAU_D = opts.tauDriver || 0.7, TAU_K = opts.tauKart || 0.15;
+      // score general de pilotos (opcional): su nivel en % de vuelta, sacado de TODO lo grabado, se pasa a segundos de este circuito
+      // y cuenta como 0,5 tandas por cada tanda suya fuera de esta selección (máx. 5)
+      var prior = {};
+      if (opts.priorPct) for (const d in D) { const g = opts.priorPct[d]; if (!g) continue; const w = 0.5 * Math.min(10, Math.max(0, g.n - D[d].length)); if (w > 0) prior[d] = { s: g.pct / 100 * refLap, w }; }
+      result_prior = prior;
       sigma = 0.25;
       for (let pass = 0; pass < 3; pass++) {
         const lamD = (sigma / TAU_D) ** 2;
         lamK = (sigma / TAU_K) ** 2;
         for (let it = 0; it < 150; it++) {
           for (const s in bySes) { const v = stints.filter(t => t.session === s).map(t => t.delta - dEff[t.driver] - kEff[t.kart]); sEff[s] = mean(v); }
-          for (const d in D) { const v = D[d].map(t => t.delta - sEff[t.session] - kEff[t.kart]); dEff[d] = v.reduce((a, b) => a + b, 0) / (v.length + lamD); }
+          for (const d in D) { const v = D[d].map(t => t.delta - sEff[t.session] - kEff[t.kart]); const p = prior[d]; dEff[d] = p ? (v.reduce((a, b) => a + b, 0) + (lamD + p.w) * p.s) / (v.length + lamD + p.w) : v.reduce((a, b) => a + b, 0) / (v.length + lamD); }
           for (const k in K) { const v = K[k].map(t => t.delta - sEff[t.session] - dEff[t.driver]); kEff[k] = v.reduce((a, b) => a + b, 0) / (v.length + lamK); }
           const mk = mean(Object.values(kEff)); for (const k in K) kEff[k] -= mk;
         }
@@ -205,7 +225,7 @@
         ? Math.sqrt(1 / (n / (sigma * sigma + (opts.tauDriver || 0.7) ** 2 * (v.every(t => D[t.driver].length === 1) ? 1 : 0.3)) + 1 / ((opts.tauKart || 0.15) ** 2)))
         : 1.15 * sigma / Math.sqrt(Math.max(n, 0.5));
       const drivers = new Set(v.map(t => t.driver)).size;
-      return { kart: +k, effect: kEff[k], se, n: v.length, drivers, best: Math.min(...v.map(t => t.best)),
+      return { kart: +k, effect: kEff[k], se, n: v.length, drivers, best: Math.min(...v.map(t => t.best)), b3: minN(v.map(t => t.b3)), b5: minN(v.map(t => t.b5)),
         top5raw: mean(v.map(t => t.top5)), luckyDrivers: [...new Set(v.map(t => t.driver))], stints: v };
     }).filter(k => !isNaN(k.effect)).sort((a, b) => a.effect - b.effect);
 
@@ -213,10 +233,10 @@
       const v = D[d];
       const kartLuck = mean(v.map(t => kEff[t.kart] || 0));
       return { driver: d, skill: dEff[d], n: v.length, karts: [...new Set(v.map(t => t.kart))],
-        best: Math.min(...v.map(t => t.best)), kartLuck, se: sigma / Math.sqrt(v.length), stints: v };
+        best: Math.min(...v.map(t => t.best)), b3: minN(v.map(t => t.b3)), b5: minN(v.map(t => t.b5)), kartLuck, se: sigma / Math.sqrt(v.length), usedPrior: !!result_prior[d], stints: v };
     }).sort((a, b) => a.skill - b.skill);
-    return { karts, drivers, stints, sigma, opts };
+    return { karts, drivers, stints, sigma, opts, refLap, priorUsed: Object.keys(result_prior).length };
   }
 
-  root.KartCore = { linesFromItems, parseResumen, analyze, tsec, median, mean, normName: d => String(d || '').replace(/^\d{1,3}\s*-\s*/, '').replace(/\s*\[\d{1,2}:\d{2}(?::\d{2})?\]\s*$/, '').trim().toUpperCase().replace(/[ÁÀÂÄ]/g, 'A').replace(/[ÉÈÊË]/g, 'E').replace(/[ÍÌÎÏ]/g, 'I').replace(/[ÓÒÔÖ]/g, 'O').replace(/[ÚÙÛÜ]/g, 'U').replace(/\s+/g, ' ') };
+  root.KartCore = { linesFromItems, parseResumen, analyze, tsec, median, mean, bestN, normName: d => String(d || '').replace(/^\d{1,3}\s*-\s*/, '').replace(/\s*\[\d{1,2}:\d{2}(?::\d{2})?\]\s*$/, '').trim().toUpperCase().replace(/[ÁÀÂÄ]/g, 'A').replace(/[ÉÈÊË]/g, 'E').replace(/[ÍÌÎÏ]/g, 'I').replace(/[ÓÒÔÖ]/g, 'O').replace(/[ÚÙÛÜ]/g, 'U').replace(/\s+/g, ' ') };
 })(typeof window !== 'undefined' ? window : globalThis);
