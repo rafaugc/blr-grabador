@@ -204,3 +204,8 @@ dyn1|count|692653 ⏎
 r15c7|tn|33.424 ⏎ r15|*i2|19845 ⏎ 
 r14c7|tn|33.363 ⏎ r14|*i2|19924 ⏎ 
 dyn1|count|722721 ⏎ 
+light|lf| ⏎ 
+com||<p><b>17:38</b><span data-flag="chequered"></span>Llegada</p> ⏎ dyn1|text| ⏎ 
+ ⏎ 
+r14c2|sf| ⏎ r14c6|ib|24.647 ⏎ r14c7|ib|31.979 ⏎ r14c8|ib|20.077 ⏎ r15c2|sf| ⏎ r15c6|ib|24.537 ⏎ r15c7|ib|32.370 ⏎ r15c8|ib|19.845 ⏎ 
+ ⏎ 
