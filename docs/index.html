@@ -879,13 +879,32 @@ function capCanvas(s, scale = 2) {
   return cv;
 }
 const capName = s => `${(s._slug || s.slug || 'sesion')}_${s.date}_${(s.time || '').replace(':', '')}_${String(s.title || s.type || '').replace(/[^\wÀ-ÿ]+/g, '-').slice(0, 30)}.png`;
-function capOpen(s) {
+function capOpen(s, apx) {
+  if (apx === undefined) return apexPhotos(s.date).then(l => capOpen(s, apexPhotoFor(s, l)));
   const cv = capCanvas(s, 2), url = cv.toDataURL('image/png');
   $('kmbox').innerHTML = `<div class="mhead"><div><div class="mtitle">📸 ${esc(s.title || s.type)} · ${esc(fmtD(s.date))} ${esc(s.time)}</div><div class="mini">${esc(s.circuit || cname(s._slug || s.slug))}</div></div><button class="mclose" data-close>✕</button></div>
     <div class="row" style="margin-bottom:8px"><a class="btn" href="${url}" download="${esc(capName(s))}">⬇️ Descargar</a>${navigator.share ? '<button class="btn ghost" id="capShare">Compartir / Guardar en Fotos</button>' : ''}</div>
-    <img src="${url}" style="width:100%;max-width:${cv.width / 2}px;border-radius:8px;border:1px solid var(--line)" alt="Captura">`;
+    ${apx ? `<div class="sub" style="margin-bottom:8px"><button data-cv="kr" class="on">Captura KR</button><button data-cv="apx">📷 Foto de Apex</button></div>` : '<div class="mini" style="margin-bottom:8px">Sin foto de Apex para esta sesión (el fotógrafo empezó el 23/11/2026; también puede faltar alguna si Apex tardó en cargar).</div>'}
+    <div id="capKR"><img src="${url}" style="width:100%;max-width:${cv.width / 2}px;border-radius:8px;border:1px solid var(--line)" alt="Captura"></div>
+    ${apx ? `<div id="capAPX" hidden><div class="row" style="margin-bottom:8px"><a class="btn" href="${esc(apx.url)}" target="_blank" rel="noopener">⬇️ Abrir / descargar foto de Apex</a></div><img src="${esc(apx.url)}" loading="lazy" style="width:100%;border-radius:8px;border:1px solid var(--line)" alt="Foto de Apex"></div>` : ''}`;
+  $('kmbox').querySelectorAll('[data-cv]').forEach(b => b.onclick = () => { $('kmbox').querySelectorAll('[data-cv]').forEach(x => x.classList.toggle('on', x === b)); $('capKR').hidden = b.dataset.cv !== 'kr'; $('capAPX').hidden = b.dataset.cv !== 'apx'; });
   $('kmodal').hidden = false;
   if ($('capShare')) $('capShare').onclick = () => cv.toBlob(b => { const f = new File([b], capName(s), { type: 'image/png' }); (navigator.canShare && navigator.canShare({ files: [f] }) ? navigator.share({ files: [f] }) : navigator.share({ title: s.title, url: location.href })).catch(() => {}); });
+}
+// fotos reales de la pantalla de Apex (las hace el fotógrafo y las guarda en las Releases de GitHub, una por día)
+const APX = {};
+async function apexPhotos(day) {
+  const c = APX[day]; if (c && Date.now() - c.t < 5 * 60000) return c.list;
+  let list = [];
+  try { const r = await fetch(`https://api.github.com/repos/${REPO}/releases/tags/fotos-${day}`); if (r.ok) list = ((await r.json()).assets || []).map(a => ({ name: a.name, url: a.browser_download_url })); } catch {}
+  APX[day] = { t: Date.now(), list }; return list;
+}
+function apexPhotoFor(s, list) {
+  // mismo circuito y hora de inicio parecida (el fotógrafo y el grabador pueden diferir un minuto o dos)
+  const slug = s._slug || s.slug, min = t => { const [h, m] = String(t).split(':').map(Number); return h * 60 + m; }, t0 = min(s.time);
+  let best = null, bd = 16;
+  list.forEach(a => { const m = a.name.match(/^(\d{4}-\d\d-\d\d)_(\d\d)(\d\d)_(.+?)(?:-\d+)?\.jpg$/); if (!m || m[1] !== s.date || m[4] !== slug) return; const d = Math.abs(+m[2] * 60 + +m[3] - t0); if (d < bd) { bd = d; best = a; } });
+  return best;
 }
 let capDay = null, capJob = 0;
 async function renderCapturas() {
@@ -897,14 +916,15 @@ async function renderCapturas() {
   if (!days.length) { el.innerHTML = `<div class="card empty">Todavía no hay sesiones grabadas en ${esc(C.nombre)}.</div>`; return; }
   if (!days.includes(capDay)) capDay = days[0];
   const list = all.filter(s => s.date === capDay).sort((a, b) => (b.time || '').localeCompare(a.time || ''));
+  const apl = await apexPhotos(capDay), apxOf = list.map(s => apexPhotoFor(s, apl));
   el.innerHTML = `<div class="card"><div class="row"><b style="font-size:13px">${esc(C.nombre)} · Día:</b>${days.map(d => `<span class="chipd ${d === capDay ? 'on' : ''}" data-cd="${d}">${fmtD(d)}</span>`).join('')}</div>
-    <div class="mini" style="margin-top:6px">Al terminar cada sesión se guarda su clasificación final tal como la mostraba Apex, para siempre. Pulsa una para verla en grande, descargarla o guardarla en Fotos. Para otro circuito, cámbialo en el selector de arriba.</div></div>
+    <div class="mini" style="margin-top:6px">Al terminar cada sesión se guarda su clasificación final tal como la mostraba Apex, para siempre. Pulsa una para verla en grande, descargarla o guardarla en Fotos. 📷 Apex = además tiene la foto real de la pantalla de Apex. Para otro circuito, cámbialo en el selector de arriba.</div></div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">${list.map((s, i) => `<div class="card click" data-ci="${i}" style="margin:0;padding:10px;cursor:pointer">
-      <div class="row" style="justify-content:space-between"><b>${esc(s.time)} · ${esc((s.title || s.type || '').slice(0, 28))}</b><span class="mini">${condIcon(condOf(s))}</span></div>
+      <div class="row" style="justify-content:space-between"><b>${esc(s.time)} · ${esc((s.title || s.type || '').slice(0, 28))}</b><span class="mini">${apxOf[i] ? '📷 Apex ' : ''}${condIcon(condOf(s))}</span></div>
       <div class="mini">${s.stints.length} pilotos · ${s.type || ''}</div>
       <div data-th="${i}" style="margin-top:8px;height:170px;overflow:hidden;border-radius:6px;background:#12151b"></div></div>`).join('')}</div>`;
   el.querySelectorAll('[data-cd]').forEach(c => c.onclick = () => { capDay = c.dataset.cd; renderCapturas(); });
-  el.querySelectorAll('[data-ci]').forEach(c => c.onclick = () => capOpen(list[+c.dataset.ci]));
+  el.querySelectorAll('[data-ci]').forEach(c => c.onclick = () => capOpen(list[+c.dataset.ci], apxOf[+c.dataset.ci] || null));
   // miniaturas poco a poco, para no bloquear el móvil
   const job = ++capJob;
   for (let i = 0; i < list.length; i++) {

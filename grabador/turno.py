@@ -19,7 +19,8 @@ def main():
     forced = os.environ.get('FORZAR', '') == 'true'
     decision = True
     if not forced and repo and token:
-        url = f'https://api.github.com/repos/{repo}/actions/workflows/grabar.yml/runs?status=in_progress&per_page=20'
+        wf = os.environ.get('WORKFLOW', 'grabar.yml')  # el fotógrafo usa fotos.yml
+        url = f'https://api.github.com/repos/{repo}/actions/workflows/{wf}/runs?status=in_progress&per_page=20'
         req = urllib.request.Request(url, headers={'Authorization': f'Bearer {token}', 'Accept': 'application/vnd.github+json'})
         try:
             runs = json.load(urllib.request.urlopen(req, timeout=20)).get('workflow_runs', [])

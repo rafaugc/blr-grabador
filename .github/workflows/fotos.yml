@@ -1,0 +1,56 @@
+name: Fotos de Apex
+
+# Fotógrafo: al terminar cada sesión guarda una foto de la pantalla de Apex en las Releases (fotos-AAAA-MM-DD).
+# Va APARTE del grabador: si falla, la grabación no se entera. Mismo sistema de turnos que el grabador
+# (uno cada 30 min; solo trabaja si no hay otro fotógrafo en marcha de hace menos de 5 h).
+on:
+  schedule:
+    - cron: '15,45 * * * *'
+  workflow_dispatch:
+    inputs:
+      minutos:
+        description: 'Minutos (para una prueba rápida, pon 20)'
+        default: '350'
+      solo:
+        description: 'Solo estos circuitos (nombres cortos separados por espacios; vacío = todos)'
+        default: ''
+      forzar:
+        description: 'Aunque ya haya otro fotógrafo en marcha'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  fotos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 358
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            grabador
+            circuitos.json
+            requirements.txt
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: ¿Hace falta?
+        id: turno
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FORZAR: ${{ github.event.inputs.forzar || 'false' }}
+          WORKFLOW: fotos.yml
+        run: python -m grabador.turno
+      - name: Preparar navegador
+        if: steps.turno.outputs.grabar == 'true'
+        run: |
+          pip install -r requirements.txt playwright
+          python -m playwright install --with-deps chromium
+      - name: Hacer fotos
+        if: steps.turno.outputs.grabar == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python -m grabador.fotos --minutos "${{ github.event.inputs.minutos || '350' }}" ${{ github.event.inputs.solo && format('--solo {0}', github.event.inputs.solo) || '' }}
