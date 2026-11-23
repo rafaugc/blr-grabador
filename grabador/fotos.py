@@ -52,6 +52,20 @@ def upload(tag: str, path: Path) -> bool:
     return True
 
 
+def limpiar(slugs: list[str]) -> None:
+    """Borra fotos de circuitos sin página de Apex (eran fotos de un error 403), de los últimos días."""
+    import datetime
+    for k in range(3):
+        tag = 'fotos-' + (datetime.date.today() - datetime.timedelta(days=k)).isoformat()
+        r = _gh('release', 'view', tag, '--json', 'assets', '-q', '.assets[].name')
+        if r.returncode != 0:
+            continue
+        for name in r.stdout.split():
+            if any(name.endswith(f'_{s}.jpg') or f'_{s}-' in name for s in slugs):
+                _gh('release', 'delete-asset', tag, name, '--yes')
+                log(f'[fotos] borrada {tag}/{name} (circuito sin página de Apex)')
+
+
 async def uploader():
     while True:
         tag, name, data = await UPLOADS.get()
@@ -70,10 +84,11 @@ async def uploader():
 async def photographer(c: dict, browser, deadline: float):
     slug = c['slug']
     url_ws = c.get('ws') or f"wss://{c.get('host', 'live-data.apex-timing.com')}:{c['port']}/"
-    page_url = c.get('url') or f'https://www.apex-timing.com/live-timing/{slug}/index.html'
+    page_url = c['url']
     state = ApexState(slug, c['nombre'], c.get('tz', 'Europe/Madrid'))
     last = {'img': None, 'ts': 0.0}
     page = None
+    bad = {'n': 0, 'until': 0.0}
     ctx = ssl.create_default_context()
 
     async def ensure_page():
@@ -81,22 +96,32 @@ async def photographer(c: dict, browser, deadline: float):
         if page and not page.is_closed():
             return page
         page = await browser.new_page(viewport=VIEW, user_agent=UA, locale='es-ES')
-        await page.goto(page_url, wait_until='domcontentloaded', timeout=45000)
+        resp = await page.goto(page_url, wait_until='domcontentloaded', timeout=45000)
+        if resp is not None and resp.status >= 400:
+            raise RuntimeError(f'la página de Apex responde {resp.status}')
         await page.wait_for_timeout(4000)
         return page
 
     async def shoot():
+        nonlocal page
+        if time.time() < bad['until']:
+            return
         try:
             p = await ensure_page()
             last['img'] = await p.screenshot(type='jpeg', quality=72, full_page=True, timeout=20000)
             last['ts'] = time.time()
+            bad['n'] = 0
         except Exception as e:
+            bad['n'] += 1
+            bad['until'] = time.time() + min(1800, 60 * 2 ** bad['n'])  # si la página falla, espera cada vez más
             log(f'[fotos][{slug}] no pude hacer la foto: {e!r}')
+            last['img'] = None
             try:
                 if page:
                     await page.close()
             except Exception:
                 pass
+            page = None
 
     async def flush():
         while state.finished:
@@ -153,7 +178,8 @@ async def main_async(minutes: float, only: list[str] | None):
     UPLOADS = asyncio.Queue()
     circuits = json.loads((ROOT / 'circuitos.json').read_text())
     active = [resolve(c) for c in circuits if c.get('grabar') and (not only or c['slug'] in only)]
-    active = [c for c in active if (c.get('port') or c.get('ws')) and not c.get('sin_fotos')]
+    active = [c for c in active if (c.get('port') or c.get('ws')) and c.get('url') and not c.get('sin_fotos')]
+    limpiar([c['slug'] for c in circuits if not c.get('url')])
     deadline = time.time() + minutes * 60
     log(f"[fotos] fotógrafo en marcha {minutes:.0f} min: {', '.join(c['slug'] for c in active)}")
     async with async_playwright() as pw:
