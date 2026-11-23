@@ -175,6 +175,8 @@
       const cv = opts.evo === false ? null : trackCurve(s);
       s._evo = cv; // para mostrarlo
       for (const t of s.stints) {
+        // sin número de kart (Apex lo mostraba en blanco) no se sabe qué kart era: fuera, para no inventar un "kart 0"
+        if (!String(t.kart ?? '').trim() || !(+t.kart > 0)) continue;
         const start = opts.dropFirst ? 1 : 0;
         const ts = cv && cv.apply ? tsOf(t) : null;
         const corr = ts ? t.laps.map((x, i) => x / cv.at(ts[i])) : t.laps;
