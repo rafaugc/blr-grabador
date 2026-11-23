@@ -130,6 +130,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#171a20}
     <a data-v="pista">En pista ahora</a>
     <a data-v="ing">Ingeniero de pista</a>
     <a data-v="sesiones">Sesiones</a>
+    <a data-v="capturas">📸 Capturas</a>
     <a data-v="apex">Live timing de Apex</a>
     <a data-v="piloto">Vista piloto</a>
     <a data-v="circuitos">Circuitos</a>
@@ -156,6 +157,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#171a20}
   <section class="view" id="v-pista"><div id="pistaOut"></div></section>
   <section class="view" id="v-ing"><div id="ingOut"></div></section>
   <section class="view" id="v-sesiones"><div id="sesOut"></div></section>
+  <section class="view" id="v-capturas"><div id="capOut"></div></section>
   <section class="view" id="v-piloto"><div id="pilotOut"></div></section>
   <section class="view" id="v-circuitos"><div id="circOut"></div></section>
   <section class="view" id="v-pdf"><div id="pdfOut"></div></section>
@@ -208,6 +210,7 @@ document.querySelectorAll('#tabs a').forEach(a => a.onclick = () => {
   if (a.dataset.v === 'piloto') { pilotReady = false; renderPilot(true); }
   if (a.dataset.v === 'circuitos') renderCircs();
   if (a.dataset.v === 'score') renderScore();
+  if (a.dataset.v === 'capturas') renderCapturas();
   if (a.dataset.v === 'pdf') renderPdf();
 });
 $('method').onclick = e => { const b = e.target.closest('button'); if (!b) return; opts.method = b.dataset.v; document.querySelectorAll('#method button').forEach(x => x.classList.toggle('on', x === b)); render(); };
@@ -232,7 +235,7 @@ async function loadCircuits() {
   await loadPilAdmin();
   if ($('useScore').checked) ensureScore().then(render);
   setTimeout(() => loadAllData().then(() => render()), 1500);
-  $('circ').onchange = () => { store.set('circ', $('circ').value); start(); };
+  $('circ').onchange = () => { store.set('circ', $('circ').value); start(); if ($('v-capturas').classList.contains('on')) renderCapturas(); };
   start();
 }
 const FAV0 = ['ariza-racing-circuit', 'circuito-dr7', 'henakart', 'karting-cabanillas', 'karting-los-santos', 'kartodromodeviana'];
@@ -793,6 +796,125 @@ function curveSvg(cv) {
     <div class="mini">Curva de la pista: lo que tardaban todos de más (arriba) o de menos (abajo) que su media, a lo largo de la sesión.</div>`;
 }
 
+// ---------- ordenar tablas pinchando en el título de la columna (1ª vez: de mayor a menor · 2ª: de menor a mayor · 3ª: como estaba) ----------
+const SORT = {};
+function cellVal(td) {
+  if (!td) return null;
+  if (td.dataset.v != null && td.dataset.v !== '') return +td.dataset.v;
+  const t = td.textContent.replace(/\s+/g, ' ').trim();
+  if (!t || t === '–' || t === '-') return null;
+  let m = t.match(/^([−-])?(\d+):(\d{1,2}(?:[.,]\d+)?)/);
+  if (m) return (m[1] ? -1 : 1) * (+m[2] * 60 + parseFloat(m[3].replace(',', '.')));
+  m = t.replace(/\./g, '').match(/^([+−±-])?(\d+(?:,\d+)?)/);
+  if (m && /^[+−±-]?\d/.test(t)) return (m[1] === '−' || m[1] === '-' ? -1 : 1) * parseFloat(m[2].replace(',', '.'));
+  return t.toLowerCase();
+}
+function makeSortable(table, key) {
+  if (!table) return;
+  const ths = [...table.tHead.rows[0].cells], tb = table.tBodies[0];
+  // filas principales con sus filas de detalle detrás
+  const groups = []; [...tb.rows].forEach(r => { if (r.classList.contains('sub-row') && groups.length) groups[groups.length - 1].push(r); else groups.push([r]); });
+  groups.forEach((g, i) => g.orig = i);
+  const apply = () => {
+    const st = SORT[key];
+    ths.forEach((th, i) => { th.style.cursor = 'pointer'; th.style.userSelect = 'none'; th.dataset.arrow = st && st.i === i ? (st.dir < 0 ? ' ▼' : ' ▲') : ''; const lbl = th.dataset.lbl ?? (th.dataset.lbl = th.innerHTML); th.innerHTML = lbl + (th.dataset.arrow ? `<span style="color:var(--accent)">${th.dataset.arrow}</span>` : ''); });
+    const ord = groups.slice();
+    if (st) ord.sort((a, b) => {
+      const x = cellVal(a[0].cells[st.i]), y = cellVal(b[0].cells[st.i]);
+      if (x == null && y == null) return a.orig - b.orig; if (x == null) return 1; if (y == null) return -1;
+      const c = typeof x === 'number' && typeof y === 'number' ? x - y : String(x).localeCompare(String(y), 'es');
+      return (c * st.dir) || (a.orig - b.orig);
+    });
+    ord.forEach(g => g.forEach(r => tb.appendChild(r)));
+  };
+  ths.forEach((th, i) => th.onclick = () => {
+    const st = SORT[key];
+    SORT[key] = !st || st.i !== i ? { i, dir: -1 } : st.dir < 0 ? { i, dir: 1 } : null;
+    apply();
+  });
+  apply();
+}
+
+// ================= CAPTURAS: la clasificación final de cada sesión, como la mostraba Apex al terminar =================
+// Se dibujan a partir de lo que guardó el grabador al acabar la sesión (con los nombres tal cual salían entonces),
+// así que hay captura de TODAS las sesiones grabadas, también las antiguas, y no ocupan espacio extra.
+function capRows(s) {
+  if (s.columnas && s.clasificacion && s.clasificacion.length) return { cols: s.columnas.map(c => ({ t: c.titulo, tipo: c.tipo })), rows: s.clasificacion.map(r => r.map(v => String(v ?? ''))) };
+  const st = s.stints.slice().sort((a, b) => (a.pos ?? 999) - (b.pos ?? 999));
+  const team = st.some(t => t.team);
+  return { cols: [{ t: 'Pos', tipo: 'rk' }, { t: 'Kart', tipo: 'no' }, { t: team ? 'Equipo / piloto' : 'Piloto', tipo: 'dr' }, { t: 'Vueltas', tipo: 'n' }, { t: 'Última vuelta', tipo: 'llp' }, { t: 'Mejor vuelta', tipo: 'blp' }],
+    rows: st.map(t => [String(t.pos ?? ''), String(t.kart), (team && t.team ? t.team + ' · ' : '') + t.driver, String(t.laps.length), fmtT(t.laps[t.laps.length - 1]), fmtT(Math.min(...t.laps))]) };
+}
+function capCanvas(s, scale = 2) {
+  const { cols, rows } = capRows(s);
+  const cv = document.createElement('canvas'), x = cv.getContext('2d');
+  const F = '-apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif', pad = 14, rh = 28, hh = 70;
+  x.font = `600 13px ${F}`;
+  const w = cols.map((c, i) => Math.min(c.tipo === 'dr' ? 330 : 140, Math.max(x.measureText(c.t).width, ...rows.map(r => (x.font = `${c.tipo === 'dr' ? 600 : 400} 14px ${F}`, x.measureText(r[i] || '').width))) + 22));
+  const W = Math.max(560, w.reduce((a, b) => a + b, 0) + pad * 2), H = hh + rh + rows.length * rh + 34;
+  cv.width = W * scale; cv.height = H * scale; x.scale(scale, scale);
+  x.fillStyle = '#12151b'; x.fillRect(0, 0, W, H);
+  x.fillStyle = '#1b2029'; x.fillRect(0, 0, W, hh);
+  x.fillStyle = '#ffd23f'; x.font = `700 18px ${F}`; x.fillText(s.title || s.group || s.type || 'Sesión', pad, 28);
+  x.fillStyle = '#c9cdd6'; x.font = `400 13px ${F}`;
+  x.fillText(`${s.circuit || cname(s._slug || s.slug)} · ${fmtD(s.date)} ${s.time}${s.pista ? ' · ' + s.pista : ''}${s.type && s.type !== s.title ? ' · ' + s.type : ''}`, pad, 50);
+  const bestCol = cols.findIndex(c => c.tipo === 'blp'), tv = v => { const m = String(v).match(/^(\d+):(\d+[.,]\d+)$/); return m ? +m[1] * 60 + parseFloat(m[2].replace(',', '.')) : parseFloat(String(v).replace(',', '.')); };
+  const best = bestCol >= 0 ? Math.min(...rows.map(r => tv(r[bestCol])).filter(v => isFinite(v) && v > 0)) : null;
+  let y = hh; x.fillStyle = '#222833'; x.fillRect(0, y, W, rh);
+  x.font = `600 12px ${F}`; x.fillStyle = '#8a909c';
+  let cx = pad; cols.forEach((c, i) => { const left = ['dr', 'no', 'rk'].includes(c.tipo); x.textAlign = left ? 'left' : 'right'; x.fillText(c.t.toUpperCase(), left ? cx + 6 : cx + w[i] - 6, y + 18); cx += w[i]; });
+  rows.forEach((r, j) => {
+    y += rh; if (j % 2) { x.fillStyle = '#161a21'; x.fillRect(0, y, W, rh); }
+    let cx = pad;
+    cols.forEach((c, i) => {
+      const left = ['dr', 'no', 'rk'].includes(c.tipo); let v = r[i] || '';
+      x.font = `${c.tipo === 'dr' || c.tipo === 'no' ? 600 : 400} 14px ${F}`;
+      x.fillStyle = i === bestCol && best != null && Math.abs(tv(v) - best) < 1e-6 ? '#b38cff' : c.tipo === 'no' ? '#ffd23f' : '#e8eaee';
+      while (x.measureText(v).width > w[i] - 12 && v.length > 3) v = v.slice(0, -2) + '…';
+      x.textAlign = left ? 'left' : 'right'; x.fillText(v, left ? cx + 6 : cx + w[i] - 6, y + 19); cx += w[i];
+    });
+  });
+  x.textAlign = 'left'; x.fillStyle = '#6b717c'; x.font = `400 11px ${F}`;
+  x.fillText('KR Karts · clasificación al terminar la sesión (datos de Apex Timing)', pad, H - 12);
+  return cv;
+}
+const capName = s => `${(s._slug || s.slug || 'sesion')}_${s.date}_${(s.time || '').replace(':', '')}_${String(s.title || s.type || '').replace(/[^\wÀ-ÿ]+/g, '-').slice(0, 30)}.png`;
+function capOpen(s) {
+  const cv = capCanvas(s, 2), url = cv.toDataURL('image/png');
+  $('kmbox').innerHTML = `<div class="mhead"><div><div class="mtitle">📸 ${esc(s.title || s.type)} · ${esc(fmtD(s.date))} ${esc(s.time)}</div><div class="mini">${esc(s.circuit || cname(s._slug || s.slug))}</div></div><button class="mclose" data-close>✕</button></div>
+    <div class="row" style="margin-bottom:8px"><a class="btn" href="${url}" download="${esc(capName(s))}">⬇️ Descargar</a>${navigator.share ? '<button class="btn ghost" id="capShare">Compartir / Guardar en Fotos</button>' : ''}</div>
+    <img src="${url}" style="width:100%;max-width:${cv.width / 2}px;border-radius:8px;border:1px solid var(--line)" alt="Captura">`;
+  $('kmodal').hidden = false;
+  if ($('capShare')) $('capShare').onclick = () => cv.toBlob(b => { const f = new File([b], capName(s), { type: 'image/png' }); (navigator.canShare && navigator.canShare({ files: [f] }) ? navigator.share({ files: [f] }) : navigator.share({ title: s.title, url: location.href })).catch(() => {}); });
+}
+let capDay = null, capJob = 0;
+async function renderCapturas() {
+  const el = $('capOut');
+  el.innerHTML = '<div class="card empty">Cargando las sesiones grabadas…</div>';
+  await loadAllData();
+  const all = ((ALLD.sessions || {})[C.slug] || []).filter(s => !isDel(s));
+  const days = [...new Set(all.map(s => s.date))].sort().reverse();
+  if (!days.length) { el.innerHTML = `<div class="card empty">Todavía no hay sesiones grabadas en ${esc(C.nombre)}.</div>`; return; }
+  if (!days.includes(capDay)) capDay = days[0];
+  const list = all.filter(s => s.date === capDay).sort((a, b) => (b.time || '').localeCompare(a.time || ''));
+  el.innerHTML = `<div class="card"><div class="row"><b style="font-size:13px">${esc(C.nombre)} · Día:</b>${days.map(d => `<span class="chipd ${d === capDay ? 'on' : ''}" data-cd="${d}">${fmtD(d)}</span>`).join('')}</div>
+    <div class="mini" style="margin-top:6px">Al terminar cada sesión se guarda su clasificación final tal como la mostraba Apex, para siempre. Pulsa una para verla en grande, descargarla o guardarla en Fotos. Para otro circuito, cámbialo en el selector de arriba.</div></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">${list.map((s, i) => `<div class="card click" data-ci="${i}" style="margin:0;padding:10px;cursor:pointer">
+      <div class="row" style="justify-content:space-between"><b>${esc(s.time)} · ${esc((s.title || s.type || '').slice(0, 28))}</b><span class="mini">${condIcon(condOf(s))}</span></div>
+      <div class="mini">${s.stints.length} pilotos · ${s.type || ''}</div>
+      <div data-th="${i}" style="margin-top:8px;height:170px;overflow:hidden;border-radius:6px;background:#12151b"></div></div>`).join('')}</div>`;
+  el.querySelectorAll('[data-cd]').forEach(c => c.onclick = () => { capDay = c.dataset.cd; renderCapturas(); });
+  el.querySelectorAll('[data-ci]').forEach(c => c.onclick = () => capOpen(list[+c.dataset.ci]));
+  // miniaturas poco a poco, para no bloquear el móvil
+  const job = ++capJob;
+  for (let i = 0; i < list.length; i++) {
+    if (job !== capJob) return;
+    const box = el.querySelector(`[data-th="${i}"]`); if (!box) return;
+    const cv = capCanvas(list[i], 1); cv.style.width = '100%'; cv.style.height = 'auto'; box.appendChild(cv);
+    await new Promise(r => setTimeout(r, 15));
+  }
+}
+
 // ---------- borrar sesiones de la memoria ----------
 // Se ocultan al momento en todos los dispositivos y el grabador borra los archivos en GitHub en 1–2 minutos.
 const isDel = s => !!(s && s._path && PADM.borrar.includes(s._path));
@@ -912,10 +1034,10 @@ async function renderScore() {
     <div class="card scroll"><table><thead><tr><th class="l">#</th><th class="l">Piloto</th><th class="l">Clase</th><th>Score</th><th title="Lo que es más rápido (−) o lento (+) por vuelta que el piloto medio, con el kart ya descontado">Nivel</th>${isAll ? '' : '<th class="hm">Nivel (s)</th>'}<th>Fiabilidad</th><th class="hm">Tandas</th>
       ${isAll ? '<th class="l hm">Circuitos</th>' : '<th>Mejor vuelta</th><th>Mejor ritmo 3v</th><th>Mejor ritmo 5v</th>'}<th></th></tr></thead><tbody>
     ${rows.map((d, i) => { const [cn, cc] = DCLS[Math.min(4, Math.floor((rows.length > 1 ? i / (rows.length - 1) : 0.5) * 5))]; const [rc, rl] = rel(d.n); const sc = scoreOf(d.pct);
-      return `<tr class="click" data-sd="${esc(d.driver)}"><td class="l mini">${i + 1}</td><td class="l"><b>${esc(d.driver)}</b></td><td class="l"><span class="kcls" style="color:${cc};border-color:${cc}55;background:${cc}14">${cn}</span></td>
-        <td class="num"><b class="${sc >= 1030 ? 't-fast' : sc <= 970 ? 't-slow' : ''}">${sc}</b></td><td class="num">${fmt(d.pct)} %</td>${isAll ? '' : `<td class="num hm mini">${fmt(d.sec)} s</td>`}<td><span class="badge ${rc}">${rl}</span></td><td class="num hm">${d.n}</td>
+      return `<tr class="click" data-sd="${esc(d.driver)}"><td class="l mini">${i + 1}</td><td class="l"><b>${esc(d.driver)}</b></td><td class="l" data-v="${-d.pct}"><span class="kcls" style="color:${cc};border-color:${cc}55;background:${cc}14">${cn}</span></td>
+        <td class="num"><b class="${sc >= 1030 ? 't-fast' : sc <= 970 ? 't-slow' : ''}">${sc}</b></td><td class="num">${fmt(d.pct)} %</td>${isAll ? '' : `<td class="num hm mini">${fmt(d.sec)} s</td>`}<td data-v="${d.n}"><span class="badge ${rc}">${rl}</span></td><td class="num hm">${d.n}</td>
         ${isAll ? `<td class="l hm mini">${d.circs.map(cname).join(', ')}</td>` : `<td class="num ${d.best === B.best ? 'purple' : ''}">${fmtT(d.best)}</td><td class="num ${d.b3 === B.b3 ? 'purple' : ''}">${fmtT(d.b3)}</td><td class="num ${d.b5 === B.b5 ? 'purple' : ''}">${fmtT(d.b5)}</td>`}
-        <td><span data-pout="${esc(d.driver)}" title="Quitar de este ranking" style="cursor:pointer;color:var(--mute);padding:0 6px">✕</span></td></tr>`; }).join('')}
+        <td data-v=""><span data-pout="${esc(d.driver)}" title="Quitar de este ranking" style="cursor:pointer;color:var(--mute);padding:0 6px">✕</span></td></tr>`; }).join('')}
     </tbody></table>
     <div class="mini" style="margin-top:8px;line-height:1.5"><b>Cómo se calcula.</b> En cada circuito se usan todas las sesiones grabadas (menos las que quites) y el mismo modelo del ranking de karts, que separa lo que pone el piloto, lo que pone el kart y las condiciones de cada sesión. El nivel del piloto se pasa a <b>% de la vuelta</b> (así un piloto de Vendrell y uno de DR7 se pueden comparar). El general es la media de sus circuitos, pesando más donde tiene más tandas. <b>Score = 1000 − 100 × nivel%</b>: 1000 es el piloto medio, 1100 va un 1% más rápido por vuelta (≈ 0,5 s en una vuelta de 50 s), 900 un 1% más lento. Con pocas tandas el modelo es prudente y acerca al piloto a 1000. No cuentan las tandas más de un 6% más rápidas o lentas que la mediana de su sesión (suelen ser otra categoría de kart en la misma tanda, como pasa en Campillos, o incidencias). Fiabilidad: alta con 6+ tandas, media con 3–5. El score en seco usa solo sesiones secas y el de mojado solo las mojadas (💧): así sabes quién es bueno con agua. Pulsa un piloto para ver dónde y cuándo corrió.<br>
     Para usarlo al valorar karts, marca <b>“Usar score general de pilotos”</b> en Karts del día (método Modelo).</div></div>`;
@@ -931,6 +1053,7 @@ async function renderScore() {
   if ($('scSesAll')) $('scSesAll').onclick = e => { e.preventDefault(); store.set('scoreSesOff', []); scoreChanged(); };
   el.querySelectorAll('[data-pout]').forEach(x => x.onclick = e => { e.stopPropagation(); const o = SC_PIL(); o.add(x.dataset.pout); store.set('scorePilOff', [...o]); scoreChanged(); });
   el.querySelectorAll('[data-pback]').forEach(x => x.onclick = () => { const o = SC_PIL(); o.delete(x.dataset.pback); store.set('scorePilOff', [...o]); scoreChanged(); });
+  makeSortable(el.querySelector('.card.scroll table'), 'score' + (isAll ? '' : '-c'));
   el.querySelectorAll('tr[data-sd]').forEach(tr => tr.onclick = () => scoreFicha(tr.dataset.sd));
   $('scCond').querySelectorAll('button').forEach(b => b.onclick = () => { SC.cond = b.dataset.v; store.set('scoreCond', SC.cond); scoreChanged(); });
   $('scMin').querySelectorAll('button').forEach(b => b.onclick = () => { SC.min = +b.dataset.n; renderScore(); });
@@ -973,8 +1096,8 @@ function renderPilotos(ses) {
     <table><thead><tr><th class="l">#</th><th class="l">Piloto</th><th class="l">Clase</th><th>Nivel</th><th class="hm">±</th><th>Fiabilidad</th>${G ? '<th title="Score general (pestaña Score pilotos)">Score</th>' : ''}<th title="Media de lo buenos que fueron sus karts (negativo = le tocaron buenos)">Suerte con el kart</th><th class="hm">Tandas</th><th class="l hm">Karts</th><th>Mejor vuelta</th><th title="Mejor media de 3 vueltas seguidas">Mejor ritmo 3v</th><th title="Mejor media de 5 vueltas seguidas">Mejor ritmo 5v</th></tr></thead><tbody>
     ${all.map((d, i) => { const [cn, cc] = DCLS[Math.min(4, Math.floor((all.length > 1 ? i / (all.length - 1) : 0.5) * 5))]; const [rc, rl] = rel(d);
       const lc = d.kartLuck <= -0.08 ? 't-fast' : d.kartLuck >= 0.08 ? 't-slow' : '';
-      return `<tr class="click" data-d="${esc(d.driver)}"><td class="l mini">${i + 1}</td><td class="l"><b>${esc(d.driver)}</b></td><td class="l"><span class="kcls" style="color:${cc};border-color:${cc}55;background:${cc}14">${cn}</span></td>
-        <td class="num ${d.skill < -0.15 ? 't-fast' : d.skill > 0.15 ? 't-slow' : ''}">${fmt(d.skill)} s</td><td class="num hm mini">${d.se.toFixed(2).replace('.', ',')}</td><td><span class="badge ${rc}">${rl}</span></td>
+      return `<tr class="click" data-d="${esc(d.driver)}"><td class="l mini">${i + 1}</td><td class="l"><b>${esc(d.driver)}</b></td><td class="l" data-v="${-d.skill}"><span class="kcls" style="color:${cc};border-color:${cc}55;background:${cc}14">${cn}</span></td>
+        <td class="num ${d.skill < -0.15 ? 't-fast' : d.skill > 0.15 ? 't-slow' : ''}">${fmt(d.skill)} s</td><td class="num hm mini">${d.se.toFixed(2).replace('.', ',')}</td><td data-v="${d.n}"><span class="badge ${rc}">${rl}</span></td>
         ${G ? `<td class="num">${G[d.driver] ? scoreOf(G[d.driver].pct) : '–'}</td>` : ''}
         <td class="num ${lc}">${opts.method === 'raw' ? '–' : fmt(d.kartLuck)}</td><td class="num hm">${d.n}</td><td class="l hm mini">${d.karts.join(', ')}</td>
         <td class="num ${d.best === dayBest ? 'purple' : ''}">${fmtT(d.best)}</td><td class="num ${d.b3 === b3 ? 'purple' : ''}">${fmtT(d.b3)}</td><td class="num ${d.b5 === b5 ? 'purple' : ''}">${fmtT(d.b5)}</td></tr>`; }).join('')}
@@ -984,6 +1107,7 @@ function renderPilotos(ses) {
   $('pilToday').onclick = () => { DAYS = new Set([today()]); loadDays(); refreshRecorded(); };
   $('pilMgr').onclick = () => openMgr();
   el.querySelectorAll('#pilMin button').forEach(b => b.onclick = () => { pilMin = +b.dataset.n; render(); });
+  makeSortable(el.querySelector('table'), 'pilotos');
   el.querySelectorAll('tr[data-d]').forEach(tr => tr.onclick = () => {
     const d = A.drivers.find(x => x.driver === tr.dataset.d); if (!d) return;
     const rows = d.stints.slice().sort((a, b) => String(a.session).localeCompare(String(b.session)));
@@ -1108,10 +1232,11 @@ function renderRanking(ses) {
     const TC = { 't-fast': '#3ddc84', 't-good': '#a6e36a', '': '#c9cdd6', 't-slow': '#ffa24c', 't-vslow': '#ff5f5f' };
     k.qcls = i < 2 && ks.length > 4 ? { n: '✈ Avión', c: '#4cc3ff' } : i >= ks.length - 2 && ks.length > 4 ? { n: 'Cepo', c: '#ff5f5f' } : { n: tier(k.effect)[1], c: TC[tier(k.effect)[0]] || '#c9cdd6' };
     const vd = (k.stints.find(t => t.best === k.best) || {}).driver, others = k.luckyDrivers.filter(d => d !== vd);
-    return `<tr class="click" data-k="${esc(k.kart)}"><td class="l mini">${i + 1}</td><td class="k ${c}">${k.kart}</td><td class="l">${IngUI.badge(k.qcls)}</td><td class="num ${c}">${fmt(k.effect)} s</td><td class="num hm mini">${k.se.toFixed(2).replace('.', ',')}</td>
-    <td><span class="badge ${cc}">${cl}</span></td><td class="num hm">${k.n}</td><td class="num hm">${k.drivers}</td><td class="num ${k.best === dayBest ? 'purple' : ''}">${fmtT(k.best)}</td><td class="num ${k.b3 != null && k.b3 === kb3 ? 'purple' : ''}">${fmtT(k.b3)}</td><td class="num ${k.b5 != null && k.b5 === kb5 ? 'purple' : ''}">${fmtT(k.b5)}</td><td class="l hm mini" style="max-width:260px;overflow:hidden;text-overflow:ellipsis"><span class="purple">${esc(vd || '')}</span>${others.length ? ', ' + esc(others.join(', ')) : ''}</td></tr>`; }).join('')}
+    return `<tr class="click" data-k="${esc(k.kart)}"><td class="l mini">${i + 1}</td><td class="k ${c}">${k.kart}</td><td class="l" data-v="${-k.effect}">${IngUI.badge(k.qcls)}</td><td class="num ${c}">${fmt(k.effect)} s</td><td class="num hm mini">${k.se.toFixed(2).replace('.', ',')}</td>
+    <td data-v="${-k.se}"><span class="badge ${cc}">${cl}</span></td><td class="num hm">${k.n}</td><td class="num hm">${k.drivers}</td><td class="num ${k.best === dayBest ? 'purple' : ''}">${fmtT(k.best)}</td><td class="num ${k.b3 != null && k.b3 === kb3 ? 'purple' : ''}">${fmtT(k.b3)}</td><td class="num ${k.b5 != null && k.b5 === kb5 ? 'purple' : ''}">${fmtT(k.b5)}</td><td class="l hm mini" style="max-width:260px;overflow:hidden;text-overflow:ellipsis"><span class="purple">${esc(vd || '')}</span>${others.length ? ', ' + esc(others.join(', ')) : ''}</td></tr>`; }).join('')}
   </tbody></table>
   <div class="mini" style="margin-top:6px"><span class="purple">Morado</span>: en “Mejor vuelta” y “Mejor ritmo” solo el mejor del día; en “Lo llevaron”, quien hizo la VR con ese kart · Clase: los 2 mejores son ✈ Avión y los 2 peores Cepo; el resto según su ventaja (Rápido ≤ −0,15 · Buen ritmo · Normal ±0,05 · Lento · Muy lento ≥ +0,15) · Mejor ritmo 3v / 5v = la mejor media de 3 / 5 vueltas seguidas que ha hecho alguien con ese kart (sin la vuelta de salida) · Pulsa un kart para ver el detalle.</div></div>`;
+  makeSortable(el.querySelector('table'), 'karts');
   el.querySelectorAll('tr[data-k]').forEach(tr => tr.onclick = () => {
     const k = ks.find(x => String(x.kart) === tr.dataset.k); if (!k) return;
     $('kmbox').innerHTML = IngUI.kartPopup(k, A, ses, null, tier(k.effect)[0]); $('kmodal').hidden = false;
@@ -1243,10 +1368,11 @@ function renderDetail(el, s) {
         <span class="mini">Marcar:</span><span class="seg" id="condMark"><button data-m="a" class="${man == null ? 'on' : ''}">Automático</button><button data-m="0" class="${man === 0 ? 'on' : ''}">☀️ Seco</button><button data-m="1" class="${man === 1 ? 'on' : ''}">💧 Mojado</button></span><span class="mini" data-ajst>${ajStatusTxt()}</span></div>
         <div class="mini" style="margin-top:4px">${cd.why.length ? cd.why.map(esc).join('<br>') : 'Sin datos para saberlo (sin parte meteorológico ni historial suficiente): se considera seco.'}</div>
         ${cd.curve ? `<div style="margin-top:6px">${curveSvg(cd.curve)}</div>` : ''}</div>`; })()}
-    <div class="sub">${tabs.map(([k, l]) => `<button data-t="${k}" class="${k === subTab ? 'on' : ''}">${l}</button>`).join('')}<button id="askS">💬 Pregunta a Claude</button>${!s.envivo && (s._path || /pdf$/i.test(s.source || '')) ? '<button id="delS">🗑 Borrar sesión</button>' : ''}</div>
+    <div class="sub">${tabs.map(([k, l]) => `<button data-t="${k}" class="${k === subTab ? 'on' : ''}">${l}</button>`).join('')}<button id="askS">💬 Pregunta a Claude</button>${s.envivo ? '' : '<button id="capS">📸 Captura</button>'}${!s.envivo && (s._path || /pdf$/i.test(s.source || '')) ? '<button id="delS">🗑 Borrar sesión</button>' : ''}</div>
     ${body}</div>`;
   $('back').onclick = () => { openSes = null; renderSes(sessionsToday()); };
   $('askS').onclick = () => askClaude(s);
+  if ($('capS')) $('capS').onclick = () => capOpen(s);
   el.querySelectorAll('#condMark button').forEach(b => b.onclick = () => markCond(s, b.dataset.m === 'a' ? null : +b.dataset.m));
   if ($('delS')) $('delS').onclick = () => { if (confirm(`¿Borrar la sesión ${s.time} ${s.title || s.type}?\nDeja de contar en todos los rankings.`)) delSessions([s]); };
   el.querySelectorAll('.sub button').forEach(b => b.onclick = () => { subTab = b.dataset.t; renderDetail(el, s); });
