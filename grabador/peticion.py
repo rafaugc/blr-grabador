@@ -6,7 +6,8 @@ Títulos que entiende:
   - "Sesiones PDF"      cuerpo = JSON con la lista de sesiones leídas de los PDF "Resumen" de Apex
   - "Grabar circuito: <slug>"  cuerpo con "Grabar: sí|no" (pausa o reanuda la grabación en directo)
   - "Borrar sesiones"   cuerpo con una ruta por línea: data/sesiones/<circuito>/<día>/<archivo>.json
-  - "Pilotos"           cuerpo = JSON {"unir": {alias: nombre que se queda}, "quitar": [nombres]} → data/pilotos.json
+  - "Pilotos"           cuerpo = JSON {"unir": {alias: nombre que se queda}, "quitar": [nombres],
+                        "mojado": {"<circuito>|<día>|<hora>": 1 mojado / 0 seco}} → data/pilotos.json
 
 Escribe el resultado en resultado.txt (se publica como comentario en la issue).
 Uso: python -m grabador.peticion <evento.json>
@@ -209,9 +210,12 @@ def save_pilotos(body: str) -> str:
     nm = lambda x: re.sub(r'\s+', ' ', str(x)).strip().upper()[:60]
     unir = {nm(a): nm(b) for a, b in (data.get('unir') or {}).items() if nm(a) and nm(b) and nm(a) != nm(b)}
     quitar = sorted({nm(x) for x in (data.get('quitar') or []) if nm(x)})
+    mojado = {str(k)[:80]: int(v) for k, v in (data.get('mojado') or {}).items()
+              if re.match(r'^[a-z0-9-]{2,61}\|\d{4}-\d\d-\d\d\|\d{1,2}:\d\d$', str(k)) and v in (0, 1)}
     PIL.parent.mkdir(parents=True, exist_ok=True)
-    PIL.write_text(json.dumps({'unir': dict(sorted(unir.items())), 'quitar': quitar}, ensure_ascii=False, indent=1))
-    return f'Guardado: {len(unir)} nombres juntados con otro y {len(quitar)} pilotos quitados de la comparativa.'
+    PIL.write_text(json.dumps({'unir': dict(sorted(unir.items())), 'quitar': quitar, 'mojado': dict(sorted(mojado.items()))}, ensure_ascii=False, indent=1))
+    return (f'Guardado: {len(unir)} nombres juntados con otro, {len(quitar)} pilotos quitados de la comparativa'
+            f' y {len(mojado)} sesiones marcadas a mano como seco/mojado.')
 
 
 def main():

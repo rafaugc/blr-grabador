@@ -141,6 +141,8 @@ tr.click{cursor:pointer}tr.click:hover td{background:#171a20}
       <span class="mini">Nivelar pilotos:</span>
       <span class="seg" id="method"><button data-v="raw">Sin nivelar</button><button data-v="driver">Vs. su media</button><button data-v="model" class="on">Modelo</button></span>
       <label class="mini"><input type="checkbox" id="traffic"> Quitar vueltas con tráfico</label>
+      <span class="mini">Pista:</span><span class="seg" id="cond" title="Auto: si hay sesiones en seco, el ranking usa solo las secas"><button data-v="auto" class="on">Auto</button><button data-v="dry">☀️ Seco</button><button data-v="wet">💧 Mojado</button><button data-v="all">Todas</button></span>
+      <label class="mini" title="Si la pista se va ralentizando (lluvia) o acelerando (se seca, coge goma) durante una sesión, se descuenta de cada vuelta"><input type="checkbox" id="evo" checked> Corregir cambios de pista</label>
       <label class="mini" title="Usa el nivel de cada piloto sacado de todo lo grabado (pestaña Score pilotos) para separar mejor piloto y kart. Solo con el método Modelo."><input type="checkbox" id="useScore"> Usar score general de pilotos</label>
       <label class="mini">Descartar vueltas &gt; <input type="text" id="cut" value="3" style="width:46px;padding:3px 6px">% de la mejor</label>
     </div>
@@ -193,7 +195,7 @@ const openTeams = new Set(), openDetTeams = new Set();
 document.head.insertAdjacentHTML('beforeend', '<style>' + IngUI.CSS + '</style>');
 $('kmodal').onclick = e => { if (e.target.id === 'kmodal' || e.target.closest('[data-close]')) $('kmodal').hidden = true; };
 document.addEventListener('keydown', e => { if (e.key === 'Escape') $('kmodal').hidden = true; });
-const opts = { method: 'model', noTraffic: false, cutPct: 3 };
+const opts = { method: 'model', noTraffic: false, cutPct: 3, cond: store.get('cond', 'auto'), evo: store.get('evo', true) };
 
 // ---------- pestañas ----------
 document.querySelectorAll('#tabs a').forEach(a => a.onclick = () => {
@@ -211,6 +213,10 @@ document.querySelectorAll('#tabs a').forEach(a => a.onclick = () => {
 $('method').onclick = e => { const b = e.target.closest('button'); if (!b) return; opts.method = b.dataset.v; document.querySelectorAll('#method button').forEach(x => x.classList.toggle('on', x === b)); render(); };
 $('traffic').onchange = e => { opts.noTraffic = e.target.checked; render(); if (SC.res) { SC.res = null; renderScore(); } };
 $('useScore').checked = !!store.get('useScore', false);
+document.querySelectorAll('#cond button').forEach(x => x.classList.toggle('on', x.dataset.v === opts.cond));
+$('cond').onclick = e => { const b = e.target.closest('button'); if (!b) return; opts.cond = b.dataset.v; store.set('cond', opts.cond); document.querySelectorAll('#cond button').forEach(x => x.classList.toggle('on', x === b)); render(); };
+$('evo').checked = opts.evo;
+$('evo').onchange = e => { opts.evo = e.target.checked; store.set('evo', opts.evo); SC.res = null; render(); };
 $('useScore').onchange = e => { store.set('useScore', e.target.checked); if (e.target.checked) ensureScore().then(render); else render(); };
 $('cut').onchange = e => { opts.cutPct = parseFloat(e.target.value.replace(',', '.')) || 3; render(); };
 
@@ -226,6 +232,7 @@ async function loadCircuits() {
   await loadPilAdmin();
   delSync();
   if ($('useScore').checked) ensureScore().then(render);
+  setTimeout(() => loadAllData().then(() => render()), 1500);
   $('circ').onchange = () => { store.set('circ', $('circ').value); start(); };
   start();
 }
@@ -442,9 +449,10 @@ let A = null;
 function render() {
   if (!C) return;
   const all = sessionsToday();
-  const ses = prepSes(all.filter(x => !excluded.has(sid(x))));
+  wxEnsureFor(all);
+  const ses = prepSes(filterCond(all.filter(x => !excluded.has(sid(x))), opts.cond));
   const prior = $('useScore').checked && opts.method === 'model' && SC.res ? SC.res.priorPct : null;
-  A = ses.length ? KartCore.analyze(ses, { method: opts.method, noTraffic: opts.noTraffic, cutPct: opts.cutPct, dropFirst: true, priorPct: prior }) : null;
+  A = ses.length ? KartCore.analyze(ses, { method: opts.method, noTraffic: opts.noTraffic, cutPct: opts.cutPct, dropFirst: true, priorPct: prior, evo: opts.evo }) : null;
   renderSel(all); renderRanking(ses); renderPilotos(ses); renderPista(); renderSes(all); renderIng();
 }
 function renderSel(all) {
@@ -457,8 +465,11 @@ function renderSel(all) {
     <div class="row"><b style="font-size:13px">Sesiones:</b>
       <span class="chipd" data-q="all">Todas</span><span class="chipd" data-q="none">Ninguna</span><span class="chipd" data-q="race">Solo carreras</span><span class="chipd" data-q="crono">Solo cronos</span>
       <span style="width:1px;height:18px;background:var(--line)"></span>
-      ${order.map(x => `<span class="chipd ${excluded.has(sid(x)) ? '' : 'on'}" data-s="${esc(sid(x))}" title="${esc(x.title)} · ${x.stints.length} pilotos">${DAYS.size > 1 ? fmtD(x.date) + ' ' : ''}${esc(x.time)} ${esc((x.title || x.type).slice(0, 22))}${x.envivo ? ' ●' : ''}</span>`).join('')}
+      ${order.map(x => `<span class="chipd ${excluded.has(sid(x)) ? '' : 'on'}" data-s="${esc(sid(x))}" title="${esc(x.title)} · ${x.stints.length} pilotos">${condOf(x).wet || condOf(x).mixed ? condIcon(condOf(x)) + ' ' : ''}${DAYS.size > 1 ? fmtD(x.date) + ' ' : ''}${esc(x.time)} ${esc((x.title || x.type).slice(0, 22))}${x.envivo ? ' ●' : ''}</span>`).join('')}
       <span class="mini">${on.length} de ${order.length} · toca una sesión para quitarla o añadirla</span>
+    </div>
+    <div class="row" style="margin-top:6px">${(() => { const nw = on.filter(x => condOf(x).wet).length, nd = on.length - nw, used = filterCond(on, opts.cond).length;
+      return `<span class="mini">☀️ ${nd} en seco · 💧 ${nw} en mojado${on.some(x => condOf(x).mixed) ? ' · ⛅/🌦 = la pista cambió durante la sesión (corregido)' : ''} · cuentan <b>${used}</b> (${{ auto: nw && nd ? 'Auto: solo las secas' : 'Auto', dry: 'solo seco', wet: 'solo mojado', all: 'todas' }[opts.cond]}) · el detalle de cada una está en la pestaña Sesiones</span>`; })()}
     </div>
     <div class="row" style="margin-top:10px"><button class="back" id="askC">💬 Pregunta a Claude sobre esta selección</button></div>
   </div>`;
@@ -497,19 +508,20 @@ function askClaude(s) {
 // ---------- pilotos: juntar duplicados y quitar de la comparativa ----------
 // Se guarda en data/pilotos.json (para todos los dispositivos) y, mientras no se guarde en la nube, en este navegador.
 // unir: { "NOMBRE ALIAS": "NOMBRE QUE SE QUEDA" } · quitar: [nombres]
-let PADM = { unir: {}, quitar: [] }, PADM_REMOTE = null;
+let PADM = { unir: {}, quitar: [], mojado: {} }, PADM_REMOTE = null;
 const padmLocal = () => store.get('pilAdmin', null);
-const sameAdm = (a, b) => JSON.stringify({ u: Object.entries(a.unir || {}).sort(), q: [...(a.quitar || [])].sort() }) === JSON.stringify({ u: Object.entries(b.unir || {}).sort(), q: [...(b.quitar || [])].sort() });
+const admKey = a => JSON.stringify({ u: Object.entries(a.unir || {}).sort(), q: [...(a.quitar || [])].sort(), m: Object.entries(a.mojado || {}).sort() });
+const sameAdm = (a, b) => admKey(a) === admKey(b);
 async function loadPilAdmin() {
   try { const r = await fetch(RAW + 'data/pilotos.json?t=' + Date.now(), { cache: 'no-store' }); if (r.ok) PADM_REMOTE = await r.json(); } catch {}
-  PADM_REMOTE = Object.assign({ unir: {}, quitar: [] }, PADM_REMOTE || {});
+  PADM_REMOTE = Object.assign({ unir: {}, quitar: [], mojado: {} }, PADM_REMOTE || {});
   const loc = padmLocal();
   if (loc && loc.pending && sameAdm(loc, PADM_REMOTE)) store.set('pilAdmin', null);
   const l2 = padmLocal();
-  PADM = l2 && l2.pending ? { unir: l2.unir || {}, quitar: l2.quitar || [] } : { unir: PADM_REMOTE.unir, quitar: PADM_REMOTE.quitar };
+  PADM = l2 && l2.pending ? { unir: l2.unir || {}, quitar: l2.quitar || [], mojado: l2.mojado || {} } : { unir: PADM_REMOTE.unir, quitar: PADM_REMOTE.quitar, mojado: PADM_REMOTE.mojado || {} };
 }
 const admPending = () => { const l = padmLocal(); return !!(l && l.pending); };
-function admSave() { store.set('pilAdmin', { unir: PADM.unir, quitar: PADM.quitar, pending: !sameAdm(PADM, PADM_REMOTE || { unir: {}, quitar: [] }) }); SC.res = null; render(); if (document.getElementById('v-score').classList.contains('on')) renderScore(); }
+function admSave() { store.set('pilAdmin', { unir: PADM.unir, quitar: PADM.quitar, mojado: PADM.mojado || {}, pending: !sameAdm(PADM, PADM_REMOTE || { unir: {}, quitar: [] }) }); SC.res = null; render(); if (document.getElementById('v-score').classList.contains('on')) renderScore(); }
 const NN = n => KartCore.normName(n);
 function canon(n) { let x = NN(n), i = 0; while (PADM.unir[x] && i++ < 6) x = PADM.unir[x]; return x; }
 const isOut = n => PADM.quitar.includes(n);
@@ -532,7 +544,7 @@ function admSplit(alias) { delete PADM.unir[alias]; admSave(); }
 function admRemove(names) { names.forEach(n => { n = canon(n); if (!PADM.quitar.includes(n)) PADM.quitar.push(n); }); admSave(); }
 function admRestore(n) { PADM.quitar = PADM.quitar.filter(x => x !== n); admSave(); }
 function admCloud() {
-  const body = '```json\n' + JSON.stringify({ unir: PADM.unir, quitar: PADM.quitar }) + '\n```';
+  const body = '```json\n' + JSON.stringify({ unir: PADM.unir, quitar: PADM.quitar, mojado: PADM.mojado || {} }) + '\n```';
   if (body.length < 6000) ghIssue('Pilotos', body);
   else { copyText(body); alert('He copiado los datos. En la página que se abre, pégalos en el cuadro grande y pulsa "Create".'); ghIssue('Pilotos', ''); }
 }
@@ -620,6 +632,115 @@ function renderMgr() {
   if ($('mgrCloud')) $('mgrCloud').onclick = admCloud;
 }
 
+// ================= LLUVIA / CONDICIONES DE PISTA =================
+// Cada sesión se clasifica en seco / mojado con, por orden: 1) lo que marques a mano, 2) mensajes de dirección de carrera de Apex,
+// 3) el parte meteorológico real de esa hora (Open-Meteo, gratis), 4) si el ritmo fue claramente más lento de lo normal en ese circuito.
+// Además se calcula la "curva de la pista" (lo que se ralentiza o acelera durante la sesión) y se descuenta de cada vuelta.
+const WX = {}; // slug -> { h: { 'AAAA-MM-DDTHH': mm }, t, loading }
+const circOf = slug => CIRCS.find(c => c.slug === slug) || {};
+const hourKey = (ts, tz) => { const p = new Intl.DateTimeFormat('sv-SE', { timeZone: tz || 'Europe/Madrid', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23' }).format(new Date(ts * 1000)); return p.slice(0, 10) + 'T' + p.slice(11, 13); };
+function fetchWx(slug, minDate) {
+  const c = circOf(slug); if (c.lat == null) return Promise.resolve(null);
+  const w = WX[slug];
+  if (w && Date.now() - w.t < 30 * 60000 && (!minDate || w.from <= minDate)) return Promise.resolve(w);
+  if (w && w.loading) return w.loading;
+  const tz = encodeURIComponent(c.tz || 'Europe/Madrid'), base = `latitude=${c.lat}&longitude=${c.lon}&hourly=precipitation&timezone=${tz}`;
+  const o = WX[slug] = Object.assign(w || { h: {} }, { t: Date.now() });
+  o.loading = (async () => {
+    const add = j => { if (j && j.hourly) j.hourly.time.forEach((t, i) => { const v = j.hourly.precipitation[i]; if (v != null) o.h[t.slice(0, 13)] = v; }); };
+    try { add(await (await fetch(`https://api.open-meteo.com/v1/forecast?${base}&past_days=92&forecast_days=1`)).json()); } catch {}
+    const lim = new Date(Date.now() - 88 * 864e5).toISOString().slice(0, 10);
+    if (minDate && minDate < lim) { try { add(await (await fetch(`https://archive-api.open-meteo.com/v1/archive?${base}&start_date=${minDate}&end_date=${lim}`)).json()); } catch {} }
+    o.from = minDate && minDate < lim ? minDate : lim; o.loading = null; o.ok = Object.keys(o.h).length > 0;
+    return o;
+  })();
+  return o.loading;
+}
+const sk = s => (s._slug || s.slug || (C && C.slug)) + '|' + s.date + '|' + s.time;
+function sesSpan(s) {
+  const ts = (s.stints || []).flatMap(t => (t.ts || []).filter(Boolean));
+  if (ts.length) return [Math.min(...ts) - 60, Math.max(...ts)];
+  const st = Date.parse(s.date + 'T' + (s.time || '00:00') + ':00') / 1000; const dur = Math.max(0, ...(s.stints || []).map(t => (t.laps || []).reduce((a, b) => a + b, 0)));
+  return [st, st + dur];
+}
+function wxOf(s, slug) {
+  const w = WX[slug]; if (!w || !w.ok) return null;
+  const tz = circOf(slug).tz, [a, b] = sesSpan(s); if (!isFinite(a)) return null;
+  let during = 0, before = 0, any = false;
+  for (let t = Math.floor(a / 3600) * 3600; t <= b; t += 3600) { const v = w.h[hourKey(t, tz)]; if (v != null) { any = true; during = Math.max(during, v); } }
+  for (let k = 1; k <= 3; k++) { const v = w.h[hourKey(a - k * 3600, tz)]; if (v != null) { any = true; before += v; } }
+  return any ? { during, before } : null;
+}
+// ¿los MISMOS pilotos fueron más lentos que ellos mismos en otras sesiones de ese circuito? (así no engaña un grupo de principiantes)
+const stPace = t => { const L = (t.laps || []).slice(1).sort((x, y) => x - y); return L.length >= 3 ? KartCore.mean(L.slice(0, 5)) : null; };
+let DPI = { t: -1, by: {} };
+function driverIdx(slug) {
+  if (DPI.t !== ALLD.t) DPI = { t: ALLD.t, by: {} };
+  if (DPI.by[slug]) return DPI.by[slug];
+  const I = {};
+  ((ALLD.sessions || {})[slug] || []).filter(h => !isDel(h)).forEach(h => { const k = sk(h); h.stints.forEach(t => { const d = canon(t.driver), p = stPace(t); if (!p || junkName(d)) return; (I[d] = I[d] || []).push([k, p]); }); });
+  return (DPI.by[slug] = I);
+}
+function paceRatio(s, slug) {
+  if (!ALLD.sessions) return null;
+  const I = driverIdx(slug), key = sk(s), rs = [];
+  s.stints.forEach(t => { const d = canon(t.driver), p = stPace(t); if (!p || junkName(d) || !I[d]) return; const o = I[d].filter(x => x[0] !== key).map(x => x[1]); if (o.length) { const r = p / KartCore.median(o); if (r > 0.85 && r < 1.3) rs.push(r); } });
+  return rs.length >= 3 ? KartCore.median(rs) : null;
+}
+const WET_RE = /lluvi|llueve|llovi|mojad|agua en pista|pista h[uú]meda|neum[aá]ticos? de agua|\bwet\b|\brain|chuv|molhad/i, DRY_RE = /pista seca|\bseco\b|\bdry\b|pista seca/i;
+const curveCache = new WeakMap();
+const curveOf = s => { if (!curveCache.has(s)) curveCache.set(s, KartCore.trackCurve(s)); return curveCache.get(s); };
+function condOf(s) {
+  const slug = s._slug || s.slug || C.slug, why = [];
+  let wet = null, src = '';
+  const man = (PADM.mojado || {})[sk(s)];
+  if (man === 1 || man === 0) { wet = man === 1; src = 'manual'; why.push(wet ? 'Marcada a mano como mojado' : 'Marcada a mano como seco'); }
+  const com = (s.comentarios || []).find(c => WET_RE.test(c.texto)), comD = (s.comentarios || []).find(c => DRY_RE.test(c.texto));
+  if (com) why.push(`Dirección de carrera (${com.hora}): “${com.texto}”`); else if (comD) why.push(`Dirección de carrera (${comD.hora}): “${comD.texto}”`);
+  if (wet == null && com) { wet = true; src = 'apex'; }
+  const wx = wxOf(s, slug);
+  if (wx) why.push(wx.during >= 0.2 ? `Parte meteorológico: lluvia (${wx.during.toFixed(1).replace('.', ',')} mm/h)` : wx.before >= 1 ? `Parte meteorológico: llovió ${wx.before.toFixed(1).replace('.', ',')} mm en las 3 h anteriores (pista húmeda)` : 'Parte meteorológico: sin lluvia');
+  if (wet == null && wx && (wx.during >= 0.2 || wx.before >= 1)) { wet = true; src = 'meteo'; }
+  const r = paceRatio(s, slug);
+  if (r != null && r >= 1.06) why.push(`Los mismos pilotos fueron un ${((r - 1) * 100).toFixed(0)}% más lentos que en sus otras sesiones aquí`);
+  if (wet == null && r != null && r >= 1.06 && !(wx && wx.during < 0.05 && wx.before < 0.3) && !comD) { wet = true; src = 'ritmo'; }
+  const cv = curveOf(s);
+  if (cv && cv.apply) why.push(`La pista cambió un ${(cv.amp * 100).toFixed(1).replace('.', ',')}% durante la sesión${cv.trend >= 0.02 ? ' (cada vez más lenta: ¿empezó a llover?)' : cv.trend <= -0.02 ? ' (cada vez más rápida: ¿se secó o cogió goma?)' : ''} — corregido en los cálculos`);
+  const mixed = !!(cv && cv.apply && Math.abs(cv.trend) >= 0.03);
+  return { wet: !!wet, mixed, src: src || (wx ? 'meteo' : r != null ? 'ritmo' : ''), why, wx, ratio: r, curve: cv };
+}
+const condIcon = c => c.wet ? (c.mixed ? '🌦' : '💧') : c.mixed ? '⛅' : '☀️';
+const condName = c => c.wet ? (c.src === 'ritmo' ? 'Mojado (probable)' : 'Mojado') : 'Seco';
+function filterCond(list, mode) {
+  if (mode === 'all') return list;
+  const w = list.filter(s => condOf(s).wet), d = list.filter(s => !condOf(s).wet);
+  if (mode === 'wet') return w; if (mode === 'dry') return d;
+  return d.length ? d : list; // auto: si hay sesiones secas, solo las secas
+}
+function markCond(s, v) { // v: 1 mojado · 0 seco · null automático
+  PADM.mojado = Object.assign({}, PADM.mojado || {});
+  if (v == null) delete PADM.mojado[sk(s)]; else PADM.mojado[sk(s)] = v;
+  admSave();
+}
+let wxAsked = {};
+function wxEnsureFor(list) {
+  // pide el parte de los circuitos que salen en pantalla (una vez cada 30 min) y repinta al llegar
+  const by = {}; list.forEach(s => { const slug = s._slug || s.slug || C.slug; if (!by[slug] || s.date < by[slug]) by[slug] = s.date; });
+  Object.entries(by).forEach(([slug, d]) => { const w = WX[slug]; if ((w && (w.loading || (Date.now() - w.t < 30 * 60000 && w.from <= d))) || circOf(slug).lat == null) return; fetchWx(slug, d).then(x => { if (x && x.ok) { SC.res = null; render(); } }); });
+}
+function curveSvg(cv) {
+  if (!cv) return '';
+  const W = 520, H = 90, lo = Math.min(...cv.curve, 0.99), hi = Math.max(...cv.curve, 1.01), n = cv.curve.length;
+  const x = i => 30 + i * (W - 40) / Math.max(1, n - 1), y = v => 8 + (hi - v) / (hi - lo) * (H - 22);
+  const lab = t => { const d = new Date(t * 1000); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:560px;height:auto">
+    <line x1="30" x2="${W - 10}" y1="${y(1)}" y2="${y(1)}" stroke="#3a3f4a" stroke-dasharray="3 3"/>
+    <text x="0" y="${y(hi) + 4}" fill="#8a909c" font-size="10">+${((hi - 1) * 100).toFixed(1)}%</text><text x="0" y="${y(lo) + 4}" fill="#8a909c" font-size="10">${((lo - 1) * 100).toFixed(1)}%</text>
+    <polyline fill="none" stroke="${cv.trend > 0 ? '#4cc3ff' : '#ffd23f'}" stroke-width="2" points="${cv.curve.map((v, i) => x(i) + ',' + y(v)).join(' ')}"/>
+    <text x="30" y="${H - 2}" fill="#8a909c" font-size="10">${lab(cv.times[0])}</text><text x="${W - 40}" y="${H - 2}" fill="#8a909c" font-size="10">${lab(cv.times[n - 1])}</text></svg>
+    <div class="mini">Curva de la pista: lo que tardaban todos de más (arriba) o de menos (abajo) que su media, a lo largo de la sesión.</div>`;
+}
+
 // ---------- borrar sesiones de la memoria ----------
 // Se ocultan al momento en este dispositivo; "Borrar de la nube" abre una issue "Borrar sesiones" que elimina los archivos del repositorio.
 const sesDel = () => store.get('sesDel', []);
@@ -688,7 +809,7 @@ function loadAllData() {
 // Por circuito: el mismo modelo que el ranking de karts (piloto + kart + sesión) con todo lo grabado. El nivel de cada piloto
 // se pasa a % de la vuelta de referencia del circuito, para poder comparar circuitos distintos. General = media de sus circuitos
 // ponderada por tandas. Score = 1000 − 100 × nivel% (1000 = piloto medio; +100 = 1% más rápido por vuelta).
-const SC = { res: null, circ: 'all', min: 2, openC: null };
+const SC = { res: null, circ: 'all', min: 2, openC: null, cond: store.get('scoreCond', 'dry') };
 const SC_OFF = () => new Set(store.get('scoreOff', []));
 const scoreOf = pct => Math.round(1000 - 100 * pct);
 const sesKey = (slug, s) => s._path || slug + '|' + (s.id || s.time);
@@ -697,11 +818,14 @@ const SC_PIL = () => new Set(store.get('scorePilOff', []));
 async function ensureScore() {
   if (SC.res) return SC.res;
   await loadAllData();
+  // parte meteorológico de todos los circuitos (máx. 8 s de espera; si no llega se usa el resto de pistas)
+  const minD = slug => (ALLD.sessions[slug] || []).reduce((m, x) => x.date < m ? x.date : m, '9999');
+  await Promise.race([Promise.all(Object.keys(ALLD.sessions).map(slug => fetchWx(slug, minD(slug)))), new Promise(r => setTimeout(r, 8000))]);
   const per = {}, gen = {}, offS = SC_SES(), offP = SC_PIL();
   Object.entries(ALLD.sessions).forEach(([slug, list]) => {
-    const ses = prepSes(list.filter(s => !isDel(s) && !offS.has(sesKey(slug, s)))).map(s => Object.assign(s, { stints: s.stints.filter(t => !offP.has(t.driver)) })).filter(s => s.stints.length);
+    const ses = prepSes(list.filter(s => !isDel(s) && !offS.has(sesKey(slug, s)) && (SC.cond === 'all' || condOf(s).wet === (SC.cond === 'wet')))).map(s => Object.assign(s, { stints: s.stints.filter(t => !offP.has(t.driver)) })).filter(s => s.stints.length);
     if (!ses.length) return;
-    const R = KartCore.analyze(ses, { method: 'model', noTraffic: opts.noTraffic, cutPct: opts.cutPct, dropFirst: true, maxDeltaPct: 6 });
+    const R = KartCore.analyze(ses, { method: 'model', noTraffic: opts.noTraffic, cutPct: opts.cutPct, dropFirst: true, maxDeltaPct: 6, evo: opts.evo });
     if (!R.stints.length) return;
     per[slug] = { refLap: R.refLap, drivers: R.drivers.filter(d => !junkName(d.driver)).map(d => ({ driver: d.driver, pct: d.skill / R.refLap * 100, sec: d.skill, n: d.n, best: d.best, b3: d.b3, b5: d.b5, karts: d.karts })) };
     if (SC_OFF().has(slug)) return;
@@ -735,11 +859,12 @@ async function renderScore() {
     const nOff = list.filter(s => offS.has(sesKey(slug, s))).length;
     return `<details ${SC.openC === slug ? 'open' : ''} data-det="${esc(slug)}" style="margin-top:6px"><summary class="mini" style="cursor:pointer"><b style="color:var(--text)">${esc(cname(slug))}</b> · ${list.length - nOff} de ${list.length} sesiones cuentan</summary>
       ${Object.entries(days).map(([d, l]) => `<div class="row" style="margin:6px 0 0 12px"><span class="mini" style="width:44px">${fmtDay(d)}</span><span class="chipd" data-dayon="${esc(slug + '|' + d)}">Todas</span><span class="chipd" data-dayoff="${esc(slug + '|' + d)}">Ninguna</span>
-        ${l.map(s => `<span class="chipd ${offS.has(sesKey(slug, s)) ? '' : 'on'}" data-sk="${esc(sesKey(slug, s))}" title="${s.stints.length} pilotos">${esc(s.time)} ${esc((s.title || s.type || '').slice(0, 22))}</span>`).join('')}</div>`).join('')}</details>`;
+        ${l.map(s => `<span class="chipd ${offS.has(sesKey(slug, s)) ? '' : 'on'}" data-sk="${esc(sesKey(slug, s))}" title="${s.stints.length} pilotos · ${esc(condOf(s).why.join(' · '))}">${condOf(s).wet || condOf(s).mixed ? condIcon(condOf(s)) + ' ' : ''}${esc(s.time)} ${esc((s.title || s.type || '').slice(0, 22))}</span>`).join('')}</div>`).join('')}</details>`;
   }).join('');
   el.innerHTML = delBanner() + `<div class="card">
       <div class="row"><b style="font-size:13px">Ver:</b><span class="chipd ${isAll ? 'on' : ''}" data-c="all">General (todos los circuitos)</span>${slugs.map(s => `<span class="chipd ${SC.circ === s ? 'on' : ''}" data-c="${esc(s)}">${esc(cname(s))}</span>`).join('')}</div>
-      <div class="row" style="margin-top:8px"><span class="mini">Mínimo de tandas:</span><span class="seg" id="scMin">${[1, 2, 3, 5].map(n => `<button data-n="${n}" class="${SC.min === n ? 'on' : ''}">${n}+</button>`).join('')}</span>
+      <div class="row" style="margin-top:8px"><span class="mini">Pista:</span><span class="seg" id="scCond"><button data-v="dry" class="${SC.cond === 'dry' ? 'on' : ''}">☀️ Score en seco</button><button data-v="wet" class="${SC.cond === 'wet' ? 'on' : ''}">💧 Score en mojado</button><button data-v="all" class="${SC.cond === 'all' ? 'on' : ''}">Todas</button></span>
+        <span class="mini">Mínimo de tandas:</span><span class="seg" id="scMin">${[1, 2, 3, 5].map(n => `<button data-n="${n}" class="${SC.min === n ? 'on' : ''}">${n}+</button>`).join('')}</span>
         <button class="back" id="scMgr">👥 Juntar / quitar pilotos</button><button class="back" id="scRe">↻ Recalcular</button>
         <span class="mini">${rows.length} de ${tot} pilotos · ${Object.values(ALLD.sessions || {}).reduce((a, l) => a + l.filter(s => !isDel(s)).length, 0)} sesiones grabadas</span></div></div>
     <div class="card"><b style="font-size:14px">Filtros del ranking</b> <span class="mini">· solo afectan a este ranking (se guardan en este dispositivo)</span>
@@ -754,7 +879,7 @@ async function renderScore() {
         ${isAll ? `<td class="l hm mini">${d.circs.map(cname).join(', ')}</td>` : `<td class="num ${d.best === B.best ? 'purple' : ''}">${fmtT(d.best)}</td><td class="num ${d.b3 === B.b3 ? 'purple' : ''}">${fmtT(d.b3)}</td><td class="num ${d.b5 === B.b5 ? 'purple' : ''}">${fmtT(d.b5)}</td>`}
         <td><span data-pout="${esc(d.driver)}" title="Quitar de este ranking" style="cursor:pointer;color:var(--mute);padding:0 6px">✕</span></td></tr>`; }).join('')}
     </tbody></table>
-    <div class="mini" style="margin-top:8px;line-height:1.5"><b>Cómo se calcula.</b> En cada circuito se usan todas las sesiones grabadas (menos las que quites) y el mismo modelo del ranking de karts, que separa lo que pone el piloto, lo que pone el kart y las condiciones de cada sesión. El nivel del piloto se pasa a <b>% de la vuelta</b> (así un piloto de Vendrell y uno de DR7 se pueden comparar). El general es la media de sus circuitos, pesando más donde tiene más tandas. <b>Score = 1000 − 100 × nivel%</b>: 1000 es el piloto medio, 1100 va un 1% más rápido por vuelta (≈ 0,5 s en una vuelta de 50 s), 900 un 1% más lento. Con pocas tandas el modelo es prudente y acerca al piloto a 1000. No cuentan las tandas más de un 6% más rápidas o lentas que la mediana de su sesión (suelen ser otra categoría de kart en la misma tanda, como pasa en Campillos, o incidencias). Fiabilidad: alta con 6+ tandas, media con 3–5. Pulsa un piloto para ver dónde y cuándo corrió.<br>
+    <div class="mini" style="margin-top:8px;line-height:1.5"><b>Cómo se calcula.</b> En cada circuito se usan todas las sesiones grabadas (menos las que quites) y el mismo modelo del ranking de karts, que separa lo que pone el piloto, lo que pone el kart y las condiciones de cada sesión. El nivel del piloto se pasa a <b>% de la vuelta</b> (así un piloto de Vendrell y uno de DR7 se pueden comparar). El general es la media de sus circuitos, pesando más donde tiene más tandas. <b>Score = 1000 − 100 × nivel%</b>: 1000 es el piloto medio, 1100 va un 1% más rápido por vuelta (≈ 0,5 s en una vuelta de 50 s), 900 un 1% más lento. Con pocas tandas el modelo es prudente y acerca al piloto a 1000. No cuentan las tandas más de un 6% más rápidas o lentas que la mediana de su sesión (suelen ser otra categoría de kart en la misma tanda, como pasa en Campillos, o incidencias). Fiabilidad: alta con 6+ tandas, media con 3–5. El score en seco usa solo sesiones secas y el de mojado solo las mojadas (💧): así sabes quién es bueno con agua. Pulsa un piloto para ver dónde y cuándo corrió.<br>
     Para usarlo al valorar karts, marca <b>“Usar score general de pilotos”</b> en Karts del día (método Modelo).</div></div>`;
   bindDelBanner(el);
   el.querySelectorAll('[data-c]').forEach(c => c.onclick = () => { SC.circ = c.dataset.c; renderScore(); });
@@ -769,6 +894,7 @@ async function renderScore() {
   el.querySelectorAll('[data-pout]').forEach(x => x.onclick = e => { e.stopPropagation(); const o = SC_PIL(); o.add(x.dataset.pout); store.set('scorePilOff', [...o]); scoreChanged(); });
   el.querySelectorAll('[data-pback]').forEach(x => x.onclick = () => { const o = SC_PIL(); o.delete(x.dataset.pback); store.set('scorePilOff', [...o]); scoreChanged(); });
   el.querySelectorAll('tr[data-sd]').forEach(tr => tr.onclick = () => scoreFicha(tr.dataset.sd));
+  $('scCond').querySelectorAll('button').forEach(b => b.onclick = () => { SC.cond = b.dataset.v; store.set('scoreCond', SC.cond); scoreChanged(); });
   $('scMin').querySelectorAll('button').forEach(b => b.onclick = () => { SC.min = +b.dataset.n; renderScore(); });
   $('scMgr').onclick = () => openMgr();
   $('scRe').onclick = () => { SC.res = null; ALLD.sessions = null; renderScore(); };
@@ -1013,9 +1139,10 @@ function renderSes(ses) {
   if (openSes) { const s = ses.find(x => sid(x) === openSes) || (openSes.startsWith('live-') ? ses.find(x => x.envivo) : null); if (s) return renderDetail(el, s); openSes = null; }
   if (!ses.length) { el.innerHTML = delBanner() + '<div class="card empty">No hay sesiones ese día.</div>'; bindDelBanner(el); return; }
   const canDel = s => !s.envivo && (s._path || /pdf$/i.test(s.source || ''));
-  el.innerHTML = delBanner() + `<div class="card scroll"><div class="mini" style="margin-bottom:6px">Pulsa una sesión para ver todos sus datos. 🗑 = borrarla de la memoria (deja de contar en todo: karts, pilotos y score).</div><table><thead><tr><th class="l">Hora</th><th class="l">Sesión</th><th>Pilotos</th><th>Vueltas</th><th>Mejor vuelta</th><th class="l">Origen</th><th></th></tr></thead><tbody>
+  el.innerHTML = delBanner() + `<div class="card scroll"><div class="mini" style="margin-bottom:6px">Pulsa una sesión para ver todos sus datos. 🗑 = borrarla de la memoria (deja de contar en todo: karts, pilotos y score).</div><table><thead><tr><th class="l">Hora</th><th class="l">Sesión</th><th class="l">Pista</th><th>Pilotos</th><th>Vueltas</th><th>Mejor vuelta</th><th class="l">Origen</th><th></th></tr></thead><tbody>
   ${ses.slice().sort((a, b) => b.time.localeCompare(a.time)).map(s => { const laps = s.stints.flatMap(t => t.laps);
-    return `<tr class="click" data-sid="${esc(sid(s))}"><td class="l">${esc(s.time)}</td><td class="l"><b>${esc(s.title || s.type)}</b></td><td class="num">${s.stints.length}</td><td class="num">${laps.length}</td><td class="num purple">${fmtT(Math.min(...laps))}</td>
+    const cd = condOf(s);
+    return `<tr class="click" data-sid="${esc(sid(s))}"><td class="l">${esc(s.time)}</td><td class="l"><b>${esc(s.title || s.type)}</b></td><td class="l mini" title="${esc(cd.why.join(' · '))}">${condIcon(cd)} ${condName(cd)}${cd.src === 'manual' ? ' (a mano)' : ''}</td><td class="num">${s.stints.length}</td><td class="num">${laps.length}</td><td class="num purple">${fmtT(Math.min(...laps))}</td>
     <td class="l mini">${s.envivo ? '<span style="color:var(--vslow)">● en curso</span>' : s.source === 'directo' ? 'vista en directo' : /pdf$/i.test(s.source || '') ? (s.local ? 'PDF (solo en este dispositivo)' : 'PDF') : 'grabada'}</td>
     <td>${canDel(s) ? `<span data-del="${esc(sid(s))}" title="Borrar esta sesión" style="cursor:pointer;padding:0 6px">🗑</span>` : ''}</td></tr>`; }).join('')}</tbody></table></div>`;
   bindDelBanner(el);
@@ -1074,10 +1201,17 @@ function renderDetail(el, s) {
   el.innerHTML = `<div class="card scroll">
     <div class="row"><button class="back" id="back">← Sesiones</button><div><b style="font:700 20px 'Barlow Condensed'">${esc(s.title || s.type)}</b>
     <div class="mini">${esc(s.time)} · ${esc(s.pista || '')} · ${st.length} pilotos · ${allLaps.length} vueltas · mejor ${fmtT(sbest)}${s.envivo ? ' · <span style="color:var(--vslow)">en curso</span>' : ''}</div></div></div>
+    ${(() => { const cd = condOf(s), man = (PADM.mojado || {})[sk(s)];
+      return `<div class="card" style="margin:8px 0;background:var(--panel2)"><div class="row"><b>${condIcon(cd)} Pista: ${condName(cd)}</b>
+        <span class="mini">Marcar:</span><span class="seg" id="condMark"><button data-m="a" class="${man == null ? 'on' : ''}">Automático</button><button data-m="0" class="${man === 0 ? 'on' : ''}">☀️ Seco</button><button data-m="1" class="${man === 1 ? 'on' : ''}">💧 Mojado</button></span>${admPending() ? '<span class="mini" style="color:var(--accent)">Cambios solo en este dispositivo · <a href="#" id="condCloud" style="color:var(--accent)">guardar en la nube</a></span>' : ''}</div>
+        <div class="mini" style="margin-top:4px">${cd.why.length ? cd.why.map(esc).join('<br>') : 'Sin datos para saberlo (sin parte meteorológico ni historial suficiente): se considera seco.'}</div>
+        ${cd.curve ? `<div style="margin-top:6px">${curveSvg(cd.curve)}</div>` : ''}</div>`; })()}
     <div class="sub">${tabs.map(([k, l]) => `<button data-t="${k}" class="${k === subTab ? 'on' : ''}">${l}</button>`).join('')}<button id="askS">💬 Pregunta a Claude</button>${!s.envivo && (s._path || /pdf$/i.test(s.source || '')) ? '<button id="delS">🗑 Borrar sesión</button>' : ''}</div>
     ${body}</div>`;
   $('back').onclick = () => { openSes = null; renderSes(sessionsToday()); };
   $('askS').onclick = () => askClaude(s);
+  if ($('condCloud')) $('condCloud').onclick = e => { e.preventDefault(); admCloud(); };
+  el.querySelectorAll('#condMark button').forEach(b => b.onclick = () => markCond(s, b.dataset.m === 'a' ? null : +b.dataset.m));
   if ($('delS')) $('delS').onclick = () => { if (confirm(`¿Borrar la sesión ${s.time} ${s.title || s.type}?\nDeja de contar en todos los rankings.`)) delSessions([s]); };
   el.querySelectorAll('.sub button').forEach(b => b.onclick = () => { subTab = b.dataset.t; renderDetail(el, s); });
   el.querySelectorAll('tr.team[data-team]').forEach(tr => tr.onclick = () => { const k = tr.dataset.team; openDetTeams.has(k) ? openDetTeams.delete(k) : openDetTeams.add(k); renderDetail(el, s); });

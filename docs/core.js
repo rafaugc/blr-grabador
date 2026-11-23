@@ -109,6 +109,39 @@
     for (let i = 0; i + n <= c.length; i++) { const m = mean(c.slice(i, i + n)); if (best == null || m < best) best = m; }
     return best;
   }
+  // ---------- evolución de la pista dentro de una sesión (lluvia que empieza, pista que se seca o coge goma) ----------
+  // Con TODOS los karts a la vez: cada vuelta se compara con la mediana de su propia tanda; la mediana de esas
+  // proporciones minuto a minuto es la "curva de la pista". Si cambia más de un 1,5 %, se descuenta de cada vuelta.
+  const tsOf = t => { if (t.ts && t.ts.length === t.laps.length && t.ts.every(x => x)) return t.ts; let c = 0; return t.laps.map(x => (c += x)); };
+  function trackCurve(s, minAmp) {
+    const pts = [];
+    for (const t of s.stints || []) {
+      const L = (t.laps || []).slice(1); if (L.length < 3) continue;
+      const ts = tsOf(t).slice(1), ref = median(L);
+      L.forEach((x, i) => { const r = x / ref; if (r > 0.9 && r < 1.15) pts.push([ts[i], r]); });
+    }
+    if (pts.length < 30) return null;
+    pts.sort((a, b) => a[0] - b[0]);
+    const t0 = pts[0][0], t1 = pts[pts.length - 1][0], span = t1 - t0;
+    if (span < 240) return null;
+    const w = Math.max(90, span / 12), nb = Math.ceil(span / w) || 1, bins = Array.from({ length: nb }, () => []);
+    pts.forEach(([t, r]) => bins[Math.min(nb - 1, Math.floor((t - t0) / w))].push(r));
+    let c = bins.map(b => b.length >= 4 ? median(b) : null);
+    const known = c.map((v, i) => v == null ? null : i).filter(i => i != null);
+    if (known.length < 3) return null;
+    c = c.map((v, i) => { if (v != null) return v; const a = known.filter(k => k < i).pop(), b = known.find(k => k > i); return a == null ? c[b] : b == null ? c[a] : c[a] + (c[b] - c[a]) * (i - a) / (b - a); });
+    c = c.map((v, i) => mean(c.slice(Math.max(0, i - 1), i + 2)));
+    const mid = t => t0 + (t + 0.5) * w;
+    const at0 = t => { const x = (t - t0) / w - 0.5; if (x <= 0) return c[0]; if (x >= nb - 1) return c[nb - 1]; const i = Math.floor(x); return c[i] + (c[i + 1] - c[i]) * (x - i); };
+    const norm = median(pts.map(p => at0(p[0])));
+    const curve = c.map(v => v / norm);
+    const amp = Math.max(...curve) - Math.min(...curve);
+    const third = Math.max(1, Math.floor(nb / 3));
+    const trend = mean(curve.slice(-third)) - mean(curve.slice(0, third)); // + = más lenta al final
+    const out = { t0, w, curve, amp, trend, times: curve.map((_, i) => mid(i)), at: t => at0(t) / norm };
+    out.apply = amp >= (minAmp ?? 0.015);
+    return out;
+  }
   const minN = a => { const v = a.filter(x => x != null && isFinite(x)); return v.length ? Math.min(...v) : null; };
   const median = a => { if (!a.length) return NaN; const b = [...a].sort((x, y) => x - y), m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; };
 
@@ -139,13 +172,17 @@
     const nm = nameMap(sessions.flatMap(s => s.stints.map(t => t.driver)));
     const stints = [];
     for (const s of sessions) {
+      const cv = opts.evo === false ? null : trackCurve(s);
+      s._evo = cv; // para mostrarlo
       for (const t of s.stints) {
         const start = opts.dropFirst ? 1 : 0;
-        let laps = t.laps.slice(start);
+        const ts = cv && cv.apply ? tsOf(t) : null;
+        const corr = ts ? t.laps.map((x, i) => x / cv.at(ts[i])) : t.laps;
+        let laps = corr.slice(start);
         if (opts.noTraffic && t.gaps) laps = laps.filter((x, i) => { const g = t.gaps[i + start]; return g == null || g >= opts.trafficGap; });
         if (!laps.length) continue;
-        const best = Math.min(...t.laps);
-        const clean = laps.filter(x => x <= best * (1 + opts.cutPct / 100));
+        const best = Math.min(...t.laps), cbest = Math.min(...corr);
+        const clean = laps.filter(x => x <= cbest * (1 + opts.cutPct / 100));
         if (clean.length < opts.minLaps) continue;
         const sorted = [...clean].sort((a, b) => a - b);
         const pace = opts.pace === 'best' ? sorted[0] : opts.pace === 'median' ? median(sorted) : mean(sorted.slice(0, 5));
@@ -238,5 +275,5 @@
     return { karts, drivers, stints, sigma, opts, refLap, priorUsed: Object.keys(result_prior).length };
   }
 
-  root.KartCore = { linesFromItems, parseResumen, analyze, tsec, median, mean, bestN, normName: d => String(d || '').replace(/^\d{1,3}\s*-\s*/, '').replace(/\s*\[\d{1,2}:\d{2}(?::\d{2})?\]\s*$/, '').trim().toUpperCase().replace(/[ÁÀÂÄ]/g, 'A').replace(/[ÉÈÊË]/g, 'E').replace(/[ÍÌÎÏ]/g, 'I').replace(/[ÓÒÔÖ]/g, 'O').replace(/[ÚÙÛÜ]/g, 'U').replace(/\s+/g, ' ') };
+  root.KartCore = { linesFromItems, parseResumen, analyze, tsec, median, mean, bestN, trackCurve, tsOf, normName: d => String(d || '').replace(/^\d{1,3}\s*-\s*/, '').replace(/\s*\[\d{1,2}:\d{2}(?::\d{2})?\]\s*$/, '').trim().toUpperCase().replace(/[ÁÀÂÄ]/g, 'A').replace(/[ÉÈÊË]/g, 'E').replace(/[ÍÌÎÏ]/g, 'I').replace(/[ÓÒÔÖ]/g, 'O').replace(/[ÚÙÛÜ]/g, 'U').replace(/\s+/g, ' ') };
 })(typeof window !== 'undefined' ? window : globalThis);
