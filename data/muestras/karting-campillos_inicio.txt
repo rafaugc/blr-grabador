@@ -2528,3 +2528,15 @@ r131|*i2|22835 ⏎
  ⏎ 
  ⏎ 
 dyn1|count|40598 ⏎ 
+dyn1|count|70624 ⏎ 
+r2c2|sr| ⏎ r2|*|| ⏎ 
+r2c2|in| ⏎ 
+dyn1|count|100738 ⏎ 
+r1c2|sr| ⏎ r1|*|| ⏎ 
+r1c2|in| ⏎ 
+r2c6|tb|33.884 ⏎ r2|*i1| ⏎ 
+dyn1|count|130810 ⏎ 
+r1c6|ti|41.152 ⏎ r1|*i1| ⏎ 
+r2c7|tb|38.100 ⏎ 
+r2|*i2| ⏎ 
+dyn1|count|160903 ⏎ 
