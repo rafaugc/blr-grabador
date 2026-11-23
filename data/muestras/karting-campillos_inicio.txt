@@ -102,3 +102,20 @@ r13c2|sf| ⏎ r13c6|ib|26.826 ⏎ r13c7|ib|33.964 ⏎ r13c8|ib|21.328 ⏎ r12c2|
  ⏎ 
  ⏎ 
 init|p| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#0000FF !important; color:#FFFFFF !important; ⏎ css|no2|border-bottom-color:#FF0000 !important; color:#FFFFFF !important; ⏎ css|no3|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no4|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no5|border-bottom-color:#E67300 !important; color:#FFFFFF !important; ⏎ css|no8|border-bottom-color:#FFB062 !important; color:#000000 !important; ⏎ css|no9|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no10|border-bottom-color:#59FF83 !important; color:#000000 !important; ⏎ css|no6|border-bottom-color:#00FF00 !important; color:#000000 !important; ⏎ css|no7|border-bottom-color:#000000 !important; color:#FFFFFF !important; ⏎ css|pena1|color:#f00; font-size:11px; font-weight: bold; text-align:center; ⏎ effects||Mostrar Efectos ⏎ comments||Comentarios ⏎ title1|| ⏎ title2||Sesión 35 ⏎ dyn1|count|1260 ⏎ light|lg| ⏎ wth1|| ⏎ wth2|| ⏎ wth3|| ⏎ track||Karting Campillos ⏎ com|| ⏎ grid||<tbody><tr data-id="r0" class="head" data-pos="0"><td data-id="c1" data-type="grp" data-pr="6"></td><td data-id="c2" data-type="sta" data-pr="1"></td><td data-id="c3" data-type="rk" data-pr="1">Clasif.</td><td data-id="c4" data-type="no" data-pr="1">Kart</td><td data-id="c5" data-type="dr" data-pr="1" data-width="18" data-min="16">Piloto</td><td data-id="c6" data-type="s1" data-pr="3" data-width="10" data-min="6">S1</td><td data-id="c7" data-type="s2" data-pr="3" data-width="10" data-min="6">S2</td><td data-id="c8" data-type="s3" data-pr="3" data-width="12" data-min="6">S3</td><td data-id="c9" data-type="llp" data-pr="2" data-width="10" data-min="7">Última vuelta</td><td data-id="c10" data-type="blp" data-pr="1" data-width="10" data-min="7">Mejor vuelta</td><td data-id="c11" data-type="gap" data-pr="4" data-width="10" data-min="7">Gap</td><td data-id="c12" data-type="int" data-pr="5" data-width="10" data-min="7">Interv.</td><td data-id="c13" data-type="tlp" data-pr="5" data-width="6" data-min="4">Vueltas</td></tr><tr data-id="r14" data-pos="1"><td data-id="r14c1" class="in"></td><td data-id="r14c2" class="in"></td><td class="rk"><div><p data-id="r14c3" class=""></p></div></td><td class="no"><div data-id="r14c4" class="no3">75</div></td><td data-id="r14c5" class="dr">JERO44</td><td data-id="r14c6" class=""></td><td data-id="r14c7" class=""></td><td data-id="r14c8" class=""></td><td data-id="r14c9" class=""></td><td data-id="r14c10" class="ib"></td><td data-id="r14c11" class="in"></td><td data-id="r14c12" class="in"></td><td data-id="r14c13" class="in"></td></tr><tr data-id="r15" data-pos="2"><td data-id="r15c1" class="in"></td><td data-id="r15c2" class="in"></td><td class="rk"><div><p data-id="r15c3" class=""></p></div></td><td class="no"><div data-id="r15c4" class="no3">80</div></td><td data-id="r15c5" class="dr">3LSA</td><td data-id="r15c6" class=""></td><td data-id="r15c7" class=""></td><td data-id="r15c8" class=""></td><td data-id="r15c9" class=""></td><td data-id="r15c10" class="ib"></td><td data-id="r15c11" class="in"></td><td data-id="r15c12" class="in"></td><td data-id="r15c13" class="in"></td></tr></tbody> ⏎ msg|| ⏎ 
+dyn1|count|31361 ⏎ 
+dyn1|count|61386 ⏎ 
+r15c2|sr| ⏎ r15|*|| ⏎ 
+r14c2|sr| ⏎ r14|*|| ⏎ 
+dyn1|count|91451 ⏎ 
+r15c2|in| ⏎ 
+r14c2|in| ⏎ 
+r15c6|tb|26.432 ⏎ 
+r15|*i1| ⏎ 
+r14c6|ti|26.510 ⏎ 
+r14|*i1| ⏎ 
+dyn1|count|121426 ⏎ 
+r15c7|tb|34.798 ⏎ r15|*i2| ⏎ 
+r14c7|tb|34.458 ⏎ r15c7|ti|34.798 ⏎ r14|*i2| ⏎ 
+dyn1|count|151517 ⏎ 
+r14c1|gs| ⏎ 
+r14c2|su| ⏎ r14c3||1 ⏎ r14c8|tb|21.525 ⏎ r14c9|tb|1:22.493 ⏎ r14c10|ib|1:22.493 ⏎ r14c13|in|1 ⏎ r14|*|82493|26510 ⏎ r14c1|gf| ⏎ r15c1|gl| ⏎ r15c2|su| ⏎ r15c3||2 ⏎ r15c8|ti|21.643 ⏎ r15c9|ti|1:22.873 ⏎ r15c10|ib|1:22.873 ⏎ r15c11|in|0.380 ⏎ r15c12|in|0.380 ⏎ r15c13|in|1 ⏎ r15|*|82873|26432 ⏎ 
