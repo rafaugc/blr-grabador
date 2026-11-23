@@ -208,6 +208,8 @@
     stints.forEach(t => { t.delta = t.pace - ref[t.session]; });
 
     const K = {}, D = {};
+    // sin nombre de piloto (vacío o "KART 12") no se sabe quién conducía: se supone un piloto medio y la diferencia es del kart
+    const anon = d => !d || /^KART\s*\d+$/i.test(d);
     stints.forEach(t => { (K[t.kart] = K[t.kart] || []).push(t); (D[t.driver] = D[t.driver] || []).push(t); });
     let kEff = {}, dEff = {}, sEff = {}, sigma = 0.3, lamK = 1.5, lamD = 1, result_prior = {};
     for (const k in K) kEff[k] = 0; for (const d in D) dEff[d] = 0; for (const s in bySes) sEff[s] = 0;
@@ -243,12 +245,12 @@
         lamK = (sigma / TAU_K) ** 2;
         for (let it = 0; it < 150; it++) {
           for (const s in bySes) { const v = stints.filter(t => t.session === s).map(t => t.delta - dEff[t.driver] - kEff[t.kart]); sEff[s] = mean(v); }
-          for (const d in D) { const v = D[d].map(t => t.delta - sEff[t.session] - kEff[t.kart]); const p = prior[d]; dEff[d] = p ? (v.reduce((a, b) => a + b, 0) + (lamD + p.w) * p.s) / (v.length + lamD + p.w) : v.reduce((a, b) => a + b, 0) / (v.length + lamD); }
+          for (const d in D) { if (anon(d)) { dEff[d] = 0; continue; } const v = D[d].map(t => t.delta - sEff[t.session] - kEff[t.kart]); const p = prior[d]; dEff[d] = p ? (v.reduce((a, b) => a + b, 0) + (lamD + p.w) * p.s) / (v.length + lamD + p.w) : v.reduce((a, b) => a + b, 0) / (v.length + lamD); }
           for (const k in K) { const v = K[k].map(t => t.delta - sEff[t.session] - dEff[t.driver]); kEff[k] = v.reduce((a, b) => a + b, 0) / (v.length + lamK); }
           const mk = mean(Object.values(kEff)); for (const k in K) kEff[k] -= mk;
         }
         const res = stints.map(t => t.delta - sEff[t.session] - dEff[t.driver] - kEff[t.kart]);
-        const repeated = Object.values(D).filter(v => v.length > 1).reduce((a, v) => a + v.length, 0);
+        const repeated = Object.entries(D).filter(([d, v]) => v.length > 1 || anon(d)).map(([, v]) => v).reduce((a, v) => a + v.length, 0);
         const dof = Math.max(3, repeated - Object.keys(D).length + Object.keys(K).length);
         sigma = Math.min(0.6, Math.max(0.12, Math.sqrt(res.reduce((a, r) => a + r * r, 0) / Math.max(dof, stints.length * 0.3))));
       }
@@ -261,7 +263,7 @@
     const karts = Object.keys(K).map(k => {
       const v = K[k], n = opts.method === 'driver' ? (v.relN || 0) : v.length;
       const se = opts.method === 'model'
-        ? Math.sqrt(1 / (n / (sigma * sigma + (opts.tauDriver || 0.7) ** 2 * (v.every(t => D[t.driver].length === 1) ? 1 : 0.3)) + 1 / ((opts.tauKart || 0.15) ** 2)))
+        ? Math.sqrt(1 / (n / (sigma * sigma + (opts.tauDriver || 0.7) ** 2 * (v.every(t => D[t.driver].length === 1 || anon(t.driver)) ? 1 : 0.3)) + 1 / ((opts.tauKart || 0.15) ** 2)))
         : 1.15 * sigma / Math.sqrt(Math.max(n, 0.5));
       const drivers = new Set(v.map(t => t.driver)).size;
       return { kart: +k, effect: kEff[k], se, n: v.length, drivers, best: Math.min(...v.map(t => t.best)), b3: minN(v.map(t => t.b3)), b5: minN(v.map(t => t.b5)),

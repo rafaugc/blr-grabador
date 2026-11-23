@@ -13,9 +13,9 @@
 <meta name="apple-mobile-web-app-title" content="KR Karts">
 <title>KR Karts · En directo</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-<script src="core.js?v=20261122d"></script>
-<script src="ingeniero.js?v=20261122d"></script>
-<script src="ingeniero-ui.js?v=20261122d"></script>
+<script src="core.js?v=20261123m"></script>
+<script src="ingeniero.js?v=20261123m"></script>
+<script src="ingeniero-ui.js?v=20261123m"></script>
 <style>
 :root{--bg:#0c0d10;--panel:#14161b;--panel2:#1b1e25;--line:#262a33;--text:#e9ebf0;--mute:#8a909c;--dim:#5d636e;--fast:#3ddc84;--good:#a6e36a;--slow:#ffa24c;--vslow:#ff5f5f;--purple:#b38cff;--accent:#ffd23f}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,system-ui,sans-serif}
@@ -1235,6 +1235,39 @@ setInterval(() => {
   if (ING.mode === 'sim' && ING.simPlay) { ING.simT = Math.min(ING.cfg.dur * 60 + 60, ING.simT + 30); if (ING.simT >= ING.cfg.dur * 60 + 60) ING.simPlay = false; }
   renderIng();
 }, 1000);
+// ---------- diferencia entre karts del circuito (lo que te juegas en el sorteo) ----------
+const quant = (a, q) => { if (!a.length) return null; const x = (a.length - 1) * q, i = Math.floor(x); return a[i] + ((a[i + 1] ?? a[i]) - a[i]) * (x - i); };
+function kartSpread(ks, refLap) {
+  const e = ks.map(k => k.effect).sort((a, b) => a - b), n = e.length, m = KartCore.mean(e);
+  const sd = Math.sqrt(KartCore.mean(e.map(x => (x - m) ** 2)));
+  const rel = ks.filter(k => k.n >= 3).map(k => k.effect).sort((a, b) => a - b);
+  const M = [
+    { id: 'all', name: 'Todos los karts', desc: 'Del kart más rápido al más lento.', v: n >= 2 ? e[n - 1] - e[0] : null },
+    { id: 'trim2', name: 'Sin los 2 mejores ni los 2 peores', desc: 'Quita los extremos (por arriba y por abajo): lo normal entre karts "corrientes".', v: n >= 7 ? e[n - 3] - e[2] : null, need: 'hacen falta 7 karts o más' },
+    { id: 'top2', name: 'Sin los 2 mejores', desc: 'Normalizado solo por arriba: del 3.º mejor al peor.', v: n >= 5 ? e[n - 1] - e[2] : null },
+    { id: 'bot2', name: 'Sin los 2 peores', desc: 'Normalizado solo por abajo: del mejor al 3.º peor.', v: n >= 5 ? e[n - 3] - e[0] : null },
+    { id: 'p1090', name: 'Del 10 % mejor al 10 % peor', desc: 'Igual que quitar extremos, pero se adapta al tamaño de la flota (comparable entre circuitos).', v: n >= 5 ? quant(e, 0.9) - quant(e, 0.1) : null },
+    { id: 'iqr', name: 'La mitad central', desc: 'Entre el kart del puesto 25 % y el del 75 %: lo que separa a la mayoría.', v: n >= 4 ? quant(e, 0.75) - quant(e, 0.25) : null },
+    { id: 'pair', name: 'Entre dos karts al azar', desc: 'Lo que suelen separarse dos karts cualquiera en el sorteo (media).', v: n >= 3 ? 1.128 * sd : null },
+    { id: 'rel', name: 'Solo karts fiables (3+ tandas)', desc: 'Del mejor al peor, sin karts con pocos datos.', v: rel.length >= 3 ? rel[rel.length - 1] - rel[0] : null, need: 'faltan karts con 3 tandas o más' },
+  ];
+  M.forEach(x => { x.pct = x.v != null && refLap ? x.v / refLap * 100 : null; });
+  return M;
+}
+let spreadSel = store.get('spreadSel', 'trim2');
+function spreadBox(ks) {
+  const M = kartSpread(ks, A.refLap), cur = M.find(x => x.id === spreadSel && x.v != null) || M.find(x => x.v != null);
+  if (!cur) return '';
+  const laps = A.refLap ? Math.round(15 * 60 / A.refLap) : 0; // vueltas en una carrera de 15 min
+  const f = v => v.toFixed(2).replace('.', ',');
+  return `<div class="card"><div class="row" style="justify-content:space-between;align-items:flex-start"><div><h4 style="margin:0 0 4px">Diferencia entre karts · ${esc(C.nombre)}</h4><div class="mini">${esc(cur.name)} · ${esc(cur.desc)}</div></div>
+      <div style="text-align:right"><div class="num" style="font-size:30px;font-weight:700;color:var(--accent)">${f(cur.v)} s<span style="font-size:14px;color:var(--mute)"> /vuelta</span></div>
+      <div class="mini">${cur.pct.toFixed(1).replace('.', ',')} % de la vuelta${laps ? ` · ≈ ${Math.round(cur.v * laps)} s en una carrera de 15 min (${laps} vueltas)` : ''}</div></div></div>
+    <details style="margin-top:8px"><summary class="mini" style="cursor:pointer">Ver todas las formas de calcularlo y elegir cuál se muestra</summary>
+    <table style="margin-top:6px"><thead><tr><th class="l">Cálculo</th><th>Diferencia</th><th>% vuelta</th><th class="l hm">Qué significa</th></tr></thead><tbody>
+    ${M.map(x => `<tr class="${x.v != null ? 'click' : ''}" data-sp="${x.id}"><td class="l">${x.id === cur.id ? '● ' : ''}<b>${esc(x.name)}</b></td><td class="num">${x.v != null ? f(x.v) + ' s' : '–'}</td><td class="num">${x.pct != null ? x.pct.toFixed(1).replace('.', ',') + ' %' : ''}</td><td class="l hm mini" style="white-space:normal">${esc(x.v != null ? x.desc : (x.need || 'pocos karts'))}</td></tr>`).join('')}
+    </tbody></table><div class="mini" style="margin-top:4px">Toca una fila para mostrarla arriba. Se calcula con la “Ventaja” de cada kart (ya descontado el piloto y las condiciones de cada sesión) y con las sesiones y días que tengas elegidos.</div></details></div>`;
+}
 function renderRanking(ses) {
   const el = $('rankOut');
   if (opts.method === 'driver' && A && !A.karts.length) { el.innerHTML = `<div class="card empty">"Vs. su media" compara a cada piloto consigo mismo con karts distintos, y en esta selección <b>ningún piloto ha llevado más de un kart</b>. Usa "Modelo", o añade días en los que hayan repetido pilotos.</div>`; return; }
@@ -1246,6 +1279,7 @@ function renderRanking(ses) {
   const bk = k => { const [c] = tier(k.effect); return `<div class="bk"><b class="${c}">${k.kart}</b><span class="num ${c}">${fmt(k.effect)} s</span></div>`; };
   el.innerHTML = `<div class="summary"><div class="card"><h4>Pide estos karts</h4><div class="bigk">${best.map(bk).join('')}</div></div>
     <div class="card"><h4>Evita estos karts</h4><div class="bigk">${worst.map(bk).join('')}</div></div></div>
+  ${spreadBox(ks)}
   <div class="card scroll"><div class="mini" style="margin-bottom:6px">${daysLabel()} · ${ses.length} sesiones · ${A.stints.length} tandas. Segundos por vuelta frente a un kart medio (negativo = más rápido).</div>
   <table><thead><tr><th class="l">#</th><th style="text-align:center">Kart</th><th class="l">Clase</th><th>Ventaja</th><th class="hm">±</th><th>Fiabilidad</th><th class="hm">Tandas</th><th class="hm">Pilotos</th><th>Mejor vuelta</th><th title="Mejor media de 3 vueltas seguidas">Mejor ritmo 3v</th><th title="Mejor media de 5 vueltas seguidas">Mejor ritmo 5v</th><th class="l hm">Lo llevaron</th></tr></thead><tbody>
   ${ks.map((k, i) => { const [c] = tier(k.effect), [cc, cl] = conf(k.se, k.drivers);
@@ -1256,7 +1290,8 @@ function renderRanking(ses) {
     <td data-v="${-k.se}"><span class="badge ${cc}">${cl}</span></td><td class="num hm">${k.n}</td><td class="num hm">${k.drivers}</td><td class="num ${k.best === dayBest ? 'purple' : ''}">${fmtT(k.best)}</td><td class="num ${k.b3 != null && k.b3 === kb3 ? 'purple' : ''}">${fmtT(k.b3)}</td><td class="num ${k.b5 != null && k.b5 === kb5 ? 'purple' : ''}">${fmtT(k.b5)}</td><td class="l hm mini" style="max-width:260px;overflow:hidden;text-overflow:ellipsis"><span class="purple">${esc(vd || '')}</span>${others.length ? ', ' + esc(others.join(', ')) : ''}</td></tr>`; }).join('')}
   </tbody></table>
   <div class="mini" style="margin-top:6px"><span class="purple">Morado</span>: en “Mejor vuelta” y “Mejor ritmo” solo el mejor del día; en “Lo llevaron”, quien hizo la VR con ese kart · Clase: los 2 mejores son ✈ Avión y los 2 peores Cepo; el resto según su ventaja (Rápido ≤ −0,15 · Buen ritmo · Normal ±0,05 · Lento · Muy lento ≥ +0,15) · Mejor ritmo 3v / 5v = la mejor media de 3 / 5 vueltas seguidas que ha hecho alguien con ese kart (sin la vuelta de salida) · Pulsa un kart para ver el detalle.</div></div>`;
-  makeSortable(el.querySelector('table'), 'karts');
+  el.querySelectorAll('tr[data-sp]').forEach(tr => tr.onclick = () => { spreadSel = tr.dataset.sp; store.set('spreadSel', spreadSel); renderRanking(ses); const d = el.querySelector('details'); if (d) d.open = true; });
+  makeSortable(el.querySelector('.card.scroll table'), 'karts');
   el.querySelectorAll('tr[data-k]').forEach(tr => tr.onclick = () => {
     const k = ks.find(x => String(x.kart) === tr.dataset.k); if (!k) return;
     $('kmbox').innerHTML = IngUI.kartPopup(k, A, ses, null, tier(k.effect)[0]); $('kmodal').hidden = false;
