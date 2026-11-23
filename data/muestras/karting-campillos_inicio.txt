@@ -2815,3 +2815,22 @@ dyn1|count|512328 ⏎
 r2c6|tn|25.737 ⏎ r2c7|| ⏎ r2c8|| ⏎ r2|*i1|32892 ⏎ 
 r1c6|tn|31.650 ⏎ r1c7|| ⏎ r1c8|| ⏎ r1|*i1|39499 ⏎ 
 dyn1|count|542403 ⏎ 
+r2c7|tn|32.947 ⏎ 
+r2|*i2|19701 ⏎ 
+r1c7|tn|39.848 ⏎ r1|*i2|22933 ⏎ 
+r2c2|sr| ⏎ r2c8|tb|19.630 ⏎ r2c9|tb|1:18.314 ⏎ r2c10|ib|1:18.314 ⏎ r2c13|in|6 ⏎ r1c11|in|15.418 ⏎ r1c12|in|15.418 ⏎ r2|*|78314|25524 ⏎ 
+dyn1|count|572373 ⏎ 
+r2c2|in| ⏎ 
+r1c2|sr| ⏎ 
+r1c8|tn|23.481 ⏎ r1c9|tn|1:34.979 ⏎ r1c13|in|5 ⏎ r1|*|93732|31147 ⏎ 
+r1c2|in| ⏎ 
+r2c6|tn|26.078 ⏎ r2c7|| ⏎ r2c8|| ⏎ r2|*i1|32919 ⏎ 
+dyn1|count|602455 ⏎ 
+r1c6|ti|31.136 ⏎ r1c7|| ⏎ r1c8|| ⏎ r1|*i1|39576 ⏎ 
+dyn1|count|632500 ⏎ 
+r2c7|tn|54.383 ⏎ r2|*i2|19630 ⏎ 
+r1c7|tn|39.678 ⏎ 
+r1|*i2|22933 ⏎ 
+dyn1|count|662645 ⏎ 
+light|lf| ⏎ com||<p><b>13:08</b><span data-flag="chequered"></span>Llegada</p> ⏎ 
+dyn1|text| ⏎ 
