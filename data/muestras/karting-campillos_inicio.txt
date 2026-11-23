@@ -95,3 +95,5 @@ light|lf| ⏎ com||<p><b>17:19</b><span data-flag="chequered"></span>Llegada</p>
 dyn1|text| ⏎ 
 r12c6|ti|26.382 ⏎ 
  ⏎ 
+r13c2|sf| ⏎ r13c6|ib|26.826 ⏎ r13c7|ib|33.964 ⏎ r13c8|ib|21.328 ⏎ r12c2|sf| ⏎ r12c6|ib|27.098 ⏎ r12c7|ib|34.906 ⏎ r12c8|ib|21.355 ⏎ 
+ ⏎ 
