@@ -2723,3 +2723,10 @@ r2c7|tn|33.576 ⏎
 r2|*i2|20018 ⏎ 
 dyn1|count|602623 ⏎ 
 r1c2|in| ⏎ 
+r1c6|tn|35.283 ⏎ r1c7|| ⏎ r1c8|| ⏎ r1|*i1|41220 ⏎ 
+dyn1|count|632764 ⏎ 
+light|lf| ⏎ com||<p><b>12:44</b><span data-flag="chequered"></span>Llegada</p> ⏎ dyn1|text| ⏎ 
+r2c6|ti|27.086 ⏎ 
+r2c2|sf| ⏎ 
+r2c6|ib|27.494 ⏎ r2c7|ib|33.167 ⏎ r2c8|ib|20.018 ⏎ 
+r1c2|sf| ⏎ 
