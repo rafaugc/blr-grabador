@@ -508,20 +508,43 @@ function askClaude(s) {
 // ---------- pilotos: juntar duplicados y quitar de la comparativa ----------
 // Se guarda en data/pilotos.json (para todos los dispositivos) y, mientras no se guarde en la nube, en este navegador.
 // unir: { "NOMBRE ALIAS": "NOMBRE QUE SE QUEDA" } · quitar: [nombres]
-let PADM = { unir: {}, quitar: [], mojado: {} }, PADM_REMOTE = null;
+let PADM = { unir: {}, quitar: [], mojado: {}, distintos: [] }, PADM_REMOTE = null;
 const padmLocal = () => store.get('pilAdmin', null);
-const admKey = a => JSON.stringify({ u: Object.entries(a.unir || {}).sort(), q: [...(a.quitar || [])].sort(), m: Object.entries(a.mojado || {}).sort() });
+const admKey = a => JSON.stringify({ u: Object.entries(a.unir || {}).sort(), q: [...(a.quitar || [])].sort(), m: Object.entries(a.mojado || {}).sort(), d: [...(a.distintos || [])].sort() });
 const sameAdm = (a, b) => admKey(a) === admKey(b);
 async function loadPilAdmin() {
   try { const r = await fetch(RAW + 'data/pilotos.json?t=' + Date.now(), { cache: 'no-store' }); if (r.ok) PADM_REMOTE = await r.json(); } catch {}
-  PADM_REMOTE = Object.assign({ unir: {}, quitar: [], mojado: {} }, PADM_REMOTE || {});
+  PADM_REMOTE = Object.assign({ unir: {}, quitar: [], mojado: {}, distintos: [] }, PADM_REMOTE || {});
   const loc = padmLocal();
   if (loc && loc.pending && sameAdm(loc, PADM_REMOTE)) store.set('pilAdmin', null);
   const l2 = padmLocal();
-  PADM = l2 && l2.pending ? { unir: l2.unir || {}, quitar: l2.quitar || [], mojado: l2.mojado || {} } : { unir: PADM_REMOTE.unir, quitar: PADM_REMOTE.quitar, mojado: PADM_REMOTE.mojado || {} };
+  PADM = l2 && l2.pending ? { unir: l2.unir || {}, quitar: l2.quitar || [], mojado: l2.mojado || {}, distintos: l2.distintos || [] } : { unir: PADM_REMOTE.unir, quitar: PADM_REMOTE.quitar, mojado: PADM_REMOTE.mojado || {}, distintos: PADM_REMOTE.distintos || [] };
+  // los "no son el mismo" que estaban solo en este dispositivo pasan a guardarse en la nube
+  const oldNo = store.get('pilNo', []);
+  if (oldNo.length) { PADM.distintos = [...new Set(PADM.distintos.concat(oldNo))]; store.set('pilNo', []); admSave(true); }
+  if (admPending()) admAutoCloud();
 }
 const admPending = () => { const l = padmLocal(); return !!(l && l.pending); };
-function admSave() { store.set('pilAdmin', { unir: PADM.unir, quitar: PADM.quitar, mojado: PADM.mojado || {}, pending: !sameAdm(PADM, PADM_REMOTE || { unir: {}, quitar: [] }) }); SC.res = null; render(); if (document.getElementById('v-score').classList.contains('on')) renderScore(); }
+function admSave(silent) {
+  store.set('pilAdmin', { unir: PADM.unir, quitar: PADM.quitar, mojado: PADM.mojado || {}, distintos: PADM.distintos || [], pending: !sameAdm(PADM, PADM_REMOTE || { unir: {}, quitar: [] }) });
+  admAutoCloud();
+  if (silent) return;
+  SC.res = null; render(); if (document.getElementById('v-score').classList.contains('on')) renderScore();
+}
+// guardado automático en la nube: 5 s después del último cambio (así varios cambios seguidos van en un solo envío)
+let admTimer = null, admSending = false, ADM_SENT = '';
+function admAutoCloud(now) {
+  if (!ghTok() || !admPending()) return;
+  clearTimeout(admTimer);
+  admTimer = setTimeout(async () => {
+    if (admSending) return admAutoCloud();
+    admSending = true;
+    const ok = await ghIssue('Pilotos', admBody(), true);
+    admSending = false;
+    if (ok) { ADM_SENT = admKey(PADM); toast('✓ Guardado en la nube para siempre'); if (!$('kmodal').hidden && $('mgrList')) renderMgr(); setTimeout(() => loadPilAdmin().then(() => { if (!$('kmodal').hidden && $('mgrList')) renderMgr(); }), 120000); }
+  }, now ? 300 : 5000);
+}
+const admBody = () => '```json\n' + JSON.stringify({ unir: PADM.unir, quitar: PADM.quitar, mojado: PADM.mojado || {}, distintos: PADM.distintos || [] }) + '\n```';
 const NN = n => KartCore.normName(n);
 function canon(n) { let x = NN(n), i = 0; while (PADM.unir[x] && i++ < 6) x = PADM.unir[x]; return x; }
 const isOut = n => PADM.quitar.includes(n);
@@ -544,7 +567,8 @@ function admSplit(alias) { delete PADM.unir[alias]; admSave(); }
 function admRemove(names) { names.forEach(n => { n = canon(n); if (!PADM.quitar.includes(n)) PADM.quitar.push(n); }); admSave(); }
 function admRestore(n) { PADM.quitar = PADM.quitar.filter(x => x !== n); admSave(); }
 function admCloud() {
-  const body = '```json\n' + JSON.stringify({ unir: PADM.unir, quitar: PADM.quitar, mojado: PADM.mojado || {} }) + '\n```';
+  if (ghTok()) return admAutoCloud(true);
+  const body = admBody();
   if (body.length < 6000) ghIssue('Pilotos', body);
   else { copyText(body); alert('He copiado los datos. En la página que se abre, pégalos en el cuadro grande y pulsa "Create".'); ghIssue('Pilotos', ''); }
 }
@@ -584,14 +608,22 @@ function mgrNames() {
   else add(sessionsToday());
   return cnt;
 }
+let SUGG = { k: '', n: 0 };
+function newDupCount() {
+  if (!ALLD.sessions) return 0;
+  const k = ALLD.t + admKey(PADM); if (SUGG.k === k) return SUGG.n;
+  const cnt = mgrNames(), names = Object.keys(cnt).filter(n => !isOut(n)).sort(), INFO = nameInfo(), no = new Set(PADM.distintos || []); let n = 0;
+  for (let i = 0; i < names.length && n < 99; i++) for (let j = i + 1; j < names.length; j++) { const a = names[i], b = names[j]; if (!no.has([a, b].sort().join('|')) && similar(a, b) && !sameSession(INFO[a], INFO[b])) n++; }
+  SUGG = { k, n }; return n;
+}
 function renderMgr() {
   const sc0 = $('kmodal').scrollTop, ls0 = $('mgrList') ? $('mgrList').scrollTop : 0;
   const cnt = mgrNames(), names = Object.keys(cnt).filter(n => !isOut(n)).sort(), INFO = nameInfo();
-  const no = new Set(store.get('pilNo', []));
+  const no = new Set(PADM.distintos || []);
   const sugg = [];
-  for (let i = 0; i < names.length && sugg.length < 40; i++) for (let j = i + 1; j < names.length; j++) {
+  for (let i = 0; i < names.length && sugg.length < 300; i++) for (let j = i + 1; j < names.length; j++) {
     const a = names[i], b = names[j];
-    if (!no.has(a + '|' + b) && similar(a, b) && !sameSession(INFO[a], INFO[b])) sugg.push(cnt[a] >= cnt[b] ? [a, b] : [b, a]);
+    if (!no.has([a, b].sort().join('|')) && similar(a, b) && !sameSession(INFO[a], INFO[b])) sugg.push(cnt[a] >= cnt[b] ? [a, b] : [b, a]);
   }
   const q = NN(MGR.q);
   const shown = names.filter(n => !q || n.includes(q));
@@ -599,8 +631,10 @@ function renderMgr() {
   const keep = sel.slice().sort((a, b) => cnt[b] - cnt[a])[0];
   const groups = {}; Object.entries(PADM.unir).forEach(([a, k]) => (groups[k] = groups[k] || []).push(a));
   $('kmbox').innerHTML = `<div class="mhead"><div><div class="mtitle">Gestionar pilotos</div><div class="mini">Junta nombres que son la misma persona o quita pilotos de la comparativa. Vale para todos los circuitos, el ranking de karts y el score.</div></div><button class="mclose" data-close>✕</button></div>
-    ${admPending() ? `<div class="card row" style="border-color:#4d4317"><span class="mini" style="color:var(--accent)">Cambios guardados solo en este dispositivo.</span><button class="back" id="mgrCloud">☁️ Guardar para todos mis dispositivos</button></div>` : `<div class="mini" style="margin-bottom:8px">✓ Todo guardado en la nube.</div>`}
-    ${sugg.length ? `<div class="card"><b style="font-size:13px">Posibles duplicados (${sugg.length})</b><div class="mini" style="margin-bottom:6px">Nombres parecidos. Tú decides: “Son el mismo” los junta (se queda el nombre con más tandas); “No” no lo vuelve a sugerir.</div>
+    ${!ghTok() ? `<div class="card row" style="border-color:#4d4317"><span class="mini" style="color:var(--accent)"><b>Importante:</b> conecta la app con GitHub (una vez) para que lo que juntes se guarde solo y para siempre. Si no, se queda en este dispositivo y se puede perder.</span><button class="back" id="mgrConn">🔑 Conectar con GitHub</button>${admPending() ? '<button class="back" id="mgrCloud">☁️ Guardar a mano</button>' : ''}</div>`
+      : admPending() && ADM_SENT !== admKey(PADM) ? `<div class="mini" style="margin-bottom:8px;color:var(--accent)">⏳ Guardando en la nube…</div>` : `<div class="mini" style="margin-bottom:8px;color:var(--fast)">✓ Todo guardado en la nube para siempre.</div>`}
+    ${!sugg.length ? '<div class="card mini">✓ No hay posibles duplicados nuevos. Cuando aparezcan nombres nuevos parecidos a otros, saldrán aquí.</div>' : ''}
+    ${sugg.length ? `<div class="card"><b style="font-size:13px">Posibles duplicados nuevos (${sugg.length})</b><div class="mini" style="margin-bottom:6px">Nombres parecidos. Tú decides: “Son el mismo” los junta (se queda el nombre con más tandas); “No” no lo vuelve a sugerir. Lo que decidas se recuerda para siempre: solo te saldrán parejas nuevas.</div>
       ${sugg.map(([a, b], i) => `<div class="row" style="padding:6px 0;border-top:1px solid var(--line);align-items:flex-start"><div style="flex:1;min-width:220px">
           <div><b>${esc(a)}</b> <span class="mini">(${cnt[a]} tandas)</span> <span class="mini">· ${esc(whereTxt(INFO[a]))} · mejor ${fmtT(INFO[a] && INFO[a].best)}</span></div>
           <div><b>${esc(b)}</b> <span class="mini">(${cnt[b]} tandas)</span> <span class="mini">· ${esc(whereTxt(INFO[b]))} · mejor ${fmtT(INFO[b] && INFO[b].best)}</span></div></div>
@@ -623,13 +657,14 @@ function renderMgr() {
   const qi = $('mgrQ'); qi.oninput = () => { MGR.q = qi.value; const pos = qi.selectionStart; renderMgr(); const n = $('mgrQ'); n.focus(); n.setSelectionRange(pos, pos); };
   box.querySelectorAll('[data-n]').forEach(c => c.onclick = () => { const n = c.dataset.n; MGR.sel.has(n) ? MGR.sel.delete(n) : MGR.sel.add(n); renderMgr(); });
   box.querySelectorAll('[data-sy]').forEach(b => b.onclick = () => { const [a, c] = sugg[+b.dataset.sy]; admMerge(a, [c]); renderMgr(); });
-  box.querySelectorAll('[data-sn]').forEach(b => b.onclick = () => { const [a, c] = sugg[+b.dataset.sn]; const x = [a, c].sort(); store.set('pilNo', [...no, x.join('|')]); renderMgr(); });
+  box.querySelectorAll('[data-sn]').forEach(b => b.onclick = () => { const [a, c] = sugg[+b.dataset.sn]; PADM.distintos = [...new Set((PADM.distintos || []).concat([[a, c].sort().join('|')]))]; admSave(true); renderMgr(); });
   box.querySelectorAll('[data-split]').forEach(b => b.onclick = e => { e.stopPropagation(); admSplit(b.dataset.split); renderMgr(); });
   box.querySelectorAll('[data-back]').forEach(b => b.onclick = e => { e.stopPropagation(); admRestore(b.dataset.back); renderMgr(); });
   if ($('mgrJoin')) $('mgrJoin').onclick = () => { const k = $('mgrKeep').value; admMerge(k, sel.filter(n => n !== k)); MGR.sel = new Set([k]); renderMgr(); };
   if ($('mgrOut')) $('mgrOut').onclick = () => { if (!confirm(`¿Quitar ${sel.length === 1 ? sel[0] : sel.length + ' pilotos'} de la comparativa? Sus vueltas dejan de contar en los rankings (puedes recuperarlo luego).`)) return; admRemove(sel); MGR.sel.clear(); renderMgr(); };
   if ($('mgrClr')) $('mgrClr').onclick = () => { MGR.sel.clear(); renderMgr(); };
   if ($('mgrCloud')) $('mgrCloud').onclick = admCloud;
+  if ($('mgrConn')) $('mgrConn').onclick = openConnect;
 }
 
 // ================= LLUVIA / CONDICIONES DE PISTA =================
@@ -751,6 +786,7 @@ function delSessions(list) {
   if (cloud.length) store.set('sesDel', [...new Set(sesDel().concat(cloud.map(s => s._path)))]);
   if (ALLD.sessions) Object.keys(ALLD.sessions).forEach(k => ALLD.sessions[k] = ALLD.sessions[k].filter(x => !list.includes(x)));
   SC.res = null; openSes = null; render();
+  if (ghTok() && cloud.length) { clearTimeout(delSessions._t); delSessions._t = setTimeout(delCloud, 4000); }
 }
 function delCloud() {
   const body = 'Sesiones a borrar (no cambies nada, solo pulsa Create):\n' + sesDel().join('\n');
@@ -763,9 +799,10 @@ async function delSync() {
   const have = new Set(); Object.entries(idx.circuitos).forEach(([slug, c]) => Object.entries(c.dias).forEach(([d, fs]) => fs.forEach(f => have.add(`data/sesiones/${slug}/${d}/${f.f}`))));
   const left = sesDel().filter(p => have.has(p)); if (left.length !== sesDel().length) store.set('sesDel', left);
 }
-const delBanner = () => sesDel().length ? `<div class="card row" style="border-color:#4d4317"><span class="mini" style="color:var(--accent)">${sesDel().length} sesión(es) borradas solo en este dispositivo.</span><button class="back" data-delcloud>🗑 Borrar también de la nube</button><button class="back" data-delundo>Deshacer</button></div>` : '';
+const delBanner = () => sesDel().length ? (ghTok() ? `<div class="card row"><span class="mini">🗑 ${sesDel().length} sesión(es) borradas: se están borrando de la nube (1–2 min).</span></div>` : `<div class="card row" style="border-color:#4d4317"><span class="mini" style="color:var(--accent)">${sesDel().length} sesión(es) borradas solo en este dispositivo.</span><button class="back" data-delcloud>🗑 Borrar también de la nube</button><button class="back" data-delundo>Deshacer</button><button class="back" data-conn>🔑 Conectar con GitHub (y no volver a hacer esto)</button></div>`) : '';
 function bindDelBanner(el) {
   el.querySelectorAll('[data-delcloud]').forEach(b => b.onclick = delCloud);
+  el.querySelectorAll('[data-conn]').forEach(b => b.onclick = openConnect);
   el.querySelectorAll('[data-delundo]').forEach(b => b.onclick = () => { store.set('sesDel', []); SC.res = null; ALLD.sessions = null; render(); if (document.getElementById('v-score').classList.contains('on')) renderScore(); });
 }
 // ---------- quién es cada nombre: circuitos, días y sesiones en las que aparece ----------
@@ -928,8 +965,8 @@ function renderPilotos(ses) {
       <span class="mini">Sin nombre (“KART 12”) no cuenta. Datos: ${esc(daysLabel())} · ${ses.length} sesiones (la misma selección que en “Karts del día”).</span>
       <button class="back" id="pilAll">Usar todos los días con datos</button><button class="back" id="pilToday">Solo hoy</button>
       <span class="mini">Mínimo de tandas:</span><span class="seg" id="pilMin">${[1, 2, 3].map(n => `<button data-n="${n}" class="${pilMin === n ? 'on' : ''}">${n}+</button>`).join('')}</span>
-      <button class="back" id="pilMgr">👥 Juntar / quitar pilotos${PADM.quitar.length || Object.keys(PADM.unir).length ? ` (${Object.keys(PADM.unir).length} juntados · ${PADM.quitar.length} quitados)` : ''}</button>
-      ${admPending() ? '<span class="mini" style="color:var(--accent)">Cambios solo en este dispositivo · <a href="#" id="pilCloud" style="color:var(--accent)">guardar en la nube</a></span>' : ''}
+      <button class="back" id="pilMgr">👥 Juntar / quitar pilotos${newDupCount() ? ` · <b style="color:var(--accent)">${newDupCount()} posibles duplicados nuevos</b>` : ''}${PADM.quitar.length || Object.keys(PADM.unir).length ? ` (${Object.keys(PADM.unir).length} juntados · ${PADM.quitar.length} quitados)` : ''}</button>
+      ${!ghTok() ? '<span class="mini" style="color:var(--accent)">Lo que juntas se guarda solo en este dispositivo · <a href="#" id="pilConn" style="color:var(--accent)">🔑 conectar con GitHub para guardarlo para siempre</a></span>' : admPending() ? '<span class="mini" style="color:var(--accent)">' + (ADM_SENT === admKey(PADM) ? '✓ Guardado en la nube' : '⏳ Guardando en la nube…') + '</span>' : ''}
     </div>
     <div class="card scroll"><div class="mini" style="margin-bottom:6px">Nivel = segundos por vuelta frente al piloto medio <b>con el kart ya descontado</b> (negativo = más rápido). Mismo modelo que el ranking de karts: separa lo que es mérito del piloto, del kart y de las condiciones de cada sesión. Pulsa un piloto para ver sus tandas.${A.priorUsed ? ` <b>Usando el score general</b> para ${A.priorUsed} pilotos.` : ''}</div>
     <table><thead><tr><th class="l">#</th><th class="l">Piloto</th><th class="l">Clase</th><th>Nivel</th><th class="hm">±</th><th>Fiabilidad</th>${G ? '<th title="Score general (pestaña Score pilotos)">Score</th>' : ''}<th title="Media de lo buenos que fueron sus karts (negativo = le tocaron buenos)">Suerte con el kart</th><th class="hm">Tandas</th><th class="l hm">Karts</th><th>Mejor vuelta</th><th title="Mejor media de 3 vueltas seguidas">Mejor ritmo 3v</th><th title="Mejor media de 5 vueltas seguidas">Mejor ritmo 5v</th></tr></thead><tbody>
@@ -945,7 +982,7 @@ function renderPilotos(ses) {
   $('pilAll').onclick = () => { DAYS = new Set(ALLDAYS); loadDays(); refreshRecorded(); };
   $('pilToday').onclick = () => { DAYS = new Set([today()]); loadDays(); refreshRecorded(); };
   $('pilMgr').onclick = () => openMgr();
-  if ($('pilCloud')) $('pilCloud').onclick = e => { e.preventDefault(); admCloud(); };
+  if ($('pilConn')) $('pilConn').onclick = e => { e.preventDefault(); openConnect(); };
   el.querySelectorAll('#pilMin button').forEach(b => b.onclick = () => { pilMin = +b.dataset.n; render(); });
   el.querySelectorAll('tr[data-d]').forEach(tr => tr.onclick = () => {
     const d = A.drivers.find(x => x.driver === tr.dataset.d); if (!d) return;
@@ -1203,14 +1240,14 @@ function renderDetail(el, s) {
     <div class="mini">${esc(s.time)} · ${esc(s.pista || '')} · ${st.length} pilotos · ${allLaps.length} vueltas · mejor ${fmtT(sbest)}${s.envivo ? ' · <span style="color:var(--vslow)">en curso</span>' : ''}</div></div></div>
     ${(() => { const cd = condOf(s), man = (PADM.mojado || {})[sk(s)];
       return `<div class="card" style="margin:8px 0;background:var(--panel2)"><div class="row"><b>${condIcon(cd)} Pista: ${condName(cd)}</b>
-        <span class="mini">Marcar:</span><span class="seg" id="condMark"><button data-m="a" class="${man == null ? 'on' : ''}">Automático</button><button data-m="0" class="${man === 0 ? 'on' : ''}">☀️ Seco</button><button data-m="1" class="${man === 1 ? 'on' : ''}">💧 Mojado</button></span>${admPending() ? '<span class="mini" style="color:var(--accent)">Cambios solo en este dispositivo · <a href="#" id="condCloud" style="color:var(--accent)">guardar en la nube</a></span>' : ''}</div>
+        <span class="mini">Marcar:</span><span class="seg" id="condMark"><button data-m="a" class="${man == null ? 'on' : ''}">Automático</button><button data-m="0" class="${man === 0 ? 'on' : ''}">☀️ Seco</button><button data-m="1" class="${man === 1 ? 'on' : ''}">💧 Mojado</button></span>${!ghTok() ? '<span class="mini" style="color:var(--accent)">Se guarda solo en este dispositivo · <a href="#" id="condCloud" style="color:var(--accent)">🔑 conectar con GitHub</a></span>' : admPending() ? '<span class="mini" style="color:var(--accent)">⏳ Guardando en la nube…</span>' : ''}</div>
         <div class="mini" style="margin-top:4px">${cd.why.length ? cd.why.map(esc).join('<br>') : 'Sin datos para saberlo (sin parte meteorológico ni historial suficiente): se considera seco.'}</div>
         ${cd.curve ? `<div style="margin-top:6px">${curveSvg(cd.curve)}</div>` : ''}</div>`; })()}
     <div class="sub">${tabs.map(([k, l]) => `<button data-t="${k}" class="${k === subTab ? 'on' : ''}">${l}</button>`).join('')}<button id="askS">💬 Pregunta a Claude</button>${!s.envivo && (s._path || /pdf$/i.test(s.source || '')) ? '<button id="delS">🗑 Borrar sesión</button>' : ''}</div>
     ${body}</div>`;
   $('back').onclick = () => { openSes = null; renderSes(sessionsToday()); };
   $('askS').onclick = () => askClaude(s);
-  if ($('condCloud')) $('condCloud').onclick = e => { e.preventDefault(); admCloud(); };
+  if ($('condCloud')) $('condCloud').onclick = e => { e.preventDefault(); openConnect(); };
   el.querySelectorAll('#condMark button').forEach(b => b.onclick = () => markCond(s, b.dataset.m === 'a' ? null : +b.dataset.m));
   if ($('delS')) $('delS').onclick = () => { if (confirm(`¿Borrar la sesión ${s.time} ${s.title || s.type}?\nDeja de contar en todos los rankings.`)) delSessions([s]); };
   el.querySelectorAll('.sub button').forEach(b => b.onclick = () => { subTab = b.dataset.t; renderDetail(el, s); });
@@ -1458,7 +1495,53 @@ startMsgs();
 // ---------- circuitos (lista, favoritos, añadir y quitar) ----------
 // Las altas y bajas se piden abriendo una "issue" en GitHub ya rellenada: el repositorio la atiende solo en 1-2 minutos.
 let ESTADO = null, quitar = null;
-const ghIssue = (title, body) => window.open(`${GH}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`, '_blank');
+// Con la "llave" de GitHub guardada en este dispositivo, las peticiones se envían solas (sin abrir GitHub ni pulsar Create).
+const ghTok = () => store.get('ghToken', '');
+function toast(msg, ok = true) {
+  let t = $('toast'); if (!t) { t = document.createElement('div'); t.id = 'toast'; t.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:99;padding:10px 16px;border-radius:10px;font-size:14px;max-width:90vw;box-shadow:0 4px 20px #0008'; document.body.appendChild(t); }
+  t.textContent = msg; t.style.background = ok ? '#1f4a33' : '#5a2320'; t.style.color = '#fff'; t.hidden = false; clearTimeout(t._h); t._h = setTimeout(() => t.hidden = true, 4000);
+}
+async function ghIssue(title, body, quiet) {
+  const tok = ghTok();
+  if (tok) {
+    try {
+      const r = await fetch(`https://api.github.com/repos/${REPO}/issues`, { method: 'POST', headers: { Authorization: 'Bearer ' + tok, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' }, body: JSON.stringify({ title, body }) });
+      if (r.ok) { if (!quiet) toast('✓ Enviado. Se guarda en la nube en 1–2 minutos.'); return true; }
+      if (r.status === 401 || r.status === 403 || r.status === 404) toast('La llave de GitHub ya no vale (caducada o sin permiso). Vuelve a conectarla en Circuitos → Conectar con GitHub.', false);
+      else toast('No se pudo enviar a GitHub (' + r.status + '). Lo intento al abrir GitHub.', false);
+    } catch { toast('Sin conexión con GitHub. Abro GitHub para enviarlo a mano.', false); }
+  }
+  window.open(`${GH}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body.length < 6000 ? body : '')}`, '_blank');
+  return false;
+}
+function openConnect() {
+  const has = !!ghTok();
+  $('kmbox').innerHTML = `<div class="mhead"><div><div class="mtitle">Conectar la app con GitHub</div><div class="mini">Se hace <b>una vez en cada dispositivo</b> (en el iPhone, hazlo dentro de la app instalada, no en Safari). Después, todo lo que juntes, quites, borres o marques se guarda solo en la nube, para siempre, sin abrir GitHub.</div></div><button class="mclose" data-close>✕</button></div>
+    ${has ? '<div class="card row" style="border-color:#1f4a33"><span style="color:var(--fast)">✓ Este dispositivo ya está conectado.</span><button class="back" id="ghOff">Desconectar</button></div>' : ''}
+    <div class="card"><b>Pasos (2 minutos)</b>
+    <ol class="steps mini" style="line-height:1.7">
+      <li>Abre este enlace (con tu sesión de GitHub iniciada): <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" style="color:var(--accent)">crear llave de GitHub</a>.</li>
+      <li><b>Token name</b>: escribe <i>KR Karts</i>. <b>Expiration</b>: elige <i>No expiration</i> (o 1 año; cuando caduque, la app te avisará).</li>
+      <li><b>Repository access</b>: elige <i>Only select repositories</i> y selecciona <b>rafa_krtrnk</b>.</li>
+      <li><b>Permissions</b> → <b>Repository permissions</b> → busca <b>Issues</b> y ponlo en <b>Read and write</b>. No toques nada más.</li>
+      <li>Abajo del todo pulsa <b>Generate token</b> y luego copia el código que empieza por <code>github_pat_</code>.</li>
+      <li>Pégalo aquí y pulsa <b>Conectar</b>:</li></ol>
+    <div class="row" style="gap:8px"><input type="text" id="ghTokIn" placeholder="github_pat_…" style="flex:1;min-width:220px" autocomplete="off"><button class="btn" id="ghTokOk">Conectar</button></div>
+    <div class="mini" id="ghTokMsg" style="margin-top:8px"></div>
+    <div class="mini" style="margin-top:8px">Es segura: esa llave solo sirve para enviar peticiones a tu proyecto, no puede borrar ni cambiar nada más de tu cuenta. Se guarda solo en este dispositivo.</div></div>`;
+  $('kmodal').hidden = false;
+  if ($('ghOff')) $('ghOff').onclick = () => { store.set('ghToken', ''); openConnect(); render(); };
+  $('ghTokOk').onclick = async () => {
+    const t = $('ghTokIn').value.trim(); if (!t) return;
+    $('ghTokMsg').textContent = 'Comprobando…';
+    try {
+      const r = await fetch(`https://api.github.com/repos/${REPO}`, { headers: { Authorization: 'Bearer ' + t, Accept: 'application/vnd.github+json' } });
+      if (!r.ok) { $('ghTokMsg').innerHTML = '<span class="err-t">GitHub no acepta esa llave. Revisa que la copiaste entera y que elegiste el proyecto rafa_krtrnk.</span>'; return; }
+      store.set('ghToken', t); $('ghTokMsg').innerHTML = '<span class="ok-t">✓ Conectado. Desde ahora se guarda todo solo.</span>';
+      admAutoCloud(true); setTimeout(() => { $('kmodal').hidden = true; render(); }, 1500);
+    } catch { $('ghTokMsg').innerHTML = '<span class="err-t">Sin conexión. Inténtalo de nuevo.</span>'; }
+  };
+}
 async function renderCircs(reload) {
   const el = $('circOut');
   if (reload) {
@@ -1480,7 +1563,7 @@ async function renderCircs(reload) {
     return ok ? '<span class="badge alta">Grabando</span>' : '<span class="badge baja">Sin conexión</span>';
   };
   const list = CIRCS.slice().sort((a, b) => (F.has(b.slug) - F.has(a.slug)) || a.nombre.localeCompare(b.nombre));
-  el.innerHTML = `<div class="card scroll"><div class="row" style="justify-content:space-between;margin-bottom:6px"><b>Tus circuitos</b><button class="btn ghost" id="cReload">Actualizar lista</button></div>
+  el.innerHTML = `<div class="card scroll"><div class="row" style="justify-content:space-between;margin-bottom:6px"><b>Tus circuitos</b><span class="row" style="gap:8px"><button class="btn ghost" id="cConn">${ghTok() ? '✓ Conectado con GitHub' : '🔑 Conectar con GitHub'}</button><button class="btn ghost" id="cReload">Actualizar lista</button></span></div>
   <div class="mini" style="margin-bottom:8px">Pulsa la estrella para marcarlo como favorito: los favoritos salen primero en el selector de arriba. <b>Pausar</b> deja de grabar ese circuito en directo pero conserva lo grabado (puedes reanudarlo cuando quieras); <b>Quitar</b> lo saca de la lista. Para borrar sesiones sueltas, ve a la pestaña Sesiones y pulsa 🗑.</div>
   <table><thead><tr><th></th><th class="l">Circuito</th><th class="l">Estado</th><th class="l">Última sesión vista</th><th>Sesiones guardadas</th><th class="l">Grabación en directo</th><th></th></tr></thead><tbody>
   ${list.map(c => `<tr><td><span class="star ${F.has(c.slug) ? 'on' : ''}" data-fav="${esc(c.slug)}">★</span></td>
@@ -1507,6 +1590,7 @@ async function renderCircs(reload) {
   el.querySelectorAll('[data-ask]').forEach(x => x.onclick = () => { quitar = x.dataset.ask; renderCircs(); });
   el.querySelectorAll('[data-nodel]').forEach(x => x.onclick = () => { quitar = null; renderCircs(); });
   el.querySelectorAll('[data-del]').forEach(x => x.onclick = () => { ghIssue('Quitar circuito: ' + x.dataset.del, 'Petición hecha desde la página. Pulsa Create / Submit new issue.'); quitar = null; renderCircs(); });
+  $('cConn').onclick = openConnect;
   $('cReload').onclick = () => { $('cReload').textContent = 'Actualizando…'; renderCircs(true); };
   $('cPais').onclick = e => { const b = e.target.closest('button'); if (b) $('cPais').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); };
   $('cAdd').onclick = () => {
@@ -1565,7 +1649,7 @@ function renderPdf() {
   drop.ondragleave = () => drop.classList.remove('over');
   drop.ondrop = e => { e.preventDefault(); drop.classList.remove('over'); readPdfs(e.dataTransfer.files); };
   $('pFile').onchange = e => readPdfs(e.target.files);
-  el.querySelectorAll('[data-up]').forEach(b => b.onclick = () => { copyText(JSON.stringify(parts[+b.dataset.up])); ghIssue('Sesiones PDF', ''); b.textContent = 'Copiado ✓ — pégalo en GitHub'; });
+  el.querySelectorAll('[data-up]').forEach(b => b.onclick = async () => { const data = JSON.stringify(parts[+b.dataset.up]); if (ghTok()) { b.textContent = 'Enviando…'; if (await ghIssue('Sesiones PDF', data)) { b.textContent = 'Enviado ✓'; return; } } copyText(data); if (!ghTok()) ghIssue('Sesiones PDF', ''); b.textContent = 'Copiado ✓ — pégalo en GitHub'; });
   const pc = $('pClear'); if (pc) pc.onclick = () => { if (pc.dataset.sure) { store.set('pdfLocal', []); recorded = {}; refreshRecorded(); loadDays(); renderPdf(); } else { pc.dataset.sure = 1; pc.textContent = '¿Seguro? Pulsa otra vez'; } };
 }
 async function readPdfs(files) {

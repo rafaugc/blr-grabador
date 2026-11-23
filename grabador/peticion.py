@@ -212,10 +212,12 @@ def save_pilotos(body: str) -> str:
     quitar = sorted({nm(x) for x in (data.get('quitar') or []) if nm(x)})
     mojado = {str(k)[:80]: int(v) for k, v in (data.get('mojado') or {}).items()
               if re.match(r'^[a-z0-9-]{2,61}\|\d{4}-\d\d-\d\d\|\d{1,2}:\d\d$', str(k)) and v in (0, 1)}
+    distintos = sorted({'|'.join(sorted(nm(x) for x in str(p).split('|', 1))) for p in (data.get('distintos') or []) if '|' in str(p)})
     PIL.parent.mkdir(parents=True, exist_ok=True)
-    PIL.write_text(json.dumps({'unir': dict(sorted(unir.items())), 'quitar': quitar, 'mojado': dict(sorted(mojado.items()))}, ensure_ascii=False, indent=1))
+    PIL.write_text(json.dumps({'unir': dict(sorted(unir.items())), 'quitar': quitar, 'mojado': dict(sorted(mojado.items())),
+                               'distintos': distintos}, ensure_ascii=False, indent=1))
     return (f'Guardado: {len(unir)} nombres juntados con otro, {len(quitar)} pilotos quitados de la comparativa'
-            f' y {len(mojado)} sesiones marcadas a mano como seco/mojado.')
+            f', {len(mojado)} sesiones marcadas a mano como seco/mojado y {len(distintos)} parejas que NO son la misma persona.')
 
 
 def main():
