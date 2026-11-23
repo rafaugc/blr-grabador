@@ -3050,3 +3050,19 @@ r4|*i2|26006 ⏎
 r7c7|ti|40.782 ⏎ 
 r7|*i2|24365 ⏎ 
 r3c6|tb|28.920 ⏎ 
+r3c7|| ⏎ r3c8|| ⏎ r3|*i1|38023 ⏎ 
+dyn1|count|903122 ⏎ 
+dyn1|count|933212 ⏎ 
+r3c7|tn|38.165 ⏎ 
+r3|*i2|23128 ⏎ 
+dyn1|count|963248 ⏎ 
+light|lf| ⏎ com||<p><b>13:25</b><span data-flag="chequered"></span>Llegada</p> ⏎ dyn1|text| ⏎ 
+r3c6|ti|28.920 ⏎ 
+r6c2|sf| ⏎ 
+r6c6|ib|30.998 ⏎ r6c7|ib|39.412 ⏎ r6c8|ib|24.099 ⏎ 
+r5c2|sf| ⏎ r5c6|ib|30.612 ⏎ r5c7|ib|39.657 ⏎ r5c8|ib|24.196 ⏎ 
+r4c2|sf| ⏎ r4c6|ib|32.991 ⏎ r4c7|ib|42.129 ⏎ r4c8|ib|26.602 ⏎ 
+r7c2|sf| ⏎ 
+r7c6|ib|31.783 ⏎ r7c7|ib|41.793 ⏎ r7c8|ib|24.809 ⏎ 
+r3c2|sf| ⏎ 
+r3c6|ib|29.110 ⏎ r3c7|ib|38.023 ⏎ r3c8|ib|23.503 ⏎ 
