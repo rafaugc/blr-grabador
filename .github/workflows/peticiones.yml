@@ -1,6 +1,6 @@
 name: Peticiones desde la página
 
-# La página abre una "issue" con la petición (añadir/quitar circuito, sesiones de PDF).
+# La página abre una "issue" con la petición (añadir/quitar circuito, sesiones de PDF, pilotos juntados/quitados).
 # Solo se atienden las del dueño del repositorio.
 on:
   issues:
@@ -33,7 +33,7 @@ jobs:
           git config user.name "blr-grabador"
           git config user.email "blr-grabador@users.noreply.github.com"
           python -m grabador.indice || true
-          git add circuitos.json data/sesiones data/indice.json
+          git add circuitos.json data/sesiones data/indice.json data/pilotos.json
           if git diff --cached --quiet; then echo "Nada que guardar"; exit 0; fi
           git commit -q -m "Petición desde la página: $TITULO"
           for i in 1 2 3 4 5; do

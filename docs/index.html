@@ -126,6 +126,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#171a20}
   <nav class="tabs" id="tabs">
     <a data-v="ranking" class="on">Karts del día</a>
     <a data-v="pilotos">Pilotos</a>
+    <a data-v="score">Score pilotos</a>
     <a data-v="pista">En pista ahora</a>
     <a data-v="ing">Ingeniero de pista</a>
     <a data-v="sesiones">Sesiones</a>
@@ -140,6 +141,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#171a20}
       <span class="mini">Nivelar pilotos:</span>
       <span class="seg" id="method"><button data-v="raw">Sin nivelar</button><button data-v="driver">Vs. su media</button><button data-v="model" class="on">Modelo</button></span>
       <label class="mini"><input type="checkbox" id="traffic"> Quitar vueltas con tráfico</label>
+      <label class="mini" title="Usa el nivel de cada piloto sacado de todo lo grabado (pestaña Score pilotos) para separar mejor piloto y kart. Solo con el método Modelo."><input type="checkbox" id="useScore"> Usar score general de pilotos</label>
       <label class="mini">Descartar vueltas &gt; <input type="text" id="cut" value="3" style="width:46px;padding:3px 6px">% de la mejor</label>
     </div>
     <div id="selOut"></div>
@@ -148,6 +150,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#171a20}
     <div id="rankOut"></div>
   </section>
   <section class="view" id="v-pilotos"><div id="pilOut"></div></section>
+  <section class="view" id="v-score"><div id="scoreOut"></div></section>
   <section class="view" id="v-pista"><div id="pistaOut"></div></section>
   <section class="view" id="v-ing"><div id="ingOut"></div></section>
   <section class="view" id="v-sesiones"><div id="sesOut"></div></section>
@@ -202,10 +205,13 @@ document.querySelectorAll('#tabs a').forEach(a => a.onclick = () => {
   if (a.dataset.v === 'ing') { ING.editing = false; renderIng(); }
   if (a.dataset.v === 'piloto') { pilotReady = false; renderPilot(true); }
   if (a.dataset.v === 'circuitos') renderCircs();
+  if (a.dataset.v === 'score') renderScore();
   if (a.dataset.v === 'pdf') renderPdf();
 });
 $('method').onclick = e => { const b = e.target.closest('button'); if (!b) return; opts.method = b.dataset.v; document.querySelectorAll('#method button').forEach(x => x.classList.toggle('on', x === b)); render(); };
-$('traffic').onchange = e => { opts.noTraffic = e.target.checked; render(); };
+$('traffic').onchange = e => { opts.noTraffic = e.target.checked; render(); if (SC.res) { SC.res = null; renderScore(); } };
+$('useScore').checked = !!store.get('useScore', false);
+$('useScore').onchange = e => { store.set('useScore', e.target.checked); if (e.target.checked) ensureScore().then(render); else render(); };
 $('cut').onchange = e => { opts.cutPct = parseFloat(e.target.value.replace(',', '.')) || 3; render(); };
 
 const baseUrl = c => (c.url || `https://www.apex-timing.com/live-timing/${c.slug}/index.html`).split('index.html')[0].split('#')[0].replace(/\/?$/, '/');
@@ -217,6 +223,8 @@ async function loadCircuits() {
   const idx = await loadIndex();
   Object.keys(idx ? idx.circuitos : {}).forEach(slug => { if (!CIRCS.some(c => c.slug === slug)) CIRCS.push({ slug, nombre: slug.replace(/-/g, ' ').replace(/\b\w/g, x => x.toUpperCase()), soloPdf: true }); });
   fillCircSelect();
+  await loadPilAdmin();
+  if ($('useScore').checked) ensureScore().then(render);
   $('circ').onchange = () => { store.set('circ', $('circ').value); start(); };
   start();
 }
@@ -433,8 +441,9 @@ let A = null;
 function render() {
   if (!C) return;
   const all = sessionsToday();
-  const ses = all.filter(x => !excluded.has(sid(x)));
-  A = ses.length ? KartCore.analyze(ses.map(s => Object.assign({ id: s.id || s.title + s.time }, s)), { method: opts.method, noTraffic: opts.noTraffic, cutPct: opts.cutPct, dropFirst: true }) : null;
+  const ses = prepSes(all.filter(x => !excluded.has(sid(x))));
+  const prior = $('useScore').checked && opts.method === 'model' && SC.res ? SC.res.priorPct : null;
+  A = ses.length ? KartCore.analyze(ses, { method: opts.method, noTraffic: opts.noTraffic, cutPct: opts.cutPct, dropFirst: true, priorPct: prior }) : null;
   renderSel(all); renderRanking(ses); renderPilotos(ses); renderPista(); renderSes(all); renderIng();
 }
 function renderSel(all) {
@@ -484,44 +493,251 @@ function askClaude(s) {
   if (q.length > 7000) q = q.slice(0, 7000) + '\n[recortado]';
   window.open('https://claude.ai/new?q=' + encodeURIComponent(q), '_blank');
 }
+// ---------- pilotos: juntar duplicados y quitar de la comparativa ----------
+// Se guarda en data/pilotos.json (para todos los dispositivos) y, mientras no se guarde en la nube, en este navegador.
+// unir: { "NOMBRE ALIAS": "NOMBRE QUE SE QUEDA" } · quitar: [nombres]
+let PADM = { unir: {}, quitar: [] }, PADM_REMOTE = null;
+const padmLocal = () => store.get('pilAdmin', null);
+const sameAdm = (a, b) => JSON.stringify({ u: Object.entries(a.unir || {}).sort(), q: [...(a.quitar || [])].sort() }) === JSON.stringify({ u: Object.entries(b.unir || {}).sort(), q: [...(b.quitar || [])].sort() });
+async function loadPilAdmin() {
+  try { const r = await fetch(RAW + 'data/pilotos.json?t=' + Date.now(), { cache: 'no-store' }); if (r.ok) PADM_REMOTE = await r.json(); } catch {}
+  PADM_REMOTE = Object.assign({ unir: {}, quitar: [] }, PADM_REMOTE || {});
+  const loc = padmLocal();
+  if (loc && loc.pending && sameAdm(loc, PADM_REMOTE)) store.set('pilAdmin', null);
+  const l2 = padmLocal();
+  PADM = l2 && l2.pending ? { unir: l2.unir || {}, quitar: l2.quitar || [] } : { unir: PADM_REMOTE.unir, quitar: PADM_REMOTE.quitar };
+}
+const admPending = () => { const l = padmLocal(); return !!(l && l.pending); };
+function admSave() { store.set('pilAdmin', { unir: PADM.unir, quitar: PADM.quitar, pending: !sameAdm(PADM, PADM_REMOTE || { unir: {}, quitar: [] }) }); SC.res = null; render(); if (document.getElementById('v-score').classList.contains('on')) renderScore(); }
+const NN = n => KartCore.normName(n);
+function canon(n) { let x = NN(n), i = 0; while (PADM.unir[x] && i++ < 6) x = PADM.unir[x]; return x; }
+const isOut = n => PADM.quitar.includes(n);
+const junkName = n => !n || /^KART\s*\d+$/.test(n);
+// copia de las sesiones con los nombres ya unidos y sin los pilotos quitados
+function prepSes(list) {
+  return list.map(s => Object.assign({}, s, { id: s.id || s.title + s.time,
+    stints: s.stints.map(t => Object.assign({}, t, { driver: canon(t.driver) })).filter(t => !isOut(t.driver)) }));
+}
+function admMerge(keep, others) {
+  keep = canon(keep);
+  others.map(canon).filter(o => o !== keep).forEach(o => {
+    PADM.unir[o] = keep;
+    Object.keys(PADM.unir).forEach(a => { if (PADM.unir[a] === o) PADM.unir[a] = keep; });
+  });
+  delete PADM.unir[keep];
+  admSave();
+}
+function admSplit(alias) { delete PADM.unir[alias]; admSave(); }
+function admRemove(names) { names.forEach(n => { n = canon(n); if (!PADM.quitar.includes(n)) PADM.quitar.push(n); }); admSave(); }
+function admRestore(n) { PADM.quitar = PADM.quitar.filter(x => x !== n); admSave(); }
+function admCloud() {
+  const body = '```json\n' + JSON.stringify({ unir: PADM.unir, quitar: PADM.quitar }) + '\n```';
+  if (body.length < 6000) ghIssue('Pilotos', body);
+  else { copyText(body); alert('He copiado los datos. En la página que se abre, pégalos en el cuadro grande y pulsa "Create".'); ghIssue('Pilotos', ''); }
+}
+// parecidos: mismo piloto escrito distinto (letra cambiada, nombre abreviado, apellido de más…)
+function lev(a, b) {
+  if (Math.abs(a.length - b.length) > 2) return 9;
+  let p = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) { const c = [i]; for (let j = 1; j <= b.length; j++) c[j] = Math.min(p[j] + 1, c[j - 1] + 1, p[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); p = c; }
+  return p[b.length];
+}
+function similar(a, b) {
+  if (a === b) return false;
+  if (a.replace(/\s/g, '') === b.replace(/\s/g, '')) return true;
+  if (a.length >= 6 && b.length >= 6 && lev(a, b) <= 1) return true;
+  const ta = a.split(' '), tb = b.split(' ');
+  const [sh, lo] = ta.length <= tb.length ? [ta, tb] : [tb, ta];
+  const used = new Set(); let strong = 0;
+  for (const t of sh) {
+    const j = lo.findIndex((u, k) => !used.has(k) && (u === t || (t.length >= 4 && u.length >= 4 && lev(t, u) <= 1) || (Math.min(t.length, u.length) >= 1 && (u.startsWith(t) || t.startsWith(u)))));
+    if (j < 0) return false;
+    used.add(j); if (lo[j] === t && t.length >= 4) strong++;
+  }
+  return strong >= 1;
+}
+let MGR = { q: '', sel: new Set() };
+async function openMgr(pre) {
+  MGR = { q: '', sel: new Set(pre ? [pre] : []) };
+  $('kmbox').innerHTML = '<div class="card empty">Cargando todos los pilotos grabados…</div>'; $('kmodal').hidden = false;
+  await loadAllData();
+  renderMgr();
+}
+function mgrNames() {
+  // nombres (ya unidos) de todo lo grabado y de la selección actual, con nº de tandas
+  const cnt = {};
+  const add = list => list.forEach(s => s.stints.forEach(t => { const n = canon(t.driver); if (!junkName(n)) cnt[n] = (cnt[n] || 0) + 1; }));
+  if (ALLD.sessions) Object.values(ALLD.sessions).forEach(add);
+  else add(sessionsToday());
+  return cnt;
+}
+function renderMgr() {
+  const sc0 = $('kmodal').scrollTop, ls0 = $('mgrList') ? $('mgrList').scrollTop : 0;
+  const cnt = mgrNames(), names = Object.keys(cnt).filter(n => !isOut(n)).sort();
+  const no = new Set(store.get('pilNo', []));
+  const sugg = [];
+  for (let i = 0; i < names.length && sugg.length < 40; i++) for (let j = i + 1; j < names.length; j++) {
+    const a = names[i], b = names[j];
+    if (!no.has(a + '|' + b) && similar(a, b)) sugg.push(cnt[a] >= cnt[b] ? [a, b] : [b, a]);
+  }
+  const q = NN(MGR.q);
+  const shown = names.filter(n => !q || n.includes(q));
+  const sel = [...MGR.sel].filter(n => cnt[n]);
+  const keep = sel.slice().sort((a, b) => cnt[b] - cnt[a])[0];
+  const groups = {}; Object.entries(PADM.unir).forEach(([a, k]) => (groups[k] = groups[k] || []).push(a));
+  $('kmbox').innerHTML = `<div class="mhead"><div><div class="mtitle">Gestionar pilotos</div><div class="mini">Junta nombres que son la misma persona o quita pilotos de la comparativa. Vale para todos los circuitos, el ranking de karts y el score.</div></div><button class="mclose" data-close>✕</button></div>
+    ${admPending() ? `<div class="card row" style="border-color:#4d4317"><span class="mini" style="color:var(--accent)">Cambios guardados solo en este dispositivo.</span><button class="back" id="mgrCloud">☁️ Guardar para todos mis dispositivos</button></div>` : `<div class="mini" style="margin-bottom:8px">✓ Todo guardado en la nube.</div>`}
+    ${sugg.length ? `<div class="card"><b style="font-size:13px">Posibles duplicados (${sugg.length})</b><div class="mini" style="margin-bottom:6px">Nombres parecidos. Tú decides: “Son el mismo” los junta (se queda el nombre con más tandas); “No” no lo vuelve a sugerir.</div>
+      ${sugg.map(([a, b], i) => `<div class="row" style="padding:4px 0;border-top:1px solid var(--line)"><span style="flex:1"><b>${esc(a)}</b> <span class="mini">(${cnt[a]})</span> ⟷ <b>${esc(b)}</b> <span class="mini">(${cnt[b]})</span></span><button class="back" data-sy="${i}">Son el mismo</button><button class="back" data-sn="${i}">No</button></div>`).join('')}</div>` : ''}
+    <div class="card"><b style="font-size:13px">Todos los pilotos (${names.length})</b> <span class="mini">· toca para seleccionar · entre paréntesis, tandas</span>
+      <div class="row" style="margin:6px 0"><input type="text" id="mgrQ" placeholder="Buscar nombre…" value="${esc(MGR.q)}" style="flex:1;min-width:160px"></div>
+      <div class="row" id="mgrList" style="max-height:34vh;overflow:auto;gap:6px">${shown.map(n => `<span class="chipd ${MGR.sel.has(n) ? 'on' : ''}" data-n="${esc(n)}">${esc(n)} <span class="mini">(${cnt[n]})</span></span>`).join('') || '<span class="mini">Ninguno con ese nombre.</span>'}</div>
+      <div class="row" style="margin-top:8px">${sel.length ? `<span class="mini">${sel.length} seleccionados</span>` : '<span class="mini">Selecciona 2 o más para juntarlos, o 1 o más para quitarlos.</span>'}
+        ${sel.length >= 2 ? `<span class="mini">Nombre que se queda:</span><select id="mgrKeep">${sel.map(n => `<option ${n === keep ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select><button class="back" id="mgrJoin">🔗 Son el mismo piloto</button>` : ''}
+        ${sel.length ? `<button class="back" id="mgrOut">🚫 Quitar de la comparativa</button><button class="back" id="mgrClr">Deseleccionar</button>` : ''}</div></div>
+    ${Object.keys(groups).length ? `<div class="card"><b style="font-size:13px">Pilotos juntados</b>${Object.entries(groups).sort().map(([k, al]) => `<div class="row" style="padding:4px 0;border-top:1px solid var(--line)"><b>${esc(k)}</b> <span class="mini">←</span> ${al.map(a => `<span class="chipd">${esc(a)} <span data-split="${esc(a)}" title="Separar" style="cursor:pointer;color:var(--slow)">✕</span></span>`).join('')}</div>`).join('')}</div>` : ''}
+    ${PADM.quitar.length ? `<div class="card"><b style="font-size:13px">Quitados de la comparativa</b><div class="row" style="margin-top:6px">${PADM.quitar.slice().sort().map(n => `<span class="chipd">${esc(n)} <span data-back="${esc(n)}" title="Recuperar" style="cursor:pointer;color:var(--fast)">↩ recuperar</span></span>`).join('')}</div></div>` : ''}`;
+  const box = $('kmbox');
+  $('kmodal').scrollTop = sc0; $('mgrList').scrollTop = ls0;
+  const qi = $('mgrQ'); qi.oninput = () => { MGR.q = qi.value; const pos = qi.selectionStart; renderMgr(); const n = $('mgrQ'); n.focus(); n.setSelectionRange(pos, pos); };
+  box.querySelectorAll('[data-n]').forEach(c => c.onclick = () => { const n = c.dataset.n; MGR.sel.has(n) ? MGR.sel.delete(n) : MGR.sel.add(n); renderMgr(); });
+  box.querySelectorAll('[data-sy]').forEach(b => b.onclick = () => { const [a, c] = sugg[+b.dataset.sy]; admMerge(a, [c]); renderMgr(); });
+  box.querySelectorAll('[data-sn]').forEach(b => b.onclick = () => { const [a, c] = sugg[+b.dataset.sn]; const x = [a, c].sort(); store.set('pilNo', [...no, x.join('|')]); renderMgr(); });
+  box.querySelectorAll('[data-split]').forEach(b => b.onclick = e => { e.stopPropagation(); admSplit(b.dataset.split); renderMgr(); });
+  box.querySelectorAll('[data-back]').forEach(b => b.onclick = e => { e.stopPropagation(); admRestore(b.dataset.back); renderMgr(); });
+  if ($('mgrJoin')) $('mgrJoin').onclick = () => { const k = $('mgrKeep').value; admMerge(k, sel.filter(n => n !== k)); MGR.sel = new Set([k]); renderMgr(); };
+  if ($('mgrOut')) $('mgrOut').onclick = () => { if (!confirm(`¿Quitar ${sel.length === 1 ? sel[0] : sel.length + ' pilotos'} de la comparativa? Sus vueltas dejan de contar en los rankings (puedes recuperarlo luego).`)) return; admRemove(sel); MGR.sel.clear(); renderMgr(); };
+  if ($('mgrClr')) $('mgrClr').onclick = () => { MGR.sel.clear(); renderMgr(); };
+  if ($('mgrCloud')) $('mgrCloud').onclick = admCloud;
+}
+
+// ---------- todo lo grabado (todos los circuitos y días), para el score general ----------
+const ALLD = { sessions: null, loading: null, t: 0 };
+function loadAllData() {
+  if (ALLD.sessions && Date.now() - ALLD.t < 10 * 60000) return Promise.resolve();
+  if (ALLD.loading) return ALLD.loading;
+  ALLD.loading = (async () => {
+    const idx = await loadIndex(true); const out = {};
+    const jobs = [];
+    Object.entries(idx ? idx.circuitos : {}).forEach(([slug, c]) => Object.entries(c.dias).forEach(([day, files]) => files.forEach(f => jobs.push({ slug, day, f }))));
+    let i = 0;
+    const worker = async () => { while (i < jobs.length) { const j = jobs[i++]; try { const r = await fetch(RAW + `data/sesiones/${j.slug}/${j.day}/${j.f.f}?h=${j.f.h}`); if (r.ok) { const x = await r.json(); (out[j.slug] = out[j.slug] || []).push(x); } } catch {} } };
+    await Promise.all(Array.from({ length: 8 }, worker));
+    localPdf().forEach(s => { const l = out[s.slug] = out[s.slug] || []; if (!l.some(x => x.id === s.id)) l.push(s); });
+    ALLD.sessions = out; ALLD.t = Date.now(); ALLD.loading = null;
+  })();
+  return ALLD.loading;
+}
+
+// ---------- score general de pilotos ----------
+// Por circuito: el mismo modelo que el ranking de karts (piloto + kart + sesión) con todo lo grabado. El nivel de cada piloto
+// se pasa a % de la vuelta de referencia del circuito, para poder comparar circuitos distintos. General = media de sus circuitos
+// ponderada por tandas. Score = 1000 − 100 × nivel% (1000 = piloto medio; +100 = 1% más rápido por vuelta).
+const SC = { res: null, circ: 'all', min: 2 };
+const SC_OFF = () => new Set(store.get('scoreOff', []));
+const scoreOf = pct => Math.round(1000 - 100 * pct);
+async function ensureScore() {
+  if (SC.res) return SC.res;
+  await loadAllData();
+  const per = {}, gen = {};
+  Object.entries(ALLD.sessions).forEach(([slug, list]) => {
+    const ses = prepSes(list);
+    if (!ses.length) return;
+    const R = KartCore.analyze(ses, { method: 'model', noTraffic: opts.noTraffic, cutPct: opts.cutPct, dropFirst: true, maxDeltaPct: 6 });
+    if (!R.stints.length) return;
+    per[slug] = { refLap: R.refLap, drivers: R.drivers.filter(d => !junkName(d.driver)).map(d => ({ driver: d.driver, pct: d.skill / R.refLap * 100, sec: d.skill, n: d.n, best: d.best, b3: d.b3, b5: d.b5, karts: d.karts })) };
+    if (SC_OFF().has(slug)) return;
+    per[slug].drivers.forEach(d => { const g = gen[d.driver] = gen[d.driver] || { driver: d.driver, w: 0, s: 0, n: 0, circs: [] }; g.s += d.pct * d.n; g.w += d.n; g.n += d.n; g.circs.push(slug); });
+  });
+  const general = Object.values(gen).map(g => ({ driver: g.driver, pct: g.s / g.w, n: g.n, circs: g.circs }));
+  const priorPct = {}; general.forEach(g => priorPct[g.driver] = { pct: g.pct, n: g.n });
+  SC.res = { per, general, priorPct };
+  return SC.res;
+}
+async function renderScore() {
+  const el = $('scoreOut');
+  if (!SC.res) { el.innerHTML = '<div class="card empty">Calculando el score con todo lo grabado (todos los circuitos y días)…</div>'; await ensureScore(); }
+  if (!document.getElementById('v-score').classList.contains('on')) return;
+  const R = SC.res, cname = slug => (CIRCS.find(c => c.slug === slug) || {}).nombre || slug;
+  const slugs = Object.keys(R.per).sort((a, b) => cname(a).localeCompare(cname(b)));
+  if (SC.circ !== 'all' && !R.per[SC.circ]) SC.circ = 'all';
+  const isAll = SC.circ === 'all';
+  let rows = isAll ? R.general.slice() : R.per[SC.circ].drivers.slice();
+  rows = rows.filter(d => d.n >= SC.min).sort((a, b) => a.pct - b.pct);
+  const rel = n => n >= 6 ? ['alta', 'Alta'] : n >= 3 ? ['media', 'Media'] : ['baja', 'Baja'];
+  const tot = isAll ? R.general.length : R.per[SC.circ].drivers.length;
+  const bb = k => Math.min(...rows.map(d => d[k] ?? Infinity));
+  const B = { best: bb('best'), b3: bb('b3'), b5: bb('b5') };
+  el.innerHTML = `<div class="card">
+      <div class="row"><b style="font-size:13px">Circuito:</b><span class="chipd ${isAll ? 'on' : ''}" data-c="all">Todos (general)</span>${slugs.map(s => `<span class="chipd ${SC.circ === s ? 'on' : ''}" data-c="${esc(s)}">${esc(cname(s))}</span>`).join('')}</div>
+      ${isAll ? `<div class="row" style="margin-top:8px"><b style="font-size:13px">Cuentan para el general:</b>${slugs.map(s => `<span class="chipd ${SC_OFF().has(s) ? '' : 'on'}" data-off="${esc(s)}">${esc(cname(s))}</span>`).join('')}<span class="mini">toca para quitar o poner un circuito</span></div>` : ''}
+      <div class="row" style="margin-top:8px"><span class="mini">Mínimo de tandas:</span><span class="seg" id="scMin">${[1, 2, 3, 5].map(n => `<button data-n="${n}" class="${SC.min === n ? 'on' : ''}">${n}+</button>`).join('')}</span>
+        <button class="back" id="scMgr">👥 Juntar / quitar pilotos</button><button class="back" id="scRe">↻ Recalcular</button>
+        <span class="mini">${rows.length} de ${tot} pilotos · ${Object.values(ALLD.sessions || {}).reduce((a, l) => a + l.length, 0)} sesiones grabadas</span></div></div>
+    <div class="card scroll"><table><thead><tr><th class="l">#</th><th class="l">Piloto</th><th class="l">Clase</th><th>Score</th><th title="Lo que es más rápido (−) o lento (+) por vuelta que el piloto medio, con el kart ya descontado">Nivel</th>${isAll ? '' : '<th class="hm">Nivel (s)</th>'}<th>Fiabilidad</th><th class="hm">Tandas</th>
+      ${isAll ? '<th class="l hm">Circuitos</th>' : '<th>Mejor vuelta</th><th>Mejor ritmo 3v</th><th>Mejor ritmo 5v</th>'}</tr></thead><tbody>
+    ${rows.map((d, i) => { const [cn, cc] = DCLS[Math.min(4, Math.floor((rows.length > 1 ? i / (rows.length - 1) : 0.5) * 5))]; const [rc, rl] = rel(d.n); const sc = scoreOf(d.pct);
+      return `<tr><td class="l mini">${i + 1}</td><td class="l"><b>${esc(d.driver)}</b></td><td class="l"><span class="kcls" style="color:${cc};border-color:${cc}55;background:${cc}14">${cn}</span></td>
+        <td class="num"><b class="${sc >= 1030 ? 't-fast' : sc <= 970 ? 't-slow' : ''}">${sc}</b></td><td class="num">${fmt(d.pct)} %</td>${isAll ? '' : `<td class="num hm mini">${fmt(d.sec)} s</td>`}<td><span class="badge ${rc}">${rl}</span></td><td class="num hm">${d.n}</td>
+        ${isAll ? `<td class="l hm mini">${d.circs.map(cname).join(', ')}</td>` : `<td class="num ${d.best === B.best ? 'purple' : ''}">${fmtT(d.best)}</td><td class="num ${d.b3 === B.b3 ? 'purple' : ''}">${fmtT(d.b3)}</td><td class="num ${d.b5 === B.b5 ? 'purple' : ''}">${fmtT(d.b5)}</td>`}</tr>`; }).join('')}
+    </tbody></table>
+    <div class="mini" style="margin-top:8px;line-height:1.5"><b>Cómo se calcula.</b> En cada circuito se usan todas las sesiones grabadas y el mismo modelo del ranking de karts, que separa lo que pone el piloto, lo que pone el kart y las condiciones de cada sesión. El nivel del piloto se pasa a <b>% de la vuelta</b> (así un piloto de Vendrell y uno de DR7 se pueden comparar). El general es la media de sus circuitos, pesando más donde tiene más tandas. <b>Score = 1000 − 100 × nivel%</b>: 1000 es el piloto medio, 1100 va un 1% más rápido por vuelta (≈ 0,5 s en una vuelta de 50 s), 900 un 1% más lento. Con pocas tandas el modelo es prudente y acerca al piloto a 1000. Para el score no cuentan las tandas más de un 6% más rápidas o lentas que la mediana de su sesión (suelen ser otra categoría de kart en la misma tanda, como pasa en Campillos, o incidencias). Fiabilidad: alta con 6+ tandas, media con 3–5.<br>
+    Para usarlo al valorar karts, marca <b>“Usar score general de pilotos”</b> en Karts del día (método Modelo).</div></div>`;
+  el.querySelectorAll('[data-c]').forEach(c => c.onclick = () => { SC.circ = c.dataset.c; renderScore(); });
+  el.querySelectorAll('[data-off]').forEach(c => c.onclick = () => { const o = SC_OFF(), k = c.dataset.off; o.has(k) ? o.delete(k) : o.add(k); store.set('scoreOff', [...o]); SC.res = null; renderScore(); render(); });
+  el.querySelectorAll('#scMin button').forEach(b => b.onclick = () => { SC.min = +b.dataset.n; renderScore(); });
+  $('scMgr').onclick = () => openMgr();
+  $('scRe').onclick = () => { SC.res = null; ALLD.sessions = null; renderScore(); };
+}
+
 // ---------- ranking de pilotos ----------
 const DCLS = [['Élite', '#b38cff'], ['Muy rápido', '#3ddc84'], ['Medio', '#c9cdd6'], ['Lento', '#ffa24c'], ['Principiante', '#ff5f5f']];
 let pilMin = 1;
 function renderPilotos(ses) {
   const el = $('pilOut');
-  if (!A || !A.drivers.length) { el.innerHTML = `<div class="card empty">No hay vueltas en la selección (${daysLabel()}).</div>`; return; }
+  if (!A || !A.drivers.length) { el.innerHTML = `<div class="card empty">No hay vueltas en la selección (${daysLabel()}). <button class="back" id="pilMgr0">👥 Juntar / quitar pilotos</button></div>`; $('pilMgr0').onclick = () => openMgr(); return; }
   const keff = {}; A.karts.forEach(k => keff[k.kart] = k.effect);
-  const all = A.drivers.filter(d => d.n >= pilMin && d.driver && !/^KART\s*\d+$/.test(d.driver));
-  const best5 = {}; ses.forEach(s => s.stints.forEach(t => { const d = KartCore.normName ? KartCore.normName(t.driver) : String(t.driver || '').toUpperCase(); const b = Ingeniero.bestN(t.laps || [], 5); if (b && (!best5[d] || b < best5[d])) best5[d] = b; }));
-  const dayBest = Math.min(...all.map(d => d.best));
+  const all = A.drivers.filter(d => d.n >= pilMin && !junkName(d.driver));
+  const dayBest = Math.min(...all.map(d => d.best)), b3 = Math.min(...all.map(d => d.b3 ?? Infinity)), b5 = Math.min(...all.map(d => d.b5 ?? Infinity));
   const rel = d => d.n >= 4 ? ['alta', 'Alta'] : d.n >= 2 ? ['media', 'Media'] : ['baja', 'Baja'];
+  const G = SC.res ? SC.res.priorPct : null;
   el.innerHTML = `<div class="card row">
       <span class="mini">Sin nombre (“KART 12”) no cuenta. Datos: ${esc(daysLabel())} · ${ses.length} sesiones (la misma selección que en “Karts del día”).</span>
       <button class="back" id="pilAll">Usar todos los días con datos</button><button class="back" id="pilToday">Solo hoy</button>
       <span class="mini">Mínimo de tandas:</span><span class="seg" id="pilMin">${[1, 2, 3].map(n => `<button data-n="${n}" class="${pilMin === n ? 'on' : ''}">${n}+</button>`).join('')}</span>
+      <button class="back" id="pilMgr">👥 Juntar / quitar pilotos${PADM.quitar.length || Object.keys(PADM.unir).length ? ` (${Object.keys(PADM.unir).length} juntados · ${PADM.quitar.length} quitados)` : ''}</button>
+      ${admPending() ? '<span class="mini" style="color:var(--accent)">Cambios solo en este dispositivo · <a href="#" id="pilCloud" style="color:var(--accent)">guardar en la nube</a></span>' : ''}
     </div>
-    <div class="card scroll"><div class="mini" style="margin-bottom:6px">Nivel = segundos por vuelta frente al piloto medio <b>con el kart ya descontado</b> (negativo = más rápido). Mismo modelo que el ranking de karts: separa lo que es mérito del piloto, del kart y de las condiciones de cada sesión. Pulsa un piloto para ver sus tandas.</div>
-    <table><thead><tr><th class="l">#</th><th class="l">Piloto</th><th class="l">Clase</th><th>Nivel</th><th class="hm">±</th><th>Fiabilidad</th><th title="Media de lo buenos que fueron sus karts (negativo = le tocaron buenos)">Suerte con el kart</th><th class="hm">Tandas</th><th class="l hm">Karts</th><th>Mejor vuelta</th><th class="hm">Mejor 5v</th></tr></thead><tbody>
+    <div class="card scroll"><div class="mini" style="margin-bottom:6px">Nivel = segundos por vuelta frente al piloto medio <b>con el kart ya descontado</b> (negativo = más rápido). Mismo modelo que el ranking de karts: separa lo que es mérito del piloto, del kart y de las condiciones de cada sesión. Pulsa un piloto para ver sus tandas.${A.priorUsed ? ` <b>Usando el score general</b> para ${A.priorUsed} pilotos.` : ''}</div>
+    <table><thead><tr><th class="l">#</th><th class="l">Piloto</th><th class="l">Clase</th><th>Nivel</th><th class="hm">±</th><th>Fiabilidad</th>${G ? '<th title="Score general (pestaña Score pilotos)">Score</th>' : ''}<th title="Media de lo buenos que fueron sus karts (negativo = le tocaron buenos)">Suerte con el kart</th><th class="hm">Tandas</th><th class="l hm">Karts</th><th>Mejor vuelta</th><th title="Mejor media de 3 vueltas seguidas">Mejor ritmo 3v</th><th title="Mejor media de 5 vueltas seguidas">Mejor ritmo 5v</th></tr></thead><tbody>
     ${all.map((d, i) => { const [cn, cc] = DCLS[Math.min(4, Math.floor((all.length > 1 ? i / (all.length - 1) : 0.5) * 5))]; const [rc, rl] = rel(d);
       const lc = d.kartLuck <= -0.08 ? 't-fast' : d.kartLuck >= 0.08 ? 't-slow' : '';
       return `<tr class="click" data-d="${esc(d.driver)}"><td class="l mini">${i + 1}</td><td class="l"><b>${esc(d.driver)}</b></td><td class="l"><span class="kcls" style="color:${cc};border-color:${cc}55;background:${cc}14">${cn}</span></td>
         <td class="num ${d.skill < -0.15 ? 't-fast' : d.skill > 0.15 ? 't-slow' : ''}">${fmt(d.skill)} s</td><td class="num hm mini">${d.se.toFixed(2).replace('.', ',')}</td><td><span class="badge ${rc}">${rl}</span></td>
+        ${G ? `<td class="num">${G[d.driver] ? scoreOf(G[d.driver].pct) : '–'}</td>` : ''}
         <td class="num ${lc}">${opts.method === 'raw' ? '–' : fmt(d.kartLuck)}</td><td class="num hm">${d.n}</td><td class="l hm mini">${d.karts.join(', ')}</td>
-        <td class="num ${d.best === dayBest ? 'purple' : ''}">${fmtT(d.best)}</td><td class="num hm">${fmtT(best5[d.driver])}</td></tr>`; }).join('')}
+        <td class="num ${d.best === dayBest ? 'purple' : ''}">${fmtT(d.best)}</td><td class="num ${d.b3 === b3 ? 'purple' : ''}">${fmtT(d.b3)}</td><td class="num ${d.b5 === b5 ? 'purple' : ''}">${fmtT(d.b5)}</td></tr>`; }).join('')}
     </tbody></table>
-    <div class="mini" style="margin-top:6px">Clase por quintiles: Élite (20% más rápido), Muy rápido, Medio, Lento, Principiante · Fiabilidad: alta con 4+ tandas · ± = margen de error · Cuantos más días juntes, más justo es el ranking. En carreras por equipos sin nombres de piloto, el “piloto” es el equipo.</div></div>`;
+    <div class="mini" style="margin-top:6px">Clase por quintiles: Élite (20% más rápido), Muy rápido, Medio, Lento, Principiante · Fiabilidad: alta con 4+ tandas · ± = margen de error · Mejor ritmo 3v / 5v = su mejor media de 3 / 5 vueltas seguidas en una misma tanda, sin la vuelta de salida (en morado, el mejor de la lista) · En carreras por equipos sin nombres de piloto, el “piloto” es el equipo.</div></div>`;
   $('pilAll').onclick = () => { DAYS = new Set(ALLDAYS); loadDays(); refreshRecorded(); };
   $('pilToday').onclick = () => { DAYS = new Set([today()]); loadDays(); refreshRecorded(); };
+  $('pilMgr').onclick = () => openMgr();
+  if ($('pilCloud')) $('pilCloud').onclick = e => { e.preventDefault(); admCloud(); };
   el.querySelectorAll('#pilMin button').forEach(b => b.onclick = () => { pilMin = +b.dataset.n; render(); });
   el.querySelectorAll('tr[data-d]').forEach(tr => tr.onclick = () => {
     const d = A.drivers.find(x => x.driver === tr.dataset.d); if (!d) return;
     const rows = d.stints.slice().sort((a, b) => String(a.session).localeCompare(String(b.session)));
     const sl = id => { const s = ses.find(x => (x.id || x.title + x.time) === id); return s ? (DAYS.size > 1 ? fmtD(s.date) + ' ' : '') + s.time + ' · ' + (s.title || s.type) : id; };
-    $('kmbox').innerHTML = `<div class="mhead"><div><div class="mtitle">${esc(d.driver)}</div><div class="mini">Nivel ${fmt(d.skill)} s/vuelta (kart descontado) · ${d.n} tandas · suerte con el kart ${fmt(d.kartLuck)} s</div></div><button class="mclose" data-close>✕</button></div>
-      <div class="scroll"><table><thead><tr><th class="l">Sesión</th><th style="text-align:center">Kart</th><th>Calidad del kart</th><th>Ritmo</th><th>Vs. media sesión</th><th>Mejor vuelta</th><th>Pos.</th></tr></thead><tbody>
-      ${rows.map(t => { const ke = keff[t.kart]; const [c] = tier(ke ?? 0); return `<tr><td class="l">${esc(sl(t.session))}</td><td class="k ${c}">${esc(t.kart)}</td><td class="num ${c}">${ke == null ? '–' : fmt(ke)}</td><td class="num">${fmtT(t.pace)}</td><td class="num">${fmt(t.delta)}</td><td class="num purple">${fmtT(t.best)}</td><td class="num">${t.pos ?? ''}</td></tr>`; }).join('')}
-      </tbody></table></div><div class="mini" style="margin-top:6px">“Vs. media sesión” = lo que fue más rápido (−) o lento (+) que la media de esa sesión, sin descontar el kart.</div>`;
+    const al = Object.entries(PADM.unir).filter(([, k]) => k === d.driver).map(([a]) => a);
+    $('kmbox').innerHTML = `<div class="mhead"><div><div class="mtitle">${esc(d.driver)}</div><div class="mini">Nivel ${fmt(d.skill)} s/vuelta (kart descontado) · ${d.n} tandas · suerte con el kart ${fmt(d.kartLuck)} s${G && G[d.driver] ? ' · score general ' + scoreOf(G[d.driver].pct) : ''}</div>${al.length ? `<div class="mini">También aparece como: ${al.map(esc).join(', ')}</div>` : ''}
+        <div class="row" style="margin-top:6px"><button class="back" id="fJoin">🔗 Juntar con otro nombre…</button><button class="back" id="fOut">🚫 Quitar de la comparativa</button></div></div><button class="mclose" data-close>✕</button></div>
+      <div class="mstats"><div><span>Mejor vuelta</span><b class="num purple">${fmtT(d.best)}</b></div><div><span>Mejor ritmo 3v</span><b class="num">${fmtT(d.b3)}</b></div><div><span>Mejor ritmo 5v</span><b class="num">${fmtT(d.b5)}</b></div></div>
+      <div class="scroll"><table><thead><tr><th class="l">Sesión</th><th style="text-align:center">Kart</th><th>Calidad del kart</th><th>Ritmo</th><th>Ritmo 3v</th><th>Ritmo 5v</th><th>Vs. media sesión</th><th>Mejor vuelta</th><th>Pos.</th></tr></thead><tbody>
+      ${rows.map(t => { const ke = keff[t.kart]; const [c] = tier(ke ?? 0); return `<tr><td class="l">${esc(sl(t.session))}</td><td class="k ${c}">${esc(t.kart)}</td><td class="num ${c}">${ke == null ? '–' : fmt(ke)}</td><td class="num">${fmtT(t.pace)}</td><td class="num">${fmtT(t.b3)}</td><td class="num">${fmtT(t.b5)}</td><td class="num">${fmt(t.delta)}</td><td class="num purple">${fmtT(t.best)}</td><td class="num">${t.pos ?? ''}</td></tr>`; }).join('')}
+      </tbody></table></div><div class="mini" style="margin-top:6px">“Ritmo” = media de sus 5 mejores vueltas limpias de la tanda (la que usa el modelo). “Ritmo 3v / 5v” = mejor media de 3 / 5 vueltas seguidas. “Vs. media sesión” = lo que fue más rápido (−) o lento (+) que la media de esa sesión, sin descontar el kart.</div>`;
     $('kmodal').hidden = false;
+    $('fJoin').onclick = () => openMgr(d.driver);
+    $('fOut').onclick = () => { if (!confirm(`¿Quitar ${d.driver} de la comparativa? Sus vueltas dejan de contar en los rankings (puedes recuperarlo luego en “Juntar / quitar pilotos”).`)) return; admRemove([d.driver]); $('kmodal').hidden = true; };
   });
 }
 // ================= INGENIERO DE PISTA =================
@@ -621,20 +837,21 @@ function renderRanking(ses) {
   if (!A || !A.karts.length) { el.innerHTML = `<div class="card empty">No hay vueltas en la selección (${daysLabel()}) en ${esc(C.nombre)}. En cuanto ruede alguna sesión aparecerá aquí.</div>`; return; }
   const ks = A.karts, rel = ks.filter(k => conf(k.se, k.drivers)[0] !== 'baja');
   const dayBest = Math.min(...ks.map(k => k.best));
+  const kb3 = Math.min(...ks.map(k => k.b3 ?? Infinity)), kb5 = Math.min(...ks.map(k => k.b5 ?? Infinity));
   const pool = rel.length >= 3 ? rel : ks, best = pool.slice(0, 3), worst = pool.slice(-3).reverse().filter(k => !best.includes(k));
   const bk = k => { const [c] = tier(k.effect); return `<div class="bk"><b class="${c}">${k.kart}</b><span class="num ${c}">${fmt(k.effect)} s</span></div>`; };
   el.innerHTML = `<div class="summary"><div class="card"><h4>Pide estos karts</h4><div class="bigk">${best.map(bk).join('')}</div></div>
     <div class="card"><h4>Evita estos karts</h4><div class="bigk">${worst.map(bk).join('')}</div></div></div>
   <div class="card scroll"><div class="mini" style="margin-bottom:6px">${daysLabel()} · ${ses.length} sesiones · ${A.stints.length} tandas. Segundos por vuelta frente a un kart medio (negativo = más rápido).</div>
-  <table><thead><tr><th class="l">#</th><th style="text-align:center">Kart</th><th class="l">Clase</th><th>Ventaja</th><th class="hm">±</th><th>Fiabilidad</th><th class="hm">Tandas</th><th class="hm">Pilotos</th><th>Mejor vuelta</th><th class="l hm">Lo llevaron</th></tr></thead><tbody>
+  <table><thead><tr><th class="l">#</th><th style="text-align:center">Kart</th><th class="l">Clase</th><th>Ventaja</th><th class="hm">±</th><th>Fiabilidad</th><th class="hm">Tandas</th><th class="hm">Pilotos</th><th>Mejor vuelta</th><th title="Mejor media de 3 vueltas seguidas">Mejor ritmo 3v</th><th title="Mejor media de 5 vueltas seguidas">Mejor ritmo 5v</th><th class="l hm">Lo llevaron</th></tr></thead><tbody>
   ${ks.map((k, i) => { const [c] = tier(k.effect), [cc, cl] = conf(k.se, k.drivers);
     const TC = { 't-fast': '#3ddc84', 't-good': '#a6e36a', '': '#c9cdd6', 't-slow': '#ffa24c', 't-vslow': '#ff5f5f' };
     k.qcls = i < 2 && ks.length > 4 ? { n: '✈ Avión', c: '#4cc3ff' } : i >= ks.length - 2 && ks.length > 4 ? { n: 'Cepo', c: '#ff5f5f' } : { n: tier(k.effect)[1], c: TC[tier(k.effect)[0]] || '#c9cdd6' };
     const vd = (k.stints.find(t => t.best === k.best) || {}).driver, others = k.luckyDrivers.filter(d => d !== vd);
     return `<tr class="click" data-k="${esc(k.kart)}"><td class="l mini">${i + 1}</td><td class="k ${c}">${k.kart}</td><td class="l">${IngUI.badge(k.qcls)}</td><td class="num ${c}">${fmt(k.effect)} s</td><td class="num hm mini">${k.se.toFixed(2).replace('.', ',')}</td>
-    <td><span class="badge ${cc}">${cl}</span></td><td class="num hm">${k.n}</td><td class="num hm">${k.drivers}</td><td class="num ${k.best === dayBest ? 'purple' : ''}">${fmtT(k.best)}</td><td class="l hm mini" style="max-width:260px;overflow:hidden;text-overflow:ellipsis"><span class="purple">${esc(vd || '')}</span>${others.length ? ', ' + esc(others.join(', ')) : ''}</td></tr>`; }).join('')}
+    <td><span class="badge ${cc}">${cl}</span></td><td class="num hm">${k.n}</td><td class="num hm">${k.drivers}</td><td class="num ${k.best === dayBest ? 'purple' : ''}">${fmtT(k.best)}</td><td class="num ${k.b3 != null && k.b3 === kb3 ? 'purple' : ''}">${fmtT(k.b3)}</td><td class="num ${k.b5 != null && k.b5 === kb5 ? 'purple' : ''}">${fmtT(k.b5)}</td><td class="l hm mini" style="max-width:260px;overflow:hidden;text-overflow:ellipsis"><span class="purple">${esc(vd || '')}</span>${others.length ? ', ' + esc(others.join(', ')) : ''}</td></tr>`; }).join('')}
   </tbody></table>
-  <div class="mini" style="margin-top:6px"><span class="purple">Morado</span>: en “Mejor vuelta” solo la VR del día; en “Lo llevaron”, quien hizo la VR con ese kart · Clase: los 2 mejores son ✈ Avión y los 2 peores Cepo; el resto según su ventaja (Rápido ≤ −0,15 · Buen ritmo · Normal ±0,05 · Lento · Muy lento ≥ +0,15) · Pulsa un kart para ver el detalle.</div></div>`;
+  <div class="mini" style="margin-top:6px"><span class="purple">Morado</span>: en “Mejor vuelta” y “Mejor ritmo” solo el mejor del día; en “Lo llevaron”, quien hizo la VR con ese kart · Clase: los 2 mejores son ✈ Avión y los 2 peores Cepo; el resto según su ventaja (Rápido ≤ −0,15 · Buen ritmo · Normal ±0,05 · Lento · Muy lento ≥ +0,15) · Mejor ritmo 3v / 5v = la mejor media de 3 / 5 vueltas seguidas que ha hecho alguien con ese kart (sin la vuelta de salida) · Pulsa un kart para ver el detalle.</div></div>`;
   el.querySelectorAll('tr[data-k]').forEach(tr => tr.onclick = () => {
     const k = ks.find(x => String(x.kart) === tr.dataset.k); if (!k) return;
     $('kmbox').innerHTML = IngUI.kartPopup(k, A, ses, null, tier(k.effect)[0]); $('kmodal').hidden = false;
