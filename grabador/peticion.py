@@ -4,6 +4,8 @@ Títulos que entiende:
   - "Añadir circuito"   cuerpo con líneas "Enlace: <url de Apex>", "Nombre: <nombre>", "País: España|Portugal"
   - "Quitar circuito: <slug>"
   - "Sesiones PDF"      cuerpo = JSON con la lista de sesiones leídas de los PDF "Resumen" de Apex
+  - "Grabar circuito: <slug>"  cuerpo con "Grabar: sí|no" (pausa o reanuda la grabación en directo)
+  - "Borrar sesiones"   cuerpo con una ruta por línea: data/sesiones/<circuito>/<día>/<archivo>.json
   - "Pilotos"           cuerpo = JSON {"unir": {alias: nombre que se queda}, "quitar": [nombres]} → data/pilotos.json
 
 Escribe el resultado en resultado.txt (se publica como comentario en la issue).
@@ -157,6 +159,43 @@ def add_pdf(body: str) -> str:
 
 
 PIL = ROOT / 'data' / 'pilotos.json'
+SES_PATH_RE = re.compile(r'^data/sesiones/[a-z0-9][a-z0-9-]{1,60}/\d{4}-\d\d-\d\d/[\w.+-]{1,120}\.json$')
+
+
+def set_recording(title: str, body: str) -> str:
+    slug = title.split(':', 1)[1].strip() if ':' in title else ''
+    val = (field(body, 'Grabar') or '').lower()
+    on = not val.startswith('n')
+    lst = load_circ()
+    c = next((x for x in lst if x['slug'] == slug), None)
+    if not c:
+        return f'No he encontrado el circuito "{slug}".'
+    c['grabar'] = on
+    save_circ(lst)
+    return f'"{c["nombre"]}": ' + ('vuelve a grabarse en directo (empieza en unos 5 minutos).' if on else 'grabación en pausa. Lo ya grabado se conserva.')
+
+
+def delete_sessions(body: str) -> str:
+    paths = [l.strip().strip('`') for l in body.splitlines()]
+    paths = [p for p in paths if SES_PATH_RE.match(p) and '..' not in p]
+    done, missing = [], 0
+    for p in paths:
+        f = ROOT / p
+        if f.exists():
+            f.unlink()
+            done.append(p.split('/', 2)[2])
+            try:
+                f.parent.rmdir()  # si el día se queda vacío
+            except OSError:
+                pass
+        else:
+            missing += 1
+    if not paths:
+        return 'No he encontrado ninguna sesión en la petición.'
+    out = f'Borradas {len(done)} sesiones' + (':\n- ' + '\n- '.join(done) if done else '.')
+    if missing:
+        out += f'\n{missing} ya no existían.'
+    return out
 
 
 def save_pilotos(body: str) -> str:
@@ -186,6 +225,10 @@ def main():
         res = remove_circuit(title)
     elif t.startswith('sesiones pdf'):
         res = add_pdf(body)
+    elif t.startswith('grabar circuito'):
+        res = set_recording(title, body)
+    elif t.startswith('borrar sesiones'):
+        res = delete_sessions(body)
     elif t.startswith('pilotos'):
         res = save_pilotos(body)
     else:
