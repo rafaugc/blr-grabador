@@ -24,6 +24,7 @@ from pathlib import Path
 import websockets
 
 from .apex import ApexState
+from . import ajustes
 
 ROOT = Path(__file__).resolve().parent.parent
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36'
@@ -107,6 +108,7 @@ def publish_git():
     """Sube a GitHub sin poder atascarse aunque haya otro grabador a la vez:
     parte siempre de la versión más reciente de GitHub y pone encima solo lo que ha escrito este grabador."""
     snap = dict(MINE)
+    applied = 0
     for attempt in range(6):
         if _git('fetch', '-q', 'origin', 'main').returncode != 0:
             time.sleep(5)
@@ -122,15 +124,21 @@ def publish_git():
             else:
                 p.parent.mkdir(parents=True, exist_ok=True)
                 p.write_text(text)
+        try:  # ajustes hechos desde la app (pilotos juntados, mojado, sesiones borradas…)
+            applied = ajustes.apply_pending()
+        except Exception as e:
+            log(f'Ajustes de la app: error {e!r}')
         subprocess.run([sys.executable, '-m', 'grabador.unir'], cwd=ROOT, capture_output=True)
         subprocess.run([sys.executable, '-m', 'grabador.indice'], cwd=ROOT, capture_output=True)
         _git('add', '-A', 'data/')
         if _git('diff', '--cached', '--quiet').returncode == 0:
+            ajustes.done(applied)
             break
-        _git('commit', '-q', '-m', f"Sesiones {time.strftime('%Y-%m-%d %H:%M', time.gmtime())}")
+        _git('commit', '-q', '-m', f"Sesiones {time.strftime('%Y-%m-%d %H:%M', time.gmtime())}" + (' + ajustes de la app' if applied else ''))
         r = _git('push', '-q', 'origin', 'HEAD:main')
         if r.returncode == 0:
-            log('Subido a GitHub')
+            log('Subido a GitHub' + (f' (con {applied} ajustes de la app)' if applied else ''))
+            ajustes.done(applied)
             break
         time.sleep(4 + attempt * 3)
     else:
@@ -311,10 +319,27 @@ async def main_async(minutes: float, only: list[str] | None):
                     log(f"[{c['slug']}] circuito nuevo en la lista, empiezo a grabarlo")
                     tasks[c['slug']] = asyncio.create_task(record(c, deadline, stats[c['slug']], raw_dir))
 
+    async def watch_ajustes():
+        # cada minuto mira si desde la app se han juntado pilotos, marcado sesiones, etc. y lo sube a GitHub
+        while time.time() < deadline - 60:
+            try:
+                n = await asyncio.to_thread(ajustes.poll)
+                if n:
+                    log(f'{n} ajustes nuevos desde la app')
+                    PUB.mark()
+                if ajustes.PENDING:
+                    await PUB.maybe()
+            except Exception as e:
+                log(f'Ajustes de la app: error {e!r}')
+            await asyncio.sleep(60)
+
     watcher = asyncio.create_task(watch_list())
+    aj_watcher = asyncio.create_task(watch_ajustes()) if PUB.enabled else None
     while any(not t.done() for t in tasks.values()):
         await asyncio.sleep(5)
     watcher.cancel()
+    if aj_watcher:
+        aj_watcher.cancel()
 
     estado_path = ROOT / 'data' / 'estado.json'
     estado_path.parent.mkdir(exist_ok=True)

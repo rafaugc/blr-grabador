@@ -230,7 +230,6 @@ async function loadCircuits() {
   Object.keys(idx ? idx.circuitos : {}).forEach(slug => { if (!CIRCS.some(c => c.slug === slug)) CIRCS.push({ slug, nombre: slug.replace(/-/g, ' ').replace(/\b\w/g, x => x.toUpperCase()), soloPdf: true }); });
   fillCircSelect();
   await loadPilAdmin();
-  delSync();
   if ($('useScore').checked) ensureScore().then(render);
   setTimeout(() => loadAllData().then(() => render()), 1500);
   $('circ').onchange = () => { store.set('circ', $('circ').value); start(); };
@@ -508,43 +507,82 @@ function askClaude(s) {
 // ---------- pilotos: juntar duplicados y quitar de la comparativa ----------
 // Se guarda en data/pilotos.json (para todos los dispositivos) y, mientras no se guarde en la nube, en este navegador.
 // unir: { "NOMBRE ALIAS": "NOMBRE QUE SE QUEDA" } · quitar: [nombres]
-let PADM = { unir: {}, quitar: [], mojado: {}, distintos: [] }, PADM_REMOTE = null;
-const padmLocal = () => store.get('pilAdmin', null);
+// ---------- ajustes que se guardan solos y para siempre, desde cualquier dispositivo ----------
+// Cada decisión (juntar, "no son el mismo", quitar, seco/mojado, borrar sesión) se manda como un mensaje al canal de ntfy.sh.
+// El grabador (siempre en marcha) lo lee cada minuto y lo guarda en data/pilotos.json en GitHub. Los demás dispositivos
+// lo ven al momento (leen el canal además del archivo). Nada que configurar.
+const AJ_TOPIC = 'krk-ajustes-7f3c9a51e2d84b06';
+let PADM = { unir: {}, quitar: [], mojado: {}, distintos: [], borrar: [] }, PADM_REMOTE = null;
+let AJ_Q = store.get('ajQ', []); // cambios aún sin enviar (sin conexión)
 const admKey = a => JSON.stringify({ u: Object.entries(a.unir || {}).sort(), q: [...(a.quitar || [])].sort(), m: Object.entries(a.mojado || {}).sort(), d: [...(a.distintos || [])].sort() });
-const sameAdm = (a, b) => admKey(a) === admKey(b);
-async function loadPilAdmin() {
-  try { const r = await fetch(RAW + 'data/pilotos.json?t=' + Date.now(), { cache: 'no-store' }); if (r.ok) PADM_REMOTE = await r.json(); } catch {}
-  PADM_REMOTE = Object.assign({ unir: {}, quitar: [], mojado: {}, distintos: [] }, PADM_REMOTE || {});
-  const loc = padmLocal();
-  if (loc && loc.pending && sameAdm(loc, PADM_REMOTE)) store.set('pilAdmin', null);
-  const l2 = padmLocal();
-  PADM = l2 && l2.pending ? { unir: l2.unir || {}, quitar: l2.quitar || [], mojado: l2.mojado || {}, distintos: l2.distintos || [] } : { unir: PADM_REMOTE.unir, quitar: PADM_REMOTE.quitar, mojado: PADM_REMOTE.mojado || {}, distintos: PADM_REMOTE.distintos || [] };
-  // los "no son el mismo" que estaban solo en este dispositivo pasan a guardarse en la nube
-  const oldNo = store.get('pilNo', []);
-  if (oldNo.length) { PADM.distintos = [...new Set(PADM.distintos.concat(oldNo))]; store.set('pilNo', []); admSave(true); }
-  if (admPending()) admAutoCloud();
+function ajApply(P, o) {
+  const can = n => { let x = n, i = 0; while (P.unir[x] && i++ < 8) x = P.unir[x]; return x; };
+  if (o.o === 'u') { const keep = can(o.k), a = can(o.a); if (!keep || !a || a === keep) return; P.unir[a] = keep; for (const k in P.unir) if (P.unir[k] === a) P.unir[k] = keep; delete P.unir[keep]; }
+  else if (o.o === 's') delete P.unir[o.a];
+  else if (o.o === 'q') { if (!P.quitar.includes(o.n)) P.quitar.push(o.n); }
+  else if (o.o === 'r') P.quitar = P.quitar.filter(x => x !== o.n);
+  else if (o.o === 'd') { if (!P.distintos.includes(o.p)) P.distintos.push(o.p); }
+  else if (o.o === 'm') { if (o.v == null) delete P.mojado[o.k]; else P.mojado[o.k] = o.v; }
+  else if (o.o === 'b') { if (!P.borrar.includes(o.p)) P.borrar.push(o.p); }
 }
-const admPending = () => { const l = padmLocal(); return !!(l && l.pending); };
-function admSave(silent) {
-  store.set('pilAdmin', { unir: PADM.unir, quitar: PADM.quitar, mojado: PADM.mojado || {}, distintos: PADM.distintos || [], pending: !sameAdm(PADM, PADM_REMOTE || { unir: {}, quitar: [] }) });
-  admAutoCloud();
+async function loadPilAdmin() {
+  let R = null;
+  try { const r = await fetch(RAW + 'data/pilotos.json?t=' + Date.now(), { cache: 'no-store' }); if (r.ok) R = await r.json(); } catch {}
+  PADM_REMOTE = Object.assign({ unir: {}, quitar: [], mojado: {}, distintos: [] }, R || {});
+  const P = { unir: Object.assign({}, PADM_REMOTE.unir), quitar: PADM_REMOTE.quitar.slice(), mojado: Object.assign({}, PADM_REMOTE.mojado), distintos: PADM_REMOTE.distintos.slice(), borrar: [] };
+  // lo enviado desde cualquier dispositivo que el grabador aún no ha guardado en el archivo
+  try {
+    const t = await (await fetch(`https://ntfy.sh/${AJ_TOPIC}/json?poll=1&since=${PADM_REMOTE._ultimo || '12h'}`, { cache: 'no-store' })).text();
+    t.split('\n').forEach(l => { try { const e = JSON.parse(l); if (e.event === 'message') (JSON.parse(e.message).ops || []).forEach(o => ajApply(P, o)); } catch {} });
+  } catch {}
+  AJ_Q.forEach(o => ajApply(P, o));
+  PADM = P;
+  // lo que se hizo antes en este dispositivo (versión anterior de la app) pasa a guardarse para siempre
+  const old = store.get('pilAdmin', null), ops = [];
+  if (old && old.pending) {
+    Object.entries(old.unir || {}).forEach(([a, k]) => { if (PADM.unir[a] !== k) ops.push({ o: 'u', a, k }); });
+    (old.quitar || []).forEach(n => { if (!PADM.quitar.includes(n)) ops.push({ o: 'q', n }); });
+    Object.entries(old.mojado || {}).forEach(([k, v]) => { if (PADM.mojado[k] !== v) ops.push({ o: 'm', k, v }); });
+    (old.distintos || []).forEach(p => { if (!PADM.distintos.includes(p)) ops.push({ o: 'd', p }); });
+  }
+  store.get('pilNo', []).forEach(p => { p = p.split('|').sort().join('|'); if (!PADM.distintos.includes(p)) ops.push({ o: 'd', p }); });
+  store.set('pilAdmin', null); store.set('pilNo', []);
+  if (ops.length) ajDo(ops, true);
+  ajFlush(); ajListen();
+}
+// aplicar aquí al momento + enviar
+function ajDo(ops, silent) {
+  ops.forEach(o => { ajApply(PADM, o); AJ_Q.push(o); });
+  store.set('ajQ', AJ_Q); ajFlush();
   if (silent) return;
   SC.res = null; render(); if (document.getElementById('v-score').classList.contains('on')) renderScore();
 }
-// guardado automático en la nube: 5 s después del último cambio (así varios cambios seguidos van en un solo envío)
-let admTimer = null, admSending = false, ADM_SENT = '';
-function admAutoCloud(now) {
-  if (!ghTok() || !admPending()) return;
-  clearTimeout(admTimer);
-  admTimer = setTimeout(async () => {
-    if (admSending) return admAutoCloud();
-    admSending = true;
-    const ok = await ghIssue('Pilotos', admBody(), true);
-    admSending = false;
-    if (ok) { ADM_SENT = admKey(PADM); toast('✓ Guardado en la nube para siempre'); if (!$('kmodal').hidden && $('mgrList')) renderMgr(); setTimeout(() => loadPilAdmin().then(() => { if (!$('kmodal').hidden && $('mgrList')) renderMgr(); }), 120000); }
-  }, now ? 300 : 5000);
+let ajBusy = false, ajRetry = null;
+async function ajFlush() {
+  if (ajBusy || !AJ_Q.length) return; ajBusy = true;
+  try {
+    while (AJ_Q.length) {
+      const batch = []; let size = 20;
+      for (const o of AJ_Q) { const l = JSON.stringify(o).length + 1; if (batch.length && size + l > 3500) break; batch.push(o); size += l; }
+      const r = await fetch(`https://ntfy.sh/${AJ_TOPIC}`, { method: 'POST', body: JSON.stringify({ ops: batch }) });
+      if (!r.ok) throw new Error(r.status);
+      AJ_Q.splice(0, batch.length); store.set('ajQ', AJ_Q);
+    }
+    ajBusy = false; ajStatus();
+  } catch { ajBusy = false; ajStatus(); clearTimeout(ajRetry); ajRetry = setTimeout(ajFlush, 30000); }
 }
-const admBody = () => '```json\n' + JSON.stringify({ unir: PADM.unir, quitar: PADM.quitar, mojado: PADM.mojado || {}, distintos: PADM.distintos || [] }) + '\n```';
+window.addEventListener('online', () => ajFlush());
+function ajStatus() { document.querySelectorAll('[data-ajst]').forEach(e => e.innerHTML = ajStatusTxt()); }
+const ajStatusTxt = () => AJ_Q.length ? `<span style="color:var(--accent)">⏳ ${AJ_Q.length} cambio(s) pendientes de enviar (sin conexión): se envían solos en cuanto haya</span>` : '<span style="color:var(--fast)">✓ Se guarda solo y para siempre, en todos tus dispositivos</span>';
+// cambios hechos en otro dispositivo mientras esta app está abierta: se ven al momento
+let ajES = null, ajT = null;
+function ajListen() {
+  if (ajES) return;
+  try {
+    ajES = new EventSource(`https://ntfy.sh/${AJ_TOPIC}/sse?since=${Math.floor(Date.now() / 1000)}`);
+    ajES.onmessage = ev => { try { const e = JSON.parse(ev.data); if (e.event !== 'message') return; const before = admKey(PADM) + PADM.borrar.length; (JSON.parse(e.message).ops || []).forEach(o => ajApply(PADM, o)); if (admKey(PADM) + PADM.borrar.length === before) return; clearTimeout(ajT); ajT = setTimeout(() => { SC.res = null; render(); if (!$('kmodal').hidden && $('mgrList')) renderMgr(); }, 800); } catch {} };
+  } catch {}
+}
 const NN = n => KartCore.normName(n);
 function canon(n) { let x = NN(n), i = 0; while (PADM.unir[x] && i++ < 6) x = PADM.unir[x]; return x; }
 const isOut = n => PADM.quitar.includes(n);
@@ -554,24 +592,10 @@ function prepSes(list) {
   return list.map(s => Object.assign({}, s, { id: s.id || s.title + s.time,
     stints: s.stints.map(t => Object.assign({}, t, { driver: canon(t.driver) })).filter(t => !isOut(t.driver)) }));
 }
-function admMerge(keep, others) {
-  keep = canon(keep);
-  others.map(canon).filter(o => o !== keep).forEach(o => {
-    PADM.unir[o] = keep;
-    Object.keys(PADM.unir).forEach(a => { if (PADM.unir[a] === o) PADM.unir[a] = keep; });
-  });
-  delete PADM.unir[keep];
-  admSave();
-}
-function admSplit(alias) { delete PADM.unir[alias]; admSave(); }
-function admRemove(names) { names.forEach(n => { n = canon(n); if (!PADM.quitar.includes(n)) PADM.quitar.push(n); }); admSave(); }
-function admRestore(n) { PADM.quitar = PADM.quitar.filter(x => x !== n); admSave(); }
-function admCloud() {
-  if (ghTok()) return admAutoCloud(true);
-  const body = admBody();
-  if (body.length < 6000) ghIssue('Pilotos', body);
-  else { copyText(body); alert('He copiado los datos. En la página que se abre, pégalos en el cuadro grande y pulsa "Create".'); ghIssue('Pilotos', ''); }
-}
+function admMerge(keep, others) { keep = canon(keep); ajDo(others.map(canon).filter(o => o !== keep).map(a => ({ o: 'u', a, k: keep }))); }
+function admSplit(alias) { ajDo([{ o: 's', a: alias }]); }
+function admRemove(names) { ajDo(names.map(n => ({ o: 'q', n: canon(n) }))); }
+function admRestore(n) { ajDo([{ o: 'r', n }]); }
 // parecidos: mismo piloto escrito distinto (letra cambiada, nombre abreviado, apellido de más…)
 function lev(a, b) {
   if (Math.abs(a.length - b.length) > 2) return 9;
@@ -631,8 +655,7 @@ function renderMgr() {
   const keep = sel.slice().sort((a, b) => cnt[b] - cnt[a])[0];
   const groups = {}; Object.entries(PADM.unir).forEach(([a, k]) => (groups[k] = groups[k] || []).push(a));
   $('kmbox').innerHTML = `<div class="mhead"><div><div class="mtitle">Gestionar pilotos</div><div class="mini">Junta nombres que son la misma persona o quita pilotos de la comparativa. Vale para todos los circuitos, el ranking de karts y el score.</div></div><button class="mclose" data-close>✕</button></div>
-    ${!ghTok() ? `<div class="card row" style="border-color:#4d4317"><span class="mini" style="color:var(--accent)"><b>Importante:</b> conecta la app con GitHub (una vez) para que lo que juntes se guarde solo y para siempre. Si no, se queda en este dispositivo y se puede perder.</span><button class="back" id="mgrConn">🔑 Conectar con GitHub</button>${admPending() ? '<button class="back" id="mgrCloud">☁️ Guardar a mano</button>' : ''}</div>`
-      : admPending() && ADM_SENT !== admKey(PADM) ? `<div class="mini" style="margin-bottom:8px;color:var(--accent)">⏳ Guardando en la nube…</div>` : `<div class="mini" style="margin-bottom:8px;color:var(--fast)">✓ Todo guardado en la nube para siempre.</div>`}
+    <div class="mini" style="margin-bottom:8px" data-ajst>${ajStatusTxt()}</div>
     ${!sugg.length ? '<div class="card mini">✓ No hay posibles duplicados nuevos. Cuando aparezcan nombres nuevos parecidos a otros, saldrán aquí.</div>' : ''}
     ${sugg.length ? `<div class="card"><b style="font-size:13px">Posibles duplicados nuevos (${sugg.length})</b><div class="mini" style="margin-bottom:6px">Nombres parecidos. Tú decides: “Son el mismo” los junta (se queda el nombre con más tandas); “No” no lo vuelve a sugerir. Lo que decidas se recuerda para siempre: solo te saldrán parejas nuevas.</div>
       ${sugg.map(([a, b], i) => `<div class="row" style="padding:6px 0;border-top:1px solid var(--line);align-items:flex-start"><div style="flex:1;min-width:220px">
@@ -657,14 +680,12 @@ function renderMgr() {
   const qi = $('mgrQ'); qi.oninput = () => { MGR.q = qi.value; const pos = qi.selectionStart; renderMgr(); const n = $('mgrQ'); n.focus(); n.setSelectionRange(pos, pos); };
   box.querySelectorAll('[data-n]').forEach(c => c.onclick = () => { const n = c.dataset.n; MGR.sel.has(n) ? MGR.sel.delete(n) : MGR.sel.add(n); renderMgr(); });
   box.querySelectorAll('[data-sy]').forEach(b => b.onclick = () => { const [a, c] = sugg[+b.dataset.sy]; admMerge(a, [c]); renderMgr(); });
-  box.querySelectorAll('[data-sn]').forEach(b => b.onclick = () => { const [a, c] = sugg[+b.dataset.sn]; PADM.distintos = [...new Set((PADM.distintos || []).concat([[a, c].sort().join('|')]))]; admSave(true); renderMgr(); });
+  box.querySelectorAll('[data-sn]').forEach(b => b.onclick = () => { const [a, c] = sugg[+b.dataset.sn]; ajDo([{ o: 'd', p: [a, c].sort().join('|') }], true); renderMgr(); });
   box.querySelectorAll('[data-split]').forEach(b => b.onclick = e => { e.stopPropagation(); admSplit(b.dataset.split); renderMgr(); });
   box.querySelectorAll('[data-back]').forEach(b => b.onclick = e => { e.stopPropagation(); admRestore(b.dataset.back); renderMgr(); });
   if ($('mgrJoin')) $('mgrJoin').onclick = () => { const k = $('mgrKeep').value; admMerge(k, sel.filter(n => n !== k)); MGR.sel = new Set([k]); renderMgr(); };
   if ($('mgrOut')) $('mgrOut').onclick = () => { if (!confirm(`¿Quitar ${sel.length === 1 ? sel[0] : sel.length + ' pilotos'} de la comparativa? Sus vueltas dejan de contar en los rankings (puedes recuperarlo luego).`)) return; admRemove(sel); MGR.sel.clear(); renderMgr(); };
   if ($('mgrClr')) $('mgrClr').onclick = () => { MGR.sel.clear(); renderMgr(); };
-  if ($('mgrCloud')) $('mgrCloud').onclick = admCloud;
-  if ($('mgrConn')) $('mgrConn').onclick = openConnect;
 }
 
 // ================= LLUVIA / CONDICIONES DE PISTA =================
@@ -752,11 +773,7 @@ function filterCond(list, mode) {
   if (mode === 'wet') return w; if (mode === 'dry') return d;
   return d.length ? d : list; // auto: si hay sesiones secas, solo las secas
 }
-function markCond(s, v) { // v: 1 mojado · 0 seco · null automático
-  PADM.mojado = Object.assign({}, PADM.mojado || {});
-  if (v == null) delete PADM.mojado[sk(s)]; else PADM.mojado[sk(s)] = v;
-  admSave();
-}
+function markCond(s, v) { ajDo([{ o: 'm', k: sk(s), v }]); } // v: 1 mojado · 0 seco · null automático
 let wxAsked = {};
 function wxEnsureFor(list) {
   // pide el parte de los circuitos que salen en pantalla (una vez cada 30 min) y repinta al llegar
@@ -777,34 +794,18 @@ function curveSvg(cv) {
 }
 
 // ---------- borrar sesiones de la memoria ----------
-// Se ocultan al momento en este dispositivo; "Borrar de la nube" abre una issue "Borrar sesiones" que elimina los archivos del repositorio.
-const sesDel = () => store.get('sesDel', []);
-const isDel = s => !!(s && s._path && sesDel().includes(s._path));
+// Se ocultan al momento en todos los dispositivos y el grabador borra los archivos en GitHub en 1–2 minutos.
+const isDel = s => !!(s && s._path && PADM.borrar.includes(s._path));
 function delSessions(list) {
   const loc = list.filter(s => s._local || (!s._path && /pdf$/i.test(s.source || ''))), cloud = list.filter(s => s._path);
   if (loc.length) { const ids = new Set(loc.map(s => s.id)); store.set('pdfLocal', localPdf().filter(x => !ids.has(x.id))); Object.values(recorded).forEach(b => Object.keys(b).forEach(k => { if (k.startsWith('local:') && ids.has(k.slice(6))) delete b[k]; })); }
-  if (cloud.length) store.set('sesDel', [...new Set(sesDel().concat(cloud.map(s => s._path)))]);
   if (ALLD.sessions) Object.keys(ALLD.sessions).forEach(k => ALLD.sessions[k] = ALLD.sessions[k].filter(x => !list.includes(x)));
-  SC.res = null; openSes = null; render();
-  if (ghTok() && cloud.length) { clearTimeout(delSessions._t); delSessions._t = setTimeout(delCloud, 4000); }
+  openSes = null;
+  if (cloud.length) ajDo(cloud.map(s => ({ o: 'b', p: s._path }))); else { SC.res = null; render(); }
+  toast('🗑 Sesión borrada. Se borra para siempre en 1–2 minutos.');
 }
-function delCloud() {
-  const body = 'Sesiones a borrar (no cambies nada, solo pulsa Create):\n' + sesDel().join('\n');
-  if (body.length < 6000) ghIssue('Borrar sesiones', body);
-  else { copyText(body); alert('He copiado la lista. En la página que se abre, pégala en el cuadro grande y pulsa "Create".'); ghIssue('Borrar sesiones', ''); }
-}
-async function delSync() {
-  // las que ya no están en el índice ya se borraron en la nube: dejan de estar pendientes
-  const idx = await loadIndex(); if (!idx) return;
-  const have = new Set(); Object.entries(idx.circuitos).forEach(([slug, c]) => Object.entries(c.dias).forEach(([d, fs]) => fs.forEach(f => have.add(`data/sesiones/${slug}/${d}/${f.f}`))));
-  const left = sesDel().filter(p => have.has(p)); if (left.length !== sesDel().length) store.set('sesDel', left);
-}
-const delBanner = () => sesDel().length ? (ghTok() ? `<div class="card row"><span class="mini">🗑 ${sesDel().length} sesión(es) borradas: se están borrando de la nube (1–2 min).</span></div>` : `<div class="card row" style="border-color:#4d4317"><span class="mini" style="color:var(--accent)">${sesDel().length} sesión(es) borradas solo en este dispositivo.</span><button class="back" data-delcloud>🗑 Borrar también de la nube</button><button class="back" data-delundo>Deshacer</button><button class="back" data-conn>🔑 Conectar con GitHub (y no volver a hacer esto)</button></div>`) : '';
-function bindDelBanner(el) {
-  el.querySelectorAll('[data-delcloud]').forEach(b => b.onclick = delCloud);
-  el.querySelectorAll('[data-conn]').forEach(b => b.onclick = openConnect);
-  el.querySelectorAll('[data-delundo]').forEach(b => b.onclick = () => { store.set('sesDel', []); SC.res = null; ALLD.sessions = null; render(); if (document.getElementById('v-score').classList.contains('on')) renderScore(); });
-}
+const delBanner = () => '';
+function bindDelBanner() {}
 // ---------- quién es cada nombre: circuitos, días y sesiones en las que aparece ----------
 const cname = slug => (CIRCS.find(c => c.slug === slug) || {}).nombre || slug;
 function nameInfo() {
@@ -966,7 +967,7 @@ function renderPilotos(ses) {
       <button class="back" id="pilAll">Usar todos los días con datos</button><button class="back" id="pilToday">Solo hoy</button>
       <span class="mini">Mínimo de tandas:</span><span class="seg" id="pilMin">${[1, 2, 3].map(n => `<button data-n="${n}" class="${pilMin === n ? 'on' : ''}">${n}+</button>`).join('')}</span>
       <button class="back" id="pilMgr">👥 Juntar / quitar pilotos${newDupCount() ? ` · <b style="color:var(--accent)">${newDupCount()} posibles duplicados nuevos</b>` : ''}${PADM.quitar.length || Object.keys(PADM.unir).length ? ` (${Object.keys(PADM.unir).length} juntados · ${PADM.quitar.length} quitados)` : ''}</button>
-      ${!ghTok() ? '<span class="mini" style="color:var(--accent)">Lo que juntas se guarda solo en este dispositivo · <a href="#" id="pilConn" style="color:var(--accent)">🔑 conectar con GitHub para guardarlo para siempre</a></span>' : admPending() ? '<span class="mini" style="color:var(--accent)">' + (ADM_SENT === admKey(PADM) ? '✓ Guardado en la nube' : '⏳ Guardando en la nube…') + '</span>' : ''}
+      <span class="mini" data-ajst>${ajStatusTxt()}</span>
     </div>
     <div class="card scroll"><div class="mini" style="margin-bottom:6px">Nivel = segundos por vuelta frente al piloto medio <b>con el kart ya descontado</b> (negativo = más rápido). Mismo modelo que el ranking de karts: separa lo que es mérito del piloto, del kart y de las condiciones de cada sesión. Pulsa un piloto para ver sus tandas.${A.priorUsed ? ` <b>Usando el score general</b> para ${A.priorUsed} pilotos.` : ''}</div>
     <table><thead><tr><th class="l">#</th><th class="l">Piloto</th><th class="l">Clase</th><th>Nivel</th><th class="hm">±</th><th>Fiabilidad</th>${G ? '<th title="Score general (pestaña Score pilotos)">Score</th>' : ''}<th title="Media de lo buenos que fueron sus karts (negativo = le tocaron buenos)">Suerte con el kart</th><th class="hm">Tandas</th><th class="l hm">Karts</th><th>Mejor vuelta</th><th title="Mejor media de 3 vueltas seguidas">Mejor ritmo 3v</th><th title="Mejor media de 5 vueltas seguidas">Mejor ritmo 5v</th></tr></thead><tbody>
@@ -982,7 +983,6 @@ function renderPilotos(ses) {
   $('pilAll').onclick = () => { DAYS = new Set(ALLDAYS); loadDays(); refreshRecorded(); };
   $('pilToday').onclick = () => { DAYS = new Set([today()]); loadDays(); refreshRecorded(); };
   $('pilMgr').onclick = () => openMgr();
-  if ($('pilConn')) $('pilConn').onclick = e => { e.preventDefault(); openConnect(); };
   el.querySelectorAll('#pilMin button').forEach(b => b.onclick = () => { pilMin = +b.dataset.n; render(); });
   el.querySelectorAll('tr[data-d]').forEach(tr => tr.onclick = () => {
     const d = A.drivers.find(x => x.driver === tr.dataset.d); if (!d) return;
@@ -1240,14 +1240,13 @@ function renderDetail(el, s) {
     <div class="mini">${esc(s.time)} · ${esc(s.pista || '')} · ${st.length} pilotos · ${allLaps.length} vueltas · mejor ${fmtT(sbest)}${s.envivo ? ' · <span style="color:var(--vslow)">en curso</span>' : ''}</div></div></div>
     ${(() => { const cd = condOf(s), man = (PADM.mojado || {})[sk(s)];
       return `<div class="card" style="margin:8px 0;background:var(--panel2)"><div class="row"><b>${condIcon(cd)} Pista: ${condName(cd)}</b>
-        <span class="mini">Marcar:</span><span class="seg" id="condMark"><button data-m="a" class="${man == null ? 'on' : ''}">Automático</button><button data-m="0" class="${man === 0 ? 'on' : ''}">☀️ Seco</button><button data-m="1" class="${man === 1 ? 'on' : ''}">💧 Mojado</button></span>${!ghTok() ? '<span class="mini" style="color:var(--accent)">Se guarda solo en este dispositivo · <a href="#" id="condCloud" style="color:var(--accent)">🔑 conectar con GitHub</a></span>' : admPending() ? '<span class="mini" style="color:var(--accent)">⏳ Guardando en la nube…</span>' : ''}</div>
+        <span class="mini">Marcar:</span><span class="seg" id="condMark"><button data-m="a" class="${man == null ? 'on' : ''}">Automático</button><button data-m="0" class="${man === 0 ? 'on' : ''}">☀️ Seco</button><button data-m="1" class="${man === 1 ? 'on' : ''}">💧 Mojado</button></span><span class="mini" data-ajst>${ajStatusTxt()}</span></div>
         <div class="mini" style="margin-top:4px">${cd.why.length ? cd.why.map(esc).join('<br>') : 'Sin datos para saberlo (sin parte meteorológico ni historial suficiente): se considera seco.'}</div>
         ${cd.curve ? `<div style="margin-top:6px">${curveSvg(cd.curve)}</div>` : ''}</div>`; })()}
     <div class="sub">${tabs.map(([k, l]) => `<button data-t="${k}" class="${k === subTab ? 'on' : ''}">${l}</button>`).join('')}<button id="askS">💬 Pregunta a Claude</button>${!s.envivo && (s._path || /pdf$/i.test(s.source || '')) ? '<button id="delS">🗑 Borrar sesión</button>' : ''}</div>
     ${body}</div>`;
   $('back').onclick = () => { openSes = null; renderSes(sessionsToday()); };
   $('askS').onclick = () => askClaude(s);
-  if ($('condCloud')) $('condCloud').onclick = e => { e.preventDefault(); openConnect(); };
   el.querySelectorAll('#condMark button').forEach(b => b.onclick = () => markCond(s, b.dataset.m === 'a' ? null : +b.dataset.m));
   if ($('delS')) $('delS').onclick = () => { if (confirm(`¿Borrar la sesión ${s.time} ${s.title || s.type}?\nDeja de contar en todos los rankings.`)) delSessions([s]); };
   el.querySelectorAll('.sub button').forEach(b => b.onclick = () => { subTab = b.dataset.t; renderDetail(el, s); });
@@ -1516,7 +1515,7 @@ async function ghIssue(title, body, quiet) {
 }
 function openConnect() {
   const has = !!ghTok();
-  $('kmbox').innerHTML = `<div class="mhead"><div><div class="mtitle">Conectar la app con GitHub</div><div class="mini">Se hace <b>una vez en cada dispositivo</b> (en el iPhone, hazlo dentro de la app instalada, no en Safari). Después, todo lo que juntes, quites, borres o marques se guarda solo en la nube, para siempre, sin abrir GitHub.</div></div><button class="mclose" data-close>✕</button></div>
+  $('kmbox').innerHTML = `<div class="mhead"><div><div class="mtitle">Conectar la app con GitHub</div><div class="mini"><b>Opcional.</b> No hace falta para juntar pilotos, marcar seco/mojado ni borrar sesiones: eso ya se guarda solo desde cualquier dispositivo. Esto solo sirve para que añadir, pausar o quitar circuitos y subir PDFs no tengan que abrir GitHub (se hace una vez en cada dispositivo).</div></div><button class="mclose" data-close>✕</button></div>
     ${has ? '<div class="card row" style="border-color:#1f4a33"><span style="color:var(--fast)">✓ Este dispositivo ya está conectado.</span><button class="back" id="ghOff">Desconectar</button></div>' : ''}
     <div class="card"><b>Pasos (2 minutos)</b>
     <ol class="steps mini" style="line-height:1.7">
@@ -1538,7 +1537,7 @@ function openConnect() {
       const r = await fetch(`https://api.github.com/repos/${REPO}`, { headers: { Authorization: 'Bearer ' + t, Accept: 'application/vnd.github+json' } });
       if (!r.ok) { $('ghTokMsg').innerHTML = '<span class="err-t">GitHub no acepta esa llave. Revisa que la copiaste entera y que elegiste el proyecto rafa_krtrnk.</span>'; return; }
       store.set('ghToken', t); $('ghTokMsg').innerHTML = '<span class="ok-t">✓ Conectado. Desde ahora se guarda todo solo.</span>';
-      admAutoCloud(true); setTimeout(() => { $('kmodal').hidden = true; render(); }, 1500);
+      setTimeout(() => { $('kmodal').hidden = true; render(); }, 1500);
     } catch { $('ghTokMsg').innerHTML = '<span class="err-t">Sin conexión. Inténtalo de nuevo.</span>'; }
   };
 }
@@ -1563,7 +1562,7 @@ async function renderCircs(reload) {
     return ok ? '<span class="badge alta">Grabando</span>' : '<span class="badge baja">Sin conexión</span>';
   };
   const list = CIRCS.slice().sort((a, b) => (F.has(b.slug) - F.has(a.slug)) || a.nombre.localeCompare(b.nombre));
-  el.innerHTML = `<div class="card scroll"><div class="row" style="justify-content:space-between;margin-bottom:6px"><b>Tus circuitos</b><span class="row" style="gap:8px"><button class="btn ghost" id="cConn">${ghTok() ? '✓ Conectado con GitHub' : '🔑 Conectar con GitHub'}</button><button class="btn ghost" id="cReload">Actualizar lista</button></span></div>
+  el.innerHTML = `<div class="card scroll"><div class="row" style="justify-content:space-between;margin-bottom:6px"><b>Tus circuitos</b><span class="row" style="gap:8px"><button class="btn ghost" id="cConn">${ghTok() ? '✓ Conectado con GitHub' : '🔑 Conectar con GitHub (opcional)'}</button><button class="btn ghost" id="cReload">Actualizar lista</button></span></div>
   <div class="mini" style="margin-bottom:8px">Pulsa la estrella para marcarlo como favorito: los favoritos salen primero en el selector de arriba. <b>Pausar</b> deja de grabar ese circuito en directo pero conserva lo grabado (puedes reanudarlo cuando quieras); <b>Quitar</b> lo saca de la lista. Para borrar sesiones sueltas, ve a la pestaña Sesiones y pulsa 🗑.</div>
   <table><thead><tr><th></th><th class="l">Circuito</th><th class="l">Estado</th><th class="l">Última sesión vista</th><th>Sesiones guardadas</th><th class="l">Grabación en directo</th><th></th></tr></thead><tbody>
   ${list.map(c => `<tr><td><span class="star ${F.has(c.slug) ? 'on' : ''}" data-fav="${esc(c.slug)}">★</span></td>
