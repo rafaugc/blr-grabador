@@ -2005,3 +2005,6 @@ light|lf| ⏎
 com||<p><b>16:51</b><span data-flag="chequered"></span>Llegada</p> ⏎ dyn1|text| ⏎ 
  ⏎ 
  ⏎ 
+ ⏎ 
+ ⏎ 
+ ⏎ 
