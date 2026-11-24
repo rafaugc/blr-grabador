@@ -2154,3 +2154,13 @@ dyn1|count|706600 ⏎
 r13c2|in| ⏎ 
 r13c6|tn|27.520 ⏎ r13c7|| ⏎ r13c8|| ⏎ r13|*i1|36009 ⏎ 
 dyn1|count|736645 ⏎ 
+r13c7|tn|36.064 ⏎ r13|*i2|22452 ⏎ 
+dyn1|count|766688 ⏎ 
+r13c2|sr| ⏎ 
+r13c8|tn|22.538 ⏎ r13c9|tn|1:26.122 ⏎ r13c13|in|8 ⏎ r13|*|85917|27324 ⏎ 
+dyn1|count|796815 ⏎ 
+r13c2|in| ⏎ 
+light|lf| ⏎ com||<p><b>17:48</b><span data-flag="chequered"></span>Llegada</p> ⏎ 
+dyn1|text| ⏎ 
+ ⏎ 
+r13c2|sf| ⏎ r13c6|ib|27.210 ⏎ r13c7|ib|36.059 ⏎ r13c8|ib|22.452 ⏎ 
