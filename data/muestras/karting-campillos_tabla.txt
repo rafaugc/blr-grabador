@@ -14,13 +14,13 @@ css|pena1|color:#f00; font-size:11px; font-weight: bold; text-align:center;
 effects||Mostrar Efectos
 comments||Comentarios
 title1||
-title2||Sesión 13
-dyn1|count|6433587
-light|lg|
+title2||Sesión 38
+dyn1|text|
+light|lf|
 wth1||
 wth2||
 wth3||
 track||Karting Campillos
-com||
-grid||<tbody><tr data-id="r0" class="head" data-pos="0"><td data-id="c1" data-type="grp" data-pr="6"></td><td data-id="c2" data-type="sta" data-pr="1"></td><td data-id="c3" data-type="rk" data-pr="1">Clasif.</td><td data-id="c4" data-type="no" data-pr="1">Kart</td><td data-id="c5" data-type="dr" data-pr="1" data-width="18" data-min="16">Piloto</td><td data-id="c6" data-type="s1" data-pr="3" data-width="10" data-min="6">S1</td><td data-id="c7" data-type="s2" data-pr="3" data-width="10" data-min="6">S2</td><td data-id="c8" data-type="s3" data-pr="3" data-width="12" data-min="6">S3</td><td data-id="c9" data-type="llp" data-pr="2" data-width="10" data-min="7">Última vuelta</td><td data-id="c10" data-type="blp" data-pr="1" data-width="10" data-min="7">Mejor vuelta</td><td data-id="c11" data-type="gap" data-pr="4" data-width="10" data-min="7">Gap</td><td data-id="c12" data-type="int" data-pr="5" data-width="10" data-min="7">Interv.</td><td data-id="c13" data-type="tlp" data-pr="5" data-width="6" data-min="4">Vueltas</td></tr></tbody>
+com||<p><b>18:22</b><span data-flag="chequered"></span>Llegada</p>
+grid||<tbody><tr data-id="r0" class="head" data-pos="0"><td data-id="c1" data-type="grp" data-pr="6"></td><td data-id="c2" data-type="sta" data-pr="1"></td><td data-id="c3" data-type="rk" data-pr="1">Clasif.</td><td data-id="c4" data-type="no" data-pr="1">Kart</td><td data-id="c5" data-type="dr" data-pr="1" data-width="18" data-min="16">Piloto</td><td data-id="c6" data-type="s1" data-pr="3" data-width="10" data-min="6">S1</td><td data-id="c7" data-type="s2" data-pr="3" data-width="10" data-min="6">S2</td><td data-id="c8" data-type="s3" data-pr="3" data-width="12" data-min="6">S3</td><td data-id="c9" data-type="llp" data-pr="2" data-width="10" data-min="7">Última vuelta</td><td data-id="c10" data-type="blp" data-pr="1" data-width="10" data-min="7">Mejor vuelta</td><td data-id="c11" data-type="gap" data-pr="4" data-width="10" data-min="7">Gap</td><td data-id="c12" data-type="int" data-pr="5" data-width="10" data-min="7">Interv.</td><td data-id="c13" data-type="tlp" data-pr="5" data-width="6" data-min="4">Vueltas</td></tr><tr data-id="r15" data-pos="1"><td data-id="r15c1" class="gs"></td><td data-id="r15c2" class="sf"></td><td class="rk"><div><p data-id="r15c3" class="">1</p></div></td><td class="no"><div data-id="r15c4" class="no2">55</div></td><td data-id="r15c5" class="dr">KART 55</td><td data-id="r15c6" class="ib">27.493</td><td data-id="r15c7" class="ib">36.006</td><td data-id="r15c8" class="ib">22.485</td><td data-id="r15c9" class="tn">1:26.621</td><td data-id="r15c10" class="ib">1:25.984</td><td data-id="r15c11" class="in"></td><td data-id="r15c12" class="in"></td><td data-id="r15c13" class="in">6</td></tr></tbody>
 msg||
