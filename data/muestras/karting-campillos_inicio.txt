@@ -2022,3 +2022,15 @@ init|p| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#0000FF !important; color
 r12c2|in| ⏎ 
 r12c6|tb|27.917 ⏎ r12|*i1| ⏎ 
 dyn1|count|122743 ⏎ 
+dyn1|count|152873 ⏎ 
+r12c7|tb|36.663 ⏎ 
+r12|*i2| ⏎ 
+r12c1|gs| ⏎ 
+r12c2|su| ⏎ r12c3||1 ⏎ r12c8|tb|22.762 ⏎ r12c9|tb|1:27.342 ⏎ r12c10|ib|1:27.342 ⏎ r12c13|in|1 ⏎ r12|*|87342|27917 ⏎ 
+dyn1|count|182923 ⏎ 
+r12c2|in| ⏎ 
+r12c6|tb|27.713 ⏎ 
+r12c7|| ⏎ r12c8|| ⏎ r12|*i1|36663 ⏎ 
+dyn1|count|212983 ⏎ 
+dyn1|count|243004 ⏎ 
+r12c7|tn|36.855 ⏎ r12|*i2|22762 ⏎ 
