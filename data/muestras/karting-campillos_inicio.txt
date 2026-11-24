@@ -2231,3 +2231,6 @@ dyn1|count|632737 ⏎
 light|lf| ⏎ com||<p><b>18:07</b><span data-flag="chequered"></span>Llegada</p> ⏎ 
 dyn1|text| ⏎ 
 r14c7|ti|32.208 ⏎ 
+ ⏎ 
+r14c2|sf| ⏎ r14c6|ib|24.991 ⏎ r14c7|ib|32.498 ⏎ r14c8|ib|19.758 ⏎ 
+ ⏎ 
