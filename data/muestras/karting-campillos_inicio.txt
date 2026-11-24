@@ -1717,3 +1717,16 @@ dyn1|count|632426 ⏎
 light|lf| ⏎ 
 com||<p><b>11:25</b><span data-flag="chequered"></span>Llegada</p> ⏎ dyn1|text| ⏎ 
 r3c7|ti|40.636 ⏎ 
+ ⏎ 
+r6c2|sf| ⏎ r6c6|ib|36.913 ⏎ r6c7|ib|46.622 ⏎ r6c8|ib|28.804 ⏎ r7c2|sf| ⏎ r7c6|ib|37.897 ⏎ r7c7|ib|47.451 ⏎ r7c8|ib|28.691 ⏎ 
+r4c2|sf| ⏎ 
+r4c6|ib|33.994 ⏎ r4c7|ib|44.203 ⏎ r4c8|ib|26.652 ⏎ 
+r3c2|sf| ⏎ 
+r3c6|ib|31.540 ⏎ r3c7|ib|40.876 ⏎ r3c8|ib|25.412 ⏎ 
+r2c2|sf| ⏎ r2c6|ib|32.245 ⏎ r2c7|ib|42.203 ⏎ r2c8|ib|25.986 ⏎ r5c2|sf| ⏎ r5c6|ib|32.048 ⏎ r5c7|ib|42.764 ⏎ r5c8|ib|25.994 ⏎ 
+r1c2|sf| ⏎ r1c6|ib|1:05.9 ⏎ r1c7|ib|1:22.6 ⏎ r1c8|ib|49.110 ⏎ 
+r8c2|sf| ⏎ 
+r8c6|ib|36.154 ⏎ r8c7|ib|45.902 ⏎ r8c8|ib|29.085 ⏎ 
+init|p| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#0000FF !important; color:#FFFFFF !important; ⏎ css|no2|border-bottom-color:#FF0000 !important; color:#FFFFFF !important; ⏎ css|no3|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no4|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no5|border-bottom-color:#E67300 !important; color:#FFFFFF !important; ⏎ css|no8|border-bottom-color:#FFB062 !important; color:#000000 !important; ⏎ css|no9|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no10|border-bottom-color:#59FF83 !important; color:#000000 !important; ⏎ css|no6|border-bottom-color:#00FF00 !important; color:#000000 !important; ⏎ css|no7|border-bottom-color:#000000 !important; color:#FFFFFF !important; ⏎ css|pena1|color:#f00; font-size:11px; font-weight: bold; text-align:center; ⏎ effects||Mostrar Efectos ⏎ comments||Comentarios ⏎ title1|| ⏎ title2||Sesión 9 ⏎ dyn1|count|1473 ⏎ light|lg| ⏎ wth1|| ⏎ wth2|| ⏎ wth3|| ⏎ track||Karting Campillos ⏎ com|| ⏎ grid||<tbody><tr data-id="r0" class="head" data-pos="0"><td data-id="c1" data-type="grp" data-pr="6"></td><td data-id="c2" data-type="sta" data-pr="1"></td><td data-id="c3" data-type="rk" data-pr="1">Clasif.</td><td data-id="c4" data-type="no" data-pr="1">Kart</td><td data-id="c5" data-type="dr" data-pr="1" data-width="18" data-min="16">Piloto</td><td data-id="c6" data-type="s1" data-pr="3" data-width="10" data-min="6">S1</td><td data-id="c7" data-type="s2" data-pr="3" data-width="10" data-min="6">S2</td><td data-id="c8" data-type="s3" data-pr="3" data-width="12" data-min="6">S3</td><td data-id="c9" data-type="llp" data-pr="2" data-width="10" data-min="7">Última vuelta</td><td data-id="c10" data-type="blp" data-pr="1" data-width="10" data-min="7">Mejor vuelta</td><td data-id="c11" data-type="gap" data-pr="4" data-width="10" data-min="7">Gap</td><td data-id="c12" data-type="int" data-pr="5" data-width="10" data-min="7">Interv.</td><td data-id="c13" data-type="tlp" data-pr="5" data-width="6" data-min="4">Vueltas</td></tr></tbody> ⏎ msg|| ⏎ 
+dyn1|count|31490 ⏎ 
+dyn1|count|61635 ⏎ 
