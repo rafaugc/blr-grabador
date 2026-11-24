@@ -1999,3 +1999,9 @@ dyn1|count|13558055 ⏎
 dyn1|count|13588109 ⏎ 
 dyn1|count|13618139 ⏎ 
 dyn1|count|13648098 ⏎ 
+dyn1|count|13678220 ⏎ 
+dyn1|count|13708374 ⏎ 
+light|lf| ⏎ 
+com||<p><b>16:51</b><span data-flag="chequered"></span>Llegada</p> ⏎ dyn1|text| ⏎ 
+ ⏎ 
+ ⏎ 
