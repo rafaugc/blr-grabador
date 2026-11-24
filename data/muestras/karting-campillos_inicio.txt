@@ -2058,3 +2058,16 @@ dyn1|count|513503 ⏎
 r12c2|sr| ⏎ r12c8|tn|22.674 ⏎ r12c9|tn|1:26.607 ⏎ r12c13|in|5 ⏎ r12|*|86552|27618 ⏎ 
 r12c2|in| ⏎ 
 dyn1|count|543470 ⏎ 
+r12c6|tn|27.721 ⏎ 
+r12c7|| ⏎ r12c8|| ⏎ r12|*i1|36168 ⏎ 
+dyn1|count|573476 ⏎ 
+r12c7|tn|36.632 ⏎ r12|*i2|22654 ⏎ 
+dyn1|count|603580 ⏎ 
+r12c2|sr| ⏎ 
+r12c8|tn|22.652 ⏎ r12c9|tn|1:27.005 ⏎ r12c13|in|6 ⏎ r12|*|86576|27662 ⏎ 
+r12c2|in| ⏎ 
+dyn1|count|633633 ⏎ 
+light|lf| ⏎ 
+com||<p><b>17:14</b><span data-flag="chequered"></span>Llegada</p> ⏎ dyn1|text| ⏎ 
+r12c6|tn|27.843 ⏎ r12c7|| ⏎ r12c8|| ⏎ r12|*i1|36168 ⏎ 
+ ⏎ 
