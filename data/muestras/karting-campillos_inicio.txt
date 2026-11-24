@@ -2218,3 +2218,16 @@ r14c6|tn|25.024 ⏎
 r14c7|| ⏎ r14c8|| ⏎ r14|*i1|32434 ⏎ 
 dyn1|count|512467 ⏎ 
 r14c7|tb|32.218 ⏎ r14|*i2|19513 ⏎ 
+dyn1|count|542414 ⏎ 
+r14c2|sr| ⏎ 
+r14c8|tn|25.919 ⏎ r14c9|tn|1:23.161 ⏎ r14c13|in|6 ⏎ r14|*|77247|24991 ⏎ 
+r14c2|in| ⏎ 
+dyn1|count|572533 ⏎ 
+r14c6|tn|25.427 ⏎ 
+r14c7|| ⏎ r14c8|| ⏎ r14|*i1|32218 ⏎ 
+dyn1|count|602690 ⏎ 
+r14c7|tb|32.208 ⏎ r14|*i2|19636 ⏎ 
+dyn1|count|632737 ⏎ 
+light|lf| ⏎ com||<p><b>18:07</b><span data-flag="chequered"></span>Llegada</p> ⏎ 
+dyn1|text| ⏎ 
+r14c7|ti|32.208 ⏎ 
