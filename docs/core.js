@@ -338,6 +338,8 @@
       for (const d in D) { dEff[d] = 0; dSe[d] = F.td * refLap; }
       dN.forEach((d, i) => { dEff[d] = F.ud[i] * refLap; dSe[d] = F.dSd[i] * refLap; });
       sN.forEach((q, i) => { sEff[q] = Math.exp(F.ses[i] + mk) - ref[q]; });
+      // ritmo frente al nivel real de su sesión (el del modelo: descuenta peso de la categoría, estado de la pista y nivel del grupo)
+      stints.forEach(t => { t.adj = t.delta - sEff[t.session]; });
       sigma = F.s * refLap; model = { tauK: F.tk * refLap, tauD: F.td * refLap, topN: F.topN, pct: { kart: F.tk * 100, driver: F.td * 100, noise: F.s * 100 } };
     }
     if (opts.method !== 'model') {

@@ -34,7 +34,8 @@
     // ¿cuánto mejor fue ese piloto con este kart que con los demás?
     const vsSelf = d => {
       const v = (dmap[d] ? dmap[d].stints : []); const mine = v.filter(t => String(t.kart) === String(k.kart)), others = v.filter(t => String(t.kart) !== String(k.kart));
-      return mine.length && others.length ? mean(mine.map(t => t.delta)) - mean(others.map(t => t.delta)) : null;
+      const dv = t => t.adj != null ? t.adj : t.delta; // frente al nivel de la sesión según el modelo: así no engaña comparar categorías de peso distintas
+      return mine.length && others.length ? mean(mine.map(dv)) - mean(others.map(dv)) : null;
     };
     const rows = Object.values(by).sort((a, b) => a.best - b.best);
     const vrDriver = rows[0];

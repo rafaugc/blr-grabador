@@ -13,9 +13,9 @@
 <meta name="apple-mobile-web-app-title" content="KR Karts">
 <title>KR Karts · En directo</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-<script src="core.js?v=20261125a"></script>
-<script src="ingeniero.js?v=20261125a"></script>
-<script src="ingeniero-ui.js?v=20261125a"></script>
+<script src="core.js?v=20261125b"></script>
+<script src="ingeniero.js?v=20261125b"></script>
+<script src="ingeniero-ui.js?v=20261125b"></script>
 <style>
 :root{--bg:#0c0d10;--panel:#14161b;--panel2:#1b1e25;--line:#262a33;--text:#e9ebf0;--mute:#8a909c;--dim:#5d636e;--fast:#3ddc84;--good:#a6e36a;--slow:#ffa24c;--vslow:#ff5f5f;--purple:#b38cff;--accent:#ffd23f}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,system-ui,sans-serif}
@@ -450,6 +450,8 @@ const toMin = t => { const [h, m] = (t || '0:0').split(':'); return +h * 60 + +m
 let A = null;
 // "Solo clasificación y carrera": deja fuera libres, entrenos y sesiones sueltas ("Sesión 17", "10'"). Se recuerda por circuito.
 const isLibre = x => { const t = (x.title || x.group || '').trim(); return /libre|entren|pract|warm|essai/i.test(t) || /^(sesi[oó]n|session)\s*\d+$/i.test(t) || /^\d+\s*['′’]?$/.test(t); };
+// categoría de peso de una sesión, leída del título ("+85 Carrera 1", "Clasi +70 +90"): cada 10 kg son unas 3–4 décimas por vuelta
+const catOf = x => ((x.title || x.group || '').match(/\+\s?\d{2,3}\b/g) || []).map(t => t.replace(/\s/g, '')).join(' ');
 const compOn = () => !!(C && store.get('comp_' + C.slug, false));
 const selOff = x => excluded.has(sid(x)) || (compOn() && isLibre(x));
 function render() {
@@ -474,6 +476,10 @@ function renderSel(all) {
       ${order.map(x => `<span class="chipd ${selOff(x) ? '' : 'on'}" data-s="${esc(sid(x))}" title="${esc(x.title)} · ${x.stints.length} pilotos">${condOf(x).wet || condOf(x).mixed ? condIcon(condOf(x)) + ' ' : ''}${DAYS.size > 1 ? fmtD(x.date) + ' ' : ''}${esc(x.time)} ${esc((x.title || x.type).slice(0, 22))}${x.envivo ? ' ●' : ''}</span>`).join('')}
       <span class="mini">${on.length} de ${order.length} · toca una sesión para quitarla o añadirla</span>
     </div>
+    ${(() => { const cats = [...new Set(order.map(catOf).filter(Boolean))].sort(), onC = [...new Set(on.map(catOf).filter(Boolean))];
+      if (cats.length < 2) return '';
+      return `<div class="row" style="margin-top:6px"><b style="font-size:13px">Peso:</b>${cats.map(c => `<span class="chipd ${onC.length === 1 && onC[0] === c ? 'on' : ''}" data-cat="${esc(c)}">Solo ${esc(c)}</span>`).join('')}
+        ${onC.length > 1 ? `<span class="mini" style="white-space:normal">Mezclas categorías de peso (${onC.map(esc).join(', ')}). La <b>Ventaja</b> y el <b>Nivel</b> ya lo descuentan: cada sesión tiene su propio nivel y cada kart o piloto se mide contra los de su misma sesión. <b>Mejor vuelta</b> y <b>Mejor ritmo</b> son tiempos reales: compáralos solo dentro de una misma categoría.</span>` : ''}</div>`; })()}
     <div class="row" style="margin-top:6px">${(() => { const nw = on.filter(x => condOf(x).wet).length, nd = on.length - nw, used = filterCond(on, opts.cond).length;
       return `<span class="mini">☀️ ${nd} en seco · 💧 ${nw} en mojado${on.some(x => condOf(x).mixed) ? ' · ⛅/🌦 = la pista cambió durante la sesión (corregido)' : ''} · cuentan <b>${used}</b> (${{ auto: nw && nd ? 'Auto: solo las secas' : 'Auto', dry: 'solo seco', wet: 'solo mojado', all: 'todas' }[opts.cond]}) · el detalle de cada una está en la pestaña Sesiones</span>`; })()}
     </div>
@@ -488,6 +494,7 @@ function renderSel(all) {
     if (q === 'crono') order.filter(isRace).forEach(x => excluded.add(sid(x)));
     render();
   });
+  el.querySelectorAll('[data-cat]').forEach(b => b.onclick = () => { excluded.clear(); order.filter(x => catOf(x) !== b.dataset.cat).forEach(x => excluded.add(sid(x))); render(); });
   el.querySelectorAll('[data-comp]').forEach(b => b.onclick = () => { store.set('comp_' + C.slug, !compOn()); render(); });
   $('askC').onclick = () => askClaude(null);
 }
