@@ -113,10 +113,12 @@
 
   function pageRows(items) {
     const rows = [];
+    const hs = items.filter(i => i.ocr && i.height).map(i => i.height);
+    const tol = hs.length ? Math.max(2.4, median(hs) * 1.1) : 2.4;
     for (const it of items) {
       const s = (it.str || '').trim(); if (!s) continue;
       const x = it.transform[4], y = it.transform[5], w = it.width || 0;
-      let row = rows.find(r => Math.abs(r.y - y) < 2.4);
+      let row = rows.find(r => Math.abs(r.y - y) < tol);
       if (!row) { row = { y, items: [] }; rows.push(row); }
       row.items.push({ x, w, c: x + w / 2, s });
     }
@@ -127,7 +129,7 @@
 
   // Cabecera: "KARTED ALFA - CARRERA 1 - RACING        14/11/2026 - 12:18"
   function findHeader(rows) {
-    for (const r of rows.slice(0, 8)) {
+    for (const r of rows.slice(0, 16)) {
       if (FOOT_RE.test(r.text)) continue;
       const m = r.text.match(/^(.*?)\s*(\d{2})\/(\d{2})\/(\d{4})\s*-\s*(\d{1,2}):(\d{2})\s*$/);
       if (m && LETTERS.test(m[1])) return { raw: m[1].trim(), date: `${m[4]}-${m[3]}-${m[2]}`, time: `${m[5].padStart(2, '0')}:${m[6]}` };
@@ -136,8 +138,12 @@
   }
   const SES_WORD = /^(CRONOS?|CRONO\b|CARRERA|FINAL|SEMIFINAL|MANGA|HEAT|SPRINT|CLASIFICACI|QUALY|QUALI|ENTRENO|ENTRENAMIENTO|LIBRES?|PR[AÁ]CTICA|WARM|RESISTENCIA|SUPERPOLE|POLE|TANDA)/i;
   const CODE = [[/^Q\d?$/i, () => 'Clasificación'], [/^R(\d+)$/i, m => 'Carrera ' + m[1]], [/^(FP|P|L)(\d*)$/i, m => 'Libres' + (m[2] ? ' ' + m[2] : '')], [/^F$/i, () => 'Final']];
-  function splitTitle(raw) {
-    let parts = raw.split(/\s+-\s+/).map(p => p.trim()).filter(Boolean).filter(p => !/^RACING$/i.test(p));
+  function splitTitle(raw, ocr) {
+    raw = raw.replace(/\s+/g, ' ').replace(/\s?-\s?/g, ' - ');
+    if (ocr) raw = raw.replace(/^([A-Za-z]\d?)\s+(?!-)/, '$1 - ');
+    let parts = raw.split(/\s+-\s+/).map(p => p.trim()).filter(Boolean).filter(p => !/^RACING$/i.test(p))
+      .flatMap(p => { const m = p.match(/^(R\d{1,2}|Q\d?)\s+(.+)$/i); return m ? [m[1], m[2]] : [p]; });
+    if (ocr && parts.length > 1 && parts[0].length <= 2 && !CODE.some(([re]) => re.test(parts[0]))) parts[0] = 'Q';   // "Q" mal leída
     let type = '', rest = [];
     for (const p of parts) {
       const code = !type && CODE.find(([re]) => re.test(p));
@@ -164,7 +170,20 @@
   }
 
   // Columnas de una fila de cabecera: devuelve el centro de cada título
-  const hdr = (row, word) => row.items.filter(i => i.s.replace(/[.:]/g, '').toLowerCase() === word.toLowerCase());
+  function dist(a, b) {
+    let prev = Array.from({ length: b.length + 1 }, (_, k) => k);
+    for (let i = 1; i <= a.length; i++) { const cur = [i]; for (let k = 1; k <= b.length; k++) cur[k] = Math.min(prev[k] + 1, cur[k - 1] + 1, prev[k - 1] + (a[i - 1] === b[k - 1] ? 0 : 1)); prev = cur; }
+    return prev[b.length];
+  }
+  function lev1(a, b) { // ¿iguales o casi? (1 letra mal; 2 en palabras largas como "piloto")
+    if (a === b) return true; if (b.length < 4 || Math.abs(a.length - b.length) > 2) return false;
+    let prev = Array.from({ length: b.length + 1 }, (_, k) => k);
+    for (let i = 1; i <= a.length; i++) { const cur = [i]; for (let k = 1; k <= b.length; k++) cur[k] = Math.min(prev[k] + 1, cur[k - 1] + 1, prev[k - 1] + (a[i - 1] === b[k - 1] ? 0 : 1)); prev = cur; }
+    return prev[b.length] <= (b.length >= 6 ? 2 : 1);
+  }
+  const ALIAS = { kart: ['kan', 'karl', 'kar', 'kari'], clasif: ['clas', 'clasit', 'ciasif'] };
+  const hdr = (row, word) => { const w = word.toLowerCase(), al = ALIAS[w] || [];
+    return row.items.filter(i => { const t = deacc(i.s).replace(/[.:|,]/g, '').toLowerCase().trim(); return lev1(t, w) || al.includes(t); }); };
   const near = (items, c, tol) => items.filter(i => Math.abs(i.c - c) <= tol);
   const isInt = s => /^\d{1,3}$/.test(s);
   const nameOf = s => s.replace(new RegExp(TIME, 'g'), '').replace(/\s+/g, ' ').trim();
@@ -176,16 +195,20 @@
     for (const r of rows) {
       const cl = hdr(r, 'Clasif'), ka = hdr(r, 'Kart'), pi = hdr(r, 'Piloto');
       if (cl.length && ka.length && pi.length) {
-        blocks = cl.map((c, i) => ({ from: c.x - 8, to: cl[i + 1] ? cl[i + 1].x - 8 : 1e9, pos: c.c, kart: (ka.find(k => k.x > c.x - 2) || ka[i]).c, name: (pi.find(p => p.x > c.x - 2) || pi[i]).x }));
+        const mv = hdr(r, 'Mejor vuelta');
+        blocks = cl.map((c, i) => { const to = cl[i + 1] ? cl[i + 1].x - 8 : 1e9, b = mv.find(m => m.x > c.x && m.x < to);
+          return { from: c.x - 8, to, pos: c.c, kart: (ka.find(k => k.x > c.x - 2) || ka[i] || ka[0]).c, name: (pi.find(p => p.x > c.x - 2) || pi[i] || pi[0]).x, best: b ? b.c : null }; });
         continue;
       }
       if (!blocks) continue;
       if (/Hist[oó]rico|Lapchart|MEJORES/.test(r.text)) { blocks = null; continue; }
       for (const b of blocks) {
         const its = r.items.filter(i => i.x >= b.from && i.x < b.to);
-        const p = near(its, b.pos, 6).find(i => isInt(i.s)), k = near(its, b.kart, 7).find(i => isInt(i.s));
-        const n = its.find(i => Math.abs(i.x - b.name) < 6 && LETTERS.test(i.s));
-        if (p && k && n && +p.s > 0 && +p.s < 100) res[k.s] = { pos: +p.s, name: nameOf(n.s), kart: k.s };
+        const tl = its.some(i => i.ocr) ? 11 : 6;   // un escaneo no cuadra tan exacto
+        const p = near(its, b.pos, tl).find(i => isInt(i.s)), k = near(its, b.kart, tl + 1).find(i => isInt(i.s) && i !== p);
+        const n = its.find(i => Math.abs(i.x - b.name) < tl && LETTERS.test(i.s));
+        const bt = b.best != null ? near(its, b.best, 18).find(i => TIME_FULL.test(i.s)) : null;
+        if (p && k && n && +p.s > 0 && +p.s < 100) res[k.s] = { pos: +p.s, name: nameOf(n.s), kart: k.s, best: bt ? tsec(bt.s) : null };
       }
     }
     return res;
@@ -193,20 +216,28 @@
 
   // "Histórico de records": una fila por kart con sus vueltas (puede seguir en la fila siguiente)
   function readHistory(rows) {
+    // La tabla puede seguir en las páginas siguientes (con o sin títulos de columna): se sigue leyendo con la misma disposición.
     const out = []; let on = false, kartC = null, nameX = null, mediaC = null, cur = null;
+    const ocr = rows.some(r => r.items.some(i => i.ocr)), tk = ocr ? 12 : 8;
     for (const r of rows) {
+      if (hdr(r, 'Clasif').length) { on = false; cur = null; continue; }
       const ka = hdr(r, 'Kart'), pi = hdr(r, 'Piloto');
-      if (ka.length === 1 && pi.length === 1 && r.items.some(i => i.s === '1') && !hdr(r, 'Clasif').length) {
-        on = true; kartC = ka[0].c; nameX = pi[0].x; const me = hdr(r, 'Media')[0]; mediaC = me ? me.c : null; cur = null; continue;
+      const nums = r.items.filter(i => /^(\d|10)$/.test(i.s)).length;
+      if ((ka.length === 1 && pi.length === 1) || ((pi.length === 1 || (on && ka.length === 1)) && nums >= 3)) {
+        if (pi.length === 1) { nameX = pi[0].x; kartC = ka.length === 1 ? ka[0].c : (kartC != null ? kartC : nameX - 12); }
+        else kartC = ka[0].c;
+        on = true;
+        const me = rows.filter(o => Math.abs(o.y - r.y) < 9).flatMap(o => hdr(o, 'Media'))[0]; if (me) mediaC = me.c;
+        continue;
       }
-      if (!on) continue;
-      if (FOOT_RE.test(r.text) || hdr(r, 'Clasif').length) { on = false; cur = null; continue; }
-      const k = near(r.items, kartC, 8).find(i => isInt(i.s));
-      const nm = r.items.find(i => i.x > kartC && i.x < nameX + 40 && LETTERS.test(i.s));
+      if (!on || FOOT_RE.test(r.text)) continue;
+      const k = near(r.items, kartC, tk).find(i => isInt(i.s));
+      const nm = r.items.find(i => i.x > kartC - 4 && i.x < nameX + 40 && LETTERS.test(i.s) && i.s.replace(/[^A-Za-zÁÉÍÓÚÑÜÇáéíóúñüç]/g, '').length >= (ocr ? 5 : 2));
       const times = [];
-      r.items.forEach(i => { if (mediaC != null && Math.abs(i.c - mediaC) < 14) return; (i.s.match(new RegExp(TIME, 'g')) || []).forEach(t => times.push(tsec(t))); });
-      if (k && nm) { cur = { kart: k.s, name: nameOf(nm.s), laps: times }; out.push(cur); }
-      else if (cur && times.length && !k) cur.laps.push(...times);
+      r.items.forEach(i => { if (mediaC != null && Math.abs(i.c - mediaC) < 14) return; if (i.x < nameX + 30 && !TIME_FULL.test(i.s)) return; (i.s.match(new RegExp(TIME, 'g')) || []).forEach(t => times.push(tsec(t))); });
+      if (nm && (k || ocr)) { cur = { kart: k ? k.s : null, name: nameOf(nm.s), laps: times }; out.push(cur); }
+      else if (ocr && k && times.length >= 3) { cur = { kart: k.s, name: null, laps: times }; out.push(cur); }   // nombre ilegible: se saca de la clasificación
+      else if (cur && !k && (times.length >= 2 || (times.length && !ocr))) cur.laps.push(...times);
     }
     return out;
   }
@@ -245,27 +276,54 @@
     [...stints].sort((a, b) => { const A = key(a), B = key(b); return A[0] - B[0] || (A[1] || 0) - (B[1] || 0); }).forEach((t, i) => { if (t.pos == null) t.pos = i + 1; });
   }
 
-  // pages = [[items de pdf.js de la página 1], [página 2], ...]
-  function parsePdf(pages, fileLabel, circs) {
+  // pages = [[items de pdf.js de la página 1], [página 2], ...]   (opts.ocr = el texto viene de leer un escaneo)
+  function parsePdf(pages, fileLabel, circs, opts) {
+    opts = opts || {};
     const rowsP = pages.map(pageRows);
     const allRows = rowsP.flat();
     const text = allRows.map(r => r.text).join('\n');
     const warnings = [];
     const base = { sessions: [], warnings, scanned: false, kind: '', circuit: detectCircuit(text, circs) };
-    if (!allRows.length) return Object.assign(base, { scanned: true });
+    if (allRows.length < 5) return Object.assign(base, { scanned: true });
     // 1) formato "Resumen" de siempre
-    const lines = pages.map(it => linesFromItems(it)).flat();
-    const old = parseResumen(lines, fileLabel);
-    if (old.sessions.length) { old.sessions.forEach(s => { s.slug = base.circuit; }); return Object.assign(base, old, { kind: 'Resumen', circuit: base.circuit }); }
-    // 2) formatos con cabecera "NOMBRE - SESIÓN    dd/mm/aaaa - hh:mm"
-    const head = rowsP.map(findHeader).find(Boolean);
-    if (!head) return base;
-    const { group, type } = splitTitle(head.raw);
-    const sess = { circuit: '', slug: base.circuit, date: head.date, time: head.time, group, type, rawTitle: head.raw, source: fileLabel || 'PDF', stints: [] };
+    if (!opts.ocr) {
+      const lines = pages.map(it => linesFromItems(it)).flat();
+      const old = parseResumen(lines, fileLabel);
+      if (old.sessions.length) { old.sessions.forEach(s => { s.slug = base.circuit; }); return Object.assign(base, old, { kind: 'Resumen', circuit: base.circuit }); }
+    }
+    // 2) cada cabecera "NOMBRE - SESIÓN    dd/mm/aaaa - hh:mm" empieza una sesión; las páginas sin cabecera la continúan
+    const segs = [];
+    rowsP.forEach(rows => {
+      const h = findHeader(rows);
+      const last = segs[segs.length - 1];
+      if (h && (!last || last.head.raw !== h.raw || last.head.time !== h.time)) segs.push({ head: h, rows: [rows] });
+      else if (last) last.rows.push(rows);
+    });
+    const kinds = new Set();
+    for (const seg of segs) {
+      const r = parseSegment(seg.head, seg.rows, fileLabel, base.circuit, opts, warnings);
+      if (r.sess) base.sessions.push(r.sess);
+      if (r.kind) kinds.add(r.kind);
+    }
+    if (opts.ocr && base.sessions.length > 1) {   // nombres de grupo mal leídos: se usa el del resto de sesiones del mismo PDF si se parece
+      const cnt = {}; base.sessions.forEach(s => cnt[s.group] = (cnt[s.group] || 0) + 1);
+      const best = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a] || b.length - a.length)[0];
+      base.sessions.forEach(s => { if (s.group !== best && dist(s.group.toUpperCase(), best.toUpperCase()) <= Math.max(4, best.length * 0.45)) s.group = best; });
+    }
+    base.kind = [...kinds].join(', ') + (opts.ocr ? ' (escaneo)' : '');
+    return base;
+  }
+
+  function parseSegment(head, rowsP, fileLabel, slug, opts, warnings) {
+    const allRows = rowsP.flat(), text = allRows.map(r => r.text).join('\n');
+    const { group, type } = splitTitle(head.raw, opts.ocr);
+    const sess = { circuit: '', slug, date: head.date, time: head.time, group, type, rawTitle: head.raw, source: fileLabel || 'PDF', stints: [] };
+    if (opts.ocr) sess.ocr = true;
     const cls = readClassification(allRows);
     const byName = {}; Object.values(cls).forEach(c => byName[deacc(c.name).toUpperCase()] = c);
+    let kind = '';
     if (/An[aá]lisis de tiempos/i.test(text)) {
-      base.kind = 'Análisis de tiempos';
+      kind = 'Análisis de tiempos';
       for (const d of readAnalysis(rowsP)) {
         d.laps.sort((a, b) => a.n - b.n);
         let st = null;
@@ -275,51 +333,173 @@
         }
       }
     } else if (/Hist[oó]rico/i.test(text)) {
-      base.kind = 'Resultados con vueltas';
+      kind = 'Resultados con vueltas';
+      const nk = n => deacc(n).toUpperCase().replace(/[^A-Z]/g, '');
       for (const h of readHistory(allRows)) {
         if (!h.laps.length) continue;
+        const byN = () => h.name && Object.values(cls).find(c => nk(c.name).slice(0, 8) === nk(h.name).slice(0, 8));
+        if (opts.ocr && (h.kart == null || !cls[h.kart] || +h.kart > 99)) { const c = byN(); if (c && +c.kart <= 99) h.kart = c.kart; }   // kart mal leído
+        if (opts.ocr && h.kart != null && +h.kart > 99) h.kart = String(+h.kart % 100);       // "139" = un "1" de la columna de al lado + kart 39
+        if (h.kart != null && +h.kart < 1) continue;
+        if (h.kart == null) continue;
         const c = cls[h.kart];
-        sess.stints.push({ kart: +h.kart, driver: h.name, cls: '', pos: c ? c.pos : null, laps: h.laps.map(t => Math.round(t * 1000) / 1000) });
+        const laps = h.laps.map(t => Math.round(t * 1000) / 1000), same = sess.stints.find(t => t.kart === +h.kart);
+        if (same && opts.ocr) { same.laps.push(...laps); continue; }   // el mismo kart partido en dos filas
+        sess.stints.push({ kart: +h.kart, driver: h.name || (c ? c.name : ''), cls: '', pos: c ? c.pos : null, laps });
       }
     } else if (Object.keys(cls).length) {
-      base.kind = 'Resultados (sin vueltas)';
       sess.resultsOnly = cls;
-      base.sessions.push(sess);
-      return base;
+      return { sess, kind: 'Resultados (sin vueltas)' };
     }
     sess.stints.forEach(st => {
-      if (st.pos != null) return;
       const c = cls[st.kart] || byName[deacc(st.driver).toUpperCase()];
-      if (c) st.pos = c.pos;
+      if (c && st.pos == null) st.pos = c.pos;
+      if (c && c.best) st._best = c.best;
     });
+    if (opts.ocr) { cleanOcrLaps(sess, warnings); tidyOcr(sess, cls); }
+    sess.stints.forEach(st => delete st._best);
     sess.stints = sess.stints.filter(t => t.laps.length);
-    if (sess.stints.length) base.sessions.push(sess);
-    return base;
+    return { sess: sess.stints.length ? sess : null, kind };
+  }
+
+  // Vueltas leídas de un escaneo: fuera las imposibles (más rápidas que su mejor vuelta oficial, o absurdas)
+  function cleanOcrLaps(sess, warnings) {
+    const all = sess.stints.flatMap(t => t.laps), med = median(all);
+    let out = 0;
+    for (const t of sess.stints) {
+      const n = t.laps.length;
+      t.laps = t.laps.map(x => x > med * 1.3 && Math.abs(x - 60 - med) < med * 0.1 ? Math.round((x - 60) * 1000) / 1000 : x);
+      t.laps = t.laps.filter(x => x > med * 0.9 && x < med * 1.6 && !(t._best && x < t._best - 0.005));
+      out += n - t.laps.length;
+      if (t._best && t.laps.length && Math.abs(Math.min(...t.laps) - t._best) > 0.005) t.laps.push(t._best); // su mejor vuelta oficial no se pierde
+    }
+    if (out) warnings.push(`${sess.group} ${sess.type}: ${out} números del escaneo descartados por mal leídos`);
+  }
+
+  // Escaneo: nombres sin números, sin pilotos repetidos, posiciones imposibles fuera y sin vueltas de otro piloto pegadas
+  function tidyOcr(sess, cls) {
+    const nk = n => deacc(n).toUpperCase().replace(/[^A-Z]/g, '');
+    sess.stints.forEach(t => { t.driver = t.driver.replace(/[^A-Za-zÁÉÍÓÚÑÜÇáéíóúñüç .'-]+.*$/, '').replace(/\s+/g, ' ').replace(/(\s[A-Za-z]){1,2}$/, '').trim(); const c = cls[t.kart]; if ((!t.driver || t.driver.length < 4) && c) t.driver = c.name; });
+    const keep = [];
+    for (const t of [...sess.stints].sort((a, b) => (cls[b.kart] ? 1 : 0) - (cls[a.kart] ? 1 : 0) || b.laps.length - a.laps.length)) {
+      const twin = keep.find(o => nk(o.driver).length >= 6 && dist(nk(t.driver).slice(0, 12), nk(o.driver).slice(0, 12)) <= 2);
+      if (!twin) keep.push(t);
+    }
+    sess.stints = sess.stints.filter(t => keep.includes(t));
+    const n = sess.stints.length, used = new Set();
+    sess.stints.forEach(t => { if (t.pos != null && (t.pos > n + 2 || used.has(t.pos))) t.pos = null; if (t.pos != null) used.add(t.pos); });
+    const cap = Math.ceil(median(sess.stints.map(t => t.laps.length)) * 1.25) + 1;
+    sess.stints.forEach(t => { if (t.laps.length > cap) t.laps = t.laps.slice(0, cap); });
+  }
+
+  // ---------- escaneos: limpiar la imagen y convertir lo leído (OCR) en "texto de PDF" ----------
+  // Las casillas resaltadas (número blanco sobre negro) se invierten para que se puedan leer.
+  function cleanScan(px, w, h, bin) {   // bin = además pasar a blanco y negro según el fondo de alrededor (2ª lectura)
+    const N = w * h, g = new Uint8Array(N);
+    for (let i = 0; i < N; i++) g[i] = (px[i * 4] * 0.3 + px[i * 4 + 1] * 0.59 + px[i * 4 + 2] * 0.11) | 0;
+    const out = Uint8Array.from(g);   // fuera de las casillas resaltadas, la imagen tal cual (el lector ya umbraliza bien)
+    if (bin) {
+      const r = Math.max(8, Math.round(w / 90)), I = new Float64Array((w + 1) * (h + 1));
+      for (let y = 0; y < h; y++) { let row = 0; for (let x = 0; x < w; x++) { row += g[y * w + x]; I[(y + 1) * (w + 1) + x + 1] = I[y * (w + 1) + x + 1] + row; } }
+      for (let y = 0; y < h; y++) { const y0 = Math.max(0, y - r), y1 = Math.min(h, y + r + 1);
+        for (let x = 0; x < w; x++) { const x0 = Math.max(0, x - r), x1 = Math.min(w, x + r + 1);
+          const m = (I[y1 * (w + 1) + x1] - I[y0 * (w + 1) + x1] - I[y1 * (w + 1) + x0] + I[y0 * (w + 1) + x0]) / ((x1 - x0) * (y1 - y0));
+          out[y * w + x] = g[y * w + x] < Math.min(m * 0.8, 190) ? 0 : 255; } }
+    }
+    // casillas resaltadas: manchas oscuras grandes y macizas → número en negro sobre blanco, sin el marco
+    const lab = new Int32Array(N), stack = new Int32Array(N), minH = Math.round(w / 65), minW = Math.round(w / 30);
+    let id = 0;
+    for (let s0 = 0; s0 < N; s0++) {
+      if (lab[s0] || g[s0] >= 110) continue;
+      id++; let sp = 0, cnt = 0, x0 = w, x1 = 0, y0 = h, y1 = 0; stack[sp++] = s0; lab[s0] = id;
+      while (sp) { const p = stack[--sp], x = p % w, y = (p - x) / w; cnt++;
+        if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+        const nb = [x > 0 ? p - 1 : -1, x < w - 1 ? p + 1 : -1, y > 0 ? p - w : -1, y < h - 1 ? p + w : -1];
+        for (const q of nb) if (q >= 0 && !lab[q] && g[q] < 110) { lab[q] = id; stack[sp++] = q; } }
+      const bw = x1 - x0 + 1, bh = y1 - y0 + 1;
+      if (bw >= minW && bh >= minH && cnt / (bw * bh) > 0.65 && bh < h / 10) {
+        const e = Math.max(2, Math.round(bh / 12));
+        for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+          const k = y * w + x; out[k] = (x - x0 < e || x1 - x < e || y - y0 < e || y1 - y < e) ? 255 : g[k] > 135 ? 0 : 255; }
+      }
+    }
+    for (let i = 0; i < N; i++) { px[i * 4] = px[i * 4 + 1] = px[i * 4 + 2] = out[i]; px[i * 4 + 3] = 255; }
+    return px;
+  }
+  function normTok(s) {
+    s = s.replace(/[|‘’'"`©®«»“”_~]/g, '').trim();
+    if (/[0-9A-Za-z]/.test(s)) s = s.replace(/^[^0-9A-Za-zÁÉÍÓÚÑÜÇáéíóúñüç]+|[^0-9A-Za-zÁÉÍÓÚÑÜÇáéíóúñüç.]+$/g, '');
+    if (/^\d{1,2}:?\d{2}[.,:]\d{3}$/.test(s) || /^\d[.,:]\d{2}[.,:]\d{3}$/.test(s)) {
+      const d = s.replace(/\D/g, ''); return d.length === 5 ? d.slice(0, 2) + '.' + d.slice(2) : d.slice(0, d.length - 5) + ':' + d.slice(-5, -3) + '.' + d.slice(-3);
+    }
+    if (/^\d{5}$/.test(s)) return s.slice(0, 2) + '.' + s.slice(2);
+    if (/^\d{6}$/.test(s) && +s[1] <= 5) return s[0] + ':' + s.slice(1, 3) + '.' + s.slice(3);
+    if (/^\d{1,3}[.,:;]$/.test(s)) return s.slice(0, -1);
+    return s;
+  }
+  // words = [{text, bbox:{x0,y0,x1,y1}, line}] en píxeles de la imagen → elementos como los de pdf.js (en puntos)
+  function ocrToItems(words, imgW, imgH, pageW, pageH) {
+    const sx = pageW / imgW, sy = pageH / imgH, out = [];
+    const ws = words.map(w => ({ t: normTok(w.text || ''), b: w.bbox, line: w.line })).filter(w => w.t);
+    let cur = null;
+    const flush = () => { if (cur) out.push({ str: cur.t, transform: [1, 0, 0, 1, cur.b.x0 * sx, pageH - (cur.b.y0 + cur.b.y1) / 2 * sy], width: (cur.b.x1 - cur.b.x0) * sx, height: (cur.b.y1 - cur.b.y0) * sy, ocr: true }); cur = null; };
+    for (const w of ws) {
+      if (cur && cur.line === w.line) {
+        const hgt = Math.max(cur.b.y1 - cur.b.y0, w.b.y1 - w.b.y0), gap = w.b.x0 - cur.b.x1;
+        const head = t => /^(kart|kan|karl|piloto|plloto|clasif|clas|vueltas|vuela|gap|media|tiempos|temps|pits|interv|nivel|categor)/i.test(deacc(t));
+        const letters = LETTERS.test(cur.t) && /^[A-Za-zÁÉÍÓÚÑÜÇáéíóúñüç.]/.test(w.t) && gap < hgt * 1.1 && !head(cur.t) && !head(w.t);
+        const split = /^\d{2}$/.test(cur.t) && /^\d{3}$/.test(w.t) && gap < hgt * 0.9;   // "44 348" → 44.348
+        if (letters || split) { cur.t = split ? cur.t + '.' + w.t : cur.t + ' ' + w.t; cur.b = { x0: cur.b.x0, y0: Math.min(cur.b.y0, w.b.y0), x1: w.b.x1, y1: Math.max(cur.b.y1, w.b.y1) }; continue; }
+      }
+      flush(); cur = { t: w.t, b: Object.assign({}, w.b), line: w.line };
+    }
+    flush();
+    return out;
   }
 
   // Junta lo leído de varios PDF: el "Resultados" sin vueltas pone las posiciones al "Análisis" de la misma sesión;
   // si la misma sesión llega dos veces, se queda la que tenga más vueltas.
   function mergePdfSessions(list) {
-    const key = s => [s.date, s.time, deacc(s.rawTitle || (s.group + ' ' + s.type)).toUpperCase().replace(/\s+/g, ' ')].join('|');
-    const withLaps = {}, results = {}, orphan = [];
-    for (const s of list) {
-      const k = key(s);
-      if (s.resultsOnly) { results[k] = s; continue; }
-      const n = s2 => s2.stints.reduce((a, t) => a + t.laps.length, 0);
-      if (!withLaps[k] || n(s) > n(withLaps[k])) withLaps[k] = Object.assign({}, s, { slug: s.slug || (withLaps[k] && withLaps[k].slug) });
+    const nk = n => deacc(n).toUpperCase().replace(/[^A-Z]/g, '');
+    const groups = [];
+    for (const s of list) {   // misma sesión = mismo día y hora (y mismo circuito si se sabe)
+      let g = groups.find(g => g.date === s.date && g.time === s.time && (!g.slug || !s.slug || g.slug === s.slug));
+      if (!g) { g = { date: s.date, time: s.time, slug: s.slug, items: [] }; groups.push(g); }
+      if (!g.slug) g.slug = s.slug;
+      g.items.push(s);
     }
-    const out = Object.entries(withLaps).map(([k, s]) => {
-      const r = results[k];
-      if (r) {
-        const byName = {}; Object.values(r.resultsOnly).forEach(c => byName[deacc(c.name).toUpperCase()] = c);
-        s.stints.forEach(t => { const c = r.resultsOnly[t.kart] || byName[deacc(t.driver).toUpperCase()]; if (c) t.pos = c.pos; });
-        if (!s.slug) s.slug = r.slug;
-        s.source = s.source + ' + ' + r.source;
+    const out = [], orphan = [];
+    for (const g of groups) {
+      const laps = g.items.filter(s => !s.resultsOnly), res = g.items.filter(s => s.resultsOnly);
+      if (!laps.length) { orphan.push(...res); continue; }
+      laps.sort((a, b) => (a.ocr ? 1 : 0) - (b.ocr ? 1 : 0) || b.stints.reduce((x, t) => x + t.laps.length, 0) - a.stints.reduce((x, t) => x + t.laps.length, 0));
+      const m = Object.assign({}, laps[0], { slug: g.slug, stints: laps[0].stints.map(t => Object.assign({}, t)) });
+      const srcs = new Set([laps[0].source]);
+      const find = t => m.stints.find(o => o.kart === t.kart && (nk(o.driver) === nk(t.driver) || nk(o.driver).startsWith(nk(t.driver).slice(0, 6)) || nk(t.driver).startsWith(nk(o.driver).slice(0, 6))))
+        || m.stints.find(o => o.kart === t.kart && m.stints.filter(x => x.kart === t.kart).length === 1)
+        || (s0 => s0.ocr ? m.stints.find(o => nk(o.driver).length >= 6 && dist(nk(o.driver).slice(0, 12), nk(t.driver).slice(0, 12)) <= 2) : null)(curSrc);
+      let curSrc = null;
+      for (const s of laps.slice(1)) {          // juntar: cada piloto se queda con la lista de vueltas más completa
+        srcs.add(s.source); curSrc = s;
+        for (const t of s.stints) {
+          const o = find(t);
+          if (!o) { m.stints.push(Object.assign({}, t)); continue; }
+          if (t.laps.length > o.laps.length && !(s.ocr && !laps[0].ocr)) o.laps = t.laps;
+          if (o.pos == null) o.pos = t.pos;
+          if (!o.cls) o.cls = t.cls;
+          if (t.driver.length > o.driver.length && !s.ocr) o.driver = t.driver;
+        }
       }
-      if (s.stints.some(t => t.pos == null)) fallbackPos(s.stints, s.type);
-      return s;
-    });
-    Object.entries(results).forEach(([k, r]) => { if (!withLaps[k]) orphan.push(r); });
+      for (const r of res) {                    // las posiciones oficiales mandan
+        srcs.add(r.source);
+        const byName = {}; Object.values(r.resultsOnly).forEach(c => byName[nk(c.name)] = c);
+        m.stints.forEach(t => { const c = r.resultsOnly[t.kart] || byName[nk(t.driver)]; if (c) t.pos = c.pos; });
+      }
+      m.source = [...srcs].join(' + ').slice(0, 80);
+      m.ocr = laps.every(s => s.ocr);
+      if (m.stints.every(t => t.pos == null)) fallbackPos(m.stints, m.type);   // si se sabe alguna posición, no se inventan las demás
+      out.push(m);
+    }
     out.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
     return { sessions: out, onlyResults: orphan };
   }
@@ -589,5 +769,5 @@
     return { karts, drivers, stints, sigma, opts, refLap, model, priorUsed: Object.keys(result_prior).length };
   }
 
-  root.KartCore = { linesFromItems, parseResumen, parsePdf, mergePdfSessions, detectCircuit, analyze, dedupe, mixedFit, tsec, median, mean, bestN, trackCurve, tsOf, normName: d => String(d || '').replace(/^\d{1,3}\s*-\s*/, '').replace(/\s*\[\d{1,2}:\d{2}(?::\d{2})?\]\s*$/, '').trim().toUpperCase().replace(/[ÁÀÂÄ]/g, 'A').replace(/[ÉÈÊË]/g, 'E').replace(/[ÍÌÎÏ]/g, 'I').replace(/[ÓÒÔÖ]/g, 'O').replace(/[ÚÙÛÜ]/g, 'U').replace(/\s+/g, ' ') };
+  root.KartCore = { linesFromItems, parseResumen, parsePdf, mergePdfSessions, detectCircuit, cleanScan, ocrToItems, analyze, dedupe, mixedFit, tsec, median, mean, bestN, trackCurve, tsOf, normName: d => String(d || '').replace(/^\d{1,3}\s*-\s*/, '').replace(/\s*\[\d{1,2}:\d{2}(?::\d{2})?\]\s*$/, '').trim().toUpperCase().replace(/[ÁÀÂÄ]/g, 'A').replace(/[ÉÈÊË]/g, 'E').replace(/[ÍÌÎÏ]/g, 'I').replace(/[ÓÒÔÖ]/g, 'O').replace(/[ÚÙÛÜ]/g, 'U').replace(/\s+/g, ' ') };
 })(typeof window !== 'undefined' ? window : globalThis);

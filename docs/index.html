@@ -1812,7 +1812,39 @@ async function pdfPages(file) {
   const doc = await lib.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
   const pages = [];
   for (let p = 1; p <= doc.numPages; p++) pages.push((await (await doc.getPage(p)).getTextContent()).items);
+  pages.doc = doc;
   return pages;
+}
+// ---- escaneos / fotos: se leen con OCR (Tesseract) dentro del navegador ----
+let ocrWorker = null;
+function loadOcr() {
+  if (window.Tesseract) return Promise.resolve(window.Tesseract);
+  return new Promise((ok, ko) => { const sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@7/dist/tesseract.min.js'; sc.onload = () => ok(window.Tesseract); sc.onerror = () => ko(new Error('No se pudo cargar el lector de escaneos')); document.head.appendChild(sc); });
+}
+// Devuelve, para cada una de las dos lecturas (imagen tal cual y en blanco y negro), las páginas como "texto de PDF"
+async function ocrPages(doc, say) {
+  const T = await loadOcr();
+  if (!ocrWorker) { say('Preparando el lector de escaneos (la primera vez tarda un poco)…'); ocrWorker = await T.createWorker('spa', 1); await ocrWorker.setParameters({ tessedit_pageseg_mode: '6', preserve_interword_spaces: '1' }); }
+  const passes = [[], []];
+  for (let p = 1; p <= doc.numPages; p++) {
+    const page = await doc.getPage(p), v1 = page.getViewport({ scale: 1 }), vp = page.getViewport({ scale: 2600 / v1.width });
+    const cv = document.createElement('canvas'); cv.width = Math.round(vp.width); cv.height = Math.round(vp.height);
+    const cx = cv.getContext('2d', { willReadFrequently: true });
+    cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height);
+    await page.render({ canvasContext: cx, viewport: vp }).promise;
+    const orig = cx.getImageData(0, 0, cv.width, cv.height);
+    for (let k = 0; k < 2; k++) {
+      say(`Leyendo el escaneo: página ${p} de ${doc.numPages}${k ? ' (2ª lectura)' : ''}…`);
+      const img = new ImageData(new Uint8ClampedArray(orig.data), cv.width, cv.height);
+      KartCore.cleanScan(img.data, cv.width, cv.height, k === 1);
+      cx.putImageData(img, 0, 0);
+      const { data } = await ocrWorker.recognize(cv, {}, { blocks: true });
+      const words = []; let li = 0;
+      (data.blocks || []).forEach(b => b.paragraphs.forEach(pa => pa.lines.forEach(l => { li++; l.words.forEach(w => words.push({ text: w.text, bbox: w.bbox, line: li })); })));
+      passes[k].push(KartCore.ocrToItems(words, cv.width, cv.height, v1.width, v1.height));
+    }
+  }
+  return passes;
 }
 const toUpload = s => ({ slug: s.slug, circuit: s.circuit, date: s.date, time: s.time, group: s.group, type: s.type, source: s.source, stints: s.stints.map(t => ({ kart: t.kart, driver: t.driver, cls: t.cls, pos: t.pos, laps: t.laps })) });
 function uploadParts(list) {
@@ -1830,7 +1862,7 @@ function renderPdf() {
   const el = $('pdfOut'), loc = localPdf();
   const parts = uploadParts(loc);
   el.innerHTML = `<div class="card"><b>Importar PDF de Apex Timing</b>
-    <div class="mini" style="margin:6px 0 10px">El circuito, el día, la hora y el nombre de cada sesión se leen solos del PDF. Puedes corregirlos antes de añadir. Sirven los “Resumen”, los “Resultados” (con el histórico de vueltas) y el “Análisis de tiempos” (vuelta a vuelta); si subes también el “Resultados” de esa sesión, se usan sus posiciones.</div>
+    <div class="mini" style="margin:6px 0 10px">El circuito, el día, la hora y el nombre de cada sesión se leen solos del PDF. Puedes corregirlos antes de añadir. Si el PDF es un escaneo o una foto, se pasa a texto aquí mismo (tarda 1–2 minutos). Si subes varios PDF de la misma sesión, se juntan en una sola con todos los datos. Sirven los “Resumen”, los “Resultados” (con el histórico de vueltas) y el “Análisis de tiempos” (vuelta a vuelta); si subes también el “Resultados” de esa sesión, se usan sus posiciones.</div>
     <div class="drop" id="pDrop"><div style="font:600 18px 'Barlow Condensed'">Pulsa aquí (o arrastra) para elegir los PDF</div><div class="mini">Puedes elegir varios a la vez.</div></div>
     <input type="file" id="pFile" accept="application/pdf" multiple hidden>
     <div id="pPrev" style="margin-top:12px"></div></div>
@@ -1855,10 +1887,16 @@ async function readPdfs(files) {
   const logs = [], read = [];
   for (const f of files) {
     try {
-      const r = KartCore.parsePdf(await pdfPages(f), f.name, CIRCS);
-      if (r.scanned) logs.push(`<div class="mini err-t">${esc(f.name)}: es una foto o un escaneo (no lleva texto dentro), así que no se puede leer. Pide al circuito el PDF de Apex Timing o descárgalo de su web.</div>`);
-      else if (!r.sessions.length) logs.push(`<div class="mini err-t">${esc(f.name)}: no he encontrado sesiones con vueltas. ¿Es un PDF de Apex Timing?</div>`);
-      r.sessions.forEach(s => { if (!s.slug) s.slug = r.circuit; read.push(s); });
+      const pages = await pdfPages(f);
+      let rs = [KartCore.parsePdf(pages, f.name, CIRCS)];
+      if (rs[0].scanned) {   // foto o escaneo: pasarlo a texto
+        const say = t => { out.innerHTML = logs.join('') + `<div class="mini">${esc(f.name)}: ${esc(t)}</div>`; };
+        rs = (await ocrPages(pages.doc, say)).map(pp => KartCore.parsePdf(pp, f.name, CIRCS, { ocr: true }));
+        const circ = rs.map(r => r.circuit).find(Boolean);
+        rs.forEach(r => { r.circuit = r.circuit || circ; });
+        if (!rs.some(r => r.sessions.length)) logs.push(`<div class="mini err-t">${esc(f.name)}: es un escaneo y no he conseguido leer sesiones con vueltas. Prueba con una foto más recta y nítida, o con el PDF original de Apex Timing.</div>`);
+      } else if (!rs[0].sessions.length) logs.push(`<div class="mini err-t">${esc(f.name)}: no he encontrado sesiones con vueltas. ¿Es un PDF de Apex Timing?</div>`);
+      rs.forEach(r => r.sessions.forEach(s => { if (!s.slug) s.slug = r.circuit; read.push(s); }));
     } catch (e) { logs.push(`<div class="mini err-t">${esc(f.name)}: ${esc(e.message || e)}</div>`); }
   }
   const m = KartCore.mergePdfSessions(read);
@@ -1871,7 +1909,7 @@ async function readPdfs(files) {
     ${pdfPending.map((s, i) => `<tr><td class="l"><select data-pc="${i}">${opts(s.slug)}</select>${s._auto ? '' : '<div class="mini err-t">No lo he reconocido: elígelo</div>'}<input type="text" data-po="${i}" placeholder="Nombre del circuito" style="display:none;margin-top:4px"></td>
       <td class="l"><input type="date" data-pd="${i}" value="${esc(s.date)}"></td><td class="l"><input type="text" data-ph="${i}" value="${esc(s.time)}" size="5"></td>
       <td class="l"><input type="text" data-pg="${i}" value="${esc(s.group)}" size="14"></td><td class="l"><input type="text" data-pt="${i}" value="${esc(s.type)}" size="14"></td>
-      <td class="num">${s.stints.length}</td><td class="num">${s.stints.reduce((a, t) => a + t.laps.length, 0)}</td></tr>`).join('')}
+      <td class="num">${s.stints.length}</td><td class="num">${s.stints.reduce((a, t) => a + t.laps.length, 0)}${s.ocr ? '<div class="mini" title="Leída de un escaneo: puede faltar algún piloto o alguna vuelta">📷 escaneo</div>' : ''}</td></tr>`).join('')}
     </tbody></table></div><div class="row" style="margin-top:10px;gap:8px"><button class="btn" id="pSave">Añadir ${pdfPending.length} sesiones</button></div>` : '');
   out.querySelectorAll('[data-pc]').forEach(x => x.onchange = () => { out.querySelector(`[data-po="${x.dataset.pc}"]`).style.display = x.value === '__otro' ? '' : 'none'; });
   const sb = $('pSave'); if (sb) sb.onclick = savePdfs;
