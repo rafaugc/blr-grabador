@@ -13,9 +13,9 @@
 <meta name="apple-mobile-web-app-title" content="KR Karts">
 <title>KR Karts · En directo</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-<script src="core.js?v=20261125b"></script>
-<script src="ingeniero.js?v=20261125b"></script>
-<script src="ingeniero-ui.js?v=20261125b"></script>
+<script src="core.js?v=20261125c"></script>
+<script src="ingeniero.js?v=20261125c"></script>
+<script src="ingeniero-ui.js?v=20261125c"></script>
 <style>
 :root{--bg:#0c0d10;--panel:#14161b;--panel2:#1b1e25;--line:#262a33;--text:#e9ebf0;--mute:#8a909c;--dim:#5d636e;--fast:#3ddc84;--good:#a6e36a;--slow:#ffa24c;--vslow:#ff5f5f;--purple:#b38cff;--accent:#ffd23f}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,system-ui,sans-serif}
@@ -1131,10 +1131,10 @@ function renderPilotos(ses) {
       return `<tr class="click" data-d="${esc(d.driver)}"><td class="l mini">${i + 1}</td><td class="l"><b>${esc(d.driver)}</b></td><td class="l" data-v="${-d.skill}"><span class="kcls" style="color:${cc};border-color:${cc}55;background:${cc}14">${cn}</span></td>
         <td class="num ${d.skill < -0.15 ? 't-fast' : d.skill > 0.15 ? 't-slow' : ''}">${fmt(d.skill)} s</td><td class="num hm mini">${d.se.toFixed(2).replace('.', ',')}</td><td data-v="${d.n}"><span class="badge ${rc}">${rl}</span></td>
         ${G ? `<td class="num">${G[d.driver] ? scoreOf(G[d.driver].pct) : '–'}</td>` : ''}
-        <td class="num ${lc}">${opts.method === 'raw' ? '–' : fmt(d.kartLuck)}</td><td class="num" data-v="${d.avgPos ?? 999}">${d.avgPos != null ? d.avgPos.toFixed(1).replace('.', ',') : '–'}</td><td class="num hm">${d.n}</td><td class="l hm mini">${d.karts.join(', ')}</td>
+        <td class="num ${lc}">${opts.method === 'raw' ? '–' : fmt(d.kartLuck)}</td><td class="num" data-v="${d.avgPos ?? 999}">${d.avgPos != null ? d.avgPos.toFixed(1).replace('.', ',') : '–'}</td><td class="num hm">${d.n}</td><td class="l hm" data-v="${d.kartLuck}">${d.karts.slice().sort((x, y) => (keff[x] ?? 9) - (keff[y] ?? 9)).map(k => `<b class="${keff[k] != null ? tier(keff[k])[0] : ''}" style="font:700 16px 'Barlow Condensed';margin-right:7px" title="Kart ${esc(k)}: ${keff[k] != null ? fmt(keff[k]) + ' s' : 'sin datos'}">${esc(k)}</b>`).join('')}</td>
         <td class="num ${d.best === dayBest ? 'purple' : ''}">${fmtT(d.best)}</td><td class="num ${d.b3 === b3 ? 'purple' : ''}">${fmtT(d.b3)}</td><td class="num ${d.b5 === b5 ? 'purple' : ''}">${fmtT(d.b5)}</td></tr>`; }).join('')}
     </tbody></table>
-    <div class="mini" style="margin-top:6px">Clase por quintiles: Élite (20% más rápido), Muy rápido, Medio, Lento, Principiante · Fiabilidad: alta con 4+ tandas · ± = margen de error · Mejor ritmo 3v / 5v = su mejor media de 3 / 5 vueltas seguidas en una misma tanda, sin la vuelta de salida (en morado, el mejor de la lista) · En carreras por equipos sin nombres de piloto, el “piloto” es el equipo.</div></div>`;
+    <div class="mini" style="margin-top:6px">Clase por quintiles: Élite (20% más rápido), Muy rápido, Medio, Lento, Principiante · Karts: con el mismo color que tienen en “Karts del día” para estas mismas sesiones (verde = rápido, rojo = lento), ordenados del mejor al peor · Fiabilidad: alta con 4+ tandas · ± = margen de error · Mejor ritmo 3v / 5v = su mejor media de 3 / 5 vueltas seguidas en una misma tanda, sin la vuelta de salida (en morado, el mejor de la lista) · En carreras por equipos sin nombres de piloto, el “piloto” es el equipo.</div></div>`;
   $('pilAll').onclick = () => { DAYS = new Set(ALLDAYS); loadDays(); refreshRecorded(); };
   $('pilToday').onclick = () => { DAYS = new Set([today()]); loadDays(); refreshRecorded(); };
   $('pilMgr').onclick = () => openMgr();
