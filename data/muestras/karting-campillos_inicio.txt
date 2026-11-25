@@ -217,3 +217,12 @@ r81c2|sr| ⏎ r81c8|tb|20.822 ⏎ r81c9|tb|1:25.065 ⏎ r81c10|ib|1:25.065 ⏎ r
 dyn1|count|542427 ⏎ 
 r81c2|in| ⏎ 
 r81c6|tb|27.643 ⏎ 
+r81c7|| ⏎ r81c8|| ⏎ r81|*i1|35973 ⏎ 
+dyn1|count|572377 ⏎ 
+dyn1|count|602439 ⏎ 
+light|lf| ⏎ com||<p><b>17:44</b><span data-flag="chequered"></span>Llegada</p> ⏎ 
+dyn1|text| ⏎ 
+r81c7|tn|37.209 ⏎ r81|*i2|20822 ⏎ 
+r81c6|ti|27.643 ⏎ 
+ ⏎ 
+r81c2|sf| ⏎ r81c6|ib|28.270 ⏎ r81c7|ib|35.973 ⏎ r81c8|ib|20.822 ⏎ 
