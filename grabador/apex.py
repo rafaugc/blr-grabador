@@ -166,11 +166,21 @@ class ApexState:
         t1, t2 = self.session_title if any(self.session_title) else (self.title1, self.title2)
         title = ' - '.join(x for x in (t1, t2) if x)
         up = title.upper()
-        stype = 'Cronos' if re.search(r'CRONO|QUALI|CLASIF|ENTREN|PRACT|LIBRE|ESSAI|CHRONO', up) else 'Carrera'
+        stype = 'Cronos' if re.search(r'CRONO|QUALI|CLASIF|ENTREN|PRACT|LIBRE|ESSAI|CHRONO|PREVIA', up) else 'Carrera'
         stints = []
         for key, ls in by_row.items():
             rid = key[0] if isinstance(key, tuple) else key
             ls.sort(key=lambda x: x['ts'])
+            # vueltas repetidas: Apex a veces reenvía el mismo tiempo a mitad de vuelta o justo antes de la siguiente
+            limpio = []
+            for i, l in enumerate(ls):
+                if limpio and abs(l['t'] - limpio[-1]['t']) < 0.0005:
+                    if l['ts'] - limpio[-1]['ts'] < 0.85 * l['t']:
+                        continue
+                    if i + 1 < len(ls) and ls[i + 1]['ts'] - l['ts'] < 0.6 * ls[i + 1]['t']:
+                        continue
+                limpio.append(l)
+            ls = limpio
             teams = [l['team'] for l in ls if l.get('team')]
             drivers = [l['driver'] for l in ls if l['driver']]
             karts = [l['kart'] for l in ls if l['kart']]

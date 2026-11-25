@@ -13,9 +13,9 @@
 <meta name="apple-mobile-web-app-title" content="KR Karts">
 <title>KR Karts · En directo</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-<script src="core.js?v=20261123m"></script>
-<script src="ingeniero.js?v=20261123m"></script>
-<script src="ingeniero-ui.js?v=20261123m"></script>
+<script src="core.js?v=20261125a"></script>
+<script src="ingeniero.js?v=20261125a"></script>
+<script src="ingeniero-ui.js?v=20261125a"></script>
 <style>
 :root{--bg:#0c0d10;--panel:#14161b;--panel2:#1b1e25;--line:#262a33;--text:#e9ebf0;--mute:#8a909c;--dim:#5d636e;--fast:#3ddc84;--good:#a6e36a;--slow:#ffa24c;--vslow:#ff5f5f;--purple:#b38cff;--accent:#ffd23f}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,system-ui,sans-serif}
@@ -179,8 +179,8 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const fmt = (x, d = 2) => (x < 0 ? '−' : x > 0 ? '+' : '±') + Math.abs(x).toFixed(d).replace('.', ',');
 const fmtT = x => { if (!isFinite(x)) return '–'; const m = Math.floor(x / 60), s = x - m * 60; return (m ? m + ':' + (s < 10 ? '0' : '') : '') + s.toFixed(3).replace('.', ','); };
-const tier = e => e <= -0.15 ? ['t-fast', 'Rápido'] : e <= -0.05 ? ['t-good', 'Buen ritmo'] : e < 0.05 ? ['', 'Normal'] : e < 0.15 ? ['t-slow', 'Lento'] : ['t-vslow', 'Muy lento'];
-const conf = (se, dr) => se < 0.09 && dr >= 3 ? ['alta', 'Alta'] : se < 0.16 && dr >= 2 ? ['media', 'Media'] : ['baja', 'Baja'];
+const tier = e0 => { const e = e0 * 50 / ((A && A.refLap) || 50); return e <= -0.15 ? ['t-fast', 'Rápido'] : e <= -0.05 ? ['t-good', 'Buen ritmo'] : e < 0.05 ? ['', 'Normal'] : e < 0.15 ? ['t-slow', 'Lento'] : ['t-vslow', 'Muy lento']; };
+const conf = (se, dr, rel) => rel != null ? (rel >= 0.8 && dr >= 3 ? ['alta', 'Alta'] : rel >= 0.5 && dr >= 2 ? ['media', 'Media'] : ['baja', 'Baja']) : se < 0.09 && dr >= 3 ? ['alta', 'Alta'] : se < 0.16 && dr >= 2 ? ['media', 'Media'] : ['baja', 'Baja'];
 const store = { get(k, d) { try { const v = localStorage.getItem('blr_' + k); return v === null ? d : JSON.parse(v); } catch { return d; } }, set(k, v) { try { localStorage.setItem('blr_' + k, JSON.stringify(v)); } catch {} } };
 const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
 
@@ -448,11 +448,15 @@ const sid = s => s.id || (s.date + s.title + s.time);
 const toMin = t => { const [h, m] = (t || '0:0').split(':'); return +h * 60 + +m; };
 
 let A = null;
+// "Solo clasificación y carrera": deja fuera libres, entrenos y sesiones sueltas ("Sesión 17", "10'"). Se recuerda por circuito.
+const isLibre = x => { const t = (x.title || x.group || '').trim(); return /libre|entren|pract|warm|essai/i.test(t) || /^(sesi[oó]n|session)\s*\d+$/i.test(t) || /^\d+\s*['′’]?$/.test(t); };
+const compOn = () => !!(C && store.get('comp_' + C.slug, false));
+const selOff = x => excluded.has(sid(x)) || (compOn() && isLibre(x));
 function render() {
   if (!C) return;
   const all = sessionsToday();
   wxEnsureFor(all);
-  const ses = prepSes(filterCond(all.filter(x => !excluded.has(sid(x))), opts.cond));
+  const ses = prepSes(filterCond(all.filter(x => !selOff(x)), opts.cond));
   const prior = $('useScore').checked && opts.method === 'model' && SC.res ? SC.res.priorPct : null;
   A = ses.length ? KartCore.analyze(ses, { method: opts.method, noTraffic: opts.noTraffic, cutPct: opts.cutPct, dropFirst: true, priorPct: prior, evo: opts.evo }) : null;
   renderSel(all); renderRanking(ses); renderPilotos(ses); renderPista(); renderSes(all); renderIng();
@@ -460,14 +464,14 @@ function render() {
 function renderSel(all) {
   const el = $('selOut');
   const order = all.slice().sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
-  const on = order.filter(x => !excluded.has(sid(x)));
-  const isRace = x => (x.type || '') !== 'Cronos' && !/clasi|crono|quali|entren|libre|pract/i.test(x.title || '');
+  const on = order.filter(x => !selOff(x));
+  const isRace = x => (x.type || '') !== 'Cronos' && !/clasi|crono|quali|entren|libre|pract|previa/i.test(x.title || '');
   el.innerHTML = `<div class="card">
     <div class="row" style="margin-bottom:8px"><b style="font-size:13px">Días:</b>${ALLDAYS.slice(0, 30).map(d => `<span class="chipd ${DAYS.has(d) ? 'on' : ''}" data-d="${d}">${fmtD(d)}</span>`).join('')}</div>
     <div class="row"><b style="font-size:13px">Sesiones:</b>
-      <span class="chipd" data-q="all">Todas</span><span class="chipd" data-q="none">Ninguna</span><span class="chipd" data-q="race">Solo carreras</span><span class="chipd" data-q="crono">Solo cronos</span>
+      <span class="chipd" data-q="all">Todas</span><span class="chipd" data-q="none">Ninguna</span><span class="chipd" data-q="race">Solo carreras</span><span class="chipd" data-q="crono">Solo cronos</span><span class="chipd ${compOn() ? 'on' : ''}" data-comp title="Deja fuera libres, entrenos y sesiones sueltas. Se recuerda para este circuito.">Solo clasificación y carrera</span>
       <span style="width:1px;height:18px;background:var(--line)"></span>
-      ${order.map(x => `<span class="chipd ${excluded.has(sid(x)) ? '' : 'on'}" data-s="${esc(sid(x))}" title="${esc(x.title)} · ${x.stints.length} pilotos">${condOf(x).wet || condOf(x).mixed ? condIcon(condOf(x)) + ' ' : ''}${DAYS.size > 1 ? fmtD(x.date) + ' ' : ''}${esc(x.time)} ${esc((x.title || x.type).slice(0, 22))}${x.envivo ? ' ●' : ''}</span>`).join('')}
+      ${order.map(x => `<span class="chipd ${selOff(x) ? '' : 'on'}" data-s="${esc(sid(x))}" title="${esc(x.title)} · ${x.stints.length} pilotos">${condOf(x).wet || condOf(x).mixed ? condIcon(condOf(x)) + ' ' : ''}${DAYS.size > 1 ? fmtD(x.date) + ' ' : ''}${esc(x.time)} ${esc((x.title || x.type).slice(0, 22))}${x.envivo ? ' ●' : ''}</span>`).join('')}
       <span class="mini">${on.length} de ${order.length} · toca una sesión para quitarla o añadirla</span>
     </div>
     <div class="row" style="margin-top:6px">${(() => { const nw = on.filter(x => condOf(x).wet).length, nd = on.length - nw, used = filterCond(on, opts.cond).length;
@@ -484,6 +488,7 @@ function renderSel(all) {
     if (q === 'crono') order.filter(isRace).forEach(x => excluded.add(sid(x)));
     render();
   });
+  el.querySelectorAll('[data-comp]').forEach(b => b.onclick = () => { store.set('comp_' + C.slug, !compOn()); render(); });
   $('askC').onclick = () => askClaude(null);
 }
 function askClaude(s) {
@@ -495,7 +500,7 @@ function askClaude(s) {
     lines.push(`\nMejores pilotos (nivel con el kart descontado):`);
     A.drivers.slice(0, 15).forEach(d => lines.push(`${d.driver}: ${d.skill.toFixed(2)} s · karts ${d.karts.join(',')} · mejor ${fmtT(d.best)}`));
   }
-  const list = s ? [s] : sessionsToday().filter(x => !excluded.has(sid(x)));
+  const list = s ? [s] : sessionsToday().filter(x => !selOff(x));
   lines.push(`\nSesiones (${list.length}):`);
   list.forEach(x => {
     lines.push(`- ${x.date} ${x.time} ${x.title || x.type}: ${x.stints.length} pilotos`);
@@ -1113,13 +1118,13 @@ function renderPilotos(ses) {
       <span class="mini" data-ajst>${ajStatusTxt()}</span>
     </div>
     <div class="card scroll"><div class="mini" style="margin-bottom:6px">Nivel = segundos por vuelta frente al piloto medio <b>con el kart ya descontado</b> (negativo = más rápido). Mismo modelo que el ranking de karts: separa lo que es mérito del piloto, del kart y de las condiciones de cada sesión. Pulsa un piloto para ver sus tandas.${A.priorUsed ? ` <b>Usando el score general</b> para ${A.priorUsed} pilotos.` : ''}</div>
-    <table><thead><tr><th class="l">#</th><th class="l">Piloto</th><th class="l">Clase</th><th>Nivel</th><th class="hm">±</th><th>Fiabilidad</th>${G ? '<th title="Score general (pestaña Score pilotos)">Score</th>' : ''}<th title="Media de lo buenos que fueron sus karts (negativo = le tocaron buenos)">Suerte con el kart</th><th class="hm">Tandas</th><th class="l hm">Karts</th><th>Mejor vuelta</th><th title="Mejor media de 3 vueltas seguidas">Mejor ritmo 3v</th><th title="Mejor media de 5 vueltas seguidas">Mejor ritmo 5v</th></tr></thead><tbody>
+    <table><thead><tr><th class="l">#</th><th class="l">Piloto</th><th class="l">Clase</th><th>Nivel</th><th class="hm">±</th><th>Fiabilidad</th>${G ? '<th title="Score general (pestaña Score pilotos)">Score</th>' : ''}<th title="Media de lo buenos que fueron sus karts (negativo = le tocaron buenos)">Suerte con el kart</th><th title="Posición final media en las sesiones elegidas">Pos. media</th><th class="hm">Tandas</th><th class="l hm">Karts</th><th>Mejor vuelta</th><th title="Mejor media de 3 vueltas seguidas">Mejor ritmo 3v</th><th title="Mejor media de 5 vueltas seguidas">Mejor ritmo 5v</th></tr></thead><tbody>
     ${all.map((d, i) => { const [cn, cc] = DCLS[Math.min(4, Math.floor((all.length > 1 ? i / (all.length - 1) : 0.5) * 5))]; const [rc, rl] = rel(d);
       const lc = d.kartLuck <= -0.08 ? 't-fast' : d.kartLuck >= 0.08 ? 't-slow' : '';
       return `<tr class="click" data-d="${esc(d.driver)}"><td class="l mini">${i + 1}</td><td class="l"><b>${esc(d.driver)}</b></td><td class="l" data-v="${-d.skill}"><span class="kcls" style="color:${cc};border-color:${cc}55;background:${cc}14">${cn}</span></td>
         <td class="num ${d.skill < -0.15 ? 't-fast' : d.skill > 0.15 ? 't-slow' : ''}">${fmt(d.skill)} s</td><td class="num hm mini">${d.se.toFixed(2).replace('.', ',')}</td><td data-v="${d.n}"><span class="badge ${rc}">${rl}</span></td>
         ${G ? `<td class="num">${G[d.driver] ? scoreOf(G[d.driver].pct) : '–'}</td>` : ''}
-        <td class="num ${lc}">${opts.method === 'raw' ? '–' : fmt(d.kartLuck)}</td><td class="num hm">${d.n}</td><td class="l hm mini">${d.karts.join(', ')}</td>
+        <td class="num ${lc}">${opts.method === 'raw' ? '–' : fmt(d.kartLuck)}</td><td class="num" data-v="${d.avgPos ?? 999}">${d.avgPos != null ? d.avgPos.toFixed(1).replace('.', ',') : '–'}</td><td class="num hm">${d.n}</td><td class="l hm mini">${d.karts.join(', ')}</td>
         <td class="num ${d.best === dayBest ? 'purple' : ''}">${fmtT(d.best)}</td><td class="num ${d.b3 === b3 ? 'purple' : ''}">${fmtT(d.b3)}</td><td class="num ${d.b5 === b5 ? 'purple' : ''}">${fmtT(d.b5)}</td></tr>`; }).join('')}
     </tbody></table>
     <div class="mini" style="margin-top:6px">Clase por quintiles: Élite (20% más rápido), Muy rápido, Medio, Lento, Principiante · Fiabilidad: alta con 4+ tandas · ± = margen de error · Mejor ritmo 3v / 5v = su mejor media de 3 / 5 vueltas seguidas en una misma tanda, sin la vuelta de salida (en morado, el mejor de la lista) · En carreras por equipos sin nombres de piloto, el “piloto” es el equipo.</div></div>`;
@@ -1138,7 +1143,7 @@ function renderPilotos(ses) {
       <div class="mstats"><div><span>Mejor vuelta</span><b class="num purple">${fmtT(d.best)}</b></div><div><span>Mejor ritmo 3v</span><b class="num">${fmtT(d.b3)}</b></div><div><span>Mejor ritmo 5v</span><b class="num">${fmtT(d.b5)}</b></div></div>
       <div class="scroll"><table><thead><tr><th class="l">Sesión</th><th style="text-align:center">Kart</th><th>Calidad del kart</th><th>Ritmo</th><th>Ritmo 3v</th><th>Ritmo 5v</th><th>Vs. media sesión</th><th>Mejor vuelta</th><th>Pos.</th></tr></thead><tbody>
       ${rows.map(t => { const ke = keff[t.kart]; const [c] = tier(ke ?? 0); return `<tr><td class="l">${esc(sl(t.session))}</td><td class="k ${c}">${esc(t.kart)}</td><td class="num ${c}">${ke == null ? '–' : fmt(ke)}</td><td class="num">${fmtT(t.pace)}</td><td class="num">${fmtT(t.b3)}</td><td class="num">${fmtT(t.b5)}</td><td class="num">${fmt(t.delta)}</td><td class="num purple">${fmtT(t.best)}</td><td class="num">${t.pos ?? ''}</td></tr>`; }).join('')}
-      </tbody></table></div><div class="mini" style="margin-top:6px">“Ritmo” = media de sus 5 mejores vueltas limpias de la tanda (la que usa el modelo). “Ritmo 3v / 5v” = mejor media de 3 / 5 vueltas seguidas. “Vs. media sesión” = lo que fue más rápido (−) o lento (+) que la media de esa sesión, sin descontar el kart.</div>`;
+      </tbody></table></div><div class="mini" style="margin-top:6px">“Ritmo” = media de sus 3 mejores vueltas limpias de la tanda (la que usa el modelo). “Ritmo 3v / 5v” = mejor media de 3 / 5 vueltas seguidas. “Vs. media sesión” = lo que fue más rápido (−) o lento (+) que la media de esa sesión, sin descontar el kart.</div>`;
     $('kmodal').hidden = false;
     $('fJoin').onclick = () => openMgr(d.driver);
     $('fOut').onclick = () => { if (!confirm(`¿Quitar ${d.driver} de la comparativa? Sus vueltas dejan de contar en los rankings (puedes recuperarlo luego en “Juntar / quitar pilotos”).`)) return; admRemove([d.driver]); $('kmodal').hidden = true; };
@@ -1272,24 +1277,31 @@ function renderRanking(ses) {
   const el = $('rankOut');
   if (opts.method === 'driver' && A && !A.karts.length) { el.innerHTML = `<div class="card empty">"Vs. su media" compara a cada piloto consigo mismo con karts distintos, y en esta selección <b>ningún piloto ha llevado más de un kart</b>. Usa "Modelo", o añade días en los que hayan repetido pilotos.</div>`; return; }
   if (!A || !A.karts.length) { el.innerHTML = `<div class="card empty">No hay vueltas en la selección (${daysLabel()}) en ${esc(C.nombre)}. En cuanto ruede alguna sesión aparecerá aquí.</div>`; return; }
-  const ks = A.karts, rel = ks.filter(k => conf(k.se, k.drivers)[0] !== 'baja');
+  const ks = A.karts, rel = ks.filter(k => conf(k.se, k.drivers, k.rel)[0] !== 'baja');
   const dayBest = Math.min(...ks.map(k => k.best));
   const kb3 = Math.min(...ks.map(k => k.b3 ?? Infinity)), kb5 = Math.min(...ks.map(k => k.b5 ?? Infinity));
-  const pool = rel.length >= 3 ? rel : ks, best = pool.slice(0, 3), worst = pool.slice(-3).reverse().filter(k => !best.includes(k));
-  const bk = k => { const [c] = tier(k.effect); return `<div class="bk"><b class="${c}">${k.kart}</b><span class="num ${c}">${fmt(k.effect)} s</span></div>`; };
-  el.innerHTML = `<div class="summary"><div class="card"><h4>Pide estos karts</h4><div class="bigk">${best.map(bk).join('')}</div></div>
-    <div class="card"><h4>Evita estos karts</h4><div class="bigk">${worst.map(bk).join('')}</div></div></div>
+  const hasP = opts.method === 'model' && A.model && ks.some(k => k.pTop != null), topN = hasP ? A.model.topN : 5;
+  const pct = v => Math.round(v * 100) + ' %';
+  const pool = rel.length >= 3 ? rel : ks;
+  // con el modelo: se recomiendan los karts con más probabilidad de estar entre los mejores (y se evitan los que más tienen de estar entre los peores)
+  const best = hasP ? ks.slice().sort((a, b) => b.pTop - a.pTop || a.effect - b.effect).slice(0, 3) : pool.slice(0, 3);
+  const worst = (hasP ? ks.slice().sort((a, b) => b.pBot - a.pBot || b.effect - a.effect).slice(0, 3) : pool.slice(-3).reverse()).filter(k => !best.includes(k));
+  const bk = (k, bad) => { const [c] = tier(k.effect); return `<div class="bk"><b class="${c}">${k.kart}</b><span class="num ${c}">${fmt(k.effect)} s</span>${hasP ? `<span class="mini" style="display:block">${bad ? topN + ' peores' : 'top ' + topN}: ${pct(bad ? k.pBot : k.pTop)}</span>` : ''}</div>`; };
+  const weak = hasP && KartCore.mean(ks.map(k => k.rel ?? 0)) < 0.5;
+  el.innerHTML = `<div class="summary"><div class="card"><h4>Pide estos karts</h4><div class="bigk">${best.map(k => bk(k)).join('')}</div></div>
+    <div class="card"><h4>Evita estos karts</h4><div class="bigk">${worst.map(k => bk(k, true)).join('')}</div></div></div>
+  ${weak ? `<div class="card" style="border-color:#4a3520"><b style="color:var(--slow)">Ranking orientativo.</b> <span class="mini">Con estas sesiones aún no se puede separar bien el kart del piloto (pocos pilotos distintos por kart, o pilotos que no cambian de kart). Los porcentajes ya lo tienen en cuenta: fíate solo de los altos.</span></div>` : ''}
   ${spreadBox(ks)}
   <div class="card scroll"><div class="mini" style="margin-bottom:6px">${daysLabel()} · ${ses.length} sesiones · ${A.stints.length} tandas. Segundos por vuelta frente a un kart medio (negativo = más rápido).</div>
-  <table><thead><tr><th class="l">#</th><th style="text-align:center">Kart</th><th class="l">Clase</th><th>Ventaja</th><th class="hm">±</th><th>Fiabilidad</th><th class="hm">Tandas</th><th class="hm">Pilotos</th><th>Mejor vuelta</th><th title="Mejor media de 3 vueltas seguidas">Mejor ritmo 3v</th><th title="Mejor media de 5 vueltas seguidas">Mejor ritmo 5v</th><th class="l hm">Lo llevaron</th></tr></thead><tbody>
-  ${ks.map((k, i) => { const [c] = tier(k.effect), [cc, cl] = conf(k.se, k.drivers);
+  <table><thead><tr><th class="l">#</th><th style="text-align:center">Kart</th><th class="l">Clase</th><th>Ventaja</th>${hasP ? `<th title="Probabilidad de que este kart esté de verdad entre los ${topN} mejores, contando el margen de error">Top ${topN}</th>` : ''}<th class="hm">±</th><th>Fiabilidad</th><th class="hm">Tandas</th><th class="hm">Pilotos</th><th>Mejor vuelta</th><th title="Mejor media de 3 vueltas seguidas">Mejor ritmo 3v</th><th title="Mejor media de 5 vueltas seguidas">Mejor ritmo 5v</th><th class="l hm">Lo llevaron</th></tr></thead><tbody>
+  ${ks.map((k, i) => { const [c] = tier(k.effect), [cc, cl] = conf(k.se, k.drivers, k.rel);
     const TC = { 't-fast': '#3ddc84', 't-good': '#a6e36a', '': '#c9cdd6', 't-slow': '#ffa24c', 't-vslow': '#ff5f5f' };
     k.qcls = i < 2 && ks.length > 4 ? { n: '✈ Avión', c: '#4cc3ff' } : i >= ks.length - 2 && ks.length > 4 ? { n: 'Cepo', c: '#ff5f5f' } : { n: tier(k.effect)[1], c: TC[tier(k.effect)[0]] || '#c9cdd6' };
     const vd = (k.stints.find(t => t.best === k.best) || {}).driver, others = k.luckyDrivers.filter(d => d !== vd);
-    return `<tr class="click" data-k="${esc(k.kart)}"><td class="l mini">${i + 1}</td><td class="k ${c}">${k.kart}</td><td class="l" data-v="${-k.effect}">${IngUI.badge(k.qcls)}</td><td class="num ${c}">${fmt(k.effect)} s</td><td class="num hm mini">${k.se.toFixed(2).replace('.', ',')}</td>
+    return `<tr class="click" data-k="${esc(k.kart)}"><td class="l mini">${i + 1}</td><td class="k ${c}">${k.kart}</td><td class="l" data-v="${-k.effect}">${IngUI.badge(k.qcls)}</td><td class="num ${c}">${fmt(k.effect)} s</td>${hasP ? `<td class="num" data-v="${k.pTop}"><b class="${k.pTop >= 0.7 ? 't-fast' : k.pTop >= 0.3 ? 't-good' : ''}" style="${k.pTop < 0.05 ? 'color:var(--dim);font-weight:400' : ''}">${pct(k.pTop)}</b></td>` : ''}<td class="num hm mini">${k.se.toFixed(2).replace('.', ',')}</td>
     <td data-v="${-k.se}"><span class="badge ${cc}">${cl}</span></td><td class="num hm">${k.n}</td><td class="num hm">${k.drivers}</td><td class="num ${k.best === dayBest ? 'purple' : ''}">${fmtT(k.best)}</td><td class="num ${k.b3 != null && k.b3 === kb3 ? 'purple' : ''}">${fmtT(k.b3)}</td><td class="num ${k.b5 != null && k.b5 === kb5 ? 'purple' : ''}">${fmtT(k.b5)}</td><td class="l hm mini" style="max-width:260px;overflow:hidden;text-overflow:ellipsis"><span class="purple">${esc(vd || '')}</span>${others.length ? ', ' + esc(others.join(', ')) : ''}</td></tr>`; }).join('')}
   </tbody></table>
-  <div class="mini" style="margin-top:6px"><span class="purple">Morado</span>: en “Mejor vuelta” y “Mejor ritmo” solo el mejor del día; en “Lo llevaron”, quien hizo la VR con ese kart · Clase: los 2 mejores son ✈ Avión y los 2 peores Cepo; el resto según su ventaja (Rápido ≤ −0,15 · Buen ritmo · Normal ±0,05 · Lento · Muy lento ≥ +0,15) · Mejor ritmo 3v / 5v = la mejor media de 3 / 5 vueltas seguidas que ha hecho alguien con ese kart (sin la vuelta de salida) · Pulsa un kart para ver el detalle.</div></div>`;
+  <div class="mini" style="margin-top:6px"><span class="purple">Morado</span>: en “Mejor vuelta” y “Mejor ritmo” solo el mejor del día; en “Lo llevaron”, quien hizo la VR con ese kart · Clase: los 2 mejores son ✈ Avión y los 2 peores Cepo; el resto según su ventaja (Rápido ≤ −0,3 % de la vuelta · Buen ritmo · Normal ±0,1 % · Lento · Muy lento ≥ +0,3 %) ·${hasP ? ` <b>Top ${topN}</b> = probabilidad de que el kart esté de verdad entre los ${topN} mejores · <b>Fiabilidad</b>: alta si lo que se ve es sobre todo kart y no margen de error (3+ pilotos distintos) · Este circuito, con estas sesiones: los karts se diferencian ${A.model.tauK.toFixed(2).replace('.', ',')} s por vuelta y los pilotos ${A.model.tauD.toFixed(2).replace('.', ',')} s (aprendido de los datos) ·` : ''} Mejor ritmo 3v / 5v = la mejor media de 3 / 5 vueltas seguidas que ha hecho alguien con ese kart (sin la vuelta de salida) · Pulsa un kart para ver el detalle.</div></div>`;
   el.querySelectorAll('tr[data-sp]').forEach(tr => tr.onclick = () => { spreadSel = tr.dataset.sp; store.set('spreadSel', spreadSel); renderRanking(ses); const d = el.querySelector('details'); if (d) d.open = true; });
   makeSortable(el.querySelector('.card.scroll table'), 'karts');
   el.querySelectorAll('tr[data-k]').forEach(tr => tr.onclick = () => {
