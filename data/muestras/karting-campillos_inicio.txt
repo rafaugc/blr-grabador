@@ -279,3 +279,15 @@ dyn1|count|511740 ⏎
 r81c2|in| ⏎ 
 r81c6|tb|26.675 ⏎ r81c7|| ⏎ r81c8|| ⏎ r81|*i1|34095 ⏎ 
 dyn1|count|541762 ⏎ 
+r81c7|tn|34.107 ⏎ r81|*i2|20697 ⏎ 
+dyn1|count|571795 ⏎ 
+r81c2|sr| ⏎ r81c8|tb|20.218 ⏎ r81c9|tb|1:21.000 ⏎ r81c10|ib|1:21.000 ⏎ r81c13|in|6 ⏎ r81|*|81000|26675 ⏎ 
+r81c2|in| ⏎ 
+dyn1|count|601905 ⏎ 
+r81c6|tb|26.527 ⏎ 
+r81c7|| ⏎ r81c8|| ⏎ r81|*i1|34101 ⏎ 
+dyn1|count|631974 ⏎ 
+r81c7|tn|38.150 ⏎ r81|*i2|20218 ⏎ 
+dyn1|count|662056 ⏎ 
+light|lf| ⏎ com||<p><b>18:04</b><span data-flag="chequered"></span>Llegada</p> ⏎ dyn1|text| ⏎ 
+r81c6|ti|26.527 ⏎ 
