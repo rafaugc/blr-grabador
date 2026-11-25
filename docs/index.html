@@ -771,11 +771,19 @@ function condOf(s) {
   if (wet == null && com) { wet = true; src = 'apex'; }
   const wx = wxOf(s, slug);
   if (wx) why.push(wx.during >= 0.2 ? `Parte meteorológico: lluvia (${wx.during.toFixed(1).replace('.', ',')} mm/h)` : wx.before >= 1 ? `Parte meteorológico: llovió ${wx.before.toFixed(1).replace('.', ',')} mm en las 3 h anteriores (pista húmeda)` : 'Parte meteorológico: sin lluvia');
-  if (wet == null && wx && (wx.during >= 0.2 || wx.before >= 1)) { wet = true; src = 'meteo'; }
   const r = paceRatio(s, slug);
   if (r != null && r >= 1.06) why.push(`Los mismos pilotos fueron un ${((r - 1) * 100).toFixed(0)}% más lentos que en sus otras sesiones aquí`);
-  if (wet == null && r != null && r >= 1.06 && !(wx && wx.during < 0.05 && wx.before < 0.3) && !comD) { wet = true; src = 'ritmo'; }
   const cv = curveOf(s);
+  // El parte es un modelo de una zona de varios km, no un pluviómetro en la pista: la lluvia floja solo cuenta si los tiempos lo confirman
+  if (wet == null && wx && (wx.during >= 0.2 || wx.before >= 1)) {
+    const heavy = wx.during >= 1 || wx.before >= 3;
+    const slower = (r != null && r >= 1.03) || (cv && cv.apply && cv.trend >= 0.02);
+    const noData = r == null && !(cv && cv.apply);
+    if (heavy || slower) { wet = true; src = 'meteo'; }
+    else if (noData && (wx.during >= 0.5 || wx.before >= 2)) { wet = true; src = 'ritmo'; why.push('Sin otras sesiones con las que comparar los tiempos: mojado probable'); }
+    else why.push(`El parte da lluvia floja, pero los tiempos fueron normales${r != null ? ` (${r >= 1 ? '+' : ''}${((r - 1) * 100).toFixed(1).replace('.', ',')}% respecto a sus otras sesiones)` : ''}: cuenta como seco`);
+  }
+  if (wet == null && r != null && r >= 1.06 && !(wx && wx.during < 0.05 && wx.before < 0.3) && !comD) { wet = true; src = 'ritmo'; }
   if (cv && cv.apply) why.push(`La pista cambió un ${(cv.amp * 100).toFixed(1).replace('.', ',')}% durante la sesión${cv.trend >= 0.02 ? ' (cada vez más lenta: ¿empezó a llover?)' : cv.trend <= -0.02 ? ' (cada vez más rápida: ¿se secó o cogió goma?)' : ''} — corregido en los cálculos`);
   const mixed = !!(cv && cv.apply && Math.abs(cv.trend) >= 0.03);
   return { wet: !!wet, mixed, src: src || (wx ? 'meteo' : r != null ? 'ritmo' : ''), why, wx, ratio: r, curve: cv };
