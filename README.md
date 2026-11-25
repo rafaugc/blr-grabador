@@ -9,7 +9,7 @@ Graba automáticamente los tiempos en directo de los circuitos que usan **Apex T
 - Todo lo recibido se guarda además "en bruto" 30 días, por si hay que volver a procesarlo.
 
 ## Circuitos
-La lista está en `circuitos.json`. Se cambia desde la pestaña **Circuitos** de la página: la página abre una petición (issue) que `.github/workflows/peticiones.yml` atiende sola (solo las del dueño del repositorio). Las sesiones de los PDF "Resumen" de Apex se suben igual desde la pestaña **Importar PDF** y se guardan en `data/sesiones/`.
+La lista está en `circuitos.json`. Se cambia desde la pestaña **Circuitos** de la página: la página abre una petición (issue) que `.github/workflows/peticiones.yml` atiende sola (solo las del dueño del repositorio). Las sesiones de los PDF de Apex ("Resumen", "Resultados" con histórico de vueltas y "Análisis de tiempos") se suben igual desde la pestaña **Importar PDF**, que lee sola el circuito, el día y el nombre de cada sesión, y se guardan en `data/sesiones/`.
 
 ## Grabar a mano
 Pestaña **Actions** → **Grabar circuitos** → **Run workflow**. Marca "Grabar aunque ya haya otro" si quieres forzarlo.

@@ -101,6 +101,229 @@
     return { sessions: out, warnings };
   }
 
+  // ===================== Lector general de PDFs de Apex Timing =====================
+  // Entiende: "Resumen" (Los Santos), "Resultados" / "Resultados por nivel" con "Histórico de records" (vueltas en tabla),
+  // "Análisis de tiempos" (vuelta a vuelta en columnas) y "Resultados" sin vueltas (solo para poner la posición).
+  // Lee solo el circuito, el día, la hora y el nombre de la sesión.
+  const TIME_FULL = new RegExp('^' + TIME + '$');
+  const LETTERS = /[A-Za-zÁÉÍÓÚÑÜÇáéíóúñüç]{2,}/;
+  const FOOT_RE = /Apex Timing|apex-timing|P[áa]gina\s+\d|MEJORES TIEMPOS|Record de la sesi|Lapchart|^Histórico|GoKarts/i;
+  const deacc = s => String(s || '').normalize('NFKD').replace(/[̀-ͯ]/g, '');
+  const ucw = s => s.toLowerCase().replace(/(^|[\s(+\-/])([a-zñ])/g, (m, a, b) => a + b.toUpperCase());
+
+  function pageRows(items) {
+    const rows = [];
+    for (const it of items) {
+      const s = (it.str || '').trim(); if (!s) continue;
+      const x = it.transform[4], y = it.transform[5], w = it.width || 0;
+      let row = rows.find(r => Math.abs(r.y - y) < 2.4);
+      if (!row) { row = { y, items: [] }; rows.push(row); }
+      row.items.push({ x, w, c: x + w / 2, s });
+    }
+    rows.sort((a, b) => b.y - a.y);
+    rows.forEach(r => { r.items.sort((a, b) => a.x - b.x); r.text = r.items.map(i => i.s).join('  '); });
+    return rows;
+  }
+
+  // Cabecera: "KARTED ALFA - CARRERA 1 - RACING        14/11/2026 - 12:18"
+  function findHeader(rows) {
+    for (const r of rows.slice(0, 8)) {
+      if (FOOT_RE.test(r.text)) continue;
+      const m = r.text.match(/^(.*?)\s*(\d{2})\/(\d{2})\/(\d{4})\s*-\s*(\d{1,2}):(\d{2})\s*$/);
+      if (m && LETTERS.test(m[1])) return { raw: m[1].trim(), date: `${m[4]}-${m[3]}-${m[2]}`, time: `${m[5].padStart(2, '0')}:${m[6]}` };
+    }
+    return null;
+  }
+  const SES_WORD = /^(CRONOS?|CRONO\b|CARRERA|FINAL|SEMIFINAL|MANGA|HEAT|SPRINT|CLASIFICACI|QUALY|QUALI|ENTRENO|ENTRENAMIENTO|LIBRES?|PR[AÁ]CTICA|WARM|RESISTENCIA|SUPERPOLE|POLE|TANDA)/i;
+  const CODE = [[/^Q\d?$/i, () => 'Clasificación'], [/^R(\d+)$/i, m => 'Carrera ' + m[1]], [/^(FP|P|L)(\d*)$/i, m => 'Libres' + (m[2] ? ' ' + m[2] : '')], [/^F$/i, () => 'Final']];
+  function splitTitle(raw) {
+    let parts = raw.split(/\s+-\s+/).map(p => p.trim()).filter(Boolean).filter(p => !/^RACING$/i.test(p));
+    let type = '', rest = [];
+    for (const p of parts) {
+      const code = !type && CODE.find(([re]) => re.test(p));
+      if (code) { type = code[1](p.match(code[0])); continue; }
+      if (!type && SES_WORD.test(deacc(p))) { type = ucw(p); continue; }
+      rest.push(p);
+    }
+    if (!type && rest.length > 1) type = ucw(rest.pop());
+    return { group: ucw(rest.join(' ')).slice(0, 30), type: (type || 'Sesión').slice(0, 30) };
+  }
+
+  // Circuito: busca en todo el texto (pie de página "HENAKART - Pista Principal", "KARTING CLUB LOS SANTOS"...)
+  const GENERIC = new Set(['KARTING', 'KART', 'KARTS', 'CIRCUITO', 'CIRCUIT', 'RACING', 'CLUB', 'DE', 'DEL', 'LA', 'LAS', 'LOS', 'EL', 'PISTA', 'KARTODROMO', 'INDOOR', 'OUTDOOR', 'PRINCIPAL', 'GOKARTS', 'TIMING', 'LIVE', 'SPORT', 'CENTER']);
+  function detectCircuit(text, circs) {
+    const T = ' ' + deacc(text).toUpperCase().replace(/[^A-Z0-9]+/g, ' ') + ' ';
+    let best = null, bestScore = 0, tie = false;
+    for (const c of circs || []) {
+      const words = [...new Set(deacc((c.nombre || '') + ' ' + (c.slug || '').replace(/-/g, ' ')).toUpperCase().split(/[^A-Z0-9]+/))]
+        .filter(w => w.length >= 3 && !GENERIC.has(w));
+      const score = words.filter(w => T.includes(' ' + w + ' ')).length;
+      if (score > bestScore) { best = c; bestScore = score; tie = false; } else if (score && score === bestScore) tie = true;
+    }
+    return best && !tie ? best.slug : null;
+  }
+
+  // Columnas de una fila de cabecera: devuelve el centro de cada título
+  const hdr = (row, word) => row.items.filter(i => i.s.replace(/[.:]/g, '').toLowerCase() === word.toLowerCase());
+  const near = (items, c, tol) => items.filter(i => Math.abs(i.c - c) <= tol);
+  const isInt = s => /^\d{1,3}$/.test(s);
+  const nameOf = s => s.replace(new RegExp(TIME, 'g'), '').replace(/\s+/g, ' ').trim();
+
+  // Clasificación (una o dos columnas de pilotos): {kart: {pos, name}}
+  function readClassification(rows) {
+    const res = {};
+    let blocks = null;
+    for (const r of rows) {
+      const cl = hdr(r, 'Clasif'), ka = hdr(r, 'Kart'), pi = hdr(r, 'Piloto');
+      if (cl.length && ka.length && pi.length) {
+        blocks = cl.map((c, i) => ({ from: c.x - 8, to: cl[i + 1] ? cl[i + 1].x - 8 : 1e9, pos: c.c, kart: (ka.find(k => k.x > c.x - 2) || ka[i]).c, name: (pi.find(p => p.x > c.x - 2) || pi[i]).x }));
+        continue;
+      }
+      if (!blocks) continue;
+      if (/Hist[oó]rico|Lapchart|MEJORES/.test(r.text)) { blocks = null; continue; }
+      for (const b of blocks) {
+        const its = r.items.filter(i => i.x >= b.from && i.x < b.to);
+        const p = near(its, b.pos, 6).find(i => isInt(i.s)), k = near(its, b.kart, 7).find(i => isInt(i.s));
+        const n = its.find(i => Math.abs(i.x - b.name) < 6 && LETTERS.test(i.s));
+        if (p && k && n && +p.s > 0 && +p.s < 100) res[k.s] = { pos: +p.s, name: nameOf(n.s), kart: k.s };
+      }
+    }
+    return res;
+  }
+
+  // "Histórico de records": una fila por kart con sus vueltas (puede seguir en la fila siguiente)
+  function readHistory(rows) {
+    const out = []; let on = false, kartC = null, nameX = null, mediaC = null, cur = null;
+    for (const r of rows) {
+      const ka = hdr(r, 'Kart'), pi = hdr(r, 'Piloto');
+      if (ka.length === 1 && pi.length === 1 && r.items.some(i => i.s === '1') && !hdr(r, 'Clasif').length) {
+        on = true; kartC = ka[0].c; nameX = pi[0].x; const me = hdr(r, 'Media')[0]; mediaC = me ? me.c : null; cur = null; continue;
+      }
+      if (!on) continue;
+      if (FOOT_RE.test(r.text) || hdr(r, 'Clasif').length) { on = false; cur = null; continue; }
+      const k = near(r.items, kartC, 8).find(i => isInt(i.s));
+      const nm = r.items.find(i => i.x > kartC && i.x < nameX + 40 && LETTERS.test(i.s));
+      const times = [];
+      r.items.forEach(i => { if (mediaC != null && Math.abs(i.c - mediaC) < 14) return; (i.s.match(new RegExp(TIME, 'g')) || []).forEach(t => times.push(tsec(t))); });
+      if (k && nm) { cur = { kart: k.s, name: nameOf(nm.s), laps: times }; out.push(cur); }
+      else if (cur && times.length && !k) cur.laps.push(...times);
+    }
+    return out;
+  }
+
+  // "Análisis de tiempos": bloques por piloto en 5–6 columnas. En cada columna, de arriba abajo:
+  // NOMBRE, luego filas "kart  tiempo  nº vuelta". Un bloque puede seguir en la columna siguiente.
+  function readAnalysis(pages) {
+    const drivers = []; let cur = null;
+    for (const rows of pages) {
+      const head = rows.find(r => hdr(r, 'Kart').length && /Temps|Vueltas/.test(r.text));
+      if (!head) continue;
+      const cols = hdr(head, 'Kart').map(k => k.x).sort((a, b) => a - b);
+      const body = rows.filter(r => r.y < head.y - 3 && !FOOT_RE.test(r.text));
+      for (let ci = 0; ci < cols.length; ci++) {
+        const x0 = cols[ci] - 4, x1 = ci + 1 < cols.length ? cols[ci + 1] - 4 : 1e9;
+        for (const r of body) {
+          const its = r.items.filter(i => i.x >= x0 && i.x < x1);
+          if (!its.length) continue;
+          const nm = its.find(i => LETTERS.test(i.s));
+          if (nm) { cur = { name: nameOf(nm.s), laps: [] }; drivers.push(cur); continue; }
+          if (!cur) continue;
+          const t = its.find(i => TIME_FULL.test(i.s));
+          const k = its.find(i => isInt(i.s) && i.x - cols[ci] < 30);
+          const n = its.find(i => isInt(i.s) && i.x - cols[ci] > 50);
+          if (k) cur.kart = cur.kart || k.s;
+          if (t) cur.laps.push({ kart: k ? k.s : cur.kart, n: n ? +n.s : cur.laps.length + 1, t: tsec(t.s) });
+        }
+      }
+    }
+    return drivers;
+  }
+
+  function fallbackPos(stints, type) {
+    const cron = /crono|clasif|qual/i.test(type);
+    const key = t => cron ? [Math.min(...t.laps)] : [-t.laps.length, t.laps.reduce((a, b) => a + b, 0)];
+    [...stints].sort((a, b) => { const A = key(a), B = key(b); return A[0] - B[0] || (A[1] || 0) - (B[1] || 0); }).forEach((t, i) => { if (t.pos == null) t.pos = i + 1; });
+  }
+
+  // pages = [[items de pdf.js de la página 1], [página 2], ...]
+  function parsePdf(pages, fileLabel, circs) {
+    const rowsP = pages.map(pageRows);
+    const allRows = rowsP.flat();
+    const text = allRows.map(r => r.text).join('\n');
+    const warnings = [];
+    const base = { sessions: [], warnings, scanned: false, kind: '', circuit: detectCircuit(text, circs) };
+    if (!allRows.length) return Object.assign(base, { scanned: true });
+    // 1) formato "Resumen" de siempre
+    const lines = pages.map(it => linesFromItems(it)).flat();
+    const old = parseResumen(lines, fileLabel);
+    if (old.sessions.length) { old.sessions.forEach(s => { s.slug = base.circuit; }); return Object.assign(base, old, { kind: 'Resumen', circuit: base.circuit }); }
+    // 2) formatos con cabecera "NOMBRE - SESIÓN    dd/mm/aaaa - hh:mm"
+    const head = rowsP.map(findHeader).find(Boolean);
+    if (!head) return base;
+    const { group, type } = splitTitle(head.raw);
+    const sess = { circuit: '', slug: base.circuit, date: head.date, time: head.time, group, type, rawTitle: head.raw, source: fileLabel || 'PDF', stints: [] };
+    const cls = readClassification(allRows);
+    const byName = {}; Object.values(cls).forEach(c => byName[deacc(c.name).toUpperCase()] = c);
+    if (/An[aá]lisis de tiempos/i.test(text)) {
+      base.kind = 'Análisis de tiempos';
+      for (const d of readAnalysis(rowsP)) {
+        d.laps.sort((a, b) => a.n - b.n);
+        let st = null;
+        for (const l of d.laps) {        // si cambia de kart a mitad de sesión, es otra tanda
+          if (!st || st.kart !== +l.kart) { st = { kart: +l.kart, driver: d.name, cls: '', pos: null, laps: [] }; sess.stints.push(st); }
+          st.laps.push(Math.round(l.t * 1000) / 1000);
+        }
+      }
+    } else if (/Hist[oó]rico/i.test(text)) {
+      base.kind = 'Resultados con vueltas';
+      for (const h of readHistory(allRows)) {
+        if (!h.laps.length) continue;
+        const c = cls[h.kart];
+        sess.stints.push({ kart: +h.kart, driver: h.name, cls: '', pos: c ? c.pos : null, laps: h.laps.map(t => Math.round(t * 1000) / 1000) });
+      }
+    } else if (Object.keys(cls).length) {
+      base.kind = 'Resultados (sin vueltas)';
+      sess.resultsOnly = cls;
+      base.sessions.push(sess);
+      return base;
+    }
+    sess.stints.forEach(st => {
+      if (st.pos != null) return;
+      const c = cls[st.kart] || byName[deacc(st.driver).toUpperCase()];
+      if (c) st.pos = c.pos;
+    });
+    sess.stints = sess.stints.filter(t => t.laps.length);
+    if (sess.stints.length) base.sessions.push(sess);
+    return base;
+  }
+
+  // Junta lo leído de varios PDF: el "Resultados" sin vueltas pone las posiciones al "Análisis" de la misma sesión;
+  // si la misma sesión llega dos veces, se queda la que tenga más vueltas.
+  function mergePdfSessions(list) {
+    const key = s => [s.date, s.time, deacc(s.rawTitle || (s.group + ' ' + s.type)).toUpperCase().replace(/\s+/g, ' ')].join('|');
+    const withLaps = {}, results = {}, orphan = [];
+    for (const s of list) {
+      const k = key(s);
+      if (s.resultsOnly) { results[k] = s; continue; }
+      const n = s2 => s2.stints.reduce((a, t) => a + t.laps.length, 0);
+      if (!withLaps[k] || n(s) > n(withLaps[k])) withLaps[k] = Object.assign({}, s, { slug: s.slug || (withLaps[k] && withLaps[k].slug) });
+    }
+    const out = Object.entries(withLaps).map(([k, s]) => {
+      const r = results[k];
+      if (r) {
+        const byName = {}; Object.values(r.resultsOnly).forEach(c => byName[deacc(c.name).toUpperCase()] = c);
+        s.stints.forEach(t => { const c = r.resultsOnly[t.kart] || byName[deacc(t.driver).toUpperCase()]; if (c) t.pos = c.pos; });
+        if (!s.slug) s.slug = r.slug;
+        s.source = s.source + ' + ' + r.source;
+      }
+      if (s.stints.some(t => t.pos == null)) fallbackPos(s.stints, s.type);
+      return s;
+    });
+    Object.entries(results).forEach(([k, r]) => { if (!withLaps[k]) orphan.push(r); });
+    out.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+    return { sessions: out, onlyResults: orphan };
+  }
+
   // ---------- utilidades estadísticas ----------
   const mean = a => a.reduce((s, x) => s + x, 0) / (a.length || 1);
   // mejor media de n vueltas SEGUIDAS de una tanda (sin la 1ª vuelta, que es de salida)
@@ -366,5 +589,5 @@
     return { karts, drivers, stints, sigma, opts, refLap, model, priorUsed: Object.keys(result_prior).length };
   }
 
-  root.KartCore = { linesFromItems, parseResumen, analyze, dedupe, mixedFit, tsec, median, mean, bestN, trackCurve, tsOf, normName: d => String(d || '').replace(/^\d{1,3}\s*-\s*/, '').replace(/\s*\[\d{1,2}:\d{2}(?::\d{2})?\]\s*$/, '').trim().toUpperCase().replace(/[ÁÀÂÄ]/g, 'A').replace(/[ÉÈÊË]/g, 'E').replace(/[ÍÌÎÏ]/g, 'I').replace(/[ÓÒÔÖ]/g, 'O').replace(/[ÚÙÛÜ]/g, 'U').replace(/\s+/g, ' ') };
+  root.KartCore = { linesFromItems, parseResumen, parsePdf, mergePdfSessions, detectCircuit, analyze, dedupe, mixedFit, tsec, median, mean, bestN, trackCurve, tsOf, normName: d => String(d || '').replace(/^\d{1,3}\s*-\s*/, '').replace(/\s*\[\d{1,2}:\d{2}(?::\d{2})?\]\s*$/, '').trim().toUpperCase().replace(/[ÁÀÂÄ]/g, 'A').replace(/[ÉÈÊË]/g, 'E').replace(/[ÍÌÎÏ]/g, 'I').replace(/[ÓÒÔÖ]/g, 'O').replace(/[ÚÙÛÜ]/g, 'U').replace(/\s+/g, ' ') };
 })(typeof window !== 'undefined' ? window : globalThis);
