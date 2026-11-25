@@ -291,3 +291,7 @@ r81c7|tn|38.150 ⏎ r81|*i2|20218 ⏎
 dyn1|count|662056 ⏎ 
 light|lf| ⏎ com||<p><b>18:04</b><span data-flag="chequered"></span>Llegada</p> ⏎ dyn1|text| ⏎ 
 r81c6|ti|26.527 ⏎ 
+ ⏎ 
+r81c2|sf| ⏎ 
+r81c6|ib|26.675 ⏎ r81c7|ib|34.107 ⏎ r81c8|ib|20.218 ⏎ 
+ ⏎ 
