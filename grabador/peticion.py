@@ -118,7 +118,7 @@ def recorded_same(s: dict) -> bool:
             o = json.loads(f.read_text())
         except Exception:
             continue
-        if str(o.get('source', '')).lower().endswith('.pdf') or o.get('source') == 'PDF':
+        if 'pdf' in str(o.get('source', '')).lower():   # otra sesión de PDF, no una grabada en directo
             continue
         try:
             oh, om = map(int, o['time'].split(':'))
