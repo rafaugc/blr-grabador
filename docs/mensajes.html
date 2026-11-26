@@ -1,55 +1,108 @@
 <!DOCTYPE html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="KR BOX">
 <meta name="theme-color" content="#0a0f1c"><link rel="manifest" href="manifest-box.json">
 <title>KR BOX · Mensaje al piloto</title>
 <link rel="icon" href="icono-box-192.png"><link rel="apple-touch-icon" href="apple-touch-icon-box.png">
+<script>/* mismos colores que la app (se aplican antes de pintar) */
+try{const t=JSON.parse(localStorage.getItem('blr_tema')||'null')||{},h=document.documentElement;h.dataset.fondo=t.f||'azul';h.dataset.resalte=t.r||'amarillof';}catch(e){}</script>
+<link rel="stylesheet" href="tema.css?v=1">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}body{margin:0;background:#0a0f1c;color:#e9ebf0;font:15px Inter,system-ui,sans-serif}
-.w{max-width:480px;margin:0 auto;padding:max(16px,env(safe-area-inset-top)) 16px 16px;display:flex;flex-direction:column;gap:12px;min-height:100vh}
-h1{font:700 24px 'Barlow Condensed';margin:0}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font:15px Inter,system-ui,sans-serif}
+.w{max-width:520px;margin:0 auto;padding:max(14px,env(safe-area-inset-top)) 14px max(14px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;min-height:100vh}
 .row{display:flex;gap:8px;align-items:center}
-input{flex:1;background:#182337;border:1px solid #2e4066;border-radius:12px;color:#e8ff00;font:700 34px 'Barlow Condensed';padding:6px 14px;width:100%}
-button.m{border:0;border-radius:18px;font:700 'Barlow Condensed';cursor:pointer;width:100%;font-family:'Barlow Condensed';font-weight:700}
-.box{background:#FAC775;color:#412402;font-size:64px;height:150px}
-.dbl{background:#5F5E5A;color:#F1EFE8;font-size:32px;height:96px}
-.clr{background:none;border:1px solid #2e4066!important;color:#8d98ad;font-size:20px;height:56px}
-button.m:active{transform:scale(.98)}
-.st{font-size:13px;color:#8d98ad;text-align:center;min-height:20px}
-.ok{color:#3ddc84}
-.lg{display:flex;flex-direction:column;gap:2px}.lg img{height:46px;width:auto;display:block}.lg small{color:#8d98ad;font-size:12px}
-.inst{background:#111a2b;border:1px solid #253350;border-radius:12px;padding:10px 12px;font-size:13px;color:#8d98ad}.inst b{color:#e8ff00}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lg{display:flex;flex-direction:column;gap:2px}.lg img{height:46px;width:auto;display:block}.lg small{color:var(--mute);font-size:12px}
+.lg .l{display:none}html[data-fondo="claro"] .lg .d{display:none}html[data-fondo="claro"] .lg .l{display:block}
+input{background:var(--panel2);border:1px solid var(--line);border-radius:12px;color:var(--acc-txt);font:700 32px 'Barlow Condensed';padding:4px 14px;width:100%;min-width:0}
+input::placeholder{color:var(--dim)}
+.lab{color:var(--mute);font-size:14px}
+button.m{border:0;border-radius:16px;cursor:pointer;width:100%;font-family:'Barlow Condensed';font-weight:700;line-height:1.05;padding:8px;transition:transform .08s}
+button.m:active{transform:scale(.97)}
+.box{background:var(--accent);color:var(--on-accent);font-size:60px;height:118px}
+.red{background:#d0122f;color:#fff}.blue{background:#1e5fe0;color:#fff}.green{background:#138a3e;color:#fff}
+.neu{background:var(--seg);color:var(--text)}
+.mid{font-size:28px;height:78px}.sm{font-size:22px;height:62px}
+.pen{display:grid;grid-template-columns:96px 1fr;gap:8px}
+.pen input{text-align:center;font-size:30px;height:78px;border-color:#d0122f;color:var(--text)}
+.txt{display:grid;grid-template-columns:1fr 104px;gap:8px}
+.txt input{font:600 18px Inter,sans-serif;color:var(--text);height:56px;text-transform:uppercase}
+.send{background:var(--panel2);color:var(--acc-txt);border:2px solid var(--accent)!important;font-size:22px;height:56px}
+.clr{background:none;border:1px solid var(--line)!important;color:var(--mute);font-size:20px;height:50px}
+.st{font-size:13px;color:var(--mute);text-align:center;min-height:20px}
+.ok{color:var(--fast)}
+.inst{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13px;color:var(--mute)}.inst b{color:var(--acc-txt)}
+.sec{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-top:4px}
 </style></head><body><div class="w">
-<div class="row" style="justify-content:space-between"><div class="lg"><img src="logo-box-oscuro.png" alt="KR BOX"><small>Mensaje al piloto</small></div><span class="st" id="conn">conectando…</span></div>
-<div class="row"><span style="color:#8a909c">Kart</span><input id="kart" inputmode="numeric" maxlength="3" placeholder="43"></div>
-<button class="m box" data-m="BOX">BOX</button>
-<button class="m dbl" data-m="DELANTE DOBLADO">DELANTE DOBLADO</button>
-<button class="m dbl" data-m="DETRÁS DOBLADO">DETRÁS DOBLADO</button>
+<div class="row" style="justify-content:space-between"><div class="lg"><img class="d" src="logo-box-oscuro.png" alt="KR BOX"><img class="l" src="logo-box-claro.png" alt="KR BOX"><small>Mensaje al piloto</small></div><span class="st" id="conn">conectando…</span></div>
+<div class="row"><span class="lab">Kart</span><input id="kart" inputmode="numeric" maxlength="3" placeholder="43"></div>
+
+<button class="m box" data-m="BOX" data-t="box">BOX</button>
+<div class="g2">
+  <button class="m blue mid" data-m="DEJA PASAR" data-t="pass">DEJA PASAR</button>
+  <button class="m green mid" data-m="ADELANTA" data-t="over">ADELANTA</button>
+</div>
+<button class="m red mid" data-m="SWAP POSITIONS" data-t="swap">SWAP POSITIONS</button>
+<div class="pen">
+  <input id="penS" inputmode="decimal" maxlength="4" placeholder="s" value="5" aria-label="Segundos de penalización">
+  <button class="m red mid" id="penB" data-t="pen">PENALTY +5 s</button>
+</div>
+<div class="g2">
+  <button class="m neu sm" data-m="DELANTE DOBLADO" data-t="dbl">DELANTE DOBLADO</button>
+  <button class="m neu sm" data-m="DETRÁS DOBLADO" data-t="dbl">DETRÁS DOBLADO</button>
+</div>
+<div class="sec">Texto libre</div>
+<div class="txt">
+  <input id="txt" maxlength="40" placeholder="Escribe un mensaje…" enterkeyhint="send">
+  <button class="m send" id="txtB" data-t="txt">Enviar</button>
+</div>
 <button class="m clr" data-m="CLEAR">Borrar mensaje</button>
 <div class="st" id="st">&nbsp;</div>
 <div class="inst" id="inst"><b>Ponlo como app:</b> en el iPhone, desde Safari pulsa <b>Compartir</b> → <b>Añadir a pantalla de inicio</b>. En Android, menú ⋮ → <b>Añadir a pantalla de inicio</b>.</div>
-<div class="st" style="margin-top:auto">El piloto lo ve al instante en su "Vista piloto". El mensaje se borra solo a los 90 s.</div>
+<div class="st" style="margin-top:auto">El piloto lo ve al instante en su "Vista piloto" (KR DASH). El mensaje se borra solo a los 90 s.</div>
 </div>
 <script>
 if(navigator.standalone||matchMedia('(display-mode: standalone)').matches)document.getElementById('inst').style.display='none';
 const TOPIC='blr-b0be61bf7279e5e3';
 const $=id=>document.getElementById(id);
+// ---- colores: los mismos que elegiste en la app (se guardan en todos tus dispositivos) ----
+function tema(t){if(!t||!t.f||!t.r)return;const h=document.documentElement;h.dataset.fondo=t.f;h.dataset.resalte=t.r;try{localStorage.setItem('blr_tema',JSON.stringify({f:t.f,r:t.r}))}catch{}
+  document.querySelector('meta[name=theme-color]').content=getComputedStyle(h).getPropertyValue('--bg').trim()||'#0a0f1c';}
+tema(JSON.parse(localStorage.getItem('blr_tema')||'null'));
+{const h=location.hostname.match(/^([\w-]+)\.github\.io$/i),seg=location.pathname.split('/')[1],repo=h&&seg?h[1]+'/'+seg:'rafaugc/rafa_krtrnk';
+ fetch('https://raw.githubusercontent.com/'+repo+'/main/data/pilotos.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>tema(d.tema)).catch(()=>{});}
+addEventListener('storage',e=>{if(e.key==='blr_tema'){try{tema(JSON.parse(e.newValue))}catch{}}});
+// ---- kart ----
 try{$('kart').value=localStorage.getItem('blr_msgKart')||''}catch{}
 $('kart').oninput=e=>{try{localStorage.setItem('blr_msgKart',e.target.value)}catch{}};
+// ---- penalización: los segundos los pones tú ----
+const penTxt=()=>{const v=$('penS').value.trim().replace(',','.');const n=parseFloat(v);return isFinite(n)&&n>0?'PENALTY +'+String(n).replace('.',',')+' s':'PENALTY';};
+$('penS').oninput=()=>{$('penB').textContent=penTxt();};
+$('penS').onfocus=e=>e.target.select();
+// ---- envío ----
 let lastId=null;
-document.querySelectorAll('button.m').forEach(b=>b.onclick=async()=>{
-  const k=$('kart').value.trim(); if(!k){$('st').textContent='Escribe primero el número de kart';$('kart').focus();return;}
+async function send(m,t){
+  const k=$('kart').value.trim(); if(!k){$('st').textContent='Escribe primero el número de kart';$('kart').focus();return false;}
   $('st').textContent='Enviando…';
-  try{const r=await fetch('https://ntfy.sh/'+TOPIC,{method:'POST',body:JSON.stringify({k,m:b.dataset.m})});const j=await r.json();lastId=j.id;
-    $('st').innerHTML=(b.dataset.m==='CLEAR'?'Mensaje borrado':'Enviado <b>'+b.dataset.m+'</b> al kart '+k)+' · '+new Date().toLocaleTimeString().slice(0,8)+(b.dataset.m==='CLEAR'?'':' · esperando que lo vea…');
+  try{const r=await fetch('https://ntfy.sh/'+TOPIC,{method:'POST',body:JSON.stringify(t?{k,m,t}:{k,m})});const j=await r.json();lastId=j.id;
+    const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    $('st').innerHTML=(m==='CLEAR'?'Mensaje borrado':'Enviado <b>'+esc(m)+'</b> al kart '+esc(k))+' · '+new Date().toLocaleTimeString().slice(0,8)+(m==='CLEAR'?'':' · esperando que lo vea…');
     try{navigator.vibrate?.(60)}catch{}
-  }catch(e){$('st').textContent='No se pudo enviar. Revisa la conexión y reinténtalo.';}
-});
+    return true;
+  }catch(e){$('st').textContent='No se pudo enviar. Revisa la conexión y reinténtalo.';return false;}
+}
+document.querySelectorAll('button.m[data-m]').forEach(b=>b.onclick=()=>send(b.dataset.m,b.dataset.t));
+$('penB').onclick=()=>send(penTxt(),'pen');
+const sendTxt=async()=>{const m=$('txt').value.trim().toUpperCase();if(!m){$('txt').focus();return;}if(await send(m,'txt'))$('txt').value='';};
+$('txtB').onclick=sendTxt;
+$('txt').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();sendTxt();}};
+// ---- conexión y "visto" ----
 const es=new EventSource('https://ntfy.sh/'+TOPIC+'/sse');
 es.onopen=()=>{$('conn').innerHTML='<span class="ok">● conectado</span>'};
 es.onerror=()=>{$('conn').textContent='reconectando…'};
 es.onmessage=ev=>{let d;try{d=JSON.parse(ev.data)}catch{return}if(d.event!=='message')return;let j;try{j=JSON.parse(d.message)}catch{return}
-  if(j.ack&&j.ack===lastId){$('st').innerHTML+=' <span class="ok">· visto ✓</span>'.replace('· esperando que lo vea…','');$('st').innerHTML=$('st').innerHTML.replace(' · esperando que lo vea…','');}};
+  if(j.ack&&j.ack===lastId){$('st').innerHTML=$('st').innerHTML.replace(' · esperando que lo vea…','')+' <span class="ok">· visto ✓</span>';}};
 </script></body></html>
