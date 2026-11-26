@@ -1,0 +1,17 @@
+{
+ "id": "kr-dash",
+ "name": "KR DASH",
+ "short_name": "KR DASH",
+ "description": "Vista piloto de KR Karts: tu dashboard en el kart",
+ "start_url": "index.html?vista=piloto",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "landscape",
+ "background_color": "#0a0f1c",
+ "theme_color": "#0a0f1c",
+ "icons": [
+  {"src": "icono-dash-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+  {"src": "icono-dash-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+  {"src": "icono-dash-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+ ]
+}

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="KR DASH">
+<meta name="theme-color" content="#0a0f1c">
+<link rel="manifest" href="manifest-dash.json">
+<link rel="apple-touch-icon" href="apple-touch-icon-dash.png">
+<link rel="icon" href="icono-dash-192.png">
+<title>KR DASH</title>
+<script>
+// Abierto desde el icono de la pantalla de inicio: directo a la vista piloto
+if (navigator.standalone || matchMedia('(display-mode: standalone)').matches) location.replace('index.html?vista=piloto');
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:#0a0f1c;color:#e9ebf0;font:15px/1.5 Inter,system-ui,sans-serif;display:flex;align-items:center;justify-content:center;padding:24px}
+.w{max-width:440px;width:100%;display:flex;flex-direction:column;gap:18px;align-items:center;text-align:center}
+.ic{width:120px;height:120px;border-radius:28px;box-shadow:0 10px 30px #0008}
+h1{font:700 30px 'Barlow Condensed';margin:0;letter-spacing:.5px}h1 span{color:#e8ff00}
+p{margin:0;color:#8d98ad}
+.go{display:block;width:100%;background:#e8ff00;color:#0a0f1c;text-decoration:none;font:700 24px 'Barlow Condensed';padding:14px;border-radius:14px}
+.card{width:100%;background:#111a2b;border:1px solid #253350;border-radius:14px;padding:14px 16px;text-align:left}
+.card b{color:#e8ff00}.card ol{margin:6px 0 0 18px;padding:0}.card li{margin:4px 0}
+.k{display:inline-block;background:#182337;border:1px solid #253350;border-radius:6px;padding:0 6px}
+</style>
+</head>
+<body>
+<div class="w">
+  <img class="ic" src="icono-dash-512.png" alt="KR DASH">
+  <h1>KR <span>DASH</span></h1>
+  <p>Tu dashboard en el kart: posición, tiempos y mensajes del box, a pantalla completa.</p>
+  <a class="go" href="index.html?vista=piloto">Abrir la vista piloto</a>
+  <div class="card" id="ios"><b>Ponlo en el iPhone como app</b>
+    <ol><li>Abre esta página en <b>Safari</b>.</li><li>Pulsa el botón <span class="k">Compartir</span> (el cuadrado con la flecha hacia arriba).</li><li>Elige <span class="k">Añadir a pantalla de inicio</span> y pulsa <span class="k">Añadir</span>.</li></ol>
+    <p style="margin-top:8px">Te saldrá el icono de KR DASH. Al abrirlo va directo a la vista piloto.</p></div>
+  <div class="card" id="and"><b>En Android</b>
+    <ol><li>Abre esta página en <b>Chrome</b>.</li><li>Pulsa el menú <span class="k">⋮</span> → <span class="k">Añadir a pantalla de inicio</span> (o <span class="k">Instalar aplicación</span>).</li></ol></div>
+</div>
+<script>
+const ua = navigator.userAgent;
+if (/iPhone|iPad|iPod|Macintosh/.test(ua) && 'ontouchend' in document) document.getElementById('and').style.display = 'none';
+else if (/Android/.test(ua)) document.getElementById('ios').style.display = 'none';
+</script>
+</body>
+</html>
