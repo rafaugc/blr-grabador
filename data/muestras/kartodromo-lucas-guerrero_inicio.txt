@@ -386,3 +386,25 @@ r9c1|gf| ⏎
 r9c2|su| ⏎ r9c3||8 ⏎ r9c6|tn|1:26.398 ⏎ r9c7|ib|38.155 ⏎ r9c8|in|3.931 ⏎ r9c10|in|6 ⏎ r10c1|gl| ⏎ r10c2|sd| ⏎ r10c3||9 ⏎ r10c8|in| ⏎ r10|#|9 ⏎ r9|*|86264| ⏎ r9|#|8 ⏎ 
 r9c2|sr| ⏎ r10c2|in| ⏎ 
 r9c1|gs| ⏎ r10c1|gs| ⏎ r10c2|ss| ⏎ r10c7|ib|1 Vuelta ⏎ r10c8|in|1 Vuelta ⏎ 
+dyn1|text|Vuelta 7/8 ⏎ r6c6|tn|1:23.330 ⏎ r6c7|in|Vuelta 7 ⏎ r6c10|in|7 ⏎ r5c2|in| ⏎ r7c2|in| ⏎ r12c2|in| ⏎ r11c2|in| ⏎ r4c2|in| ⏎ r9c2|in| ⏎ r10c7|ib|2 Vueltas ⏎ r6|*|83143| ⏎ 
+r5c2|sr| ⏎ 
+r5c6|tn|1:23.500 ⏎ r5c7|ib|0.513 ⏎ r5c8|in|0.513 ⏎ r5c10|in|7 ⏎ r5|*|83185| ⏎ 
+r7c2|sr| ⏎ r7c6|tn|1:25.202 ⏎ r7c7|ib|13.181 ⏎ r7c8|in|12.668 ⏎ r7c10|in|7 ⏎ r7|*|85083| ⏎ 
+r12c1|gf| ⏎ r12c2|su| ⏎ r12c3||4 ⏎ r12c6|tn|1:25.163 ⏎ r12c7|ib|20.654 ⏎ r12c8|in|7.473 ⏎ r12c10|in|7 ⏎ r8c1|gl| ⏎ r8c3||5 ⏎ r8c8|in| ⏎ r11c8|in|13.141 ⏎ r8|#|5 ⏎ r12|*|84799| ⏎ r12|#|4 ⏎ 
+r10c2|sr| ⏎ r10c6|tn|2:35.882 ⏎ r10c7|ib|1 Vuelta ⏎ r10c8|in|1:09.088 ⏎ r10c10|in|6 ⏎ r10|*|90407| ⏎ 
+r12c1|gs| ⏎ r8c1|gs| ⏎ r8c2|sd| ⏎ r8c6|tn|1:35.045 ⏎ r8c7|ib|26.687 ⏎ r8c8|in|6.033 ⏎ r8c10|in|7 ⏎ r8|*|83715| ⏎ 
+r11c2|sr| ⏎ r11c6|tn|1:29.218 ⏎ r11c7|ib|34.001 ⏎ r11c8|in|7.314 ⏎ r11c10|in|7 ⏎ r11|*|88255| ⏎ 
+r12c2|sr| ⏎ 
+r4c2|sr| ⏎ r4c6|tn|1:27.822 ⏎ r4c7|ib|38.716 ⏎ r4c8|in|4.715 ⏎ r4c10|in|7 ⏎ r4|*|87589| ⏎ 
+r8c2|sr| ⏎ 
+r9c2|sr| ⏎ 
+r9c6|tn|1:26.660 ⏎ r9c7|ib|41.485 ⏎ r9c8|in|2.769 ⏎ r9c10|in|7 ⏎ r9|*|86350| ⏎ 
+dyn1|text|Vuelta 8/8 ⏎ r6c6|tn|1:23.121 ⏎ r6c7|in|Vuelta 8 ⏎ r6c10|in|8 ⏎ r5c2|in| ⏎ r7c2|in| ⏎ r12c2|in| ⏎ r8c2|in| ⏎ r11c2|in| ⏎ r4c2|in| ⏎ r9c2|in| ⏎ r10c2|in| ⏎ r6|*|83073| ⏎ 
+r5c2|sr| ⏎ 
+r5c6|tn|1:22.874 ⏎ r5c7|ib|0.266 ⏎ r5c8|in|0.266 ⏎ r5c10|in|8 ⏎ r5|*|82871| ⏎ 
+r7c2|sr| ⏎ r7c6|tn|1:26.273 ⏎ r7c7|ib|16.333 ⏎ r7c8|in|16.067 ⏎ r7c10|in|8 ⏎ r7|*|85159| ⏎ 
+r8c1|gf| ⏎ 
+r8c2|su| ⏎ r8c3||4 ⏎ r8c6|tn|1:25.758 ⏎ r8c7|ib|29.324 ⏎ r8c8|in|12.991 ⏎ r8c10|in|8 ⏎ r12c1|gl| ⏎ r12c2|sd| ⏎ r12c3||5 ⏎ r12c8|in| ⏎ r11c8|in|13.347 ⏎ r8|*|84744| ⏎ r8|#|4 ⏎ r12|#|5 ⏎ 
+r10c2|sr| ⏎ 
+r10c6|tn|1:30.931 ⏎ r10c8|in|1:13.359 ⏎ r10c10|in|7 ⏎ r10|*|90476| ⏎ 
+r8c1|gs| ⏎ r12c1|gs| ⏎ r12c6|tn|1:35.240 ⏎ r12c7|ib|32.773 ⏎ r12c8|in|3.449 ⏎ r12c10|in|8 ⏎ r12|*|84957| ⏎ 
