@@ -112,5 +112,9 @@
   "PEDRO|PEDRO ANTONIO VAZQUEZ GUTIERREZ",
   "VICTOR PAVON|VICTOR PLAZA PAVON"
  ],
- "_ultimo": "Y8i5FBVuPlUQ"
+ "_ultimo": "Y8i5FBVuPlUQ",
+ "tema": {
+  "f": "azul",
+  "r": "amarillof"
+ }
 }
