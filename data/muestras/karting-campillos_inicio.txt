@@ -424,3 +424,81 @@ r5c1|gs| ⏎ r5c2|su| ⏎ r5c3||4 ⏎ r5c8|ti|25.451 ⏎ r5c9|ti|1:38.545 ⏎ r5
 r9c7|tb|37.257 ⏎ r9|*i2|23506 ⏎ 
 r8c6|ti|34.076 ⏎ r8c7|| ⏎ r8c8|| ⏎ r8|*i1|44107 ⏎ 
 r6c2|sr| ⏎ r6c8|ti|23.880 ⏎ r6c9|tn|1:36.591 ⏎ r6c13|in|4 ⏎ r6|*|94752|30703 ⏎ 
+r3c2|in| ⏎ 
+r5c2|in| ⏎ 
+dyn1|count|457081 ⏎ 
+r6c2|in| ⏎ 
+r9c2|sr| ⏎ 
+r9c8|tn|23.807 ⏎ r9c9|tb|1:29.828 ⏎ r9c10|ib|1:29.828 ⏎ r9c13|in|4 ⏎ r6c1|gs| ⏎ r6c11|in|4.924 ⏎ r6c12|in|4.924 ⏎ r2c1|gs| ⏎ r2c11|in|5.696 ⏎ r5c1|gf| ⏎ r5c11|in|8.717 ⏎ r3c1|gl| ⏎ r3c11|in|8.944 ⏎ r7c11|in|11.106 ⏎ r1c11|in|15.276 ⏎ r8c11|in|16.360 ⏎ r4c11|in|19.263 ⏎ r9|*|89828|28764 ⏎ 
+r1c2|sr| ⏎ 
+r1c8|ti|27.480 ⏎ r1c9|ti|1:42.027 ⏎ r1c10|ib|1:42.027 ⏎ r1c11|in|12.199 ⏎ r1c12|in|1.093 ⏎ r1c13|in|4 ⏎ r8c12|in|4.161 ⏎ r1|*|102027|32523 ⏎ 
+r7c7|ti|41.390 ⏎ r7|*i2|25409 ⏎ 
+r3c6|ti|31.738 ⏎ r3c7|| ⏎ r3c8|| ⏎ r3|*i1|40310 ⏎ 
+r5c6|ti|31.127 ⏎ r5c7|| ⏎ r5c8|| ⏎ r5|*i1|41400 ⏎ 
+r9c2|in| ⏎ 
+r1c2|in| ⏎ 
+r6c6|ti|29.804 ⏎ 
+r6c7|| ⏎ r6c8|| ⏎ r6|*i1|39458 ⏎ 
+dyn1|count|487148 ⏎ 
+r8c7|ti|43.802 ⏎ 
+r8|*i2|27650 ⏎ 
+r9c6|tn|28.928 ⏎ r9c7|| ⏎ r9c8|| ⏎ r9|*i1|37257 ⏎ r7c2|sr| ⏎ r7c8|ti|25.361 ⏎ r7c9|ti|1:40.185 ⏎ r7c10|ib|1:40.185 ⏎ r7c11|in|10.357 ⏎ r7c12|in|1.413 ⏎ r7c13|in|4 ⏎ r1c12|in|1.842 ⏎ r7|*|100185|32853 ⏎ 
+r1c6|ti|31.754 ⏎ 
+r1c7|| ⏎ r1c8|| ⏎ r1|*i1|42024 ⏎ 
+r7c2|in| ⏎ 
+r3c7|ti|39.950 ⏎ r3|*i2|25230 ⏎ 
+dyn1|count|517294 ⏎ 
+r5c7|ti|40.004 ⏎ r5|*i2|25451 ⏎ 
+r8c2|sr| ⏎ 
+r8c8|ti|26.663 ⏎ r8c9|ti|1:44.541 ⏎ r8c10|ib|1:44.541 ⏎ r8c11|in|14.713 ⏎ r8c12|in|2.514 ⏎ r8c13|in|2 ⏎ r4c12|in|4.550 ⏎ r8|*|104541|34076 ⏎ 
+r6c7|ti|37.973 ⏎ r6|*i2|23880 ⏎ 
+r8c2|in| ⏎ 
+r7c6|tn|32.914 ⏎ r7c7|| ⏎ r7c8|| ⏎ r7|*i1|41390 ⏎ 
+r9c7|tn|38.298 ⏎ r9|*i2|23506 ⏎ 
+r3c1|gs| ⏎ r3c2|su| ⏎ r3c3||4 ⏎ r3c8|ti|25.107 ⏎ r3c9|ti|1:36.795 ⏎ r3c10|ib|1:36.795 ⏎ r3c11|in|6.967 ⏎ r3c12|in|1.271 ⏎ r3c13|in|4 ⏎ r5c1|gs| ⏎ r5c3||5 ⏎ r5c12|in|1.750 ⏎ r7c12|in|1.640 ⏎ r3|*|96795|31738 ⏎ r3|#|4 ⏎ r5|#|5 ⏎ 
+r5c1|gf| ⏎ 
+r5c2|sr| ⏎ r5c3||4 ⏎ r5c8|ti|25.083 ⏎ r5c9|ti|1:36.214 ⏎ r5c10|ib|1:36.214 ⏎ r5c11|in|6.386 ⏎ r5c12|in|0.690 ⏎ r5c13|in|4 ⏎ r3c1|gl| ⏎ r3c2|sr| ⏎ r3c3||5 ⏎ r3c12|in|0.581 ⏎ r7c12|in|3.390 ⏎ r3|#|5 ⏎ r5|*|96214|31127 ⏎ r5|#|4 ⏎ 
+r6c2|sr| ⏎ r6c8|ti|23.802 ⏎ r6c9|ti|1:31.579 ⏎ r6c10|ib|1:31.579 ⏎ r6c11|in|1.751 ⏎ r6c12|in|1.751 ⏎ r6c13|in|5 ⏎ r2c12|in|3.945 ⏎ r6|*|91579|29804 ⏎ 
+r1c7|tn|42.568 ⏎ r1|*i2|27480 ⏎ 
+dyn1|count|547341 ⏎ 
+r3c2|in| ⏎ 
+r5c2|in| ⏎ 
+r6c2|in| ⏎ 
+r8c6|tn|39.299 ⏎ r8c7|| ⏎ r8c8|| ⏎ r8|*i1|43802 ⏎ 
+r9c2|sr| ⏎ r9c8|tn|23.564 ⏎ r9c9|tn|1:30.790 ⏎ r9c13|in|5 ⏎ r9|*|89828|28764 ⏎ 
+r2c2|ss| ⏎ 
+r2c6|ib|31.179 ⏎ r2c7|ib|39.397 ⏎ r2c8|ib|24.948 ⏎ 
+r9c2|in| ⏎ 
+r1c2|su| ⏎ 
+r1c3||6 ⏎ r1c8|ti|25.464 ⏎ r1c9|ti|1:39.786 ⏎ r1c10|ib|1:39.786 ⏎ r1c11|in|9.958 ⏎ r1c12|in|2.991 ⏎ r1c13|in|5 ⏎ r7c3||7 ⏎ r7c12|in|0.399 ⏎ r8c12|in|4.356 ⏎ r1|*|99786|31754 ⏎ r1|#|6 ⏎ r7|#|7 ⏎ 
+r5c6|ti|30.664 ⏎ r5c7|| ⏎ r5c8|| ⏎ r5|*i1|40004 ⏎ 
+r3c6|tn|32.560 ⏎ r3c7|| ⏎ r3c8|| ⏎ r3|*i1|39950 ⏎ 
+r7c7|tn|42.487 ⏎ 
+r7|*i2|25361 ⏎ 
+r6c6|tn|29.886 ⏎ r6c7|| ⏎ r6c8|| ⏎ r6|*i1|37973 ⏎ 
+dyn1|count|577357 ⏎ 
+r4c7|tn|2:20.5 ⏎ r4|*i2|26015 ⏎ 
+r1c2|in| ⏎ 
+r2c2|in| ⏎ r2c6|tn|38.966 ⏎ r2c7|tn|2:24.2 ⏎ r2c8|| ⏎ r2|*i2|24832 ⏎ 
+r9c6|tb|28.522 ⏎ 
+r9c7|| ⏎ r9c8|| ⏎ r9|*i1|37257 ⏎ 
+r7c2|sr| ⏎ r7c8|tn|25.939 ⏎ r7c9|tn|1:41.340 ⏎ r7c13|in|5 ⏎ r7|*|100185|32786 ⏎ 
+r1c6|tn|31.975 ⏎ r1c7|| ⏎ r1c8|| ⏎ r1|*i1|42024 ⏎ 
+r8c7|tn|45.252 ⏎ r8|*i2|26663 ⏎ 
+r3c7|tb|31.983 ⏎ 
+r3|*i2|25107 ⏎ 
+dyn1|count|607515 ⏎ 
+r7c2|in| ⏎ 
+r4c2|sr| ⏎ r4c8|tn|34.016 ⏎ r4c9|tn|3:28.672 ⏎ r4c13|in|4 ⏎ r4|*|109856|33701 ⏎ 
+r2c2|sr| ⏎ r2c8|tn|25.800 ⏎ r2c9|tn|3:29.034 ⏎ r2c13|in|5 ⏎ r2|*|95524|31179 ⏎ 
+r5c7|tn|40.045 ⏎ r5|*i2|25083 ⏎ 
+r6c7|tn|38.517 ⏎ 
+r6|*i2|23802 ⏎ 
+r4c2|in| ⏎ 
+r2c2|in| ⏎ 
+light|lf| ⏎ 
+com||<p><b>11:27</b><span data-flag="chequered"></span>Llegada</p> ⏎ dyn1|text| ⏎ 
+r9c7|tn|37.340 ⏎ r9|*i2|23535 ⏎ 
+r9c6|ti|28.522 ⏎ 
+r3c7|ti|31.983 ⏎ 
+init|p| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#0000FF !important; color:#FFFFFF !important; ⏎ css|no2|border-bottom-color:#FF0000 !important; color:#FFFFFF !important; ⏎ css|no3|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no4|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no5|border-bottom-color:#E67300 !important; color:#FFFFFF !important; ⏎ css|no8|border-bottom-color:#FFB062 !important; color:#000000 !important; ⏎ css|no9|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no10|border-bottom-color:#59FF83 !important; color:#000000 !important; ⏎ css|no6|border-bottom-color:#00FF00 !important; color:#000000 !important; ⏎ css|no7|border-bottom-color:#000000 !important; color:#FFFFFF !important; ⏎ css|pena1|color:#f00; font-size:11px; font-weight: bold; text-align:center; ⏎ effects||Mostrar Efectos ⏎ comments||Comentarios ⏎ title1|| ⏎ title2||Sesión 10 ⏎ dyn1|count|1503 ⏎ light|lg| ⏎ wth1|| ⏎ wth2|| ⏎ wth3|| ⏎ track||Karting Campillos ⏎ com|| ⏎ grid||<tbody><tr data-id="r0" class="head" data-pos="0"><td data-id="c1" data-type="grp" data-pr="6"></td><td data-id="c2" data-type="sta" data-pr="1"></td><td data-id="c3" data-type="rk" data-pr="1">Clasif.</td><td data-id="c4" data-type="no" data-pr="1">Kart</td><td data-id="c5" data-type="dr" data-pr="1" data-width="18" data-min="16">Piloto</td><td data-id="c6" data-type="s1" data-pr="3" data-width="10" data-min="6">S1</td><td data-id="c7" data-type="s2" data-pr="3" data-width="10" data-min="6">S2</td><td data-id="c8" data-type="s3" data-pr="3" data-width="12" data-min="6">S3</td><td data-id="c9" data-type="llp" data-pr="2" data-width="10" data-min="7">Última vuelta</td><td data-id="c10" data-type="blp" data-pr="1" data-width="10" data-min="7">Mejor vuelta</td><td data-id="c11" data-type="gap" data-pr="4" data-width="10" data-min="7">Gap</td><td data-id="c12" data-type="int" data-pr="5" data-width="10" data-min="7">Interv.</td><td data-id="c13" data-type="tlp" data-pr="5" data-width="6" data-min="4">Vueltas</td></tr><tr data-id="r1" data-pos="1"><td data-id="r1c1" class="in"></td><td data-id="r1c2" class="in"></td><td class="rk"><div><p data-id="r1c3" class=""></p></div></td><td class="no"><div data-id="r1c4" class="no2">46</div></td><td data-id="r1c5" class="dr">MULLE</td><td data-id="r1c6" class=""></td><td data-id="r1c7" class=""></td><td data-id="r1c8" class=""></td><td data-id="r1c9" class=""></td><td data-id="r1c10" class="ib"></td><td data-id="r1c11" class="in"></td><td data-id="r1c12" class="in"></td><td data-id="r1c13" class="in"></td></tr><tr data-id="r2" data-pos="2"><td data-id="r2c1" class="in"></td><td data-id="r2c2" class="in"></td><td class="rk"><div><p data-id="r2c3" class=""></p></div></td><td class="no"><div data-id="r2c4" class="no2">55</div></td><td data-id="r2c5" class="dr">DOUBLE B</td><td data-id="r2c6" class=""></td><td data-id="r2c7" class=""></td><td data-id="r2c8" class=""></td><td data-id="r2c9" class=""></td><td data-id="r2c10" class="ib"></td><td data-id="r2c11" class="in"></td><td data-id="r2c12" class="in"></td><td data-id="r2c13" class="in"></td></tr><tr data-id="r3" data-pos="3"><td data-id="r3c1" class="in"></td><td data-id="r3c2" class="in"></td><td class="rk"><div><p data-id="r3c3" class=""></p></div></td><td class="no"><div data-id="r3c4" class="no2">34</div></td><td data-id="r3c5" class="dr">JAAFAR</td><td data-id="r3c6" class=""></td><td data-id="r3c7" class=""></td><td data-id="r3c8" class=""></td><td data-id="r3c9" class=""></td><td data-id="r3c10" class="ib"></td><td data-id="r3c11" class="in"></td><td data-id="r3c12" class="in"></td><td data-id="r3c13" class="in"></td></tr><tr data-id="r4" data-pos="4"><td data-id="r4c1" class="in"></td><td data-id="r4c2" class="in"></td><td class="rk"><div><p data-id="r4c3" class=""></p></div></td><td class="no"><div data-id="r4c4" class="no2">35</div></td><td data-id="r4c5" class="dr">KINGG</td><td data-id="r4c6" class=""></td><td data-id="r4c7" class=""></td><td data-id="r4c8" class=""></td><td data-id="r4c9" class=""></td><td data-id="r4c10" class="ib"></td><td data-id="r4c11" class="in"></td><td data-id="r4c12" class="in"></td><td data-id="r4c13" class="in"></td></tr><tr data-id="r5" data-pos="5"><td data-id="r5c1" class="in"></td><td data-id="r5c2" class="in"></td><td class="rk"><div><p data-id="r5c3" class=""></p></div></td><td class="no"><div data-id="r5c4" class="no2">43</div></td><td data-id="r5c5" class="dr">SIFU</td><td data-id="r5c6" class=""></td><td data-id="r5c7" class=""></td><td data-id="r5c8" class=""></td><td data-id="r5c9" class=""></td><td data-id="r5c10" class="ib"></td><td data-id="r5c11" class="in"></td><td data-id="r5c12" class="in"></td><td data-id="r5c13" class="in"></td></tr><tr data-id="r6" data-pos="6"><td data-id="r6c1" class="in"></td><td data-id="r6c2" class="in"></td><td class="rk"><div><p data-id="r6c3" class=""></p></div></td><td class="no"><div data-id="r6c4" class="no2">36</div></td><td data-id="r6c5" class="dr">BAWS</td><td data-id="r6c6" class=""></td><td data-id="r6c7" class=""></td><td data-id="r6c8" class=""></td><td data-id="r6c9" class=""></td><td data-id="r6c10" class="ib"></td><td data-id="r6c11" class="in"></td><td data-id="r6c12" class="in"></td><td data-id="r6c13" class="in"></td></tr><tr data-id="r7" data-pos="7"><td data-id="r7c1" class="in"></td><td data-id="r7c2" class="in"></td><td class="rk"><div><p data-id="r7c3" class=""></p></div></td><td class="no"><div data-id="r7c4" class="no2">42</div></td><td data-id="r7c5" class="dr">YH</td><td data-id="r7c6" class=""></td><td data-id="r7c7" class=""></td><td data-id="r7c8" class=""></td><td data-id="r7c9" class=""></td><td data-id="r7c10" class="ib"></td><td data-id="r7c11" class="in"></td><td data-id="r7c12" class="in"></td><td data-id="r7c13" class="in"></td></tr><tr data-id="r8" data-pos="8"><td data-id="r8c1" class="in"></td><td data-id="r8c2" class="in"></td><td class="rk"><div><p data-id="r8c3" class=""></p></div></td><td class="no"><div data-id="r8c4" class="no2">37</div></td><td data-id="r8c5" class="dr">DOUBLE D DENO</td><td data-id="r8c6" class=""></td><td data-id="r8c7" class=""></td><td data-id="r8c8" class=""></td><td data-id="r8c9" class=""></td><td data-id="r8c10" class="ib"></td><td data-id="r8c11" class="in"></td><td data-id="r8c12" class="in"></td><td data-id="r8c13" class="in"></td></tr><tr data-id="r9" data-pos="9"><td data-id="r9c1" class="in"></td><td data-id="r9c2" class="in"></td><td class="rk"><div><p data-id="r9c3" class=""></p></div></td><td class="no"><div data-id="r9c4" class="no2">45</div></td><td data-id="r9c5" class="dr">ZHELLY</td><td data-id="r9c6" class=""></td><td data-id="r9c7" class=""></td><td data-id="r9c8" class=""></td><td data-id="r9c9" class=""></td><td data-id="r9c10" class="ib"></td><td data-id="r9c11" class="in"></td><td data-id="r9c12" class="in"></td><td data-id="r9c13" class="in"></td></tr><tr data-id="r10" data-pos="10"><td data-id="r10c1" class="in"></td><td data-id="r10c2" class="in"></td><td class="rk"><div><p data-id="r10c3" class=""></p></div></td><td class="no"><div data-id="r10c4" class="no5">101</div></td><td data-id="r10c5" class="dr">RUBENVA</td><td data-id="r10c6" class=""></td><td data-id="r10c7" class=""></td><td data-id="r10c8" class=""></td><td data-id="r10c9" class=""></td><td data-id="r10c10" class="ib"></td><td data-id="r10c11" class="in"></td><td data-id="r10c12" class="in"></td><td data-id="r10c13" class="in"></td></tr><tr data-id="r11" data-pos="11"><td data-id="r11c1" class="in"></td><td data-id="r11c2" class="in"></td><td class="rk"><div><p data-id="r11c3" class=""></p></div></td><td class="no"><div data-id="r11c4" class="no1">7</div></td><td data-id="r11c5" class="dr">JOSVA</td><td data-id="r11c6" class=""></td><td data-id="r11c7" class=""></td><td data-id="r11c8" class=""></td><td data-id="r11c9" class=""></td><td data-id="r11c10" class="ib"></td><td data-id="r11c11" class="in"></td><td data-id="r11c12" class="in"></td><td data-id="r11c13" class="in"></td></tr><tr data-id="r12" data-pos="12"><td data-id="r12c1" class="in"></td><td data-id="r12c2" class="in"></td><td class="rk"><div><p data-id="r12c3" class=""></p></div></td><td class="no"><div data-id="r12c4" class="no1">15</div></td><td data-id="r12c5" class="dr">WESSELVA</td><td data-id="r12c6" class=""></td><td data-id="r12c7" class=""></td><td data-id="r12c8" class=""></td><td data-id="r12c9" class=""></td><td data-id="r12c10" class="ib"></td><td data-id="r12c11" class="in"></td><td data-id="r12c12" class="in"></td><td data-id="r12c13" class="in"></td></tr><tr data-id="r13" data-pos="13"><td data-id="r13c1" class="in"></td><td data-id="r13c2" class="in"></td><td class="rk"><div><p data-id="r13c3" class=""></p></div></td><td class="no"><div data-id="r13c4" class="no1">2</div></td><td data-id="r13c5" class="dr">KIMBERLEY</td><td data-id="r13c6" class=""></td><td data-id="r13c7" class=""></td><td data-id="r13c8" class=""></td><td data-id="r13c9" class=""></td><td data-id="r13c10" class="ib"></td><td data-id="r13c11" class="in"></td><td data-id="r13c12" class="in"></td><td data-id="r13c13" class="in"></td></tr></tbody> ⏎ msg|| ⏎ 
