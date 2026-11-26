@@ -62,3 +62,31 @@ r14c2|in| ⏎
 dyn1|count|191436 ⏎ 
 r25c6|tn|28.137 ⏎ r25c7|| ⏎ r25c8|| ⏎ r25|*i1|35820 ⏎ r35c6|tn|28.390 ⏎ r35c7|| ⏎ r35c8|| ⏎ r35|*i1|35948 ⏎ 
 r14c6|tn|28.166 ⏎ r14c7|| ⏎ r14c8|| ⏎ r14|*i1|36653 ⏎ 
+dyn1|count|221467 ⏎ 
+r25c7|tn|35.890 ⏎ 
+r25|*i2|22379 ⏎ r14c7|ti|35.930 ⏎ 
+r14|*i2|22494 ⏎ r35c7|tn|36.140 ⏎ r35|*i2|22651 ⏎ 
+dyn1|count|251467 ⏎ 
+r35c2|sr| ⏎ r35c8|tn|22.717 ⏎ r35c9|tn|1:27.247 ⏎ r35c13|in|2 ⏎ r14c2|sr| ⏎ r14c8|tn|22.864 ⏎ r14c9|tn|1:26.960 ⏎ r14c13|in|2 ⏎ r14|*|86347|27200 ⏎ r35|*|86003|27404 ⏎ 
+r25c2|sr| ⏎ r25c8|tn|23.366 ⏎ r25c9|tn|1:27.393 ⏎ r25c13|in|2 ⏎ r25|*|85753|27554 ⏎ 
+r35c4|no2|91 ⏎ 
+r35c2|in| ⏎ r14c2|in| ⏎ 
+r25c2|in| ⏎ 
+r35c4|| ⏎ 
+r24c4|no2|91 ⏎ 
+r14c3||2 ⏎ 
+r14c12|in|0.594 ⏎ r35c1|gs| ⏎ r35c3||3 ⏎ r35c6|ti|28.390 ⏎ r35c7|ti|36.140 ⏎ r35c8|ti|22.717 ⏎ r35c9|ti|1:27.247 ⏎ r35c10|ib|1:27.247 ⏎ r35c11|in|1.494 ⏎ r35c12|in|0.900 ⏎ r35c13|in|1 ⏎ r14|#|2 ⏎ r24|*|| ⏎ r35|*|87247|28390 ⏎ r35|#|3 ⏎ 
+r24c2|ss| ⏎ 
+dyn1|count|281592 ⏎ 
+init|p| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#0000FF !important; color:#FFFFFF !important; ⏎ css|no2|border-bottom-color:#FF0000 !important; color:#FFFFFF !important; ⏎ css|no3|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no4|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no5|border-bottom-color:#E67300 !important; color:#FFFFFF !important; ⏎ css|no8|border-bottom-color:#FFB062 !important; color:#000000 !important; ⏎ css|no9|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no10|border-bottom-color:#59FF83 !important; color:#000000 !important; ⏎ css|no6|border-bottom-color:#00FF00 !important; color:#000000 !important; ⏎ css|no7|border-bottom-color:#000000 !important; color:#FFFFFF !important; ⏎ css|pena1|color:#f00; font-size:11px; font-weight: bold; text-align:center; ⏎ effects||Mostrar Efectos ⏎ comments||Comentarios ⏎ title1|| ⏎ title2||10´ ⏎ dyn1|count|281818 ⏎ light|lg| ⏎ wth1|| ⏎ wth2|| ⏎ wth3|| ⏎ track||Karting Campillos ⏎ com|| ⏎ grid||<tbody><tr data-id="r0" class="head" data-pos="0"><td data-id="c1" data-type="grp" data-pr="6"></td><td data-id="c2" data-type="sta" data-pr="1"></td><td data-id="c3" data-type="rk" data-pr="1">Clasif.</td><td data-id="c4" data-type="no" data-pr="1">Kart</td><td data-id="c5" data-type="dr" data-pr="1" data-width="18" data-min="16">Piloto</td><td data-id="c6" data-type="s1" data-pr="3" data-width="10" data-min="6">S1</td><td data-id="c7" data-type="s2" data-pr="3" data-width="10" data-min="6">S2</td><td data-id="c8" data-type="s3" data-pr="3" data-width="12" data-min="6">S3</td><td data-id="c9" data-type="llp" data-pr="2" data-width="10" data-min="7">Última vuelta</td><td data-id="c10" data-type="blp" data-pr="1" data-width="10" data-min="7">Mejor vuelta</td><td data-id="c11" data-type="gap" data-pr="4" data-width="10" data-min="7">Gap</td><td data-id="c12" data-type="int" data-pr="5" data-width="10" data-min="7">Interv.</td><td data-id="c13" data-type="tlp" data-pr="5" data-width="6" data-min="4">Vueltas</td></tr><tr data-id="r25" data-pos="1"><td data-id="r25c1" class="gf"></td><td data-id="r25c2" class="in"></td><td class="rk"><div><p data-id="r25c3" class="">1</p></div></td><td class="no"><div data-id="r25c4" class="no2">47</div></td><td data-id="r25c5" class="dr">ROCCO28</td><td data-id="r25c6" class="tn">28.137</td><td data-id="r25c7" class="tn">35.890</td><td data-id="r25c8" class="tn">23.366</td><td data-id="r25c9" class="tn">1:27.393</td><td data-id="r25c10" class="ib">1:25.753</td><td data-id="r25c11" class="in"></td><td data-id="r25c12" class="in"></td><td data-id="r25c13" class="in">2</td></tr><tr data-id="r24" data-pos="2"><td data-id="r24c1" class="gm"></td><td data-id="r24c2" class="ss"></td><td class="rk"><div><p data-id="r24c3" class="">2</p></div></td><td class="no"><div data-id="r24c4" class="no2">91</div></td><td data-id="r24c5" class="dr">BODEANOSS</td><td data-id="r24c6" class="ib">27.404</td><td data-id="r24c7" class="ib">35.948</td><td data-id="r24c8" class="ib">22.651</td><td data-id="r24c9" class="ti">1:26.003</td><td data-id="r24c10" class="ib">1:26.003</td><td data-id="r24c11" class="in">0.250</td><td data-id="r24c12" class="in">0.250</td><td data-id="r24c13" class="in">1</td></tr><tr data-id="r14" data-pos="3"><td data-id="r14c1" class="gl"></td><td data-id="r14c2" class="in"></td><td class="rk"><div><p data-id="r14c3" class="">3</p></div></td><td class="no"><div data-id="r14c4" class="no2">31</div></td><td data-id="r14c5" class="dr">LN MEDIA</td><td data-id="r14c6" class="tn">28.166</td><td data-id="r14c7" class="ti">35.930</td><td data-id="r14c8" class="tn">22.864</td><td data-id="r14c9" class="tn">1:26.960</td><td data-id="r14c10" class="ib">1:26.347</td><td data-id="r14c11" class="in">0.594</td><td data-id="r14c12" class="in">0.344</td><td data-id="r14c13" class="in">2</td></tr></tbody> ⏎ msg|| ⏎ 
+r24c9|tn|1:27.247 ⏎ 
+r24c13|in|2 ⏎ r24|*|86003|27404 ⏎ 
+r24c2|in| ⏎ r24c6|tb|26.754 ⏎ r24c7|| ⏎ r24c8|| ⏎ r24|*i1|35948 ⏎ 
+r14c6|ti|27.078 ⏎ r14c7|| ⏎ r14c8|| ⏎ r14|*i1|35930 ⏎ 
+r25c6|tn|27.742 ⏎ r25c7|| ⏎ r25c8|| ⏎ r25|*i1|35820 ⏎ 
+dyn1|count|311916 ⏎ 
+r24c7|tb|35.415 ⏎ 
+r24|*i2|22651 ⏎ 
+r14c7|ti|35.640 ⏎ r14|*i2|22494 ⏎ 
+r25c7|ti|35.816 ⏎ 
+r25|*i2|22379 ⏎ 
