@@ -439,3 +439,8 @@ r4c2|ss| ⏎ r9c2|ss| ⏎
  ⏎ 
  ⏎ 
  ⏎ 
+ ⏎ 
+ ⏎ 
+r10c2|so| ⏎ r10c6|tn|21:08.034 ⏎ r10c7|ib|21:39.757 ⏎ r10c8|in|20:55.421 ⏎ r10c10|in|8 ⏎ r10|*out|0 ⏎ 
+dyn1|text|Vuelta 9/8 ⏎ r5c1|gs| ⏎ r5c2|so| ⏎ r5c3||1 ⏎ r5c6|tn|21:40.172 ⏎ r5c7|in|Vuelta 9 ⏎ r5c8|in| ⏎ r5c10|in|9 ⏎ r6c1|gs| ⏎ r6c3||2 ⏎ r6c7|ib|1 Vuelta ⏎ r6c8|in|1 Vuelta ⏎ r7c8|in|16.333 ⏎ r10c7|ib|21:39.491 ⏎ r6|#|2 ⏎ r5|*out|0 ⏎ r5|#|1 ⏎ 
+r6c2|so| ⏎ 
