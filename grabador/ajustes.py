@@ -13,6 +13,7 @@ Cambios ("ops"), los mismos que entiende la página:
   {"o":"d","p":"A|B"}              A y B NO son la misma persona
   {"o":"m","k":"circuito|día|hora","v":1|0|null}   sesión mojada / seca / automático
   {"o":"b","p":"data/sesiones/<circuito>/<día>/<archivo>.json"}   borrar sesión
+  {"o":"t","f":FONDO,"r":RESALTE}  colores de la app (igual en todos los dispositivos)
 """
 from __future__ import annotations
 
@@ -26,6 +27,8 @@ ROOT = Path(__file__).resolve().parent.parent
 PIL = ROOT / 'data' / 'pilotos.json'
 TOPIC = 'krk-ajustes-7f3c9a51e2d84b06'
 SES_RE = re.compile(r'^data/sesiones/[a-z0-9][a-z0-9-]{1,60}/\d{4}-\d\d-\d\d/[\w.+-]{1,120}\.json$')
+TEMA_F = {'carbon', 'azul', 'pizarra', 'verde', 'burdeos', 'negro'}
+TEMA_R = {'amarillo', 'naranja', 'cian', 'azul', 'rosa', 'blanco'}
 MOJ_RE = re.compile(r'^[a-z0-9-]{2,61}\|\d{4}-\d\d-\d\d\|\d{1,2}:\d\d$')
 
 PENDING: list = []          # cambios leídos y aún no subidos
@@ -84,6 +87,9 @@ def apply_op(d: dict, o: dict) -> None:
                 d['mojado'][k] = o['v']
             else:
                 d['mojado'].pop(k, None)
+    elif t == 't':
+        if o.get('f') in TEMA_F and o.get('r') in TEMA_R:
+            d['tema'] = {'f': o['f'], 'r': o['r']}
     elif t == 'b':
         p = str(o.get('p') or '')
         if SES_RE.match(p) and '..' not in p:
@@ -99,6 +105,8 @@ def apply_op(d: dict, o: dict) -> None:
 def dump(d: dict) -> str:
     out = {'unir': dict(sorted(d['unir'].items())), 'quitar': sorted(set(d['quitar'])),
            'mojado': dict(sorted(d['mojado'].items())), 'distintos': sorted(set(d['distintos']))}
+    if d.get('tema'):
+        out['tema'] = d['tema']
     if d.get('_ultimo'):
         out['_ultimo'] = d['_ultimo']
     return json.dumps(out, ensure_ascii=False, indent=1)

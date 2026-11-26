@@ -13,11 +13,31 @@
 <meta name="apple-mobile-web-app-title" content="KR Karts">
 <title>KR Karts · En directo</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-<script src="core.js?v=20261125c"></script>
-<script src="ingeniero.js?v=20261125c"></script>
-<script src="ingeniero-ui.js?v=20261125c"></script>
+<script>/* tema guardado: se aplica antes de pintar para que no parpadee */
+try{const t=JSON.parse(localStorage.getItem('blr_tema')||'null');if(t){if(t.f)document.documentElement.dataset.fondo=t.f;if(t.r)document.documentElement.dataset.resalte=t.r;}}catch(e){}</script>
+<script src="core.js?v=20261126a"></script>
+<script src="ingeniero.js?v=20261126a"></script>
+<script src="ingeniero-ui.js?v=20261126a"></script>
 <style>
-:root{--bg:#0c0d10;--panel:#14161b;--panel2:#1b1e25;--line:#262a33;--text:#e9ebf0;--mute:#8a909c;--dim:#5d636e;--fast:#3ddc84;--good:#a6e36a;--slow:#ffa24c;--vslow:#ff5f5f;--purple:#b38cff;--accent:#ffd23f}
+:root{--bg:#0c0d10;--panel:#14161b;--panel2:#1b1e25;--line:#262a33;--row:#1d2027;--hover:#171a20;--seg:#2c3039;--deep:#101216;--text:#e9ebf0;--mute:#8a909c;--dim:#5d636e;--fast:#3ddc84;--good:#a6e36a;--slow:#ffa24c;--vslow:#ff5f5f;--purple:#b38cff;--accent:#ffd23f;--on-accent:#111;--acc-bg:color-mix(in srgb,var(--accent) 12%,var(--bg));--acc-line:color-mix(in srgb,var(--accent) 40%,var(--bg))}
+/* ---- fondos ---- */
+html[data-fondo="azul"]{--bg:#0a0f1c;--panel:#111a2b;--panel2:#182337;--line:#253350;--row:#1a253a;--hover:#152036;--seg:#2a3a5a;--deep:#0d1424;--mute:#8d98ad;--dim:#5e6a80}
+html[data-fondo="pizarra"]{--bg:#1c1f25;--panel:#252931;--panel2:#2e333d;--line:#3b414d;--row:#31363f;--hover:#2b3039;--seg:#454c5a;--deep:#202329;--mute:#9aa0ab;--dim:#6c727d}
+html[data-fondo="verde"]{--bg:#08130f;--panel:#0f1d17;--panel2:#15271f;--line:#22392e;--row:#192c23;--hover:#13241c;--seg:#2a4537;--deep:#0b1813;--mute:#86a093;--dim:#587063}
+html[data-fondo="burdeos"]{--bg:#150a0d;--panel:#1f1015;--panel2:#29161c;--line:#3b222a;--row:#2c1820;--hover:#24131a;--seg:#4a2a35;--deep:#190c10;--mute:#a68b93;--dim:#765d65}
+html[data-fondo="negro"]{--bg:#000;--panel:#0b0b0d;--panel2:#131317;--line:#1f1f25;--row:#16161a;--hover:#101014;--seg:#26262d;--deep:#060607}
+/* ---- resaltes ---- */
+html[data-resalte="naranja"]{--accent:#ff7a1a}
+html[data-resalte="cian"]{--accent:#22d3ee}
+html[data-resalte="azul"]{--accent:#5b9bff}
+html[data-resalte="rosa"]{--accent:#ff5fa8}
+html[data-resalte="blanco"]{--accent:#f2f4f8}
+.tema{position:relative}.tema>button{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;cursor:pointer;color:var(--mute);font-size:12px;display:inline-flex;gap:6px;align-items:center}
+.tema .sw{width:12px;height:12px;border-radius:50%;display:inline-block;border:1px solid #fff3;flex:none}
+.tpop{position:absolute;right:0;top:calc(100% + 6px);z-index:60;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;width:min(340px,92vw);box-shadow:0 10px 30px #0009}
+.tpop[hidden]{display:none}.tpop h4{margin:0 0 6px}.tpop .row{gap:6px;margin-bottom:12px}
+.tchip{border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:5px 10px 5px 7px;cursor:pointer;color:var(--mute);font-size:12px;display:inline-flex;gap:6px;align-items:center}
+.tchip.on{color:var(--text);border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,system-ui,sans-serif}
 button,input,select{font:inherit;color:inherit}
 .num{font-family:"JetBrains Mono",monospace;font-variant-numeric:tabular-nums}
@@ -39,20 +59,20 @@ select,input[type=text],input[type=date]{background:var(--panel2);border:1px sol
 h4{margin:0 0 8px;font:600 13px Inter;color:var(--mute)}
 table{width:100%;border-collapse:collapse}
 th{font:600 11px Inter;text-transform:uppercase;letter-spacing:.05em;color:var(--dim);text-align:right;padding:7px;border-bottom:1px solid var(--line);white-space:nowrap}
-td{padding:8px 7px;border-bottom:1px solid #1d2027;text-align:right;white-space:nowrap}
+td{padding:8px 7px;border-bottom:1px solid var(--row);text-align:right;white-space:nowrap}
 th.l,td.l{text-align:left}td.k{font:700 21px/1 "Barlow Condensed";text-align:center}
 .scroll{overflow-x:auto}
 .t-fast{color:var(--fast)}.t-good{color:var(--good)}.t-slow{color:var(--slow)}.t-vslow{color:var(--vslow)}.purple{color:var(--purple)}
 .badge{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--mute)}
-.badge.alta{color:var(--fast);border-color:#1f4a33}.badge.media{color:var(--accent);border-color:#4d4317}.badge.baja{color:var(--slow);border-color:#4a3520}
+.badge.alta{color:var(--fast);border-color:#1f4a33}.badge.media{color:var(--accent);border-color:var(--acc-line)}.badge.baja{color:var(--slow);border-color:#4a3520}
 .mini{font-size:12px;color:var(--mute)}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .seg{display:inline-flex;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px}
-.seg button{border:0;background:transparent;border-radius:7px;padding:5px 10px;cursor:pointer;color:var(--mute);font-size:13px}.seg button.on{background:#2c3039;color:var(--text)}
+.seg button{border:0;background:transparent;border-radius:7px;padding:5px 10px;cursor:pointer;color:var(--mute);font-size:13px}.seg button.on{background:var(--seg);color:var(--text)}
 iframe{width:100%;height:78vh;border:1px solid var(--line);border-radius:12px;background:#fff}
-.flash{animation:fl 1.2s}@keyframes fl{from{background:#2a2410}to{background:transparent}}
+.flash{animation:fl 1.2s}@keyframes fl{from{background:var(--acc-bg)}to{background:transparent}}
 .empty{padding:30px;text-align:center;color:var(--mute)}
-.btn{display:inline-block;background:var(--accent);color:#111;border:0;border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer;text-decoration:none}.btn.ghost{background:var(--panel2);color:var(--text);border:1px solid var(--line)}.btn:disabled{opacity:.5}
+.btn{display:inline-block;background:var(--accent);color:var(--on-accent);border:0;border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer;text-decoration:none}.btn.ghost{background:var(--panel2);color:var(--text);border:1px solid var(--line)}.btn:disabled{opacity:.5}
 .star{cursor:pointer;font-size:18px;color:var(--dim);user-select:none}.star.on{color:var(--accent)}
 .drop{border:2px dashed var(--line);border-radius:12px;padding:28px;text-align:center;cursor:pointer}.drop.over{border-color:var(--accent)}
 .ok-t{color:var(--fast)}.err-t{color:var(--vslow)}
@@ -79,7 +99,7 @@ body.pilot{overflow:hidden;position:fixed;inset:0}
 .pv .bc{font-family:"Barlow Condensed";font-weight:700}
 .pv .x{background:none;border:1px solid var(--line);border-radius:8px;color:var(--mute);padding:2px 10px;cursor:pointer}
 .pv .xx{width:clamp(38px,9.4vh,61px);height:clamp(38px,9.4vh,61px);border-radius:12px;border:2px solid var(--line);background:var(--panel2);color:var(--text);font-size:clamp(19px,5.1vh,34px);cursor:pointer;line-height:1}
-.pv .kbtn{height:clamp(34px,8.5vh,54px);padding:0 12px;border-radius:12px;border:2px solid #6b5a1a;background:#2a2410;color:var(--accent);font:700 clamp(15px,4.25vh,29px) 'Barlow Condensed';cursor:pointer;white-space:nowrap}
+.pv .kbtn{height:clamp(34px,8.5vh,54px);padding:0 12px;border-radius:12px;border:2px solid var(--acc-line);background:var(--acc-bg);color:var(--accent);font:700 clamp(15px,4.25vh,29px) 'Barlow Condensed';cursor:pointer;white-space:nowrap}
 .pv .clock{font:700 clamp(24px,8.5vh,66px)/1 'JetBrains Mono',monospace;color:var(--text)}
 .pv .top{grid-column:1/3;display:grid;grid-template-columns:1fr minmax(90px,.5fr) 1fr;gap:8px;min-height:0}
 .pv .posbig{font:700 clamp(40px,20vh,170px)/.9 'Barlow Condensed';color:var(--text)}
@@ -89,24 +109,24 @@ body.pilot{overflow:hidden;position:fixed;inset:0}
 .ksl{display:flex;flex-direction:column;gap:1.2vh;justify-content:center;min-width:0}
 .kst{font:700 clamp(18px,6vh,34px) 'Barlow Condensed'}
 .ksv{font:700 clamp(48px,26vh,180px)/1 'Barlow Condensed';color:var(--accent)}
-.ksgo{height:clamp(40px,13vh,80px);border:0;border-radius:14px;background:var(--accent);color:#111;font:700 clamp(18px,6vh,34px) 'Barlow Condensed';cursor:pointer}
+.ksgo{height:clamp(40px,13vh,80px);border:0;border-radius:14px;background:var(--accent);color:var(--on-accent);font:700 clamp(18px,6vh,34px) 'Barlow Condensed';cursor:pointer}
 .ksc{display:flex;flex-wrap:wrap;gap:6px;max-height:18vh;overflow:auto}.ksc .chipd{font-size:clamp(13px,3.4vh,20px);padding:4px 12px}
 .kp2{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,1fr);gap:8px}
 .kp2 button{border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font:600 clamp(22px,8vh,46px) Inter,sans-serif;cursor:pointer}
-.kp2 button:active{background:#2a2410}
+.kp2 button:active{background:var(--acc-bg)}
 .xx2{width:44px;height:44px;border-radius:12px;border:2px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;cursor:pointer}
 .rot{display:none}
 body.prot .pv,body.prot .ks{position:fixed;top:0;left:0;transform-origin:0 0}
 body.prot[data-rd="r"] .pv,body.prot[data-rd="r"] .ks{transform:translateX(var(--ph)) rotate(90deg)}
 body.prot[data-rd="l"] .pv,body.prot[data-rd="l"] .ks{transform:translateY(var(--pw)) rotate(-90deg)}
 .lockb{height:clamp(34px,8.5vh,54px);min-width:clamp(34px,8.5vh,54px);border-radius:12px;border:2px solid var(--line);background:var(--panel2);color:var(--mute);font-size:clamp(16px,4.2vh,26px);cursor:pointer;padding:0 8px}
-.lockb.on{border-color:#6b5a1a;background:#2a2410;color:var(--accent)}
+.lockb.on{border-color:var(--acc-line);background:var(--acc-bg);color:var(--accent)}
 body.plock #chgK{opacity:.25;pointer-events:none}
 .xx.confirm{background:#b3261e;border-color:#b3261e;color:#fff}@media (orientation:portrait){body.pilot .rot{display:block}}
-tr.click{cursor:pointer}tr.click:hover td{background:#171a20}
-.sub{display:flex;gap:4px;margin:10px 0;flex-wrap:wrap}.sub button{border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:5px 12px;cursor:pointer;color:var(--mute);font-size:13px}.sub button.on{color:var(--accent);border-color:#6b5a1a;background:#2a2410}
+tr.click{cursor:pointer}tr.click:hover td{background:var(--hover)}
+.sub{display:flex;gap:4px;margin:10px 0;flex-wrap:wrap}.sub button{border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:5px 12px;cursor:pointer;color:var(--mute);font-size:13px}.sub button.on{color:var(--accent);border-color:var(--acc-line);background:var(--acc-bg)}
 .lt td{padding:5px 6px;font-size:12px}.lt .best{color:var(--purple);font-weight:600}.lt .sbest{background:#2a1f45}.lt .off{color:var(--dim);text-decoration:line-through}
-.chipd{border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:4px 10px;cursor:pointer;color:var(--mute);font-size:12px;user-select:none}.chipd.on{background:#2a2410;border-color:#6b5a1a;color:var(--accent)}
+.chipd{border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:4px 10px;cursor:pointer;color:var(--mute);font-size:12px;user-select:none}.chipd.on{background:var(--acc-bg);border-color:var(--acc-line);color:var(--accent)}
 .flag{display:inline-block;padding:3px 10px;border-radius:6px;font-weight:600;font-size:12px}
 .back{background:none;border:1px solid var(--line);border-radius:8px;padding:5px 12px;cursor:pointer;color:var(--text)}
 @media(max-width:640px){.hm{display:none}td,th{padding:7px 4px}}
@@ -120,6 +140,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#171a20}
     <select id="dia"></select>
     <div class="grow"></div>
     <a class="pill" href="mensajes.html" target="_blank" style="text-decoration:none;color:var(--accent)">Mensaje al piloto</a>
+    <div class="tema"><button id="temaBtn" title="Colores de la app"><span class="sw" id="temaSw"></span>Colores</button><div class="tpop" id="temaPop" hidden></div></div>
     <span class="pill" id="wsState">Conectando…</span>
     <span class="pill" id="dataState">Cargando sesiones…</span>
   </header>
@@ -522,6 +543,35 @@ function askClaude(s) {
 // ---------- pilotos: juntar duplicados y quitar de la comparativa ----------
 // Se guarda en data/pilotos.json (para todos los dispositivos) y, mientras no se guarde en la nube, en este navegador.
 // unir: { "NOMBRE ALIAS": "NOMBRE QUE SE QUEDA" } · quitar: [nombres]
+// ---------- colores de la app (fondo + resalte) ----------
+// Se guarda en este navegador y se manda al canal de ajustes, así sale igual en todos tus dispositivos.
+const TEMA_F = { carbon: ['Carbón', '#0c0d10', '#14161b'], azul: ['Azul noche', '#0a0f1c', '#111a2b'], pizarra: ['Pizarra', '#1c1f25', '#252931'], verde: ['Verde boxes', '#08130f', '#0f1d17'], burdeos: ['Burdeos', '#150a0d', '#1f1015'], negro: ['Negro total', '#000000', '#0b0b0d'] };
+const TEMA_R = { amarillo: ['Amarillo', '#ffd23f'], naranja: ['Naranja', '#ff7a1a'], cian: ['Cian', '#22d3ee'], azul: ['Azul', '#5b9bff'], rosa: ['Rosa', '#ff5fa8'], blanco: ['Blanco', '#f2f4f8'] };
+let TEMA = Object.assign({ f: 'carbon', r: 'amarillo' }, store.get('tema', {}));
+function temaApply(t) {
+  if (!TEMA_F[t.f]) t.f = 'carbon'; if (!TEMA_R[t.r]) t.r = 'amarillo';
+  TEMA = { f: t.f, r: t.r }; store.set('tema', TEMA);
+  const h = document.documentElement;
+  if (t.f === 'carbon') delete h.dataset.fondo; else h.dataset.fondo = t.f;
+  if (t.r === 'amarillo') delete h.dataset.resalte; else h.dataset.resalte = t.r;
+  document.querySelectorAll('meta[name=theme-color]').forEach(m => m.content = TEMA_F[t.f][1]);
+  const sw = document.getElementById('temaSw'); if (sw) sw.style.background = `linear-gradient(135deg,${TEMA_F[t.f][2]} 50%,${TEMA_R[t.r][1]} 50%)`;
+  const pop = document.getElementById('temaPop'); if (pop && !pop.hidden) temaPaint();
+}
+function temaSync() { if (PADM.tema && (PADM.tema.f !== TEMA.f || PADM.tema.r !== TEMA.r)) temaApply(Object.assign({}, PADM.tema)); }
+function temaSet(f, r) { temaApply({ f, r }); AJ_Q = AJ_Q.filter(o => o.o !== 't'); store.set('ajQ', AJ_Q); ajDo([{ o: 't', f: TEMA.f, r: TEMA.r }], true); }
+function temaPaint() {
+  const pop = document.getElementById('temaPop');
+  pop.innerHTML = `<h4>Fondo</h4><div class="row">${Object.entries(TEMA_F).map(([k, v]) => `<button class="tchip${TEMA.f === k ? ' on' : ''}" data-tf="${k}"><span class="sw" style="background:${v[2]}"></span>${v[0]}</button>`).join('')}</div>
+    <h4>Resalte</h4><div class="row">${Object.entries(TEMA_R).map(([k, v]) => `<button class="tchip${TEMA.r === k ? ' on' : ''}" data-tr="${k}"><span class="sw" style="background:${v[1]}"></span>${v[0]}</button>`).join('')}</div>
+    <div class="mini" data-ajst>${ajStatusTxt()}</div>`;
+  pop.querySelectorAll('[data-tf]').forEach(b => b.onclick = e => { e.stopPropagation(); temaSet(b.dataset.tf, TEMA.r); });
+  pop.querySelectorAll('[data-tr]').forEach(b => b.onclick = e => { e.stopPropagation(); temaSet(TEMA.f, b.dataset.tr); });
+}
+document.getElementById('temaBtn').onclick = e => { e.stopPropagation(); const p = document.getElementById('temaPop'); p.hidden = !p.hidden; if (!p.hidden) temaPaint(); };
+document.getElementById('temaPop').onclick = e => e.stopPropagation();
+document.addEventListener('click', () => { const p = document.getElementById('temaPop'); if (p) p.hidden = true; });
+temaApply(TEMA);
 // ---------- ajustes que se guardan solos y para siempre, desde cualquier dispositivo ----------
 // Cada decisión (juntar, "no son el mismo", quitar, seco/mojado, borrar sesión) se manda como un mensaje al canal de ntfy.sh.
 // El grabador (siempre en marcha) lo lee cada minuto y lo guarda en data/pilotos.json en GitHub. Los demás dispositivos
@@ -539,12 +589,13 @@ function ajApply(P, o) {
   else if (o.o === 'd') { if (!P.distintos.includes(o.p)) P.distintos.push(o.p); }
   else if (o.o === 'm') { if (o.v == null) delete P.mojado[o.k]; else P.mojado[o.k] = o.v; }
   else if (o.o === 'b') { if (!P.borrar.includes(o.p)) P.borrar.push(o.p); }
+  else if (o.o === 't') { if (TEMA_F[o.f] && TEMA_R[o.r]) P.tema = { f: o.f, r: o.r }; }
 }
 async function loadPilAdmin() {
   let R = null;
   try { const r = await fetch(RAW + 'data/pilotos.json?t=' + Date.now(), { cache: 'no-store' }); if (r.ok) R = await r.json(); } catch {}
   PADM_REMOTE = Object.assign({ unir: {}, quitar: [], mojado: {}, distintos: [] }, R || {});
-  const P = { unir: Object.assign({}, PADM_REMOTE.unir), quitar: PADM_REMOTE.quitar.slice(), mojado: Object.assign({}, PADM_REMOTE.mojado), distintos: PADM_REMOTE.distintos.slice(), borrar: [] };
+  const P = { unir: Object.assign({}, PADM_REMOTE.unir), quitar: PADM_REMOTE.quitar.slice(), mojado: Object.assign({}, PADM_REMOTE.mojado), distintos: PADM_REMOTE.distintos.slice(), borrar: [], tema: PADM_REMOTE.tema || null };
   // lo enviado desde cualquier dispositivo que el grabador aún no ha guardado en el archivo
   try {
     const t = await (await fetch(`https://ntfy.sh/${AJ_TOPIC}/json?poll=1&since=${PADM_REMOTE._ultimo || '12h'}`, { cache: 'no-store' })).text();
@@ -552,6 +603,7 @@ async function loadPilAdmin() {
   } catch {}
   AJ_Q.forEach(o => ajApply(P, o));
   PADM = P;
+  temaSync();
   // lo que se hizo antes en este dispositivo (versión anterior de la app) pasa a guardarse para siempre
   const old = store.get('pilAdmin', null), ops = [];
   if (old && old.pending) {
@@ -595,7 +647,7 @@ function ajListen() {
   if (ajES) return;
   try {
     ajES = new EventSource(`https://ntfy.sh/${AJ_TOPIC}/sse?since=${Math.floor(Date.now() / 1000)}`);
-    ajES.onmessage = ev => { try { const e = JSON.parse(ev.data); if (e.event !== 'message') return; const before = admKey(PADM) + PADM.borrar.length; (JSON.parse(e.message).ops || []).forEach(o => ajApply(PADM, o)); if (admKey(PADM) + PADM.borrar.length === before) return; clearTimeout(ajT); ajT = setTimeout(() => { SC.res = null; render(); if (!$('kmodal').hidden && $('mgrList')) renderMgr(); }, 800); } catch {} };
+    ajES.onmessage = ev => { try { const e = JSON.parse(ev.data); if (e.event !== 'message') return; const before = admKey(PADM) + PADM.borrar.length; (JSON.parse(e.message).ops || []).forEach(o => ajApply(PADM, o)); temaSync(); if (admKey(PADM) + PADM.borrar.length === before) return; clearTimeout(ajT); ajT = setTimeout(() => { SC.res = null; render(); if (!$('kmodal').hidden && $('mgrList')) renderMgr(); }, 800); } catch {} };
   } catch {}
 }
 const NN = n => KartCore.normName(n);
@@ -1211,7 +1263,7 @@ function renderIng() {
       <div><span class="mini">1 · Reglamento</span><div class="row"><b>${esc(presetName)}</b><span class="mini">${cfg.dur}′ · ${cfg.stopsMin} paradas · relevo mín. ${cfg.stintMin}′${cfg.stintMax < cfg.dur ? ' · máx. ' + cfg.stintMax + '′' : ''} · ${cfg.rows} fila${cfg.rows > 1 ? 's' : ''} de ${cfg.boxKarts} karts</span><button class="back" id="ingEdit">✏️ Editar reglamento</button></div></div>
       ${ING.mode === 'live' ? `<div><span class="mini">2 · Tu dorsal</span><div class="row"><select id="ingDorsal"><option value="">— elige —</option>${rows.map(r => `<option value="${esc(kartOf(r))}" ${kartOf(r) === String(ING.dorsal) ? 'selected' : ''}>${esc(kartOf(r))} · ${esc(r.team || r.driver || '')}</option>`).join('')}${ING.dorsal && !rows.some(r => kartOf(r) === String(ING.dorsal)) ? `<option selected value="${esc(ING.dorsal)}">${esc(ING.dorsal)}</option>` : ''}</select>
         <input type="text" id="ingDorsalTxt" placeholder="o escríbelo" value="" style="width:90px"></div></div>
-      <div><span class="mini">3 · Salida</span><div class="row">${running ? `<span class="pill live">● Carrera en marcha desde ${new Date(ING.start).toTimeString().slice(0, 5)}</span><button class="back" id="ingStop">Terminar</button>` : `<button class="btn" id="ingStart" ${ING.dorsal ? '' : 'disabled'} style="background:var(--accent);color:#111;border:0;border-radius:9px;padding:9px 16px;font-weight:700;cursor:pointer">▶ Iniciar carrera</button><span class="mini">Púlsalo al apagarse el semáforo (o justo después).</span>`}</div></div>` :
+      <div><span class="mini">3 · Salida</span><div class="row">${running ? `<span class="pill live">● Carrera en marcha desde ${new Date(ING.start).toTimeString().slice(0, 5)}</span><button class="back" id="ingStop">Terminar</button>` : `<button class="btn" id="ingStart" ${ING.dorsal ? '' : 'disabled'} style="background:var(--accent);color:var(--on-accent);border:0;border-radius:9px;padding:9px 16px;font-weight:700;cursor:pointer">▶ Iniciar carrera</button><span class="mini">Púlsalo al apagarse el semáforo (o justo después).</span>`}</div></div>` :
       `<div><span class="mini">Simulación</span><div class="row"><button class="back" id="simPlay">${ING.simPlay ? '⏸ Pausa' : '▶ Reproducir'}</button><input type="range" id="simT" min="0" max="${cfg.dur * 60 + 60}" step="5" value="${ING.simT}" style="width:260px;accent-color:var(--accent)"><span class="num">${Ingeniero.clockFmt(ING.simT)} / ${Ingeniero.clockFmt(cfg.dur * 60)}</span></div></div>`}
     </div>
     ${ING.mode === 'live' && !running ? '<div class="mini" style="margin-top:8px">Importante: deja esta página abierta desde la salida; solo ve las vueltas y paradas que ocurren mientras está abierta. Si Apex no está conectado ahora (pastilla de arriba), espera a que empiece la sesión.</div>' : ''}
@@ -1230,7 +1282,7 @@ function renderIng() {
   el.querySelectorAll('#ingMode button').forEach(b => b.onclick = () => { ING.mode = b.dataset.m; ingSave(); renderIng(); });
   $('ingEdit').onclick = () => {
     ING.editing = true;
-    el.innerHTML = IngUI.rulesForm(cfg) + `<div class="row"><button class="btn" id="ingSaveR" style="background:var(--accent);color:#111;border:0;border-radius:9px;padding:9px 16px;font-weight:700;cursor:pointer">Guardar reglamento</button><button class="back" id="ingCancel">Cancelar</button></div>`;
+    el.innerHTML = IngUI.rulesForm(cfg) + `<div class="row"><button class="btn" id="ingSaveR" style="background:var(--accent);color:var(--on-accent);border:0;border-radius:9px;padding:9px 16px;font-weight:700;cursor:pointer">Guardar reglamento</button><button class="back" id="ingCancel">Cancelar</button></div>`;
     el.querySelectorAll('[data-preset]').forEach(b => b.onclick = () => { ING.cfg = Object.assign({ preset: b.dataset.preset }, Ingeniero.PRESETS[b.dataset.preset]); ingSave(); ING.editing = false; renderIng(); $('ingEdit').click(); });
     $('ingSaveR').onclick = () => { ING.cfg = IngUI.readRules(el, ING.cfg); ingSave(); ING.editing = false; renderIng(); };
     $('ingCancel').onclick = () => { ING.editing = false; renderIng(); };
