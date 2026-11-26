@@ -366,3 +366,10 @@ r3c2|sr| ⏎
 dyn1|text|Vuelta 3/8 ⏎ 
 r2c6|tn|1:33.453 ⏎ r2c7|in|Vuelta 3 ⏎ r2c10|in|3 ⏎ r3c2|in| ⏎ r2|*|93130| ⏎ 
 r3c2|sr| ⏎ r3c6|ti|1:33.623 ⏎ r3c7|ib|2.294 ⏎ r3c8|in|2.294 ⏎ r3c9|in|1:33.623 ⏎ r3c10|in|3 ⏎ r3|*|93623| ⏎ 
+ ⏎ 
+dyn1|text|Vuelta 4/8 ⏎ 
+r3c1|gf| ⏎ r3c2|su| ⏎ r3c3||1 ⏎ r3c6|tn|1:38.595 ⏎ r3c7|in|Vuelta 4 ⏎ r3c8|in| ⏎ r3c10|in|4 ⏎ r2c1|gl| ⏎ r2c2|sd| ⏎ r2c3||2 ⏎ r2c7|ib| ⏎ r2|#|2 ⏎ r3|*|93623| ⏎ r3|#|1 ⏎ 
+r3c1|gs| ⏎ 
+r2c1|gs| ⏎ r2c6|tn|1:46.827 ⏎ r2c7|ib|5.938 ⏎ r2c8|in|5.938 ⏎ r2c10|in|4 ⏎ r2|*|93292| ⏎ 
+r3c2|sr| ⏎ 
+r2c2|sr| ⏎ 
