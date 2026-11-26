@@ -15,9 +15,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <script>/* tema guardado: se aplica antes de pintar para que no parpadee */
 try{const t=JSON.parse(localStorage.getItem('blr_tema')||'null');if(t){if(t.f)document.documentElement.dataset.fondo=t.f;if(t.r)document.documentElement.dataset.resalte=t.r;}}catch(e){}</script>
-<script src="core.js?v=20261126b"></script>
-<script src="ingeniero.js?v=20261126b"></script>
-<script src="ingeniero-ui.js?v=20261126b"></script>
+<script src="core.js?v=20261126c"></script>
+<script src="ingeniero.js?v=20261126c"></script>
+<script src="ingeniero-ui.js?v=20261126c"></script>
 <style>
 :root{--bg:#0c0d10;--panel:#14161b;--panel2:#1b1e25;--line:#262a33;--row:#1d2027;--hover:#171a20;--seg:#2c3039;--deep:#101216;--text:#e9ebf0;--mute:#8a909c;--dim:#5d636e;--fast:#3ddc84;--good:#a6e36a;--slow:#ffa24c;--vslow:#ff5f5f;--purple:#b38cff;--accent:#ffd23f;--on-accent:#111;--acc-txt:var(--accent);--acc-bg:color-mix(in srgb,var(--accent) 12%,var(--bg));--acc-line:color-mix(in srgb,var(--accent) 40%,var(--bg))}
 /* ---- fondos ---- */
@@ -78,9 +78,19 @@ html[data-resalte="cian"]{--accent:#22d3ee}
 html[data-resalte="azul"]{--accent:#5b9bff}
 html[data-resalte="rosa"]{--accent:#ff5fa8}
 html[data-resalte="blanco"]{--accent:#f2f4f8}
+html[data-resalte="verde"]{--accent:#1fbf5b}
+html[data-resalte="amarillof"]{--accent:#e8ff00}
+html[data-resalte="verdef"]{--accent:#39ff14}
+html[data-resalte="azulf"]{--accent:#0096ff}
+html[data-resalte="turquesaf"]{--accent:#00ffd0}
+html[data-resalte="naranjaf"]{--accent:#ff5f00}
+html[data-resalte="rojof"]{--accent:#ff1f4b}
+html[data-resalte="rosaf"]{--accent:#ff2fb0}
+html[data-resalte="magentaf"]{--accent:#f000ff}
+html[data-resalte="violetaf"]{--accent:#a259ff}
 .tema{position:relative}.tema>button{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;cursor:pointer;color:var(--mute);font-size:12px;display:inline-flex;gap:6px;align-items:center}
 .tema .sw{width:12px;height:12px;border-radius:50%;display:inline-block;border:1px solid #fff3;flex:none}
-.tpop{position:absolute;right:0;top:calc(100% + 6px);z-index:60;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;width:min(340px,92vw);box-shadow:0 10px 30px #0009}
+.tpop{position:absolute;right:0;top:calc(100% + 6px);z-index:60;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;width:min(420px,94vw);box-shadow:0 10px 30px #0009}
 .tpop[hidden]{display:none}.tpop h4{margin:0 0 6px}.tpop .row{gap:6px;margin-bottom:12px}
 .tchip{border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:5px 10px 5px 7px;cursor:pointer;color:var(--mute);font-size:12px;display:inline-flex;gap:6px;align-items:center}
 .tchip.on{color:var(--text);border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
@@ -592,7 +602,7 @@ function askClaude(s) {
 // ---------- colores de la app (fondo + resalte) ----------
 // Se guarda en este navegador y se manda al canal de ajustes, así sale igual en todos tus dispositivos.
 const TEMA_F = { carbon: ['Carbón', '#0c0d10', '#14161b'], azul: ['Azul noche', '#0a0f1c', '#111a2b'], pizarra: ['Pizarra', '#1c1f25', '#252931'], verde: ['Verde boxes', '#08130f', '#0f1d17'], burdeos: ['Burdeos', '#150a0d', '#1f1015'], negro: ['Negro total', '#000000', '#0b0b0d'], claro: ['Claro (alto contraste)', '#f2f3f5', '#ffffff'] };
-const TEMA_R = { amarillo: ['Amarillo', '#ffd23f'], naranja: ['Naranja', '#ff7a1a'], cian: ['Cian', '#22d3ee'], azul: ['Azul', '#5b9bff'], rosa: ['Rosa', '#ff5fa8'], blanco: ['Blanco', '#f2f4f8'] };
+const TEMA_R = { amarillo: ['Amarillo', '#ffd23f'], naranja: ['Naranja', '#ff7a1a'], cian: ['Cian', '#22d3ee'], azul: ['Azul', '#5b9bff'], verde: ['Verde', '#1fbf5b'], rosa: ['Rosa', '#ff5fa8'], blanco: ['Blanco', '#f2f4f8'], amarillof: ['Amarillo flúor', '#e8ff00', 1], verdef: ['Verde flúor', '#39ff14', 1], azulf: ['Azul flúor', '#0096ff', 1], turquesaf: ['Turquesa flúor', '#00ffd0', 1], naranjaf: ['Naranja flúor', '#ff5f00', 1], rojof: ['Rojo intenso', '#ff1f4b', 1], rosaf: ['Rosa flúor', '#ff2fb0', 1], magentaf: ['Magenta', '#f000ff', 1], violetaf: ['Violeta eléctrico', '#a259ff', 1] };
 let TEMA = Object.assign({ f: 'carbon', r: 'amarillo' }, store.get('tema', {}));
 function temaApply(t) {
   if (!TEMA_F[t.f]) t.f = 'carbon'; if (!TEMA_R[t.r]) t.r = 'amarillo';
@@ -610,7 +620,8 @@ function temaSet(f, r) { temaApply({ f, r }); AJ_Q = AJ_Q.filter(o => o.o !== 't
 function temaPaint() {
   const pop = document.getElementById('temaPop');
   pop.innerHTML = `<h4>Fondo</h4><div class="row">${Object.entries(TEMA_F).map(([k, v]) => `<button class="tchip${TEMA.f === k ? ' on' : ''}" data-tf="${k}"><span class="sw" style="background:${v[2]}"></span>${v[0]}</button>`).join('')}</div>
-    <h4>Resalte</h4><div class="row">${Object.entries(TEMA_R).map(([k, v]) => `<button class="tchip${TEMA.r === k ? ' on' : ''}" data-tr="${k}"><span class="sw" style="background:${TEMA.f === 'claro' && k === 'blanco' ? '#111318' : v[1]}"></span>${TEMA.f === 'claro' && k === 'blanco' ? 'Negro' : v[0]}</button>`).join('')}</div>
+    <h4>Resalte · clásicos</h4><div class="row">${Object.entries(TEMA_R).filter(([, v]) => !v[2]).map(([k, v]) => `<button class="tchip${TEMA.r === k ? ' on' : ''}" data-tr="${k}"><span class="sw" style="background:${TEMA.f === 'claro' && k === 'blanco' ? '#111318' : v[1]}"></span>${TEMA.f === 'claro' && k === 'blanco' ? 'Negro' : v[0]}</button>`).join('')}</div>
+    <h4>Resalte · flúor e intensos</h4><div class="row">${Object.entries(TEMA_R).filter(([, v]) => v[2]).map(([k, v]) => `<button class="tchip${TEMA.r === k ? ' on' : ''}" data-tr="${k}"><span class="sw" style="background:${TEMA.f === 'claro' && k === 'blanco' ? '#111318' : v[1]}"></span>${TEMA.f === 'claro' && k === 'blanco' ? 'Negro' : v[0]}</button>`).join('')}</div>
     <div class="mini" data-ajst>${ajStatusTxt()}</div>`;
   pop.querySelectorAll('[data-tf]').forEach(b => b.onclick = e => { e.stopPropagation(); temaSet(b.dataset.tf, TEMA.r); });
   pop.querySelectorAll('[data-tr]').forEach(b => b.onclick = e => { e.stopPropagation(); temaSet(TEMA.f, b.dataset.tr); });

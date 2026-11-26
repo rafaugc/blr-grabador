@@ -28,7 +28,7 @@ PIL = ROOT / 'data' / 'pilotos.json'
 TOPIC = 'krk-ajustes-7f3c9a51e2d84b06'
 SES_RE = re.compile(r'^data/sesiones/[a-z0-9][a-z0-9-]{1,60}/\d{4}-\d\d-\d\d/[\w.+-]{1,120}\.json$')
 TEMA_F = {'carbon', 'azul', 'pizarra', 'verde', 'burdeos', 'negro', 'claro'}
-TEMA_R = {'amarillo', 'naranja', 'cian', 'azul', 'rosa', 'blanco'}
+TEMA_R = {'amarillo', 'naranja', 'cian', 'azul', 'verde', 'rosa', 'blanco', 'amarillof', 'verdef', 'azulf', 'turquesaf', 'naranjaf', 'rojof', 'rosaf', 'magentaf', 'violetaf'}
 MOJ_RE = re.compile(r'^[a-z0-9-]{2,61}\|\d{4}-\d\d-\d\d\|\d{1,2}:\d\d$')
 
 PENDING: list = []          # cambios leídos y aún no subidos
