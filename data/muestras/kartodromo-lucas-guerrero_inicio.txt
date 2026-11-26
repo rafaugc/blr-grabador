@@ -330,3 +330,7 @@ r6c2|ss| ⏎
 light|lf| ⏎ com||<p><b>13:36</b><span data-flag="chequered"></span>Llegada</p><p><b>12:58</b><span data-flag="green"></span>Start</p> ⏎ r6c2|sf| ⏎ r8c2|sf| ⏎ r5c2|sf| ⏎ r9c2|sf| ⏎ r4c2|sf| ⏎ 
 dyn1|text| ⏎ 
 r12c2|sf| ⏎ 
+r7c2|sf| ⏎ 
+r11c2|sf| ⏎ 
+r10c2|sf| ⏎ 
+ ⏎ 
