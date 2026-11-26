@@ -369,3 +369,20 @@ r9c1|gl| ⏎
 r8c1|gs| ⏎ r8c2|ss| ⏎ r8c7|ib|1 Vuelta ⏎ r8c8|in|1 Vuelta ⏎ 
 r11c2|sr| ⏎ 
 r8c2|sd| ⏎ r8c6|tn|1:57.064 ⏎ r8c7|ib|39.280 ⏎ r8c8|in|3.466 ⏎ r8c10|in|5 ⏎ r8|*|83715| ⏎ 
+r10c2|sr| ⏎ 
+r9c2|sr| ⏎ r8c2|sr| ⏎ 
+dyn1|text|Vuelta 6/8 ⏎ 
+r6c6|tn|1:24.057 ⏎ r6c7|in|Vuelta 6 ⏎ r6c10|in|6 ⏎ r5c2|in| ⏎ r7c2|in| ⏎ r12c2|in| ⏎ r11c2|in| ⏎ r4c2|in| ⏎ r10c2|in| ⏎ r9c2|in| ⏎ r8c2|in| ⏎ r6|*|82953| ⏎ 
+r5c2|sr| ⏎ r5c6|tn|1:24.265 ⏎ r5c7|ib|0.343 ⏎ r5c8|in|0.343 ⏎ r5c10|in|6 ⏎ r5|*|82866| ⏎ 
+r7c2|sr| ⏎ 
+r7c6|tn|1:25.386 ⏎ r7c7|ib|11.309 ⏎ r7c8|in|10.966 ⏎ r7c10|in|6 ⏎ r7|*|85085| ⏎ 
+r8c1|gf| ⏎ r8c2|so| ⏎ r8c3||4 ⏎ r8c6|tn|59.749 ⏎ r8c7|ib|14.972 ⏎ r8c8|in|3.663 ⏎ r8c10|in|6 ⏎ r12c1|gl| ⏎ r12c2|sd| ⏎ r12c3||5 ⏎ r12c8|in| ⏎ r11c2|sd| ⏎ r11c3||6 ⏎ r4c2|sd| ⏎ r4c3||7 ⏎ r10c2|sd| ⏎ r10c3||8 ⏎ r9c2|sd| ⏎ r9c3||9 ⏎ r8|*out|0 ⏎ r8|#|4 ⏎ r12|#|5 ⏎ r11|#|6 ⏎ r4|#|7 ⏎ r10|#|8 ⏎ r9|#|9 ⏎ 
+r8c1|gs| ⏎ 
+r12c1|gs| ⏎ r12c6|tn|1:27.590 ⏎ r12c7|ib|18.821 ⏎ r12c8|in|3.849 ⏎ r12c10|in|6 ⏎ r12|*|84430| ⏎ 
+r11c6|tn|1:28.772 ⏎ r11c7|ib|28.113 ⏎ r11c8|in|9.292 ⏎ r11c10|in|6 ⏎ r11|*|87668| ⏎ 
+r12c2|sr| ⏎ r11c2|sr| ⏎ r4c2|in| ⏎ r10c2|in| ⏎ r9c2|in| ⏎ 
+r4c2|sr| ⏎ r4c6|tn|1:28.012 ⏎ r4c7|ib|34.224 ⏎ r4c8|in|6.111 ⏎ r4c10|in|6 ⏎ r4|*|87354| ⏎ 
+r9c1|gf| ⏎ 
+r9c2|su| ⏎ r9c3||8 ⏎ r9c6|tn|1:26.398 ⏎ r9c7|ib|38.155 ⏎ r9c8|in|3.931 ⏎ r9c10|in|6 ⏎ r10c1|gl| ⏎ r10c2|sd| ⏎ r10c3||9 ⏎ r10c8|in| ⏎ r10|#|9 ⏎ r9|*|86264| ⏎ r9|#|8 ⏎ 
+r9c2|sr| ⏎ r10c2|in| ⏎ 
+r9c1|gs| ⏎ r10c1|gs| ⏎ r10c2|ss| ⏎ r10c7|ib|1 Vuelta ⏎ r10c8|in|1 Vuelta ⏎ 
