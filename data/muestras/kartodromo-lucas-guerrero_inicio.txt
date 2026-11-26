@@ -467,3 +467,5 @@ r11c2|ss| ⏎
 light|lf| ⏎ com||<p><b>14:13</b><span data-flag="chequered"></span>Llegada</p> ⏎ r5c2|sf| ⏎ r6c2|sf| ⏎ r7c2|sf| ⏎ r8c2|sf| ⏎ r12c2|sf| ⏎ r11c2|sf| ⏎ r10c2|sf| ⏎ 
 r4c2|sf| ⏎ 
 r9c2|sf| ⏎ 
+ ⏎ 
+ ⏎ 
