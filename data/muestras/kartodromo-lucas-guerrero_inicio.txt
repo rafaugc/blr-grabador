@@ -52,3 +52,30 @@ r5|*out|0 ⏎
 r10c2|so| ⏎ r10|*out|0 ⏎ 
 r11c2|so| ⏎ 
 r11|*out|0 ⏎ 
+dyn1|countdown|840203 ⏎ 
+dyn1|countdown|810096 ⏎ 
+r6c2|sr| ⏎ 
+r6c6|tn|1:37.025 ⏎ r6|*|| ⏎ 
+r8c2|sr| ⏎ r8c6|tn|1:37.722 ⏎ r8|*|| ⏎ 
+r6c2|in| ⏎ 
+r7c2|sr| ⏎ 
+r7c6|tn|1:48.475 ⏎ r7|*|| ⏎ 
+r8c2|in| ⏎ 
+dyn1|countdown|780103 ⏎ 
+r7c2|in| ⏎ 
+r9c2|sr| ⏎ r9c6|tn|1:49.650 ⏎ r9|*|| ⏎ 
+r5c2|sr| ⏎ 
+r5c6|tn|1:41.128 ⏎ r5|*|| ⏎ 
+r4c2|sr| ⏎ 
+r4c6|tn|1:47.612 ⏎ r4|*|| ⏎ 
+r12c2|sr| ⏎ 
+r12c6|tn|2:00.653 ⏎ r12|*|| ⏎ 
+r9c2|in| ⏎ 
+r5c2|in| ⏎ 
+dyn1|countdown|749909 ⏎ 
+r4c2|in| ⏎ 
+r10c2|sr| ⏎ r10c6|tn|1:52.506 ⏎ r10|*|| ⏎ 
+r12c2|in| ⏎ 
+r11c2|sr| ⏎ r11c6|tn|1:50.409 ⏎ r11|*|| ⏎ 
+r10c2|in| ⏎ 
+r11c2|in| ⏎ 
