@@ -279,3 +279,12 @@ init|p| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#FF8484 !important; color
 dyn1|countdown|541412 ⏎ 
 dyn1|countdown|511358 ⏎ 
 dyn1|countdown|481205 ⏎ 
+dyn1|countdown|451125 ⏎ 
+dyn1|countdown|421107 ⏎ 
+r3c2|sr| ⏎ r3c6|tn|2:52.574 ⏎ r3|*|| ⏎ 
+r2c2|sr| ⏎ 
+r2c6|tn|3:04.903 ⏎ r2|*|| ⏎ 
+r3c2|in| ⏎ 
+r2c2|in| ⏎ 
+dyn1|countdown|390970 ⏎ 
+dyn1|countdown|360812 ⏎ 
