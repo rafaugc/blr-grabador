@@ -252,3 +252,21 @@ init|r| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#0000FF !important; color
  ⏎ 
  ⏎ 
  ⏎ 
+ ⏎ 
+ ⏎ 
+ ⏎ 
+dyn1|count|36124 ⏎ 
+r2c6|tb|33.257 ⏎ r2|*i1| ⏎ 
+r1c2|sr| ⏎ r1|*|| ⏎ 
+r3c2|sr| ⏎ 
+r3|*|| ⏎ 
+r1c2|in| ⏎ 
+r5c2|sr| ⏎ r5|*|| ⏎ 
+r3c2|in| ⏎ 
+dyn1|count|66219 ⏎ 
+r5c2|in| ⏎ r6c2|sr| ⏎ 
+r6|*|| ⏎ 
+r4c2|sr| ⏎ r4|*|| ⏎ 
+r6c2|in| ⏎ 
+r4c2|in| ⏎ 
+r1c6|ti|36.621 ⏎ r1|*i1| ⏎ 
