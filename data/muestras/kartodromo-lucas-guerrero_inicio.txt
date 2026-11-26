@@ -314,3 +314,11 @@ r3c2|in| ⏎
 r2c2|in| ⏎ 
 dyn1|countdown|60012 ⏎ 
 dyn1|countdown|29956 ⏎ 
+dyn1|countdown| ⏎ 
+r2c1|gf| ⏎ r2c2|su| ⏎ r2c3||1 ⏎ r2c6|tb|1:38.698 ⏎ r2c7|ib|1:38.698 ⏎ r2c8|in| ⏎ r2c9|in| ⏎ r2c10|in|5 ⏎ r3c1|gl| ⏎ r3c3||2 ⏎ r3c6|ti|1:39.271 ⏎ r3c8|in|0.573 ⏎ r3c9|in|0.573 ⏎ r2|*|98698| ⏎ r2|#|1 ⏎ r3|#|2 ⏎ 
+r2c2|in| ⏎ 
+r3c2|ss| ⏎ 
+r3c2|sr| ⏎ r3c6|tn|2:11.587 ⏎ r3c10|in|5 ⏎ r3|*|99271| ⏎ 
+r3c2|in| ⏎ 
+ ⏎ 
+r2c2|ss| ⏎ 
