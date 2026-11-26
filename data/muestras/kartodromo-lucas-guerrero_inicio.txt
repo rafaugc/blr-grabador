@@ -288,3 +288,12 @@ r3c2|in| ⏎
 r2c2|in| ⏎ 
 dyn1|countdown|390970 ⏎ 
 dyn1|countdown|360812 ⏎ 
+dyn1|countdown|330780 ⏎ 
+dyn1|countdown|300675 ⏎ 
+r3c1|gs| ⏎ r3c2|su| ⏎ r3c3||1 ⏎ r3c6|tb|1:59.157 ⏎ r3c7|ib|1:59.157 ⏎ r3c10|in|2 ⏎ r2|#|2 ⏎ r3|*|119157| ⏎ r3|#|1 ⏎ 
+r2c1|gf| ⏎ r2c2|su| ⏎ r2c3||1 ⏎ r2c6|tb|1:59.052 ⏎ r2c7|ib|1:59.052 ⏎ r2c10|in|2 ⏎ r3c1|gl| ⏎ r3c2|sr| ⏎ r3c3||2 ⏎ r3c6|ti|1:59.157 ⏎ r3c8|in|0.105 ⏎ r3c9|in|0.105 ⏎ r2|*|119052| ⏎ r2|#|1 ⏎ r3|#|2 ⏎ 
+r3c2|in| ⏎ 
+r2c2|in| ⏎ 
+dyn1|countdown|270609 ⏎ 
+dyn1|countdown|240560 ⏎ 
+dyn1|countdown|210400 ⏎ 
