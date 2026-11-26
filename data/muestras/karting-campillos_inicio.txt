@@ -145,3 +145,8 @@ r14c7|tn|37.368 ⏎
 r14|*i2|22276 ⏎ r25c7|tn|37.163 ⏎ r25|*i2|22531 ⏎ 
 r24c7|tn|37.667 ⏎ r24|*i2|22499 ⏎ 
 light|lf| ⏎ com||<p><b>12:54</b><span data-flag="chequered"></span>Llegada</p> ⏎ dyn1|text| ⏎ 
+ ⏎ 
+r14c2|sf| ⏎ 
+r14c6|ib|27.078 ⏎ r14c7|ib|35.640 ⏎ r14c8|ib|22.117 ⏎ 
+r24c2|sf| ⏎ r24c6|ib|26.754 ⏎ r24c7|ib|35.415 ⏎ r24c8|ib|22.394 ⏎ r25c2|sf| ⏎ r25c6|ib|27.554 ⏎ r25c7|ib|35.820 ⏎ r25c8|ib|22.379 ⏎ 
+ ⏎ 
