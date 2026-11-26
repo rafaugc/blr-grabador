@@ -379,3 +379,8 @@ r3c6|tn|1:34.539 ⏎ r3c7|in|Vuelta 5 ⏎ r3c10|in|5 ⏎ r2c2|in| ⏎ r3|*|94084
 r2c2|sr| ⏎ 
 r2c6|tn|1:36.026 ⏎ r2c7|ib|7.425 ⏎ r2c8|in|7.425 ⏎ r2c10|in|5 ⏎ r2|*|94659| ⏎ 
  ⏎ 
+dyn1|text|Vuelta 6/8 ⏎ 
+r3c6|tn|1:33.805 ⏎ r3c7|in|Vuelta 6 ⏎ r3c10|in|6 ⏎ r2c2|in| ⏎ r3|*|93754| ⏎ 
+r2c2|sr| ⏎ r2c6|tn|1:35.212 ⏎ r2c7|ib|8.832 ⏎ r2c8|in|8.832 ⏎ r2c10|in|6 ⏎ r2|*|94687| ⏎ 
+ ⏎ 
+dyn1|text|Vuelta 7/8 ⏎ r3c6|ti|1:33.524 ⏎ r3c7|in|Vuelta 7 ⏎ r3c9|in|1:33.524 ⏎ r3c10|in|7 ⏎ r2c2|in| ⏎ r3|*|93524| ⏎ 
