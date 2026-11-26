@@ -345,3 +345,27 @@ r6c1|gf| ⏎ r5c1|gl| ⏎ r5c2|sr| ⏎ r5c6|tn|1:23.511 ⏎ r5c7|ib|0.222 ⏎ r5
 r8c2|sr| ⏎ 
 r8c6|ti|1:23.715 ⏎ r8c7|ib|5.169 ⏎ r8c8|in|4.947 ⏎ r8c9|in|1:23.715 ⏎ r8c10|in|4 ⏎ r7c7|ib|1 Vuelta ⏎ r7c8|in|1 Vuelta ⏎ r12c7|ib|5.475 ⏎ r11c7|ib|7.797 ⏎ r4c7|ib|12.877 ⏎ r10c7|ib|13.556 ⏎ r8|*|83715| ⏎ 
 r7c2|sr| ⏎ r7c6|ti|1:24.780 ⏎ r7c7|ib|7.467 ⏎ r7c8|in|2.298 ⏎ r7c9|in|1:24.780 ⏎ r7c10|in|4 ⏎ r12c7|ib|1 Vuelta ⏎ r12c8|in|1 Vuelta ⏎ r11c7|ib|2.322 ⏎ r4c7|ib|7.402 ⏎ r10c7|ib|8.081 ⏎ r7|*|84780| ⏎ 
+r12c2|sr| ⏎ 
+r12c6|ti|1:25.649 ⏎ r12c7|ib|13.811 ⏎ r12c8|in|6.344 ⏎ r12c9|in|1:25.649 ⏎ r12c10|in|4 ⏎ r11c7|ib|1 Vuelta ⏎ r11c8|in|1 Vuelta ⏎ r4c7|ib|5.080 ⏎ r10c7|ib|5.759 ⏎ r12|*|85649| ⏎ 
+r11c2|sr| ⏎ 
+r11c6|tn|1:28.137 ⏎ r11c7|ib|18.621 ⏎ r11c8|in|4.810 ⏎ r11c10|in|4 ⏎ r4c7|ib|1 Vuelta ⏎ r4c8|in|1 Vuelta ⏎ r10c7|ib|0.679 ⏎ r11|*|87629| ⏎ 
+r4c1|gs| ⏎ 
+r4c2|sr| ⏎ r4c6|tn|1:30.304 ⏎ r4c7|ib|25.868 ⏎ r4c8|in|7.247 ⏎ r4c10|in|4 ⏎ r10c1|gs| ⏎ r10c7|ib|1 Vuelta ⏎ r10c8|in|1 Vuelta ⏎ r4|*|88360| ⏎ 
+r4c1|gf| ⏎ r10c1|gl| ⏎ r10c2|sr| ⏎ r10c6|tn|1:30.153 ⏎ r10c7|ib|26.396 ⏎ r10c8|in|0.528 ⏎ r10c10|in|4 ⏎ r10|*|87783| ⏎ 
+r9c2|sr| ⏎ r9c6|tn|1:28.529 ⏎ r9c7|ib|30.490 ⏎ r9c8|in|4.094 ⏎ r9c10|in|4 ⏎ r9|*|85922| ⏎ 
+dyn1|text|Vuelta 5/8 ⏎ r6c6|tb|1:22.953 ⏎ r6c7|in|Vuelta 5 ⏎ r6c9|tb|1:22.953 ⏎ r6c10|in|5 ⏎ r5c2|in| ⏎ r5c9|in|1:23.138 ⏎ r8c2|in| ⏎ r7c2|in| ⏎ r12c2|in| ⏎ r11c2|in| ⏎ r4c2|in| ⏎ r10c2|in| ⏎ r9c2|in| ⏎ r6|*|82953| ⏎ msg||Mejor vuelta : BEZECCHI - 1:22.953 (61.97 Km/h) ⏎ 
+r6c6|ti|1:22.953 ⏎ r6c9|in|1:22.953 ⏎ r5c2|sr| ⏎ r5c6|tb|1:22.866 ⏎ r5c7|ib|0.135 ⏎ r5c8|in|0.135 ⏎ r5c9|tb|1:22.866 ⏎ r5c10|in|5 ⏎ r5|*|82866| ⏎ msg||Mejor vuelta : KOTUK - 1:22.866 (62.04 Km/h) ⏎ 
+r7c1|gf| ⏎ 
+r7c2|su| ⏎ r7c3||3 ⏎ r7c6|tn|1:25.466 ⏎ r7c7|ib|9.980 ⏎ r7c8|in|9.845 ⏎ r7c10|in|5 ⏎ r8c1|gl| ⏎ r8c2|sd| ⏎ r8c3||4 ⏎ r8c8|in| ⏎ r12c8|in|8.642 ⏎ r8|#|4 ⏎ r7|*|84780| ⏎ r7|#|3 ⏎ 
+r7c1|gs| ⏎ 
+r12c1|gf| ⏎ r12c2|su| ⏎ r12c3||4 ⏎ r12c6|ti|1:24.430 ⏎ r12c7|ib|15.288 ⏎ r12c8|in|5.308 ⏎ r12c9|in|1:24.430 ⏎ r12c10|in|5 ⏎ r8c3||5 ⏎ r11c8|in|13.452 ⏎ r8|#|5 ⏎ r12|*|84430| ⏎ r12|#|4 ⏎ 
+r12c1|gs| ⏎ r11c1|gf| ⏎ r11c2|su| ⏎ r11c3||5 ⏎ r11c6|tn|1:27.730 ⏎ r11c7|ib|23.398 ⏎ r11c8|in|8.110 ⏎ r11c10|in|5 ⏎ r8c3||6 ⏎ r4c8|in|20.699 ⏎ r8|#|6 ⏎ r11|*|87557| ⏎ r11|#|5 ⏎ 
+r7c2|sr| ⏎ 
+r11c1|gs| ⏎ r4c2|su| ⏎ r4c3||6 ⏎ r4c6|ti|1:27.354 ⏎ r4c7|ib|30.269 ⏎ r4c8|in|6.871 ⏎ r4c9|in|1:27.354 ⏎ r4c10|in|5 ⏎ r8c3||7 ⏎ r10c1|gs| ⏎ r10c8|in|21.227 ⏎ r8|#|7 ⏎ r4|*|87354| ⏎ r4|#|6 ⏎ 
+r12c2|sr| ⏎ 
+r4c1|gs| ⏎ r10c1|gf| ⏎ r10c2|su| ⏎ r10c3||7 ⏎ r10c6|tn|1:31.975 ⏎ r10c7|ib|35.418 ⏎ r10c8|in|5.149 ⏎ r10c10|in|5 ⏎ r8c3||8 ⏎ r9c8|in|25.321 ⏎ r8|#|8 ⏎ r10|*|88977| ⏎ r10|#|7 ⏎ 
+r9c1|gm| ⏎ r9c2|su| ⏎ r9c3||8 ⏎ r9c6|tn|1:28.277 ⏎ r9c7|ib|35.814 ⏎ r9c8|in|0.396 ⏎ r9c10|in|5 ⏎ r8c3||9 ⏎ r8|#|9 ⏎ r9|*|87108| ⏎ r9|#|8 ⏎ 
+r9c1|gl| ⏎ 
+r8c1|gs| ⏎ r8c2|ss| ⏎ r8c7|ib|1 Vuelta ⏎ r8c8|in|1 Vuelta ⏎ 
+r11c2|sr| ⏎ 
+r8c2|sd| ⏎ r8c6|tn|1:57.064 ⏎ r8c7|ib|39.280 ⏎ r8c8|in|3.466 ⏎ r8c10|in|5 ⏎ r8|*|83715| ⏎ 
