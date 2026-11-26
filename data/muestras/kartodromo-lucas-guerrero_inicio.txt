@@ -340,3 +340,6 @@ r3c2|ss| ⏎
  ⏎ 
  ⏎ 
  ⏎ 
+ ⏎ 
+light|lf| ⏎ com||<p><b>12:09</b><span data-flag="chequered"></span>Llegada</p> ⏎ r2c2|sf| ⏎ r3c2|sf| ⏎ 
+dyn1|text| ⏎ 
