@@ -15,17 +15,63 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <script>/* tema guardado: se aplica antes de pintar para que no parpadee */
 try{const t=JSON.parse(localStorage.getItem('blr_tema')||'null');if(t){if(t.f)document.documentElement.dataset.fondo=t.f;if(t.r)document.documentElement.dataset.resalte=t.r;}}catch(e){}</script>
-<script src="core.js?v=20261126a"></script>
-<script src="ingeniero.js?v=20261126a"></script>
-<script src="ingeniero-ui.js?v=20261126a"></script>
+<script src="core.js?v=20261126b"></script>
+<script src="ingeniero.js?v=20261126b"></script>
+<script src="ingeniero-ui.js?v=20261126b"></script>
 <style>
-:root{--bg:#0c0d10;--panel:#14161b;--panel2:#1b1e25;--line:#262a33;--row:#1d2027;--hover:#171a20;--seg:#2c3039;--deep:#101216;--text:#e9ebf0;--mute:#8a909c;--dim:#5d636e;--fast:#3ddc84;--good:#a6e36a;--slow:#ffa24c;--vslow:#ff5f5f;--purple:#b38cff;--accent:#ffd23f;--on-accent:#111;--acc-bg:color-mix(in srgb,var(--accent) 12%,var(--bg));--acc-line:color-mix(in srgb,var(--accent) 40%,var(--bg))}
+:root{--bg:#0c0d10;--panel:#14161b;--panel2:#1b1e25;--line:#262a33;--row:#1d2027;--hover:#171a20;--seg:#2c3039;--deep:#101216;--text:#e9ebf0;--mute:#8a909c;--dim:#5d636e;--fast:#3ddc84;--good:#a6e36a;--slow:#ffa24c;--vslow:#ff5f5f;--purple:#b38cff;--accent:#ffd23f;--on-accent:#111;--acc-txt:var(--accent);--acc-bg:color-mix(in srgb,var(--accent) 12%,var(--bg));--acc-line:color-mix(in srgb,var(--accent) 40%,var(--bg))}
 /* ---- fondos ---- */
 html[data-fondo="azul"]{--bg:#0a0f1c;--panel:#111a2b;--panel2:#182337;--line:#253350;--row:#1a253a;--hover:#152036;--seg:#2a3a5a;--deep:#0d1424;--mute:#8d98ad;--dim:#5e6a80}
 html[data-fondo="pizarra"]{--bg:#1c1f25;--panel:#252931;--panel2:#2e333d;--line:#3b414d;--row:#31363f;--hover:#2b3039;--seg:#454c5a;--deep:#202329;--mute:#9aa0ab;--dim:#6c727d}
 html[data-fondo="verde"]{--bg:#08130f;--panel:#0f1d17;--panel2:#15271f;--line:#22392e;--row:#192c23;--hover:#13241c;--seg:#2a4537;--deep:#0b1813;--mute:#86a093;--dim:#587063}
 html[data-fondo="burdeos"]{--bg:#150a0d;--panel:#1f1015;--panel2:#29161c;--line:#3b222a;--row:#2c1820;--hover:#24131a;--seg:#4a2a35;--deep:#190c10;--mute:#a68b93;--dim:#765d65}
 html[data-fondo="negro"]{--bg:#000;--panel:#0b0b0d;--panel2:#131317;--line:#1f1f25;--row:#16161a;--hover:#101014;--seg:#26262d;--deep:#060607}
+/* ---- fondo claro de alto contraste ---- */
+html[data-fondo="claro"]{color-scheme:light;--bg:#f2f3f5;--panel:#ffffff;--panel2:#eceef2;--line:#aeb5c0;--row:#d3d8df;--hover:#e3e7ed;--seg:#cfd5dd;--deep:#eef0f3;--text:#0b0d12;--mute:#3a414c;--dim:#555c68;--fast:#05753a;--good:#3f6d0b;--slow:#a84a06;--vslow:#c01818;--purple:#6425d0;--acc-txt:color-mix(in srgb,var(--accent) 42%,#000);--acc-bg:color-mix(in srgb,var(--accent) 18%,#fff);--acc-line:color-mix(in srgb,var(--accent) 65%,#000)}
+html[data-fondo="claro"][data-resalte="blanco"]{--accent:#111318;--on-accent:#fff;--acc-txt:#111318;--acc-bg:#e2e5ea;--acc-line:#111318}
+html[data-fondo="claro"] .tabs a.on{border-color:var(--acc-line);font-weight:600}
+html[data-fondo="claro"] .tchip.on{border-color:var(--acc-line);box-shadow:0 0 0 1px var(--acc-line) inset}
+html[data-fondo="claro"] .lt .sbest{background:#e9defd}
+html[data-fondo="claro"] .up{color:#05753a!important}html[data-fondo="claro"] .down{color:#c01818!important}
+html[data-fondo="claro"] .pill.ok,html[data-fondo="claro"] .badge.alta{border-color:#05753a}html[data-fondo="claro"] .pill.warn,html[data-fondo="claro"] .badge.baja{border-color:#a84a06}
+html[data-fondo="claro"] .tpop{box-shadow:0 10px 30px #0003}html[data-fondo="claro"] .tema .sw{border-color:#0003}
+html[data-fondo="claro"] input::placeholder{color:#6b7280}
+html[data-fondo="claro"] [style*="color:#3ddc84"]{color:#05753a!important}
+html[data-fondo="claro"] [fill="#3ddc84"]{fill:#05753a}html[data-fondo="claro"] [stroke="#3ddc84"]{stroke:#05753a}
+html[data-fondo="claro"] [style*="color:#a6e36a"]{color:#3f6d0b!important}
+html[data-fondo="claro"] [fill="#a6e36a"]{fill:#3f6d0b}html[data-fondo="claro"] [stroke="#a6e36a"]{stroke:#3f6d0b}
+html[data-fondo="claro"] [style*="color:#ffa24c"]{color:#a84a06!important}
+html[data-fondo="claro"] [fill="#ffa24c"]{fill:#a84a06}html[data-fondo="claro"] [stroke="#ffa24c"]{stroke:#a84a06}
+html[data-fondo="claro"] [style*="color:#ff5f5f"]{color:#c01818!important}
+html[data-fondo="claro"] [fill="#ff5f5f"]{fill:#c01818}html[data-fondo="claro"] [stroke="#ff5f5f"]{stroke:#c01818}
+html[data-fondo="claro"] [style*="color:#b38cff"]{color:#6425d0!important}
+html[data-fondo="claro"] [fill="#b38cff"]{fill:#6425d0}html[data-fondo="claro"] [stroke="#b38cff"]{stroke:#6425d0}
+html[data-fondo="claro"] [style*="color:#4cc3ff"]{color:#035e93!important}
+html[data-fondo="claro"] [fill="#4cc3ff"]{fill:#035e93}html[data-fondo="claro"] [stroke="#4cc3ff"]{stroke:#035e93}
+html[data-fondo="claro"] [style*="color:#ff8fb1"]{color:#b0144f!important}
+html[data-fondo="claro"] [fill="#ff8fb1"]{fill:#b0144f}html[data-fondo="claro"] [stroke="#ff8fb1"]{stroke:#b0144f}
+html[data-fondo="claro"] [style*="color:#ff8a6b"]{color:#b43a08!important}
+html[data-fondo="claro"] [fill="#ff8a6b"]{fill:#b43a08}html[data-fondo="claro"] [stroke="#ff8a6b"]{stroke:#b43a08}
+html[data-fondo="claro"] [style*="color:#ffd23f"]{color:#6e5a12!important}
+html[data-fondo="claro"] [fill="#ffd23f"]{fill:#6e5a12}html[data-fondo="claro"] [stroke="#ffd23f"]{stroke:#6e5a12}
+html[data-fondo="claro"] [style*="color:#c9cdd6"]{color:#2b313b!important}
+html[data-fondo="claro"] [fill="#c9cdd6"]{fill:#2b313b}html[data-fondo="claro"] [stroke="#c9cdd6"]{stroke:#2b313b}
+html[data-fondo="claro"] [style*="color:#e9ebf0"]{color:#0b0d12!important}
+html[data-fondo="claro"] [fill="#e9ebf0"]{fill:#0b0d12}html[data-fondo="claro"] [stroke="#e9ebf0"]{stroke:#0b0d12}
+html[data-fondo="claro"] [style*="color:#e8eaee"]{color:#0b0d12!important}
+html[data-fondo="claro"] [fill="#e8eaee"]{fill:#0b0d12}html[data-fondo="claro"] [stroke="#e8eaee"]{stroke:#0b0d12}
+html[data-fondo="claro"] [style*="color:#8a909c"]{color:#3a414c!important}
+html[data-fondo="claro"] [fill="#8a909c"]{fill:#3a414c}html[data-fondo="claro"] [stroke="#8a909c"]{stroke:#3a414c}
+html[data-fondo="claro"] [style*="color:#888"]{color:#3a414c!important}
+html[data-fondo="claro"] [fill="#888"]{fill:#3a414c}html[data-fondo="claro"] [stroke="#888"]{stroke:#3a414c}
+html[data-fondo="claro"] [style*="color:#5d636e"]{color:#555c68!important}
+html[data-fondo="claro"] [fill="#5d636e"]{fill:#555c68}html[data-fondo="claro"] [stroke="#5d636e"]{stroke:#555c68}
+html[data-fondo="claro"] [style*="color:#6b717c"]{color:#555c68!important}
+html[data-fondo="claro"] [fill="#6b717c"]{fill:#555c68}html[data-fondo="claro"] [stroke="#6b717c"]{stroke:#555c68}
+html[data-fondo="claro"] [style*="color:#3a3f4a"]{color:#8d95a1!important}
+html[data-fondo="claro"] [fill="#3a3f4a"]{fill:#8d95a1}html[data-fondo="claro"] [stroke="#3a3f4a"]{stroke:#8d95a1}
+html[data-fondo="claro"] [style*="color:#262a33"]{color:#b4bbc6!important}
+html[data-fondo="claro"] [fill="#262a33"]{fill:#b4bbc6}html[data-fondo="claro"] [stroke="#262a33"]{stroke:#b4bbc6}
 /* ---- resaltes ---- */
 html[data-resalte="naranja"]{--accent:#ff7a1a}
 html[data-resalte="cian"]{--accent:#22d3ee}
@@ -43,7 +89,7 @@ button,input,select{font:inherit;color:inherit}
 .num{font-family:"JetBrains Mono",monospace;font-variant-numeric:tabular-nums}
 .wrap{max-width:none;margin:0;padding:14px 22px}
 header{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
-.logo{font:700 24px "Barlow Condensed";letter-spacing:.5px}.logo span{color:var(--accent)}
+.logo{font:700 24px "Barlow Condensed";letter-spacing:.5px}.logo span{color:var(--acc-txt)}
 select,input[type=text],input[type=date]{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
 .pill{font-size:12px;padding:4px 10px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);color:var(--mute)}
 .pill.ok{color:var(--fast);border-color:#1f4a33}.pill.warn{color:var(--slow);border-color:#4a3520}.pill.live{color:#fff;background:#b3261e;border-color:#b3261e}
@@ -64,7 +110,7 @@ th.l,td.l{text-align:left}td.k{font:700 21px/1 "Barlow Condensed";text-align:cen
 .scroll{overflow-x:auto}
 .t-fast{color:var(--fast)}.t-good{color:var(--good)}.t-slow{color:var(--slow)}.t-vslow{color:var(--vslow)}.purple{color:var(--purple)}
 .badge{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--mute)}
-.badge.alta{color:var(--fast);border-color:#1f4a33}.badge.media{color:var(--accent);border-color:var(--acc-line)}.badge.baja{color:var(--slow);border-color:#4a3520}
+.badge.alta{color:var(--fast);border-color:#1f4a33}.badge.media{color:var(--acc-txt);border-color:var(--acc-line)}.badge.baja{color:var(--slow);border-color:#4a3520}
 .mini{font-size:12px;color:var(--mute)}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .seg{display:inline-flex;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px}
@@ -73,7 +119,7 @@ iframe{width:100%;height:78vh;border:1px solid var(--line);border-radius:12px;ba
 .flash{animation:fl 1.2s}@keyframes fl{from{background:var(--acc-bg)}to{background:transparent}}
 .empty{padding:30px;text-align:center;color:var(--mute)}
 .btn{display:inline-block;background:var(--accent);color:var(--on-accent);border:0;border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer;text-decoration:none}.btn.ghost{background:var(--panel2);color:var(--text);border:1px solid var(--line)}.btn:disabled{opacity:.5}
-.star{cursor:pointer;font-size:18px;color:var(--dim);user-select:none}.star.on{color:var(--accent)}
+.star{cursor:pointer;font-size:18px;color:var(--dim);user-select:none}.star.on{color:var(--acc-txt)}
 .drop{border:2px dashed var(--line);border-radius:12px;padding:28px;text-align:center;cursor:pointer}.drop.over{border-color:var(--accent)}
 .ok-t{color:var(--fast)}.err-t{color:var(--vslow)}
 .steps{margin:8px 0 0 18px;padding:0}.steps li{margin:4px 0}
@@ -90,7 +136,7 @@ body.pilot{overflow:hidden;position:fixed;inset:0}
 .pv .tile{background:var(--panel);border-radius:16px;padding:1.2vh 1.6vw;display:flex;flex-direction:column;justify-content:center;min-width:0;overflow:hidden}
 .pv .lab{color:var(--mute);font-size:clamp(11px,2.4vh,16px)}
 .pv .big{font-family:"JetBrains Mono",monospace;font-weight:500;line-height:1.05;font-size:clamp(28px,13vh,110px);transition:color .4s}
-.pv .huge{font:700 clamp(36px,17vh,150px)/1 "Barlow Condensed";color:var(--accent)}
+.pv .huge{font:700 clamp(36px,17vh,150px)/1 "Barlow Condensed";color:var(--acc-txt)}
 .pv .mid{font-size:clamp(16px,6vh,48px);font-weight:600}
 .pv .sub2{font-size:clamp(11px,2.6vh,18px)}
 .pv .gap{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:clamp(18px,7vh,56px);line-height:1.05}
@@ -99,7 +145,7 @@ body.pilot{overflow:hidden;position:fixed;inset:0}
 .pv .bc{font-family:"Barlow Condensed";font-weight:700}
 .pv .x{background:none;border:1px solid var(--line);border-radius:8px;color:var(--mute);padding:2px 10px;cursor:pointer}
 .pv .xx{width:clamp(38px,9.4vh,61px);height:clamp(38px,9.4vh,61px);border-radius:12px;border:2px solid var(--line);background:var(--panel2);color:var(--text);font-size:clamp(19px,5.1vh,34px);cursor:pointer;line-height:1}
-.pv .kbtn{height:clamp(34px,8.5vh,54px);padding:0 12px;border-radius:12px;border:2px solid var(--acc-line);background:var(--acc-bg);color:var(--accent);font:700 clamp(15px,4.25vh,29px) 'Barlow Condensed';cursor:pointer;white-space:nowrap}
+.pv .kbtn{height:clamp(34px,8.5vh,54px);padding:0 12px;border-radius:12px;border:2px solid var(--acc-line);background:var(--acc-bg);color:var(--acc-txt);font:700 clamp(15px,4.25vh,29px) 'Barlow Condensed';cursor:pointer;white-space:nowrap}
 .pv .clock{font:700 clamp(24px,8.5vh,66px)/1 'JetBrains Mono',monospace;color:var(--text)}
 .pv .top{grid-column:1/3;display:grid;grid-template-columns:1fr minmax(90px,.5fr) 1fr;gap:8px;min-height:0}
 .pv .posbig{font:700 clamp(40px,20vh,170px)/.9 'Barlow Condensed';color:var(--text)}
@@ -108,7 +154,7 @@ body.pilot{overflow:hidden;position:fixed;inset:0}
 .ks{width:var(--pw,100vw);height:var(--ph,100vh);box-sizing:border-box;padding:max(6px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));display:grid;grid-template-columns:1fr 1.15fr;gap:12px}
 .ksl{display:flex;flex-direction:column;gap:1.2vh;justify-content:center;min-width:0}
 .kst{font:700 clamp(18px,6vh,34px) 'Barlow Condensed'}
-.ksv{font:700 clamp(48px,26vh,180px)/1 'Barlow Condensed';color:var(--accent)}
+.ksv{font:700 clamp(48px,26vh,180px)/1 'Barlow Condensed';color:var(--acc-txt)}
 .ksgo{height:clamp(40px,13vh,80px);border:0;border-radius:14px;background:var(--accent);color:var(--on-accent);font:700 clamp(18px,6vh,34px) 'Barlow Condensed';cursor:pointer}
 .ksc{display:flex;flex-wrap:wrap;gap:6px;max-height:18vh;overflow:auto}.ksc .chipd{font-size:clamp(13px,3.4vh,20px);padding:4px 12px}
 .kp2{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,1fr);gap:8px}
@@ -120,13 +166,13 @@ body.prot .pv,body.prot .ks{position:fixed;top:0;left:0;transform-origin:0 0}
 body.prot[data-rd="r"] .pv,body.prot[data-rd="r"] .ks{transform:translateX(var(--ph)) rotate(90deg)}
 body.prot[data-rd="l"] .pv,body.prot[data-rd="l"] .ks{transform:translateY(var(--pw)) rotate(-90deg)}
 .lockb{height:clamp(34px,8.5vh,54px);min-width:clamp(34px,8.5vh,54px);border-radius:12px;border:2px solid var(--line);background:var(--panel2);color:var(--mute);font-size:clamp(16px,4.2vh,26px);cursor:pointer;padding:0 8px}
-.lockb.on{border-color:var(--acc-line);background:var(--acc-bg);color:var(--accent)}
+.lockb.on{border-color:var(--acc-line);background:var(--acc-bg);color:var(--acc-txt)}
 body.plock #chgK{opacity:.25;pointer-events:none}
 .xx.confirm{background:#b3261e;border-color:#b3261e;color:#fff}@media (orientation:portrait){body.pilot .rot{display:block}}
 tr.click{cursor:pointer}tr.click:hover td{background:var(--hover)}
-.sub{display:flex;gap:4px;margin:10px 0;flex-wrap:wrap}.sub button{border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:5px 12px;cursor:pointer;color:var(--mute);font-size:13px}.sub button.on{color:var(--accent);border-color:var(--acc-line);background:var(--acc-bg)}
+.sub{display:flex;gap:4px;margin:10px 0;flex-wrap:wrap}.sub button{border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:5px 12px;cursor:pointer;color:var(--mute);font-size:13px}.sub button.on{color:var(--acc-txt);border-color:var(--acc-line);background:var(--acc-bg)}
 .lt td{padding:5px 6px;font-size:12px}.lt .best{color:var(--purple);font-weight:600}.lt .sbest{background:#2a1f45}.lt .off{color:var(--dim);text-decoration:line-through}
-.chipd{border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:4px 10px;cursor:pointer;color:var(--mute);font-size:12px;user-select:none}.chipd.on{background:var(--acc-bg);border-color:var(--acc-line);color:var(--accent)}
+.chipd{border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:4px 10px;cursor:pointer;color:var(--mute);font-size:12px;user-select:none}.chipd.on{background:var(--acc-bg);border-color:var(--acc-line);color:var(--acc-txt)}
 .flag{display:inline-block;padding:3px 10px;border-radius:6px;font-weight:600;font-size:12px}
 .back{background:none;border:1px solid var(--line);border-radius:8px;padding:5px 12px;cursor:pointer;color:var(--text)}
 @media(max-width:640px){.hm{display:none}td,th{padding:7px 4px}}
@@ -139,7 +185,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:var(--hover)}
     <select id="circ"></select>
     <select id="dia"></select>
     <div class="grow"></div>
-    <a class="pill" href="mensajes.html" target="_blank" style="text-decoration:none;color:var(--accent)">Mensaje al piloto</a>
+    <a class="pill" href="mensajes.html" target="_blank" style="text-decoration:none;color:var(--acc-txt)">Mensaje al piloto</a>
     <div class="tema"><button id="temaBtn" title="Colores de la app"><span class="sw" id="temaSw"></span>Colores</button><div class="tpop" id="temaPop" hidden></div></div>
     <span class="pill" id="wsState">Conectando…</span>
     <span class="pill" id="dataState">Cargando sesiones…</span>
@@ -183,7 +229,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:var(--hover)}
   <section class="view" id="v-circuitos"><div id="circOut"></div></section>
   <section class="view" id="v-pdf"><div id="pdfOut"></div></section>
   <section class="view" id="v-apex">
-    <div class="mini" style="margin-bottom:8px">El live timing oficial del circuito, tal cual. Si no se ve, <a id="apexLink" target="_blank" style="color:var(--accent)">ábrelo aquí</a>.</div>
+    <div class="mini" style="margin-bottom:8px">El live timing oficial del circuito, tal cual. Si no se ve, <a id="apexLink" target="_blank" style="color:var(--acc-txt)">ábrelo aquí</a>.</div>
     <iframe id="apexFrame" title="Live timing Apex" loading="lazy"></iframe>
   </section>
   <div class="mini foot" style="margin-top:8px">Datos: grabador automático (sesiones terminadas) + conexión directa con Apex (sesión en curso). Se actualiza solo.</div>
@@ -545,7 +591,7 @@ function askClaude(s) {
 // unir: { "NOMBRE ALIAS": "NOMBRE QUE SE QUEDA" } · quitar: [nombres]
 // ---------- colores de la app (fondo + resalte) ----------
 // Se guarda en este navegador y se manda al canal de ajustes, así sale igual en todos tus dispositivos.
-const TEMA_F = { carbon: ['Carbón', '#0c0d10', '#14161b'], azul: ['Azul noche', '#0a0f1c', '#111a2b'], pizarra: ['Pizarra', '#1c1f25', '#252931'], verde: ['Verde boxes', '#08130f', '#0f1d17'], burdeos: ['Burdeos', '#150a0d', '#1f1015'], negro: ['Negro total', '#000000', '#0b0b0d'] };
+const TEMA_F = { carbon: ['Carbón', '#0c0d10', '#14161b'], azul: ['Azul noche', '#0a0f1c', '#111a2b'], pizarra: ['Pizarra', '#1c1f25', '#252931'], verde: ['Verde boxes', '#08130f', '#0f1d17'], burdeos: ['Burdeos', '#150a0d', '#1f1015'], negro: ['Negro total', '#000000', '#0b0b0d'], claro: ['Claro (alto contraste)', '#f2f3f5', '#ffffff'] };
 const TEMA_R = { amarillo: ['Amarillo', '#ffd23f'], naranja: ['Naranja', '#ff7a1a'], cian: ['Cian', '#22d3ee'], azul: ['Azul', '#5b9bff'], rosa: ['Rosa', '#ff5fa8'], blanco: ['Blanco', '#f2f4f8'] };
 let TEMA = Object.assign({ f: 'carbon', r: 'amarillo' }, store.get('tema', {}));
 function temaApply(t) {
@@ -555,6 +601,7 @@ function temaApply(t) {
   if (t.f === 'carbon') delete h.dataset.fondo; else h.dataset.fondo = t.f;
   if (t.r === 'amarillo') delete h.dataset.resalte; else h.dataset.resalte = t.r;
   document.querySelectorAll('meta[name=theme-color]').forEach(m => m.content = TEMA_F[t.f][1]);
+  document.querySelectorAll('meta[name=apple-mobile-web-app-status-bar-style]').forEach(m => m.content = t.f === 'claro' ? 'default' : 'black-translucent');
   const sw = document.getElementById('temaSw'); if (sw) sw.style.background = `linear-gradient(135deg,${TEMA_F[t.f][2]} 50%,${TEMA_R[t.r][1]} 50%)`;
   const pop = document.getElementById('temaPop'); if (pop && !pop.hidden) temaPaint();
 }
@@ -563,7 +610,7 @@ function temaSet(f, r) { temaApply({ f, r }); AJ_Q = AJ_Q.filter(o => o.o !== 't
 function temaPaint() {
   const pop = document.getElementById('temaPop');
   pop.innerHTML = `<h4>Fondo</h4><div class="row">${Object.entries(TEMA_F).map(([k, v]) => `<button class="tchip${TEMA.f === k ? ' on' : ''}" data-tf="${k}"><span class="sw" style="background:${v[2]}"></span>${v[0]}</button>`).join('')}</div>
-    <h4>Resalte</h4><div class="row">${Object.entries(TEMA_R).map(([k, v]) => `<button class="tchip${TEMA.r === k ? ' on' : ''}" data-tr="${k}"><span class="sw" style="background:${v[1]}"></span>${v[0]}</button>`).join('')}</div>
+    <h4>Resalte</h4><div class="row">${Object.entries(TEMA_R).map(([k, v]) => `<button class="tchip${TEMA.r === k ? ' on' : ''}" data-tr="${k}"><span class="sw" style="background:${TEMA.f === 'claro' && k === 'blanco' ? '#111318' : v[1]}"></span>${TEMA.f === 'claro' && k === 'blanco' ? 'Negro' : v[0]}</button>`).join('')}</div>
     <div class="mini" data-ajst>${ajStatusTxt()}</div>`;
   pop.querySelectorAll('[data-tf]').forEach(b => b.onclick = e => { e.stopPropagation(); temaSet(b.dataset.tf, TEMA.r); });
   pop.querySelectorAll('[data-tr]').forEach(b => b.onclick = e => { e.stopPropagation(); temaSet(TEMA.f, b.dataset.tr); });
@@ -640,7 +687,7 @@ async function ajFlush() {
 }
 window.addEventListener('online', () => ajFlush());
 function ajStatus() { document.querySelectorAll('[data-ajst]').forEach(e => e.innerHTML = ajStatusTxt()); }
-const ajStatusTxt = () => AJ_Q.length ? `<span style="color:var(--accent)">⏳ ${AJ_Q.length} cambio(s) pendientes de enviar (sin conexión): se envían solos en cuanto haya</span>` : '<span style="color:var(--fast)">✓ Se guarda solo y para siempre, en todos tus dispositivos</span>';
+const ajStatusTxt = () => AJ_Q.length ? `<span style="color:var(--acc-txt)">⏳ ${AJ_Q.length} cambio(s) pendientes de enviar (sin conexión): se envían solos en cuanto haya</span>` : '<span style="color:var(--fast)">✓ Se guarda solo y para siempre, en todos tus dispositivos</span>';
 // cambios hechos en otro dispositivo mientras esta app está abierta: se ven al momento
 let ajES = null, ajT = null;
 function ajListen() {
@@ -889,7 +936,7 @@ function makeSortable(table, key) {
   groups.forEach((g, i) => g.orig = i);
   const apply = () => {
     const st = SORT[key];
-    ths.forEach((th, i) => { th.style.cursor = 'pointer'; th.style.userSelect = 'none'; th.dataset.arrow = st && st.i === i ? (st.dir < 0 ? ' ▼' : ' ▲') : ''; const lbl = th.dataset.lbl ?? (th.dataset.lbl = th.innerHTML); th.innerHTML = lbl + (th.dataset.arrow ? `<span style="color:var(--accent)">${th.dataset.arrow}</span>` : ''); });
+    ths.forEach((th, i) => { th.style.cursor = 'pointer'; th.style.userSelect = 'none'; th.dataset.arrow = st && st.i === i ? (st.dir < 0 ? ' ▼' : ' ▲') : ''; const lbl = th.dataset.lbl ?? (th.dataset.lbl = th.innerHTML); th.innerHTML = lbl + (th.dataset.arrow ? `<span style="color:var(--acc-txt)">${th.dataset.arrow}</span>` : ''); });
     const ord = groups.slice();
     if (st) ord.sort((a, b) => {
       const x = cellVal(a[0].cells[st.i]), y = cellVal(b[0].cells[st.i]);
@@ -1121,7 +1168,7 @@ async function renderScore() {
         <span class="mini">${rows.length} de ${tot} pilotos · ${Object.values(ALLD.sessions || {}).reduce((a, l) => a + l.filter(s => !isDel(s)).length, 0)} sesiones grabadas</span></div></div>
     <div class="card"><b style="font-size:14px">Filtros del ranking</b> <span class="mini">· solo afectan a este ranking (se guardan en este dispositivo)</span>
       ${isAll ? `<div class="row" style="margin-top:8px"><b style="font-size:13px">Circuitos:</b>${slugs.map(s => `<span class="chipd ${offC.has(s) ? '' : 'on'}" data-off="${esc(s)}">${esc(cname(s))}</span>`).join('')}</div>` : ''}
-      <div style="margin-top:8px"><b style="font-size:13px">Sesiones:</b> <span class="mini">${offS.size ? offS.size + ' quitadas · <a href="#" id="scSesAll" style="color:var(--accent)">volver a ponerlas todas</a>' : 'cuentan todas'} · abre un circuito para quitar o poner sesiones (p. ej. las de lluvia)</span>${sesBlock}</div>
+      <div style="margin-top:8px"><b style="font-size:13px">Sesiones:</b> <span class="mini">${offS.size ? offS.size + ' quitadas · <a href="#" id="scSesAll" style="color:var(--acc-txt)">volver a ponerlas todas</a>' : 'cuentan todas'} · abre un circuito para quitar o poner sesiones (p. ej. las de lluvia)</span>${sesBlock}</div>
       <div class="row" style="margin-top:10px"><b style="font-size:13px">Pilotos quitados del ranking:</b>${offP.size ? [...offP].sort().map(n => `<span class="chipd">${esc(n)} <span data-pback="${esc(n)}" style="cursor:pointer;color:var(--fast)">↩</span></span>`).join('') : '<span class="mini">ninguno · pulsa ✕ en la tabla para quitar uno</span>'}</div></div>
     <div class="card scroll"><table><thead><tr><th class="l">#</th><th class="l">Piloto</th><th class="l">Clase</th><th>Score</th><th title="Lo que es más rápido (−) o lento (+) por vuelta que el piloto medio, con el kart ya descontado">Nivel</th>${isAll ? '' : '<th class="hm">Nivel (s)</th>'}<th>Fiabilidad</th><th class="hm">Tandas</th>
       ${isAll ? '<th class="l hm">Circuitos</th>' : '<th>Mejor vuelta</th><th>Mejor ritmo 3v</th><th>Mejor ritmo 5v</th>'}<th></th></tr></thead><tbody>
@@ -1181,7 +1228,7 @@ function renderPilotos(ses) {
       <span class="mini">Sin nombre (“KART 12”) no cuenta. Datos: ${esc(daysLabel())} · ${ses.length} sesiones (la misma selección que en “Karts del día”).</span>
       <button class="back" id="pilAll">Usar todos los días con datos</button><button class="back" id="pilToday">Solo hoy</button>
       <span class="mini">Mínimo de tandas:</span><span class="seg" id="pilMin">${[1, 2, 3].map(n => `<button data-n="${n}" class="${pilMin === n ? 'on' : ''}">${n}+</button>`).join('')}</span>
-      <button class="back" id="pilMgr">👥 Juntar / quitar pilotos${newDupCount() ? ` · <b style="color:var(--accent)">${newDupCount()} posibles duplicados nuevos</b>` : ''}${PADM.quitar.length || Object.keys(PADM.unir).length ? ` (${Object.keys(PADM.unir).length} juntados · ${PADM.quitar.length} quitados)` : ''}</button>
+      <button class="back" id="pilMgr">👥 Juntar / quitar pilotos${newDupCount() ? ` · <b style="color:var(--acc-txt)">${newDupCount()} posibles duplicados nuevos</b>` : ''}${PADM.quitar.length || Object.keys(PADM.unir).length ? ` (${Object.keys(PADM.unir).length} juntados · ${PADM.quitar.length} quitados)` : ''}</button>
       <span class="mini" data-ajst>${ajStatusTxt()}</span>
     </div>
     <div class="card scroll"><div class="mini" style="margin-bottom:6px">Nivel = segundos por vuelta frente al piloto medio <b>con el kart ya descontado</b> (negativo = más rápido). Mismo modelo que el ranking de karts: separa lo que es mérito del piloto, del kart y de las condiciones de cada sesión. Pulsa un piloto para ver sus tandas.${A.priorUsed ? ` <b>Usando el score general</b> para ${A.priorUsed} pilotos.` : ''}</div>
@@ -1333,7 +1380,7 @@ function spreadBox(ks) {
   const laps = A.refLap ? Math.round(15 * 60 / A.refLap) : 0; // vueltas en una carrera de 15 min
   const f = v => v.toFixed(2).replace('.', ',');
   return `<div class="card"><div class="row" style="justify-content:space-between;align-items:flex-start"><div><h4 style="margin:0 0 4px">Diferencia entre karts · ${esc(C.nombre)}</h4><div class="mini">${esc(cur.name)} · ${esc(cur.desc)}</div></div>
-      <div style="text-align:right"><div class="num" style="font-size:30px;font-weight:700;color:var(--accent)">${f(cur.v)} s<span style="font-size:14px;color:var(--mute)"> /vuelta</span></div>
+      <div style="text-align:right"><div class="num" style="font-size:30px;font-weight:700;color:var(--acc-txt)">${f(cur.v)} s<span style="font-size:14px;color:var(--mute)"> /vuelta</span></div>
       <div class="mini">${cur.pct.toFixed(1).replace('.', ',')} % de la vuelta${laps ? ` · ≈ ${Math.round(cur.v * laps)} s en una carrera de 15 min (${laps} vueltas)` : ''}</div></div></div>
     <details style="margin-top:8px"><summary class="mini" style="cursor:pointer">Ver todas las formas de calcularlo y elegir cuál se muestra</summary>
     <table style="margin-top:6px"><thead><tr><th class="l">Cálculo</th><th>Diferencia</th><th>% vuelta</th><th class="l hm">Qué significa</th></tr></thead><tbody>
@@ -1605,7 +1652,7 @@ function renderPilot(force) {
   if (!me) {
     el.innerHTML = `<div class="pv">${head()}<div class="tile" style="grid-column:1/3;grid-row:2/4;align-items:center;text-align:center">
       <div class="mid">Esperando al kart ${esc(pilotKart)}…</div><div class="sub2" style="color:var(--mute);margin-top:8px">${live && live.ws && live.ws.readyState === 1 ? 'Aún no aparece en el live timing de Apex.' : 'Sin conexión con Apex. Reconectando…'}</div>
-      <div class="rot sub2" style="margin-top:10px;color:var(--accent)">Gira el móvil en horizontal</div></div></div>`;
+      <div class="rot sub2" style="margin-top:10px;color:var(--acc-txt)">Gira el móvil en horizontal</div></div></div>`;
     return bindPilot();
   }
   const [rid, r] = me;
@@ -1653,7 +1700,7 @@ function renderPilot(force) {
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;min-height:0">
       <div class="tile"><div class="lab">Pos ritmo${n ? ` · ${n} v` : ''}</div>
-        <div class="fv" style="flex:2.2"><span class="bc" style="color:var(--accent)">${pr ? 'P' + pr : '–'}</span></div>
+        <div class="fv" style="flex:2.2"><span class="bc" style="color:var(--acc-txt)">${pr ? 'P' + pr : '–'}</span></div>
         <div class="fv" style="flex:.8"><span>${pr ? pr + '/' + paces.length : `<small style="font-size:.45em">vistas ${lapsOf(rid).length} · válidas ${validLaps(rid).length}</small>`}</span></div></div>
       <div class="tile" style="padding-top:.6vh;padding-bottom:.6vh">
         <div class="lab">Delante</div><div class="fv" style="border-bottom:1px solid var(--line)"><span class="mono" style="color:#ff8a6b">${esc(ahead === 'LÍDER' || ahead === '–' ? ahead : (ahead.startsWith('+') ? ahead : '+' + ahead))}</span></div>
@@ -1779,7 +1826,7 @@ function openConnect() {
     ${has ? '<div class="card row" style="border-color:#1f4a33"><span style="color:var(--fast)">✓ Este dispositivo ya está conectado.</span><button class="back" id="ghOff">Desconectar</button></div>' : ''}
     <div class="card"><b>Pasos (2 minutos)</b>
     <ol class="steps mini" style="line-height:1.7">
-      <li>Abre este enlace (con tu sesión de GitHub iniciada): <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" style="color:var(--accent)">crear llave de GitHub</a>.</li>
+      <li>Abre este enlace (con tu sesión de GitHub iniciada): <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" style="color:var(--acc-txt)">crear llave de GitHub</a>.</li>
       <li><b>Token name</b>: escribe <i>KR Karts</i>. <b>Expiration</b>: elige <i>No expiration</i> (o 1 año; cuando caduque, la app te avisará).</li>
       <li><b>Repository access</b>: elige <i>Only select repositories</i> y selecciona <b>rafa_krtrnk</b>.</li>
       <li><b>Permissions</b> → <b>Repository permissions</b> → busca <b>Issues</b> y ponlo en <b>Read and write</b>. No toques nada más.</li>
