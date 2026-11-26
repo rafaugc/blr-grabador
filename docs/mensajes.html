@@ -25,6 +25,7 @@ button.m:active{transform:scale(.97)}
 .box{background:var(--accent);color:var(--on-accent);font-size:60px;height:118px}
 .red{background:#d0122f;color:#fff}.blue{background:#1e5fe0;color:#fff}.green{background:#138a3e;color:#fff}
 .neu{background:var(--seg);color:var(--text)}
+.last{background:var(--panel2);color:var(--text);box-shadow:inset 0 0 0 4px #1fbf5b}
 .mid{font-size:28px;height:78px}.sm{font-size:22px;height:62px}
 .pen{display:grid;grid-template-columns:96px 1fr;gap:8px}
 .pen input{text-align:center;font-size:30px;height:78px;border-color:#d0122f;color:var(--text)}
@@ -45,6 +46,11 @@ button.m:active{transform:scale(.97)}
   <button class="m blue mid" data-m="DEJA PASAR" data-t="pass">DEJA PASAR</button>
   <button class="m green mid" data-m="ADELANTA" data-t="over">ADELANTA</button>
 </div>
+<div class="g2">
+  <button class="m green mid" data-m="BOX ABIERTO" data-t="bopen">BOX ABIERTO</button>
+  <button class="m red mid" data-m="BOX CERRADO" data-t="bclosed">BOX CERRADO</button>
+</div>
+<button class="m last mid" data-m="QUEDA 1 VUELTA" data-t="last">QUEDA 1 VUELTA</button>
 <button class="m red mid" data-m="SWAP POSITIONS" data-t="swap">SWAP POSITIONS</button>
 <div class="pen">
   <input id="penS" inputmode="decimal" maxlength="4" placeholder="s" value="5" aria-label="Segundos de penalización">

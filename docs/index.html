@@ -17,9 +17,9 @@
 <script>/* tema guardado: se aplica antes de pintar para que no parpadee */
 if(/[?&]vista=piloto/.test(location.search))document.documentElement.classList.add('dashboot');
 try{const t=JSON.parse(localStorage.getItem('blr_tema')||'null')||{},h=document.documentElement;h.dataset.fondo=t.f||'azul';h.dataset.resalte=t.r||'amarillof';}catch(e){}</script>
-<script src="core.js?v=20261126d"></script>
-<script src="ingeniero.js?v=20261126d"></script>
-<script src="ingeniero-ui.js?v=20261126d"></script>
+<script src="core.js?v=20261126e"></script>
+<script src="ingeniero.js?v=20261126e"></script>
+<script src="ingeniero-ui.js?v=20261126e"></script>
 <link rel="stylesheet" href="tema.css?v=1">
 <style>
 .tema{position:relative}.tema>button{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;cursor:pointer;color:var(--mute);font-size:12px;display:inline-flex;gap:6px;align-items:center}
@@ -71,7 +71,9 @@ html.dashboot .wrap{visibility:hidden}
 body.pilot header,body.pilot nav.tabs,body.pilot .foot{display:none}
 body.pilot .wrap{max-width:none;padding:0}
 body.pilot{overflow:hidden;position:fixed;inset:0}
-.pv{width:var(--pw,100vw);height:var(--ph,100vh);box-sizing:border-box;padding:max(6px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1.05fr 1fr;gap:8px}
+.mpop{position:absolute;left:20%;top:20%;width:60%;height:60%;z-index:30;border-radius:24px;display:flex;align-items:center;justify-content:center;text-align:center;padding:2%;font-family:'Barlow Condensed';font-weight:700;line-height:.95;box-shadow:0 20px 60px #000b;cursor:pointer;overflow:hidden;word-break:break-word}
+.mpop.in{animation:mpin .25s ease-out}@keyframes mpin{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.pv{position:relative;width:var(--pw,100vw);height:var(--ph,100vh);box-sizing:border-box;padding:max(6px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1.05fr 1fr;gap:8px}
 .pv .bar{grid-column:1/3;display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--mute);font-size:clamp(11px,1.9vh,14px);padding:0 6px;flex-wrap:nowrap;overflow:hidden}
 .pv .fv{flex:1;min-height:0;min-width:0;display:flex;align-items:center;overflow:hidden}
 .pv .fv.c{justify-content:center;text-align:center}
@@ -1600,7 +1602,7 @@ function renderPilot(force) {
       ${fl ? `<span class="flag" style="background:${fl[1]};font-size:clamp(12px,2.6vh,18px)">${(t => t.charAt(0).toUpperCase() + t.slice(1))(fl[0].replace('Bandera ', ''))}</span>` : ''}</span>
     <span style="display:flex;gap:12px;align-items:center"><span class="clock" id="pclk">${clockTxt.replace('Quedan ', '')}</span>${pilotLock ? '<button class="lockb" id="flipP" title="Girar 180°">⟲</button>' : ''}<button class="lockb ${pilotLock ? 'on' : ''}" id="lockP" title="${pilotLock ? 'Mantén pulsado para desbloquear' : 'Bloquear en horizontal'}">${pilotLock ? '🔒' : '🔓'}</button><button class="xx" id="exitP" title="Salir">✕</button></span></div>`;
   if (!me) {
-    el.innerHTML = `<div class="pv">${head()}<div class="tile" style="grid-column:1/3;grid-row:2/4;align-items:center;text-align:center">
+    el.innerHTML = `<div class="pv">${msgPop()}${head()}<div class="tile" style="grid-column:1/3;grid-row:2/4;align-items:center;text-align:center">
       <span class="dashlogo big"><img class="lg-d" src="logo-dash-oscuro.png" alt="KR Dash"><img class="lg-l" src="logo-dash-claro.png" alt="KR Dash"></span>
       <div class="mid">Esperando al kart ${esc(pilotKart)}…</div><div class="sub2" style="color:var(--mute);margin-top:8px">${live && live.ws && live.ws.readyState === 1 ? 'Aún no aparece en el live timing de Apex.' : 'Sin conexión con Apex. Reconectando…'}</div>
       <div class="rot sub2" style="margin-top:10px;color:var(--acc-txt)">Gira el móvil en horizontal</div></div></div>`;
@@ -1636,7 +1638,7 @@ function renderPilot(force) {
   const isPB = last != null && last === myBest && Date.now() < flash.until;
   const dMean = last != null && mean ? last - mean : null;
   const n = paceN(rid);
-  el.innerHTML = `<div class="pv">
+  el.innerHTML = `<div class="pv">${msgPop()}
     ${head()}
     <div class="top">
       <div class="tile"><div class="lab">Última vuelta</div>
@@ -1721,12 +1723,28 @@ document.addEventListener('visibilitychange', async () => { if (document.visibil
 const MSG_TOPIC = 'blr-b0be61bf7279e5e3';
 let pilotMsg = null, msgES = null;
 const MSG_TTL = 90000;
+// colores de cada tipo de mensaje (los rojos/azules/verdes son fijos con cualquier tema)
+function msgSty(m, t) {
+  t = t || (/^BOX ABIERTO/i.test(m) ? 'bopen' : /^BOX CERRADO/i.test(m) ? 'bclosed' : /^BOX/i.test(m) ? 'box' : /^PENALTY/i.test(m) ? 'pen' : /^SWAP/i.test(m) ? 'swap' : /^DEJA PASAR/i.test(m) ? 'pass' : /^ADELANTA/i.test(m) ? 'over' : /QUEDA 1 VUELTA/i.test(m) ? 'last' : /DOBLADO/i.test(m) ? 'dbl' : 'txt');
+  const R = '#d0122f', B = '#1e5fe0', G = '#138a3e';
+  return ({ box: { bg: 'var(--accent)', fg: 'var(--on-accent)' }, bopen: { bg: G, fg: '#fff' }, bclosed: { bg: R, fg: '#fff' }, pen: { bg: R, fg: '#fff' }, swap: { bg: R, fg: '#fff' },
+    pass: { bg: B, fg: '#fff' }, over: { bg: G, fg: '#fff' }, last: { bg: 'var(--panel2)', fg: 'var(--text)', bd: '#1fbf5b' }, dbl: { bg: 'var(--seg)', fg: 'var(--text)' },
+    txt: { bg: 'var(--panel2)', fg: 'var(--text)', bd: 'var(--accent)' } })[t] || { bg: 'var(--seg)', fg: 'var(--text)' };
+}
+// pop-up: centrado, 60% de la pantalla, 5 segundos; luego el mensaje se queda en su caja. Tocarlo lo cierra antes.
+const POP_MS = 5000;
+function msgPop() {
+  if (!pilotMsg || !pilotMsg.rx || pilotMsg.popOff || Date.now() - pilotMsg.rx > POP_MS) return '';
+  const S = msgSty(pilotMsg.m, pilotMsg.t), first = !pilotMsg.anim; pilotMsg.anim = true;
+  const len = pilotMsg.m.length, fs = len <= 8 ? .22 : len <= 16 ? .15 : len <= 26 ? .11 : .085;
+  return `<div class="mpop${first ? ' in' : ''}" style="background:${S.bg};color:${S.fg};font-size:calc(var(--ph,100vh) * ${fs})${S.bd ? ';box-shadow:inset 0 0 0 calc(var(--ph,100vh) * .018) ' + S.bd + ',0 20px 60px #000b' : ''}"><span>${esc(pilotMsg.m)}</span></div>`;
+}
+document.addEventListener('click', e => { if (pilotMsg && e.target.closest && e.target.closest('.mpop')) { pilotMsg.popOff = true; renderPilot(); } });
 function msgTile() {
   const m = pilotMsg && Date.now() - pilotMsg.at < MSG_TTL ? pilotMsg.m : null;
   if (!m) return `<div class="msg" style="background:var(--panel);color:var(--dim);font-size:clamp(14px,3vh,22px)">sin mensaje</div>`;
-  const t = pilotMsg.t || (/^BOX/i.test(m) ? 'box' : /^PENALTY/i.test(m) ? 'pen' : /^SWAP/i.test(m) ? 'swap' : /^DEJA PASAR/i.test(m) ? 'pass' : /^ADELANTA/i.test(m) ? 'over' : /DOBLADO/i.test(m) ? 'dbl' : 'txt');
-  const S = { box: ['var(--accent)', 'var(--on-accent)'], pen: ['#d0122f', '#fff'], swap: ['#d0122f', '#fff'], pass: ['#1e5fe0', '#fff'], over: ['#138a3e', '#fff'], dbl: ['var(--seg)', 'var(--text)'], txt: ['var(--panel2)', 'var(--text)'] }[t] || ['var(--seg)', 'var(--text)'];
-  return `<div class="msg tile" style="flex-direction:column;align-items:stretch;background:${S[0]};color:${S[1]};padding:2vh 2vw${t === 'txt' ? ';border:3px solid var(--accent)' : ''}"><div class="fv c w"><span class="bc">${esc(m)}</span></div></div>`;
+  const S = msgSty(m, pilotMsg.t);
+  return `<div class="msg tile" style="flex-direction:column;align-items:stretch;background:${S.bg};color:${S.fg};padding:2vh 2vw${S.bd ? ';border:4px solid ' + S.bd : ''}"><div class="fv c w"><span class="bc">${esc(m)}</span></div></div>`;
 }
 function parseMsg(txt) {
   try { const j = JSON.parse(txt); if (j && j.m) return j; } catch {}
@@ -1742,7 +1760,8 @@ function startMsgs() {
       if (d.event !== 'message' || Date.now() - d.time * 1000 > MSG_TTL) return;
       const j = parseMsg(d.message); if (!j || j.ack) return;
       if (String(j.k) !== String(pilotKart) && j.k !== 'todos') return;
-      pilotMsg = /^(CLEAR|BORRAR)$/i.test(j.m) ? null : { m: String(j.m).slice(0, 60), t: j.t, at: d.time * 1000 };
+      pilotMsg = /^(CLEAR|BORRAR)$/i.test(j.m) ? null : { m: String(j.m).slice(0, 60), t: j.t, at: d.time * 1000, rx: Date.now() - d.time * 1000 < 20000 ? Date.now() : 0 };
+      if (pilotMsg && pilotMsg.rx) setTimeout(() => renderPilot(), POP_MS + 60);
       if (pilotMsg) { try { navigator.vibrate?.([300, 100, 300]); } catch {} fetch(`https://ntfy.sh/${MSG_TOPIC}`, { method: 'POST', body: JSON.stringify({ ack: d.id, k: pilotKart, m: j.m }) }).catch(() => {}); }
       renderPilot();
     };
