@@ -353,3 +353,8 @@ init|r| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#FF8484 !important; color
 r3|*|| ⏎ 
 r2|*|| ⏎ 
  ⏎ 
+dyn1|text|Vuelta 1/8 ⏎ r3c1|gs| ⏎ r3c2|su| ⏎ r3c3||1 ⏎ r3c6|tb|1:42.083 ⏎ r3c7|in|Vuelta 1 ⏎ r3c9|tb|1:42.083 ⏎ r3c10|in|1 ⏎ r2|#|2 ⏎ r3|*|102083| ⏎ r3|#|1 ⏎ msg||Mejor vuelta : PIOMBINO - 1:42.083 (50.36 Km/h) ⏎ 
+r3c1|gf| ⏎ r3c6|ti|1:42.083 ⏎ r3c9|in|1:42.083 ⏎ r2c1|gl| ⏎ r2c2|sd| ⏎ r2c3||2 ⏎ r2c6|tb|1:41.728 ⏎ r2c7|ib|0.157 ⏎ r2c8|in|0.157 ⏎ r2c9|tb|1:41.728 ⏎ r2c10|in|1 ⏎ r2|*|101728| ⏎ msg||Mejor vuelta : CHIARA - 1:41.728 (50.53 Km/h) ⏎ 
+r3c2|sr| ⏎ 
+r2c2|sr| ⏎ 
+ ⏎ 
