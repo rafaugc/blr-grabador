@@ -320,3 +320,13 @@ r11c2|so| ⏎
 r11c6|tn|19:54.633 ⏎ r11c10|in|10 ⏎ r11|*out|0 ⏎ 
 r10c2|so| ⏎ 
 r10c6|tn|19:45.893 ⏎ r10c10|in|9 ⏎ r10|*out|0 ⏎ 
+ ⏎ 
+ ⏎ 
+r5c2|ss| ⏎ 
+r4c2|ss| ⏎ 
+r8c2|ss| ⏎ 
+r9c2|ss| ⏎ 
+r6c2|ss| ⏎ 
+light|lf| ⏎ com||<p><b>13:36</b><span data-flag="chequered"></span>Llegada</p><p><b>12:58</b><span data-flag="green"></span>Start</p> ⏎ r6c2|sf| ⏎ r8c2|sf| ⏎ r5c2|sf| ⏎ r9c2|sf| ⏎ r4c2|sf| ⏎ 
+dyn1|text| ⏎ 
+r12c2|sf| ⏎ 
