@@ -36,3 +36,8 @@ dyn1|count|602520 ⏎
 light|lf| ⏎ com||<p><b>17:42</b><span data-flag="chequered"></span>Llegada</p> ⏎ 
 dyn1|text| ⏎ 
  ⏎ 
+r106c2|sf| ⏎ r106c6|ib|24.696 ⏎ r106c7|ib|32.231 ⏎ r106c8|ib|19.907 ⏎ 
+r107c2|sf| ⏎ r107c6|ib|28.615 ⏎ r107c7|ib|38.364 ⏎ r107c8|ib|23.101 ⏎ 
+r108c2|sf| ⏎ r108c6|ib|29.038 ⏎ r108c7|ib|38.220 ⏎ r108c8|ib|24.318 ⏎ 
+ ⏎ 
+ ⏎ 
