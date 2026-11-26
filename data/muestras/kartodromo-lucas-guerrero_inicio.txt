@@ -358,3 +358,11 @@ r3c1|gf| ⏎ r3c6|ti|1:42.083 ⏎ r3c9|in|1:42.083 ⏎ r2c1|gl| ⏎ r2c2|sd| ⏎
 r3c2|sr| ⏎ 
 r2c2|sr| ⏎ 
  ⏎ 
+dyn1|text|Vuelta 2/8 ⏎ r2c1|gf| ⏎ r2c2|su| ⏎ r2c3||1 ⏎ r2c6|tb|1:33.130 ⏎ r2c7|in|Vuelta 2 ⏎ r2c8|in| ⏎ r2c9|tb|1:33.130 ⏎ r2c10|in|2 ⏎ r3c1|gl| ⏎ r3c2|sd| ⏎ r3c3||2 ⏎ r3c7|ib| ⏎ r2|*|93130| ⏎ r2|#|1 ⏎ r3|#|2 ⏎ msg||Mejor vuelta : CHIARA - 1:33.130 (55.20 Km/h) ⏎ 
+r2c1|gs| ⏎ r3c1|gs| ⏎ r3c6|ti|1:35.411 ⏎ r3c7|ib|2.124 ⏎ r3c8|in|2.124 ⏎ r3c9|in|1:35.411 ⏎ r3c10|in|2 ⏎ r3|*|95411| ⏎ 
+r2c2|sr| ⏎ 
+r3c2|sr| ⏎ 
+ ⏎ 
+dyn1|text|Vuelta 3/8 ⏎ 
+r2c6|tn|1:33.453 ⏎ r2c7|in|Vuelta 3 ⏎ r2c10|in|3 ⏎ r3c2|in| ⏎ r2|*|93130| ⏎ 
+r3c2|sr| ⏎ r3c6|ti|1:33.623 ⏎ r3c7|ib|2.294 ⏎ r3c8|in|2.294 ⏎ r3c9|in|1:33.623 ⏎ r3c10|in|3 ⏎ r3|*|93623| ⏎ 
