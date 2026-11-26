@@ -444,3 +444,15 @@ r4c2|ss| ⏎ r9c2|ss| ⏎
 r10c2|so| ⏎ r10c6|tn|21:08.034 ⏎ r10c7|ib|21:39.757 ⏎ r10c8|in|20:55.421 ⏎ r10c10|in|8 ⏎ r10|*out|0 ⏎ 
 dyn1|text|Vuelta 9/8 ⏎ r5c1|gs| ⏎ r5c2|so| ⏎ r5c3||1 ⏎ r5c6|tn|21:40.172 ⏎ r5c7|in|Vuelta 9 ⏎ r5c8|in| ⏎ r5c10|in|9 ⏎ r6c1|gs| ⏎ r6c3||2 ⏎ r6c7|ib|1 Vuelta ⏎ r6c8|in|1 Vuelta ⏎ r7c8|in|16.333 ⏎ r10c7|ib|21:39.491 ⏎ r6|#|2 ⏎ r5|*out|0 ⏎ r5|#|1 ⏎ 
 r6c2|so| ⏎ 
+r6c6|tn|21:44.218 ⏎ r6c7|ib|3.780 ⏎ r6c8|in|3.780 ⏎ r6c10|in|9 ⏎ r7c7|ib|1 Vuelta ⏎ r7c8|in|1 Vuelta ⏎ r8c7|ib|12.991 ⏎ r12c7|ib|16.440 ⏎ r11c7|ib|22.278 ⏎ r4c7|ib|26.399 ⏎ r9c7|ib|28.003 ⏎ r6|*out|0 ⏎ 
+r7c2|so| ⏎ 
+r7c6|tn|21:31.636 ⏎ r7c7|ib|7.531 ⏎ r7c8|in|3.751 ⏎ r7c10|in|9 ⏎ r8c7|ib|1 Vuelta ⏎ r8c8|in|1 Vuelta ⏎ r12c7|ib|3.449 ⏎ r11c7|ib|9.287 ⏎ r4c7|ib|13.408 ⏎ r9c7|ib|15.012 ⏎ r7|*out|0 ⏎ 
+r8c2|so| ⏎ r8c6|tn|21:22.740 ⏎ r8c7|ib|11.626 ⏎ r8c8|in|4.095 ⏎ r8c10|in|9 ⏎ r12c7|ib|1 Vuelta ⏎ r12c8|in|1 Vuelta ⏎ r11c7|ib|5.838 ⏎ r4c7|ib|9.959 ⏎ r9c7|ib|11.563 ⏎ r8|*out|0 ⏎ 
+r12c2|so| ⏎ 
+r12c6|tn|21:22.413 ⏎ r12c7|ib|14.748 ⏎ r12c8|in|3.122 ⏎ r12c10|in|9 ⏎ r11c7|ib|1 Vuelta ⏎ r11c8|in|1 Vuelta ⏎ r4c7|ib|4.121 ⏎ r9c7|ib|5.725 ⏎ r12|*out|0 ⏎ 
+r11c2|so| ⏎ 
+r11c6|tn|21:28.160 ⏎ r11c7|ib|26.333 ⏎ r11c8|in|11.585 ⏎ r11c10|in|9 ⏎ r4c7|ib|1 Vuelta ⏎ r4c8|in|1 Vuelta ⏎ r9c7|ib|1.604 ⏎ r11|*out|0 ⏎ 
+r4c2|so| ⏎ 
+r4c6|tn|21:30.301 ⏎ r4c7|ib|32.595 ⏎ r4c8|in|6.262 ⏎ r4c10|in|9 ⏎ r9c7|ib|1 Vuelta ⏎ r9c8|in|1 Vuelta ⏎ r4|*out|0 ⏎ 
+r9c2|so| ⏎ r9c6|tn|21:36.988 ⏎ r9c7|ib|40.886 ⏎ r9c8|in|8.291 ⏎ r9c10|in|9 ⏎ r9|*out|0 ⏎ 
+ ⏎ 
