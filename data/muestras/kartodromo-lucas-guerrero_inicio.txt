@@ -394,3 +394,5 @@ r2c2|sr| ⏎ r2c6|tb|1:32.758 ⏎ r2c7|ib|7.601 ⏎ r2c8|in|7.601 ⏎ r2c9|tb|1:
 dyn1|text|Vuelta 9/8 ⏎ r3c6|tn|1:34.559 ⏎ r3c7|in|Vuelta 9 ⏎ r3c10|in|9 ⏎ r2c2|in| ⏎ r3|*|93723| ⏎ 
 r2c2|ss| ⏎ 
 r2c7|ib|1 Vuelta ⏎ r2c8|in|1 Vuelta ⏎ 
+ ⏎ 
+r3c2|ss| ⏎ 
