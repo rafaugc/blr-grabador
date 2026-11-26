@@ -1,32 +1,39 @@
 <!DOCTYPE html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mensaje al piloto</title>
-<link rel="icon" href="favicon.png?v=2"><link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="KR BOX">
+<meta name="theme-color" content="#0a0f1c"><link rel="manifest" href="manifest-box.json">
+<title>KR BOX · Mensaje al piloto</title>
+<link rel="icon" href="icono-box-192.png"><link rel="apple-touch-icon" href="apple-touch-icon-box.png">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}body{margin:0;background:#0c0d10;color:#e9ebf0;font:15px Inter,system-ui,sans-serif}
-.w{max-width:480px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:12px;min-height:100vh}
+*{box-sizing:border-box}body{margin:0;background:#0a0f1c;color:#e9ebf0;font:15px Inter,system-ui,sans-serif}
+.w{max-width:480px;margin:0 auto;padding:max(16px,env(safe-area-inset-top)) 16px 16px;display:flex;flex-direction:column;gap:12px;min-height:100vh}
 h1{font:700 24px 'Barlow Condensed';margin:0}
 .row{display:flex;gap:8px;align-items:center}
-input{flex:1;background:#1b1e25;border:1px solid #3a3d45;border-radius:12px;color:#ffd23f;font:700 34px 'Barlow Condensed';padding:6px 14px;width:100%}
+input{flex:1;background:#182337;border:1px solid #2e4066;border-radius:12px;color:#e8ff00;font:700 34px 'Barlow Condensed';padding:6px 14px;width:100%}
 button.m{border:0;border-radius:18px;font:700 'Barlow Condensed';cursor:pointer;width:100%;font-family:'Barlow Condensed';font-weight:700}
 .box{background:#FAC775;color:#412402;font-size:64px;height:150px}
 .dbl{background:#5F5E5A;color:#F1EFE8;font-size:32px;height:96px}
-.clr{background:none;border:1px solid #3a3d45!important;color:#8a909c;font-size:20px;height:56px}
+.clr{background:none;border:1px solid #2e4066!important;color:#8d98ad;font-size:20px;height:56px}
 button.m:active{transform:scale(.98)}
-.st{font-size:13px;color:#8a909c;text-align:center;min-height:20px}
+.st{font-size:13px;color:#8d98ad;text-align:center;min-height:20px}
 .ok{color:#3ddc84}
+.lg{display:flex;flex-direction:column;gap:2px}.lg img{height:46px;width:auto;display:block}.lg small{color:#8d98ad;font-size:12px}
+.inst{background:#111a2b;border:1px solid #253350;border-radius:12px;padding:10px 12px;font-size:13px;color:#8d98ad}.inst b{color:#e8ff00}
 </style></head><body><div class="w">
-<div class="row" style="justify-content:space-between"><h1>Mensaje al piloto</h1><span class="st" id="conn">conectando…</span></div>
+<div class="row" style="justify-content:space-between"><div class="lg"><img src="logo-box-oscuro.png" alt="KR BOX"><small>Mensaje al piloto</small></div><span class="st" id="conn">conectando…</span></div>
 <div class="row"><span style="color:#8a909c">Kart</span><input id="kart" inputmode="numeric" maxlength="3" placeholder="43"></div>
 <button class="m box" data-m="BOX">BOX</button>
 <button class="m dbl" data-m="DELANTE DOBLADO">DELANTE DOBLADO</button>
 <button class="m dbl" data-m="DETRÁS DOBLADO">DETRÁS DOBLADO</button>
 <button class="m clr" data-m="CLEAR">Borrar mensaje</button>
 <div class="st" id="st">&nbsp;</div>
+<div class="inst" id="inst"><b>Ponlo como app:</b> en el iPhone, desde Safari pulsa <b>Compartir</b> → <b>Añadir a pantalla de inicio</b>. En Android, menú ⋮ → <b>Añadir a pantalla de inicio</b>.</div>
 <div class="st" style="margin-top:auto">El piloto lo ve al instante en su "Vista piloto". El mensaje se borra solo a los 90 s.</div>
 </div>
 <script>
+if(navigator.standalone||matchMedia('(display-mode: standalone)').matches)document.getElementById('inst').style.display='none';
 const TOPIC='blr-b0be61bf7279e5e3';
 const $=id=>document.getElementById(id);
 try{$('kart').value=localStorage.getItem('blr_msgKart')||''}catch{}
