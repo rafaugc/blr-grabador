@@ -456,3 +456,14 @@ r4c2|so| ⏎
 r4c6|tn|21:30.301 ⏎ r4c7|ib|32.595 ⏎ r4c8|in|6.262 ⏎ r4c10|in|9 ⏎ r9c7|ib|1 Vuelta ⏎ r9c8|in|1 Vuelta ⏎ r4|*out|0 ⏎ 
 r9c2|so| ⏎ r9c6|tn|21:36.988 ⏎ r9c7|ib|40.886 ⏎ r9c8|in|8.291 ⏎ r9c10|in|9 ⏎ r9|*out|0 ⏎ 
  ⏎ 
+ ⏎ 
+r10c2|ss| ⏎ r10c7|ib|1 Vuelta ⏎ r10c8|in|1 Vuelta ⏎ 
+r5c2|ss| ⏎ 
+r6c2|ss| ⏎ 
+r7c2|ss| ⏎ 
+r8c2|ss| ⏎ 
+r12c2|ss| ⏎ 
+r11c2|ss| ⏎ 
+light|lf| ⏎ com||<p><b>14:13</b><span data-flag="chequered"></span>Llegada</p> ⏎ r5c2|sf| ⏎ r6c2|sf| ⏎ r7c2|sf| ⏎ r8c2|sf| ⏎ r12c2|sf| ⏎ r11c2|sf| ⏎ r10c2|sf| ⏎ 
+r4c2|sf| ⏎ 
+r9c2|sf| ⏎ 
