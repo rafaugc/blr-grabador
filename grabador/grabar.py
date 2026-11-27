@@ -139,7 +139,7 @@ def publish_git():
                     p.unlink()
             else:
                 p.parent.mkdir(parents=True, exist_ok=True)
-                p.write_text(_juntar(p, text) if rel.startswith('data/sesiones/') and p.exists() else text)
+                p.write_text(_juntar(p, text) if rel.replace('\\', '/').startswith('data/sesiones/') and p.exists() else text)
         try:  # ajustes hechos desde la app (pilotos juntados, mojado, sesiones borradas…)
             applied = ajustes.apply_pending()
         except Exception as e:
@@ -360,7 +360,8 @@ async def main_async(minutes: float, only: list[str] | None):
     active = [resolve(c) for c in active]
     active = [c for c in active if c.get('port') or c.get('ws')]
     global PUB
-    PUB = Publisher(os.environ.get('GITHUB_ACTIONS') == 'true')
+    # KR_PUBLICAR=1: grabador en un ordenador propio (portátil en casa), que también sube lo grabado
+    PUB = Publisher(os.environ.get('GITHUB_ACTIONS') == 'true' or os.environ.get('KR_PUBLICAR') == '1')
     raw_dir = ROOT / 'raw'
     raw_dir.mkdir(exist_ok=True)
     t_ini = time.time()
