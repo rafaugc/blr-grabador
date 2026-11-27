@@ -40,15 +40,153 @@
     const rows = Object.values(by).sort((a, b) => a.best - b.best);
     const vrDriver = rows[0];
     const vsList = rows.map(r => vsSelf(r.driver)).filter(x => x != null);
-    // gráfico vuelta a vuelta
-    const W = 560, H = 150, pad = 26;
-    const series = rows.map(r => r.all.reduce((a, l) => a.length >= l.length ? a : l, []).slice(1));
-    const allT = series.flat().filter(Boolean); const lo = Math.min(...allT), hi = Math.min(Math.max(...allT), lo + 3);
-    const maxN = Math.max(1, ...series.map(s => s.length));
+    // ---------- gráficas del pop-up (se eligen con las pastillas; se recuerda la elección) ----------
+    const median = a => { a = a.slice().sort((x, y) => x - y); const n = a.length; return n ? (n % 2 ? a[(n - 1) / 2] : (a[n / 2 - 1] + a[n / 2]) / 2) : null; };
     const colors = ['#b38cff', '#ffd23f', '#3ddc84', '#4cc3ff', '#ff8fb1', '#ffa24c', '#a6e36a', '#c9cdd6'];
-    const chart = allT.length > 2 ? `<svg viewBox="0 0 ${W} ${H}" class="kchart">${[0, 0.5, 1].map(f => { const y = pad / 2 + f * (H - pad); return `<line x1="${pad + 10}" x2="${W}" y1="${y}" y2="${y}" stroke="#262a33"/><text x="0" y="${y + 4}" fill="#5d636e" font-size="10">${(lo + f * (hi - lo)).toFixed(1).replace('.', ',')}</text>`; }).join('')}
-      ${series.map((s, i) => `<polyline fill="none" stroke="${colors[i % 8]}" stroke-width="1.8" points="${s.map((t, j) => `${pad + 10 + j * (W - pad - 12) / Math.max(1, maxN - 1)},${pad / 2 + (Math.min(t, hi) - lo) / (hi - lo || 1) * (H - pad)}`).join(' ')}"/>`).join('')}</svg>
-      <div class="legend">${rows.map((r, i) => `<span><i style="background:${colors[i % 8]}"></i>${esc(r.driver)}</span>`).join('')}</div>` : '';
+    const num = (x, d = 1) => (x < 0 ? '−' : x > 0 ? '+' : '') + Math.abs(x).toFixed(d).replace('.', ',');
+    const sesBy = {}; sessions.forEach(s => sesBy[s.id] = s);
+    const start1 = s => { const t = typeof root.inicioTardio === 'function' ? root.inicioTardio(s) : null; return t ? t.desde : 1; };
+    const W = 720, L = 46, R = 14;
+    const ax = 'style="fill:var(--mute)" font-size="11"', grid = 'style="stroke:var(--line)"';
+    // tandas de este kart, en orden de hora
+    const tandas = [];
+    sessions.forEach(s => s.stints.forEach(t => { if (String(t.kart) === String(k.kart) && t.laps && t.laps.length > 1) tandas.push({ s, t, d: clean(t.driver) }); }));
+    tandas.sort((a, b) => (a.s.date + a.s.time).localeCompare(b.s.date + b.s.time));
+    tandas.forEach((x, i) => { x.c = colors[Math.min(i, 7)]; x.name = `${x.d} · ${(x.s.title || x.s.type || '').slice(0, 24)} ${x.s.time}`; });
+    const leg = l => `<div class="legend">${l.map(x => `<span><i style="background:${x.c}"></i>${esc(x.name)}</span>`).join('')}</div>`;
+    const yScale = (vals, minSpan) => { const m = Math.max(minSpan, ...vals.map(Math.abs)); const step = m <= 0.6 ? 0.25 : m <= 1.2 ? 0.5 : 1; const top = Math.ceil(m / step) * step; const ticks = []; for (let v = -top; v <= top + 1e-9; v += step) ticks.push(Math.round(v * 100) / 100); return { top, ticks }; };
+
+    // A · ventaja vuelta a vuelta: cada vuelta frente a lo esperado para ese piloto en esa sesión (0 = un kart medio)
+    const chartA = (() => {
+      const series = tandas.map(x => {
+        const all = x.s.stints.filter(u => u.laps && u.laps.length > 1);
+        const lvl = d => { const o = dmap[clean(d)]; return o && isFinite(o.skill) ? o.skill : null; };
+        const field = all.map(u => lvl(u.driver)).filter(v => v != null);
+        const dOff = lvl(x.t.driver) != null && field.length ? lvl(x.t.driver) - mean(field) : 0;
+        const best = Math.min(...x.t.laps), v1 = start1(x.s);
+        const raw = x.t.laps.map((t, i) => {
+          if (i === 0 || t > best * 1.03) return null; // salida, boxes, trompos, tráfico gordo
+          const med = median(all.map(u => { const v = u.laps[i]; return v != null && v <= Math.min(...u.laps) * 1.03 ? v : null; }).filter(v => v != null));
+          return med == null ? null : t - med - dOff;
+        });
+        // media móvil de 3 vueltas para quitar ruido
+        const pts = raw.map((v, i) => { if (v == null) return null; const w = [raw[i - 1], v, raw[i + 1]].filter(z => z != null); return { n: i + v1, v: mean(w), lap: x.t.laps[i] }; });
+        return Object.assign({ pts }, x);
+      }).filter(z => z.pts.some(Boolean));
+      if (!series.length) return '';
+      // con muchas tandas la gráfica no se lee: se quedan las 6 con más vueltas (cada una conserva su color)
+      const nTot = series.length;
+      if (nTot > 6) { const keep = new Set(series.slice().sort((a, b) => b.pts.filter(Boolean).length - a.pts.filter(Boolean).length).slice(0, 6)); for (let i = series.length - 1; i >= 0; i--) if (!keep.has(series[i])) series.splice(i, 1); series.forEach((z, i) => z.c = colors[i]); }
+      const vals = series.flatMap(z => z.pts.filter(Boolean).map(p => p.v));
+      const { top, ticks } = yScale(vals.map(v => Math.max(-1.5, Math.min(1.5, v))), 0.5);
+      const n0 = Math.min(...series.flatMap(z => z.pts.filter(Boolean).map(p => p.n))), n1 = Math.max(...series.flatMap(z => z.pts.filter(Boolean).map(p => p.n)));
+      const H = 250, T = 16, B = 36, X = n => L + (n - n0) / Math.max(1, n1 - n0) * (W - L - R), Y = v => T + (Math.max(-top, Math.min(top, v)) + top) / (2 * top) * (H - T - B);
+      const stepX = Math.max(1, Math.ceil((n1 - n0) / 12 / 5) * 5); const xt = []; for (let n = Math.ceil(n0 / stepX) * stepX; n <= n1; n += stepX) xt.push(n); if (!xt.length) xt.push(n0);
+      const eff = isFinite(k.effect) ? k.effect : null;
+      return `<h4>Ventaja vuelta a vuelta</h4>
+      <div class="mini">Cada vuelta comparada con lo esperado para ese piloto en esa sesión (ritmo del resto de la parrilla en esa misma vuelta y nivel del piloto). <b>Por encima de la línea = el kart va más rápido que un kart medio.</b> Se pueden comparar tandas de sesiones distintas porque cada una se mide contra la suya.</div>
+      <svg viewBox="0 0 ${W} ${H}" class="kchart">
+        ${ticks.map(v => `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" ${v === 0 ? 'style="stroke:var(--mute)" stroke-width="1.2"' : grid}/><text x="${L - 6}" y="${Y(v) + 4}" text-anchor="end" ${ax}>${v === 0 ? '0' : num(v, 2)}</text>`).join('')}
+        ${eff != null && Math.abs(eff) <= top ? `<line x1="${L}" x2="${W - R}" y1="${Y(eff)}" y2="${Y(eff)}" style="stroke:var(--text)" stroke-dasharray="5 4" stroke-width="1"/><text x="${W - R - 4}" y="${Y(eff) + (eff <= 0 ? -5 : 13)}" text-anchor="end" style="fill:var(--text)" font-size="11">ranking: ${fmt(eff)} s</text>` : ''}
+        ${xt.map(n => `<text x="${X(n)}" y="${H - B + 15}" text-anchor="middle" ${ax}>${n}</text>`).join('')}
+        <text x="${(L + W - R) / 2}" y="${H - 4}" text-anchor="middle" ${ax}>Vuelta de la sesión</text>
+        <text x="${L + 4}" y="${T + 11}" style="fill:var(--fast)" font-size="11">▲ más rápido (s/vuelta)</text><text x="${L + 4}" y="${H - B - 5}" style="fill:var(--vslow)" font-size="11">▼ más lento</text>
+        ${series.map(z => { const segs = []; let cur = []; z.pts.forEach(p => { if (p) cur.push(p); else if (cur.length) { segs.push(cur); cur = []; } }); if (cur.length) segs.push(cur);
+          return segs.map(sg => sg.length > 1 ? `<polyline fill="none" stroke="${z.c}" stroke-width="2" stroke-linejoin="round" points="${sg.map(p => `${X(p.n).toFixed(1)},${Y(p.v).toFixed(1)}`).join(' ')}"/>` : '').join('') +
+            z.pts.filter(Boolean).map(p => `<circle cx="${X(p.n).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="5" fill="${z.c}" fill-opacity="0"><title>${esc(z.d)} · vuelta ${p.n} · ${fmtT(p.lap)} · ${fmt(p.v)} s frente a lo esperado</title></circle>`).join(''); }).join('')}
+      </svg>${leg(series)}
+      <div class="mini">Línea suavizada (media de 3 vueltas). Los cortes son vueltas que no cuentan (salida, boxes, trompos). La línea discontinua es la ventaja del kart en el ranking.${nTot > 6 ? ` Se muestran las 6 tandas más largas de las ${nTot} de este kart; todas están en “Tiempos en bruto”.` : ''}</div>`;
+    })();
+
+    // B · evolución en el día: un punto por tanda, con el piloto descontado
+    const chartB = (() => {
+      const pts = (k.stints || []).map(t => { const s = sesBy[t.session], d = dmap[t.driver]; const base = t.adj != null ? t.adj : t.delta; return s && base != null ? { s, t, v: base - (d && isFinite(d.skill) ? d.skill : 0) } : null; }).filter(Boolean)
+        .sort((a, b) => (a.s.date + a.s.time).localeCompare(b.s.date + b.s.time));
+      if (!pts.length) return '';
+      const se = isFinite(A.sigma) ? A.sigma : 0.3;
+      const { top, ticks } = yScale(pts.flatMap(p => [p.v - se, p.v + se]).map(v => Math.max(-2, Math.min(2, v))), 0.5);
+      const H = 230, T = 16, B = 44, X = i => L + (pts.length === 1 ? 0.5 : (i + 0.5) / pts.length) * (W - L - R), Y = v => T + (Math.max(-top, Math.min(top, v)) + top) / (2 * top) * (H - T - B);
+      const multiDay = new Set(pts.map(p => p.s.date)).size > 1, eff = isFinite(k.effect) ? k.effect : null;
+      return `<h4>Evolución en el día</h4>
+      <div class="mini">Un punto por tanda, por orden de hora: lo que rindió el kart en esa tanda una vez descontado el nivel de quien lo llevaba. La barra es el margen de error de una sola tanda (± ${se.toFixed(2).replace('.', ',')} s).</div>
+      <svg viewBox="0 0 ${W} ${H}" class="kchart">
+        ${ticks.map(v => `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" ${v === 0 ? 'style="stroke:var(--mute)" stroke-width="1.2"' : grid}/><text x="${L - 6}" y="${Y(v) + 4}" text-anchor="end" ${ax}>${v === 0 ? '0' : num(v, 2)}</text>`).join('')}
+        ${eff != null && Math.abs(eff) <= top ? `<line x1="${L}" x2="${W - R}" y1="${Y(eff)}" y2="${Y(eff)}" style="stroke:var(--text)" stroke-dasharray="5 4" stroke-width="1"/>` : ''}
+        <text x="${L + 4}" y="${T + 11}" style="fill:var(--fast)" font-size="11">▲ más rápido (s/vuelta)</text><text x="${L + 4}" y="${H - B - 5}" style="fill:var(--vslow)" font-size="11">▼ más lento</text>
+        ${pts.length > 1 ? `<polyline fill="none" style="stroke:var(--dim)" stroke-width="1.5" points="${pts.map((p, i) => `${X(i).toFixed(1)},${Y(p.v).toFixed(1)}`).join(' ')}"/>` : ''}
+        ${pts.map((p, i) => `<line x1="${X(i)}" x2="${X(i)}" y1="${Y(p.v - se)}" y2="${Y(p.v + se)}" style="stroke:var(--mute)" stroke-width="1.5"/>
+          <circle cx="${X(i)}" cy="${Y(p.v)}" r="5.5" style="fill:var(--accent);stroke:var(--panel)" stroke-width="2"><title>${esc(p.s.time)} ${esc(p.s.title || p.s.type || '')} · ${esc(p.t.driver)} · ${fmt(p.v)} s/vuelta</title></circle>
+          ${pts.length <= 10 ? `<text x="${X(i)}" y="${Y(p.v - se) - 5}" text-anchor="middle" style="fill:var(--text)" font-size="11">${fmt(p.v)}</text>` : ''}
+          <text x="${X(i)}" y="${H - B + 15}" text-anchor="middle" ${ax}>${multiDay ? p.s.date.slice(8, 10) + '/' + p.s.date.slice(5, 7) + ' ' : ''}${esc(p.s.time)}</text>
+          ${pts.length <= 8 ? `<text x="${X(i)}" y="${H - B + 29}" text-anchor="middle" ${ax}>${esc(String(p.t.driver).slice(0, pts.length <= 4 ? 22 : 12))}</text>` : ''}`).join('')}
+      </svg>
+      <div class="mini">${pts.length < 3 ? `Con ${pts.length === 1 ? 'una sola tanda' : 'solo ' + pts.length + ' tandas'} no se puede hablar de tendencia: hacen falta más sesiones con este kart. ` : ''}La línea discontinua es la ventaja del kart en el ranking (${fmt(eff)} s).</div>`;
+    })();
+
+    // C · el kart frente a toda la flota
+    const chartC = (() => {
+      const ks = A.karts.filter(x => isFinite(x.effect)); if (ks.length < 2) return '';
+      const m = Math.max(0.3, ...ks.map(x => Math.abs(x.effect))) * 1.12, H = 118, cy = 58, X = v => L / 2 + (v + m) / (2 * m) * (W - L / 2 - R);
+      const me = ks.find(x => String(x.kart) === String(k.kart)), pos = ks.findIndex(x => x === me) + 1;
+      const step = m <= 0.6 ? 0.2 : m <= 1.5 ? 0.5 : 1; const tk = []; for (let v = -Math.floor(m / step) * step; v <= m; v += step) tk.push(Math.round(v * 100) / 100);
+      return `<h4>Frente a la flota</h4>
+      <div class="mini">Todos los karts de estas sesiones, del más rápido (izquierda) al más lento (derecha). ${me ? `Este es el <b>${pos}º de ${ks.length}</b>.` : ''} La barra es su margen de error.</div>
+      <svg viewBox="0 0 ${W} ${H}" class="kchart">
+        ${tk.map(v => `<line x1="${X(v)}" x2="${X(v)}" y1="${cy - 22}" y2="${cy + 22}" ${v === 0 ? 'style="stroke:var(--mute)"' : grid}/><text x="${X(v)}" y="${cy + 38}" text-anchor="middle" ${ax}>${v === 0 ? 'kart medio' : num(v, 1)}</text>`).join('')}
+        <text x="${L / 2}" y="12" style="fill:var(--fast)" font-size="11">◀ más rápido</text><text x="${W - R}" y="12" text-anchor="end" style="fill:var(--vslow)" font-size="11">más lento ▶</text>
+        <text x="${W / 2}" y="${H - 4}" text-anchor="middle" ${ax}>Segundos por vuelta frente a un kart medio</text>
+        ${ks.filter(x => x !== me).map(x => `<circle cx="${X(x.effect)}" cy="${cy}" r="6" style="fill:var(--dim);stroke:var(--panel)" stroke-width="2"><title>Kart ${esc(x.kart)} · ${fmt(x.effect)} s/vuelta</title></circle>`).join('')}
+        ${[ks[0], ks[ks.length - 1]].filter(x => x !== me).map(x => `<text x="${X(x.effect)}" y="${cy - 12}" text-anchor="middle" ${ax}>${esc(x.kart)}</text>`).join('')}
+        ${me ? `${isFinite(me.se) ? `<line x1="${X(Math.max(-m, me.effect - me.se))}" x2="${X(Math.min(m, me.effect + me.se))}" y1="${cy}" y2="${cy}" style="stroke:var(--accent)" stroke-width="3" stroke-linecap="round"/>` : ''}
+          <circle cx="${X(me.effect)}" cy="${cy}" r="8" style="fill:var(--accent);stroke:var(--panel)" stroke-width="2"><title>Kart ${esc(me.kart)} · ${fmt(me.effect)} s/vuelta</title></circle>
+          <text x="${X(me.effect)}" y="${cy - 14}" text-anchor="middle" style="fill:var(--text)" font-size="13" font-weight="700">Kart ${esc(me.kart)} · ${fmt(me.effect)}</text>` : ''}
+      </svg>`;
+    })();
+
+    // D · cada piloto contra sí mismo
+    const chartD = (() => {
+      const list = rows.map(r => ({ d: r.driver, v: vsSelf(r.driver) })).filter(x => x.v != null).sort((a, b) => a.v - b.v);
+      if (!list.length) return `<h4>Piloto contra sí mismo</h4><div class="kempty">Sin datos: ninguno de los pilotos que llevaron este kart ha llevado otro kart distinto en las sesiones elegidas. Añade más sesiones o más días para poder comparar a cada piloto consigo mismo.</div>`;
+      const m = Math.max(0.3, ...list.map(x => Math.abs(x.v))) * 1.25, rh = 26, T = 22, H = T + list.length * rh + 26, x0 = 170, X = v => x0 + (v + m) / (2 * m) * (W - x0 - R);
+      return `<h4>Piloto contra sí mismo</h4>
+      <div class="mini">Lo que ganó o perdió cada piloto con este kart frente a su propio ritmo con los otros karts que llevó. Barra hacia la izquierda = fue más rápido con este.</div>
+      <svg viewBox="0 0 ${W} ${H}" class="kchart">
+        <line x1="${X(0)}" x2="${X(0)}" y1="${T - 4}" y2="${H - 22}" style="stroke:var(--mute)"/>
+        <text x="${x0}" y="12" style="fill:var(--fast)" font-size="11">◀ más rápido con este kart</text><text x="${W - R}" y="12" text-anchor="end" style="fill:var(--vslow)" font-size="11">más lento ▶</text>
+        <text x="${(x0 + W - R) / 2}" y="${H - 4}" text-anchor="middle" ${ax}>Segundos por vuelta</text>
+        ${list.map((x, i) => { const y = T + i * rh, a = X(Math.min(0, x.v)), b = X(Math.max(0, x.v));
+          return `<text x="${x0 - 10}" y="${y + 15}" text-anchor="end" style="fill:var(--text)" font-size="12">${esc(x.d.slice(0, 22))}</text>
+          <rect x="${a}" y="${y + 4}" width="${Math.max(2, b - a)}" height="${rh - 10}" rx="4" style="fill:var(${x.v < 0 ? '--fast' : '--vslow'})"><title>${esc(x.d)} · ${fmt(x.v)} s/vuelta</title></rect>
+          <text x="${x.v < 0 ? a - 6 : b + 6}" y="${y + 15}" text-anchor="${x.v < 0 ? 'end' : 'start'}" style="fill:var(--text)" font-size="12">${fmt(x.v)}</text>`; }).join('')}
+      </svg>`;
+    })();
+
+    // E · tiempos en bruto, una gráfica por tanda (sin mezclar sesiones)
+    const chartE = (() => {
+      if (!tandas.length) return '';
+      const pw = 352, ph = 150, pl = 50, pb = 26, pt = 8;
+      return `<h4>Tiempos en bruto</h4>
+      <div class="mini">Los tiempos tal cual, una gráfica por tanda y cada una con su propia escala. Arriba = más rápido. Los puntos huecos son vueltas fuera de escala (boxes, trompos).</div>
+      <div class="kgrid">${tandas.map(x => {
+        const v1 = start1(x.s), laps = x.t.laps.map((t, i) => ({ n: i + v1, t })).slice(1); if (!laps.length) return '';
+        const lo = Math.min(...laps.map(p => p.t)), hi = Math.max(lo + 0.5, Math.min(lo * 1.03, Math.max(...laps.map(p => p.t))));
+        const n0 = laps[0].n, n1 = laps[laps.length - 1].n, X = n => pl + (n - n0) / Math.max(1, n1 - n0) * (pw - pl - 8), Y = t => pt + (Math.min(t, hi) - lo) / (hi - lo) * (ph - pt - pb);
+        const stepX = Math.max(1, Math.ceil((n1 - n0) / 6 / 5) * 5); const xt = []; for (let n = Math.ceil(n0 / stepX) * stepX; n <= n1; n += stepX) xt.push(n); if (!xt.length) xt.push(n0);
+        return `<div><div class="kpt"><i style="background:${x.c}"></i><b>${esc(x.d)}</b> · ${esc(x.s.title || x.s.type || '')} · ${esc(x.s.time)}</div>
+        <svg viewBox="0 0 ${pw} ${ph}" class="kchart">
+          ${[0, 0.5, 1].map(f => { const t = lo + f * (hi - lo), y = Y(t); return `<line x1="${pl}" x2="${pw - 8}" y1="${y}" y2="${y}" ${grid}/><text x="${pl - 5}" y="${y + 4}" text-anchor="end" ${ax}>${fmtT(t).slice(0, -2)}</text>`; }).join('')}
+          ${xt.map(n => `<text x="${X(n)}" y="${ph - 8}" text-anchor="middle" ${ax}>${n}</text>`).join('')}
+          <polyline fill="none" stroke="${x.c}" stroke-width="2" stroke-linejoin="round" points="${laps.map(p => `${X(p.n).toFixed(1)},${Y(p.t).toFixed(1)}`).join(' ')}"/>
+          ${laps.map(p => `<circle cx="${X(p.n).toFixed(1)}" cy="${Y(p.t).toFixed(1)}" r="${p.t > hi ? 3.5 : 5}" ${p.t > hi ? `fill="none" stroke="${x.c}" stroke-width="1.5"` : `fill="${x.c}" fill-opacity="0"`}><title>Vuelta ${p.n} · ${fmtT(p.t)}</title></circle>`).join('')}
+        </svg></div>`; }).join('')}</div>
+      <div class="mini">Eje horizontal: número real de vuelta de la sesión.</div>`;
+    })();
+
+    const panes = [['a', 'Ventaja vuelta a vuelta', chartA], ['b', 'Evolución en el día', chartB], ['c', 'Frente a la flota', chartC], ['d', 'Piloto contra sí mismo', chartD], ['e', 'Tiempos en bruto', chartE]].filter(p => p[2]);
+    let on; try { on = JSON.parse(localStorage.getItem('kcharts') || 'null'); } catch { on = null; }
+    if (!Array.isArray(on) || !panes.some(p => on.includes(p[0]))) on = ['a', 'b'];
+    const chart = panes.length ? `<div class="kcsel"><span class="mini">Gráficas:</span>${panes.map(p => `<span class="chipd ${on.includes(p[0]) ? 'on' : ''}" data-kc="${p[0]}">${p[1]}</span>`).join('')}</div>
+      ${panes.map(p => `<div class="kpane" data-kp="${p[0]}" ${on.includes(p[0]) ? '' : 'hidden'}>${p[2]}</div>`).join('')}` : '';
     return `<div class="mhead">
         <div class="mk ${cls || ''}">${esc(k.kart)}</div>
         <div><div class="mtitle">Kart ${esc(k.kart)} ${k.qcls ? badge(k.qcls) : ''}</div>
@@ -58,7 +196,7 @@
       <div class="mstats">
         <div><span>Mejor ritmo 3v</span><b class="num">${fmtT(Math.min(...rows.map(r => r.b3 ?? Infinity)))}</b></div>
         <div><span>Mejor ritmo 5v</span><b class="num">${fmtT(Math.min(...rows.map(r => r.b5 ?? Infinity)))}</b></div>
-        <div><span>Pilotos más rápidos con él que con otros karts</span><b class="num">${vsList.filter(x => x < 0).length} de ${vsList.length}</b></div>
+        <div><span>Pilotos más rápidos con él que con otros karts</span><b class="num">${vsList.length ? vsList.filter(x => x < 0).length + ' de ' + vsList.length : '<span class="mini" style="display:inline;font-size:13px">sin datos: nadie llevó otro kart</span>'}</b></div>
       </div>
       <div class="scroll"><table><thead><tr><th class="l">Piloto</th><th>VR</th><th class="l">Sesión de la VR</th><th>Mejor ritmo 3v</th><th>Mejor ritmo 5v</th><th title="Lo rápido que es el piloto, con el kart descontado">Nivel piloto</th><th title="Cuánto más rápido fue con este kart que con los otros que llevó">Vs. sus otros karts</th><th>Vueltas</th></tr></thead><tbody>
       ${rows.map((r, i) => { const v = vsSelf(r.driver); return `<tr><td class="l ${i === 0 ? 'purple' : ''}"><b>${esc(r.driver)}</b>${r.team ? `<div class="mini">${esc(r.team)}</div>` : ''}</td>
@@ -67,8 +205,9 @@
         <td class="num">${dmap[r.driver] ? fmt(dmap[r.driver].skill) : '–'}</td>
         <td class="num ${v == null ? '' : v < -0.05 ? 't-fast' : v > 0.05 ? 't-slow' : ''}">${v == null ? '–' : fmt(v)}</td><td class="num">${r.laps}</td></tr>`; }).join('')}
       </tbody></table></div>
-      ${chart ? `<h4 style="margin-top:14px">Vuelta a vuelta (sin la 1ª)</h4>${chart}` : ''}
-      <div class="mini" style="margin-top:8px"><span class="purple">Morado</span> = vuelta rápida del kart y quien la hizo · “Mejor ritmo 3v/5v” = mejor media de 3 o 5 vueltas seguidas · “Vs. sus otros karts” negativo = ese piloto fue más rápido con este kart.</div>`;
+      ${chart}
+      <div class="mini" style="margin-top:8px"><span class="purple">Morado</span> = vuelta rápida del kart y quien la hizo · “Mejor ritmo 3v/5v” = mejor media de 3 o 5 vueltas seguidas · “Vs. sus otros karts” negativo = ese piloto fue más rápido con este kart.</div>
+      <div class="kredim">Arrastra la esquina inferior derecha para cambiar el tamaño de esta ventana ↘ (doble clic en ella para volver al tamaño normal)</div>`;
   }
 
   // ---------- desglose por piloto de un equipo ----------
@@ -219,7 +358,12 @@
 .kcls{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid;font-weight:600;white-space:nowrap}
 .modal[hidden]{display:none!important}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:flex-start;justify-content:center;z-index:50;padding:30px 12px;overflow:auto}
-.modal .box{background:var(--panel);border:1px solid var(--line);border-radius:14px;max-width:880px;width:100%;padding:16px}
+.modal .box{background:var(--panel);border:1px solid var(--line);border-radius:14px;width:min(880px,100%);max-width:100%;min-width:min(340px,100%);min-height:160px;padding:16px;resize:both;overflow:auto;flex:none}
+.kcsel{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:14px 0 2px}.kcsel .chipd{cursor:pointer}
+.kpane h4{margin:14px 0 2px}.kpane .mini{margin:2px 0 6px}.kpane[hidden]{display:none}
+.kgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px 16px}.kpt{font-size:12px;color:var(--mute);margin-bottom:2px}.kpt i{display:inline-block;width:10px;height:3px;margin-right:5px;vertical-align:middle}.kpt b{color:var(--text)}
+.kempty{background:var(--panel2);border-radius:10px;padding:12px;color:var(--mute);font-size:13px}
+.kredim{font-size:11px;color:var(--dim);text-align:right;margin-top:10px}@media(pointer:coarse){.kredim{display:none}}
 .mhead{display:flex;gap:14px;align-items:center;margin-bottom:12px}.mk{font:700 46px/1 "Barlow Condensed";min-width:60px;text-align:center}
 .mtitle{font:700 22px "Barlow Condensed";display:flex;gap:8px;align-items:center}.mclose{margin-left:auto;background:none;border:1px solid var(--line);border-radius:8px;color:var(--text);font-size:18px;width:36px;height:36px;cursor:pointer}
 .mstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.mstats div{background:var(--panel2);border-radius:10px;padding:8px 10px}.mstats span{display:block;font-size:11px;color:var(--mute)}.mstats b{font-size:18px}
@@ -246,5 +390,27 @@ tr.me td{background:var(--acc-bg)}
 .dbar{position:relative;height:10px;background:var(--panel2);border-radius:5px;overflow:hidden}.dbar>div:first-child{height:100%}.dmin{position:absolute;top:0;bottom:0;width:2px;background:var(--text)}
 .flds{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}.fld span{display:block;font-size:12px;color:var(--mute);margin-bottom:3px}.fld input,.fld select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 10px;color:var(--text)}.fld small{font-size:11px;color:var(--dim)}
 `;
+  // pastillas de gráficas del pop-up del kart (se recuerda la elección)
+  if (root.document) {
+    document.addEventListener('click', e => {
+      const c = e.target.closest && e.target.closest('[data-kc]'); if (!c) return;
+      const box = c.closest('.box') || document; c.classList.toggle('on');
+      const p = box.querySelector(`[data-kp="${c.dataset.kc}"]`); if (p) p.hidden = !c.classList.contains('on');
+      try { localStorage.setItem('kcharts', JSON.stringify([...box.querySelectorAll('[data-kc].on')].map(x => x.dataset.kc))); } catch {}
+    });
+    // ventana redimensionable a mano: se recuerda el tamaño en este dispositivo
+    const boot = () => {
+      const box = document.getElementById('kmbox'); if (!box || !root.ResizeObserver) return;
+      let saved = null; try { saved = JSON.parse(localStorage.getItem('kmboxSize') || 'null'); } catch {}
+      if (saved && saved.w) { box.style.width = saved.w + 'px'; if (saved.h) box.style.height = saved.h + 'px'; }
+      new ResizeObserver(() => {
+        if (!box.offsetWidth || !box.style.width) return; // solo cuando lo ha cambiado el usuario arrastrando
+        try { localStorage.setItem('kmboxSize', JSON.stringify({ w: Math.round(box.offsetWidth), h: box.style.height ? Math.round(box.offsetHeight) : 0 })); } catch {}
+      }).observe(box);
+      box.addEventListener('dblclick', e => { const r = box.getBoundingClientRect(); if (e.clientX > r.right - 26 && e.clientY > r.bottom - 26) { box.style.width = box.style.height = ''; try { localStorage.removeItem('kmboxSize'); } catch {} } });
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  }
+
   root.IngUI = { kartPopup, driverRows, engineer, rulesForm, readRules, quintile, badge, CSS, esc, fmtT, fmt };
 })(typeof window !== 'undefined' ? window : globalThis);

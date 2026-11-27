@@ -1,8 +1,8 @@
 name: Grabar circuitos
 
-# Cada 30 min se lanza un turno. Si ya hay un grabador en marcha (de hace menos de 5 h)
-# el turno se cierra solo en unos segundos. Así siempre hay uno escuchando, y el
-# siguiente se conecta ~50 min antes de que el anterior termine: no se pierde nada.
+# El grabador en marcha lanza él mismo a su sustituto cuando lleva 5 h, ~50 min antes de terminar:
+# así no se pierde nada. El aviso programado de cada 30 min queda de reserva (GitHub lo retrasa o se lo
+# salta a menudo): si ya hay un grabador de hace menos de 5 h, ese turno se cierra solo en segundos.
 # El grabador está siempre atento, pero solo guarda cuando hay vueltas.
 on:
   schedule:
@@ -22,7 +22,7 @@ on:
 
 permissions:
   contents: write
-  actions: read
+  actions: write
 
 jobs:
   grabar:
@@ -43,6 +43,8 @@ jobs:
         run: pip install -r requirements.txt
       - name: Grabar
         if: steps.turno.outputs.grabar == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "blr-grabador"
           git config user.email "blr-grabador@users.noreply.github.com"

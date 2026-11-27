@@ -1,8 +1,10 @@
 """Decide si este turno debe grabar o si ya hay otro grabador cubriendo.
 
-Hay un turno nuevo cada 30 min. Solo graba si no hay otro grabador en marcha
-que haya empezado hace menos de RELEVO minutos. Así siempre hay un grabador
-activo y, al final de cada uno, el siguiente ya está conectado (solapan ~50 min).
+Los turnos nuevos los lanza el propio grabador cuando lleva RELEVO minutos (ver relevo() en grabar.py);
+el aviso programado de GitHub (cada 30 min) queda de reserva, porque llega tarde o no llega.
+Un turno solo graba si no hay otro turno en marcha, ANTERIOR a él, que haya empezado hace menos
+de RELEVO minutos. Mirar solo los anteriores evita que dos turnos lanzados a la vez se cedan el paso
+el uno al otro y no grabe ninguno. Así, al final de cada turno, el siguiente ya está conectado (~50 min).
 Escribe grabar=true/false en $GITHUB_OUTPUT.
 """
 import json
@@ -28,13 +30,17 @@ def main():
             print('No pude consultar otros turnos, grabo por si acaso:', e)
             runs = []
         now = datetime.now(timezone.utc)
+        start = lambda r: datetime.fromisoformat((r.get('run_started_at') or r['created_at']).replace('Z', '+00:00'))
+        me = next((r for r in runs if str(r['id']) == str(run_id)), None)
+        my_key = (start(me), int(me['id'])) if me else (now, int(run_id or 0))
         for r in runs:
             if str(r['id']) == str(run_id):
                 continue
-            started = datetime.fromisoformat((r.get('run_started_at') or r['created_at']).replace('Z', '+00:00'))
+            started = start(r)
             age = (now - started).total_seconds() / 60
-            print(f"Turno {r['id']} en marcha desde hace {age:.0f} min")
-            if age < RELEVO:
+            antes = (started, int(r['id'])) < my_key
+            print(f"Turno {r['id']} en marcha desde hace {age:.0f} min" + ('' if antes else ' (posterior a este: no cuenta)'))
+            if age < RELEVO and antes:
                 decision = False
     print('Grabar en este turno:', decision)
     out = os.environ.get('GITHUB_OUTPUT')

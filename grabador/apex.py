@@ -191,8 +191,12 @@ class ApexState:
             except ValueError:
                 kart_n = kart
             pos = self.rows.get(rid, {}).get('rk', '')
+            # número real de la primera vuelta grabada (si el grabador se enganchó con la sesión empezada será > 1)
+            # (se mira solo en las 3 primeras: en las cronos hay pausas en boxes que Apex cuenta como vueltas)
+            difs = [int(l['n']) - i for i, l in enumerate(ls[:3]) if str(l.get('n', '')).isdigit()]
+            v0 = max(1, min(difs)) if difs else None
             stints.append({
-                'kart': kart_n, 'driver': driver.strip().upper(), 'cls': '',
+                'v0': v0, 'kart': kart_n, 'driver': driver.strip().upper(), 'cls': '',
                 'team': (max(set(teams), key=teams.count) if teams else ''),
                 'pos': int(pos) if str(pos).isdigit() else None,
                 'laps': [l['t'] for l in ls],

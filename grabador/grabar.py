@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import calendar
 import gzip
 import json
 import os
@@ -147,6 +148,59 @@ def publish_git():
     for rel, text in snap.items():  # lo subido ya no está pendiente
         if MINE.get(rel, object()) == text:
             MINE.pop(rel, None)
+
+
+RELEVO = 300  # minutos: a esta edad el grabador lanza a su sustituto (igual que en turno.py)
+
+
+def _gh(method, path, body=None):
+    repo, token = os.environ.get('GITHUB_REPOSITORY'), os.environ.get('GITHUB_TOKEN')
+    if not (repo and token):
+        return None
+    req = urllib.request.Request(f'https://api.github.com/repos/{repo}/actions/{path}', method=method,
+                                 data=json.dumps(body).encode() if body is not None else None,
+                                 headers={'Authorization': f'Bearer {token}', 'Accept': 'application/vnd.github+json'})
+    with urllib.request.urlopen(req, timeout=20) as r:
+        txt = r.read().decode() or '{}'
+    return json.loads(txt)
+
+
+def hay_sustituto():
+    """¿Hay otro turno posterior a este que lleve más de 3 min en marcha? (los que no graban se cierran en segundos)"""
+    me = str(os.environ.get('GITHUB_RUN_ID'))
+    runs = (_gh('GET', 'workflows/grabar.yml/runs?status=in_progress&per_page=30') or {}).get('workflow_runs', [])
+    mine = next((r for r in runs if str(r['id']) == me), None)
+    if not mine:
+        return False
+    t0 = mine.get('run_started_at') or mine['created_at']
+    now = time.time()
+    for r in runs:
+        st = r.get('run_started_at') or r['created_at']
+        age = now - calendar.timegm(time.strptime(st, '%Y-%m-%dT%H:%M:%SZ'))
+        if str(r['id']) != me and st > t0 and age > 180:
+            return True
+    return False
+
+
+async def relevo(t0: float, deadline: float):
+    """El grabador lanza a su propio sustituto en vez de esperar al aviso programado de GitHub, que a menudo
+    llega tarde (el 21/11/2026 dejó 80 min sin grabar). Si el sustituto no aparece, insiste cada 5 min."""
+    if not os.environ.get('GITHUB_TOKEN') or deadline - t0 < (RELEVO + 10) * 60:
+        return
+    await asyncio.sleep(max(0, t0 + (RELEVO + 1) * 60 - time.time()))
+    forzar = False
+    while time.time() < deadline - 60:
+        try:
+            if await asyncio.to_thread(hay_sustituto):
+                log('Relevo: el siguiente turno ya está grabando')
+                return
+            await asyncio.to_thread(_gh, 'POST', 'workflows/grabar.yml/dispatches',
+                                    {'ref': 'main', 'inputs': {'forzar': 'true' if forzar else 'false'}})
+            log('Relevo: he lanzado el siguiente turno' + (' (forzado)' if forzar else ''))
+        except Exception as e:
+            log(f'Relevo: no pude lanzar el siguiente turno ({e!r}); lo reintento')
+        forzar = True
+        await asyncio.sleep(300)
 
 
 PUB: 'Publisher | None' = None
@@ -293,7 +347,8 @@ async def main_async(minutes: float, only: list[str] | None):
     PUB = Publisher(os.environ.get('GITHUB_ACTIONS') == 'true')
     raw_dir = ROOT / 'raw'
     raw_dir.mkdir(exist_ok=True)
-    deadline = time.time() + minutes * 60
+    t_ini = time.time()
+    deadline = t_ini + minutes * 60
     stats = {c['slug']: {'nombre': c['nombre'], 'conectado': False, 'conexiones': 0, 'mensajes': 0,
                          'sesiones': 0, 'errores_lectura': 0} for c in active}
     log(f"Grabando {len(active)} circuitos durante {minutes:.0f} minutos: {', '.join(c['slug'] for c in active)}")
@@ -335,11 +390,14 @@ async def main_async(minutes: float, only: list[str] | None):
 
     watcher = asyncio.create_task(watch_list())
     aj_watcher = asyncio.create_task(watch_ajustes()) if PUB.enabled else None
+    rel = asyncio.create_task(relevo(t_ini, deadline)) if PUB.enabled else None
     while any(not t.done() for t in tasks.values()):
         await asyncio.sleep(5)
     watcher.cancel()
     if aj_watcher:
         aj_watcher.cancel()
+    if rel:
+        rel.cancel()
 
     estado_path = ROOT / 'data' / 'estado.json'
     estado_path.parent.mkdir(exist_ok=True)

@@ -17,9 +17,9 @@
 <script>/* tema guardado: se aplica antes de pintar para que no parpadee */
 if(/[?&]vista=piloto/.test(location.search))document.documentElement.classList.add('dashboot');
 try{const t=JSON.parse(localStorage.getItem('blr_tema')||'null')||{},h=document.documentElement;h.dataset.fondo=t.f||'azul';h.dataset.resalte=t.r||'amarillof';}catch(e){}</script>
-<script src="core.js?v=20261126e"></script>
-<script src="ingeniero.js?v=20261126e"></script>
-<script src="ingeniero-ui.js?v=20261126e"></script>
+<script src="core.js?v=20261127a"></script>
+<script src="ingeniero.js?v=20261127a"></script>
+<script src="ingeniero-ui.js?v=20261127a"></script>
 <link rel="stylesheet" href="tema.css?v=1">
 <style>
 .tema{position:relative}.tema>button{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;cursor:pointer;color:var(--mute);font-size:12px;display:inline-flex;gap:6px;align-items:center}
@@ -56,6 +56,7 @@ th.l,td.l{text-align:left}td.k{font:700 21px/1 "Barlow Condensed";text-align:cen
 .badge{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--mute)}
 .badge.alta{color:var(--fast);border-color:#1f4a33}.badge.media{color:var(--acc-txt);border-color:var(--acc-line)}.badge.baja{color:var(--slow);border-color:#4a3520}
 .mini{font-size:12px;color:var(--mute)}
+.warn-inc{margin:10px 0 0;padding:9px 12px;border-radius:10px;border:1px solid color-mix(in srgb,var(--slow) 55%,var(--bg));background:color-mix(in srgb,var(--slow) 13%,var(--bg));font-size:13px}.tag-inc{font-size:11px;font-weight:600;color:var(--slow);border:1px solid color-mix(in srgb,var(--slow) 55%,var(--bg));border-radius:999px;padding:1px 7px;white-space:nowrap}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .seg{display:inline-flex;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px}
 .seg button{border:0;background:transparent;border-radius:7px;padding:5px 10px;cursor:pointer;color:var(--mute);font-size:13px}.seg button.on{background:var(--seg);color:var(--text)}
@@ -1436,18 +1437,38 @@ function renderSes(ses) {
   el.innerHTML = delBanner() + `<div class="card scroll"><div class="mini" style="margin-bottom:6px">Pulsa una sesión para ver todos sus datos. 🗑 = borrarla de la memoria (deja de contar en todo: karts, pilotos y score).</div><table><thead><tr><th class="l">Hora</th><th class="l">Sesión</th><th class="l">Pista</th><th>Pilotos</th><th>Vueltas</th><th>Mejor vuelta</th><th class="l">Origen</th><th></th></tr></thead><tbody>
   ${ses.slice().sort((a, b) => b.time.localeCompare(a.time)).map(s => { const laps = s.stints.flatMap(t => t.laps);
     const cd = condOf(s);
-    return `<tr class="click" data-sid="${esc(sid(s))}"><td class="l">${esc(s.time)}</td><td class="l"><b>${esc(s.title || s.type)}</b></td><td class="l mini" title="${esc(cd.why.join(' · '))}">${condIcon(cd)} ${condName(cd)}${cd.src === 'manual' ? ' (a mano)' : ''}</td><td class="num">${s.stints.length}</td><td class="num">${laps.length}</td><td class="num purple">${fmtT(Math.min(...laps))}</td>
+    return `<tr class="click" data-sid="${esc(sid(s))}"><td class="l">${esc(s.time)}</td><td class="l"><b>${esc(s.title || s.type)}</b>${inicioTardio(s) ? ` <span class="tag-inc" title="La grabación empieza en la vuelta ${inicioTardio(s).desde}: faltan las primeras">⚠ incompleta</span>` : ''}</td><td class="l mini" title="${esc(cd.why.join(' · '))}">${condIcon(cd)} ${condName(cd)}${cd.src === 'manual' ? ' (a mano)' : ''}</td><td class="num">${s.stints.length}</td><td class="num">${laps.length}</td><td class="num purple">${fmtT(Math.min(...laps))}</td>
     <td class="l mini">${s.envivo ? '<span style="color:var(--vslow)">● en curso</span>' : s.source === 'directo' ? 'vista en directo' : /pdf$/i.test(s.source || '') ? (s.local ? 'PDF (solo en este dispositivo)' : 'PDF') : 'grabada'}</td>
     <td>${canDel(s) ? `<span data-del="${esc(sid(s))}" title="Borrar esta sesión" style="cursor:pointer;padding:0 6px">🗑</span>` : ''}</td></tr>`; }).join('')}</tbody></table></div>`;
   bindDelBanner(el);
   el.querySelectorAll('[data-del]').forEach(x => x.onclick = e => { e.stopPropagation(); const s = ses.find(y => sid(y) === x.dataset.del); if (s && confirm(`¿Borrar la sesión ${s.time} ${s.title || s.type}?\nDeja de contar en todos los rankings.`)) delSessions([s]); });
   el.querySelectorAll('tr[data-sid]').forEach(tr => tr.onclick = () => { openSes = tr.dataset.sid; subTab = 'clas'; renderSes(sessionsToday()); window.scrollTo(0, 0); });
 }
+// ¿La grabación empezó con la sesión ya en marcha? Devuelve {desde, total} (desde = nº real de la 1ª vuelta grabada) o null si está entera.
+window.inicioTardio = inicioTardio;
+function inicioTardio(s) {
+  if (!s || !s.stints || !s.stints.length || /pdf$/i.test(s.source || '')) return null;
+  const med = a => { a = a.slice().sort((x, y) => x - y); return a[Math.floor(a.length / 2)]; };
+  let v = s.stints.map(t => t.v0).filter(x => x != null), total = null;
+  const ti = (s.columnas || []).findIndex(c => c.tipo === 'tlp'), ki = (s.columnas || []).findIndex(c => c.tipo === 'no');
+  const tl = {}; if (ti >= 0 && ki >= 0) (s.clasificacion || []).forEach(r => { if (/^\d+$/.test(r[ti] || '')) tl[String(r[ki])] = +r[ti]; });
+  if (Object.keys(tl).length) total = Math.max(...Object.values(tl));
+  // sesiones antiguas (sin número de vuelta guardado): en carrera, vueltas que dice Apex menos las que hay grabadas
+  let min = 3;
+  if (!v.length && s.type === 'Carrera') {
+    // si alguien tiene grabada la vuelta 1 o 2 del líder, la carrera se grabó desde el principio (lo que falte son vueltas sueltas)
+    if (s.stints.some(t => { const m = /^Vuelta (\d+)$/.exec((t.lider || [])[0] || ''); return m && +m[1] <= 2; })) return null;
+    v = s.stints.filter(t => tl[String(t.kart)]).map(t => tl[String(t.kart)] - t.laps.length + 1); min = 5;
+  }
+  if (!v.length) return null;
+  const desde = med(v);
+  return desde >= min ? { desde, total } : null;
+}
 function renderDetail(el, s) {
   const st = s.stints.slice().sort((a, b) => (a.pos ?? 99) - (b.pos ?? 99));
   const allLaps = st.flatMap(t => t.laps), sbest = Math.min(...allLaps);
   const keff = {}; (A ? A.karts : []).forEach(k => keff[String(k.kart)] = k.effect);
-  const hasTeams = st.some(t => t.team);
+  const hasTeams = st.some(t => t.team), tarde = inicioTardio(s);
   const tabs = [['clas', 'Clasificación']].concat(hasTeams ? [['equipos', 'Equipos y pilotos']] : [], [['vueltas', 'Vuelta a vuelta'], ['pos', 'Posiciones'], ['karts', 'Karts'], ['com', 'Comentarios']]);
   if (subTab === 'equipos' && !hasTeams) subTab = 'clas';
   const mean = a => a.reduce((x, y) => x + y, 0) / a.length;
@@ -1471,14 +1492,14 @@ function renderDetail(el, s) {
         ${g.stints.slice().sort((a, b) => b.laps.length - a.laps.length).map(t => { const b5 = Ingeniero.bestN(t.laps, 5); return `<tr><td class="l">${esc(t.driver)}</td><td class="num">${Ingeniero.clockFmt(t.laps.reduce((a, b) => a + b, 0))}</td><td class="num">${t.laps.length}</td><td class="num purple">${fmtT(Math.min(...t.laps))}</td><td class="num">${fmtT(Ingeniero.bestN(t.laps, 3))}</td><td class="num">${fmtT(b5)}</td><td class="num">${fmtT(mean(t.laps))}</td><td class="num">${b5 ? allPace.filter(x => x < b5 - 1e-9).length + 1 + 'º' : '–'}</td></tr>`; }).join('')}</table></td></tr>` : ''}`; }).join('')}</tbody></table>
     <div class="mini" style="margin-top:6px">Pulsa un equipo para ver a sus pilotos. Si Apex solo daba el nombre del equipo (sin cambio de piloto), aparece una sola línea.</div>`;
   } else if (subTab === 'vueltas') {
-    const n = Math.max(...st.map(t => t.laps.length));
-    body = `<table class="lt"><thead><tr><th class="l">Piloto</th><th>Kart</th>${Array.from({ length: n }, (_, i) => `<th>${i + 1}</th>`).join('')}<th>Mejor</th><th>Media</th></tr></thead><tbody>
+    const n = Math.max(...st.map(t => t.laps.length)), v1 = tarde ? tarde.desde : 1;
+    body = `<table class="lt"><thead><tr><th class="l">Piloto</th><th>Kart</th>${Array.from({ length: n }, (_, i) => `<th>${i + v1}</th>`).join('')}<th>Mejor</th><th>Media</th></tr></thead><tbody>
     ${st.map(t => { const best = Math.min(...t.laps); return `<tr><td class="l">${esc(t.driver)}${t.team ? `<div class="mini">${esc(t.team)}</div>` : ''}</td><td class="num">${esc(t.kart)}</td>
       ${Array.from({ length: n }, (_, i) => { const x = t.laps[i]; if (x == null) return '<td></td>'; const off = i === 0 || x > best * (1 + opts.cutPct / 100) || (opts.noTraffic && t.gaps && t.gaps[i] != null && t.gaps[i] < 0.5);
         const tip = [t.posv && t.posv[i] ? 'P' + t.posv[i] : '', t.gaps && t.gaps[i] != null ? 'a ' + t.gaps[i].toFixed(2) + ' s del de delante' : ''].filter(Boolean).join(' · ');
         return `<td class="num ${x === sbest ? 'best sbest' : ''} ${off ? 'off' : ''}" title="${tip}">${fmtT(x)}</td>`; }).join('')}
       <td class="num ${best === sbest ? 'purple' : ''}">${fmtT(best)}</td><td class="num">${fmtT(mean(t.laps))}</td></tr>`; }).join('')}</tbody></table>
-    <div class="mini" style="margin-top:6px"><span class="purple">Morado</span> = mejor vuelta de la sesión · <span style="text-decoration:line-through">tachadas</span> = vueltas que no cuentan para el ranking (1ª vuelta, trompos, tráfico…)</div>`;
+    <div class="mini" style="margin-top:6px"><span class="purple">Morado</span> = mejor vuelta de la sesión · <span style="text-decoration:line-through">tachadas</span> = vueltas que no cuentan para el ranking (1ª vuelta${tarde ? ' grabada' : ''}, trompos, tráfico…)${tarde ? ` · Los números de arriba son las vueltas reales de la carrera: la grabación empieza en la ${tarde.desde}.` : ''}</div>`;
   } else if (subTab === 'pos') {
     const has = st.some(t => t.posv && t.posv.some(Boolean));
     const n = Math.max(...st.map(t => t.laps.length));
@@ -1495,6 +1516,7 @@ function renderDetail(el, s) {
   el.innerHTML = `<div class="card scroll">
     <div class="row"><button class="back" id="back">← Sesiones</button><div><b style="font:700 20px 'Barlow Condensed'">${esc(s.title || s.type)}</b>
     <div class="mini">${esc(s.time)} · ${esc(s.pista || '')} · ${st.length} pilotos · ${allLaps.length} vueltas · mejor ${fmtT(sbest)}${s.envivo ? ' · <span style="color:var(--vslow)">en curso</span>' : ''}</div></div></div>
+    ${tarde ? `<div class="warn-inc">⚠ <b>Grabación incompleta:</b> empieza en la vuelta ${tarde.desde}${tarde.total ? ' de ' + tarde.total : ''}. Faltan las ${tarde.desde - 1} primeras vueltas porque el grabador se conectó con la sesión ya empezada. Para completarla, sube el PDF de Apex de esta sesión en “Importar PDF”.</div>` : ''}
     ${(() => { const cd = condOf(s), man = (PADM.mojado || {})[sk(s)];
       return `<div class="card" style="margin:8px 0;background:var(--panel2)"><div class="row"><b>${condIcon(cd)} Pista: ${condName(cd)}</b>
         <span class="mini">Marcar:</span><span class="seg" id="condMark"><button data-m="a" class="${man == null ? 'on' : ''}">Automático</button><button data-m="0" class="${man === 0 ? 'on' : ''}">☀️ Seco</button><button data-m="1" class="${man === 1 ? 'on' : ''}">💧 Mojado</button></span><span class="mini" data-ajst>${ajStatusTxt()}</span></div>

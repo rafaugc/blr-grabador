@@ -50,6 +50,8 @@ def merge(a, b):
                     cur[k].append(src[i] if i < len(src) else (t if k == 'laps' else None))
         if s.get('pos') is not None:
             cur['pos'] = s['pos']
+        if s.get('v0') is not None:
+            cur['v0'] = min(s['v0'], cur['v0']) if cur.get('v0') is not None else s['v0']
     for s in by.values():
         order = sorted(range(len(s['laps'])), key=lambda i: s['ts'][i] or 0)
         for k in ARR:
