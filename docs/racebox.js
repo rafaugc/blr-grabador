@@ -264,13 +264,48 @@
   }
   const lapAt = (laps, t) => { for (const l of laps) if (t >= l.t0 && t < l.t1) return l.n; return 0; };
   const p2 = n => String(n).padStart(2, '0');
-  function toCSV(samples, laps) {
-    laps = laps || [];
-    const t0 = samples.length ? samples[0].t : 0, f = (x, n) => x == null || !isFinite(x) ? '' : x.toFixed(n);
-    const rows = ['utc,tiempo_s,vuelta,latitud,longitud,velocidad_kmh,rumbo_grados,altura_m,altura_wgs_m,g_longitudinal,g_lateral,g_vertical,giro_balanceo_gs,giro_cabeceo_gs,giro_guinada_gs,satelites,fix,gps_valido,precision_horizontal_m,precision_vertical_m,precision_velocidad_kmh,precision_rumbo_grados,pdop,bateria_pct'];
-    for (const s of samples) rows.push([s.utc != null ? new Date(s.utc).toISOString() : '', f(s.t - t0, 2), lapAt(laps, s.t), f(s.lat, 7), f(s.lon, 7), f(s.v, 2), f(s.hdg, 2), f(s.alt, 2), f(s.altW, 2), f(s.gx, 3), f(s.gy, 3), f(s.gz, 3), f(s.rx, 2), f(s.ry, 2), f(s.rz, 2), s.sv, s.fix, s.valid ? 1 : 0, f(s.hAcc, 2), f(s.vAcc, 2), f(s.sAcc, 2), f(s.hdgAcc, 2), f(s.pdop, 2), s.bat].join(','));
-    return rows.join('\r\n') + '\r\n';
+  // CSV con la misma forma que el «CSV v3» de RaceChrono (mismas cabeceras, columnas y unidades; la velocidad va en m/s).
+  function toCSV(samples, laps, name) {
+    laps = laps || []; name = (name || 'KR DASH').replace(/"/g, "'");
+    const ok = samples.filter(s => s.valid);
+    const f = (x, n) => x == null || !isFinite(x) ? '' : String(+x.toFixed(n));
+    const d0 = new Date(ok.length && ok[0].utc != null ? ok[0].utc : Date.now());
+    const out = ['This file is created using KR DASH (RaceBox), in RaceChrono CSV v3 layout.', 'Format,3', 'Session title,"' + name + '"', 'Session type,Lap timing', 'Track name,"' + name + '"', 'Driver name,',
+      'Created,' + p2(d0.getUTCDate()) + '/' + p2(d0.getUTCMonth() + 1) + '/' + d0.getUTCFullYear() + ',' + p2(d0.getUTCHours()) + ':' + p2(d0.getUTCMinutes()), 'Note,', '',
+      'timestamp,fragment_id,lap_number,elapsed_time,distance_traveled,accuracy,altitude,bearing,device_battery_level,device_update_rate,fix_type,latitude,longitude,satellites,speed,combined_acc,device_update_rate,lateral_acc,lean_angle,longitudinal_acc,speed,device_update_rate,x_acc,y_acc,z_acc,device_update_rate,x_rate_of_rotation,y_rate_of_rotation,z_rate_of_rotation',
+      'unix time,,,s,m,m,m,deg,%,Hz,,deg,deg,sats,m/s,G,Hz,G,deg,G,m/s,Hz,G,G,G,Hz,deg/s,deg/s,deg/s',
+      ',,,,,100: gps,100: gps,100: gps,100: gps,100: gps,100: gps,100: gps,100: gps,100: gps,100: gps,calc,calc,calc,calc,calc,calc,101: acc,101: acc,101: acc,101: acc,102: gyro,102: gyro,102: gyro,102: gyro'];
+    let dist = 0, prev = null; const t0 = ok.length ? ok[0].t : 0;
+    for (const s of ok) {
+      let la = 0, lo = 0;
+      if (prev) {
+        const dt = s.t - prev.t, k = Math.cos(s.lat * Math.PI / 180);
+        dist += Math.hypot((s.lon - prev.lon) * k * 111320, (s.lat - prev.lat) * 110540);
+        if (dt > 0 && dt < 1) { // aceleraciones calculadas a partir del GPS, como hace RaceChrono en sus canales «calc»
+          let dh = s.hdg - prev.hdg; dh -= 360 * Math.round(dh / 360);
+          const v = s.v / 3.6; lo = (s.v - prev.v) / 3.6 / dt / 9.80665; la = s.v > 5 ? v * (dh * Math.PI / 180 / dt) / 9.80665 : 0;
+        }
+      }
+      const n = lapAt(laps, s.t), v = s.v / 3.6;
+      out.push([s.utc != null ? (s.utc / 1000).toFixed(3) : '', 0, n || '', f(s.t - t0, 2), f(dist, 3), f(s.hAcc, 3), f(s.alt, 3), f(s.hdg, 3), f(s.bat, 1), '25.0', f(s.fix, 1), f(s.lat, 7), f(s.lon, 7), f(s.sv, 1), f(v, 4),
+        f(Math.hypot(la, lo), 5), '25.0', f(la, 5), f(Math.atan(la) * 180 / Math.PI, 5), f(lo, 5), f(v, 4), '25.0', f(s.gx, 5), f(s.gy, 5), f(s.gz, 5), '25.0', f(s.rx, 3), f(s.ry, 3), f(s.rz, 3)].join(','));
+      prev = s;
+    }
+    return out.join('\n') + '\n';
   }
+  // Leer un CSV v3 de RaceChrono (o el nuestro, que tiene la misma forma)
+  function fromCSV(text) {
+    const L = text.split(/\r?\n/), hi = L.findIndex(l => l.startsWith('timestamp,')); if (hi < 0) return null;
+    const H = L[hi].split(','), ix = n => H.indexOf(n), nm = /^Session title,"?(.*?)"?$/.exec(L.find(l => l.startsWith('Session title')) || '');
+    const I = { ts: ix('timestamp'), el: ix('elapsed_time'), acc: ix('accuracy'), alt: ix('altitude'), hdg: ix('bearing'), bat: ix('device_battery_level'), fix: ix('fix_type'), lat: ix('latitude'), lon: ix('longitude'), sv: ix('satellites'), v: ix('speed'), gx: ix('x_acc'), gy: ix('y_acc'), gz: ix('z_acc'), rx: ix('x_rate_of_rotation'), ry: ix('y_rate_of_rotation'), rz: ix('z_rate_of_rotation') };
+    const samples = [], g = (c, i) => i < 0 || c[i] === '' || c[i] == null ? null : +c[i];
+    for (let r = hi + 3; r < L.length; r++) { if (!L[r]) continue; const c = L[r].split(','), lat = g(c, I.lat), lon = g(c, I.lon); if (lat == null || lon == null) continue;
+      const ts = g(c, I.ts), fx = g(c, I.fix);
+      samples.push({ t: ts != null ? ts : g(c, I.el), utc: ts != null ? ts * 1000 : null, lat, lon, v: (g(c, I.v) || 0) * 3.6, hdg: g(c, I.hdg) || 0, alt: g(c, I.alt), altW: null, sv: g(c, I.sv), fix: fx == null ? 3 : fx, valid: fx == null || fx >= 2,
+        hAcc: g(c, I.acc), vAcc: null, sAcc: null, hdgAcc: null, pdop: null, bat: g(c, I.bat), gx: g(c, I.gx), gy: g(c, I.gy), gz: g(c, I.gz), rx: g(c, I.rx), ry: g(c, I.ry), rz: g(c, I.rz) }); }
+    return { samples, name: nm ? nm[1] : '' };
+  }
+
   // Formato .vbo con la misma forma que el que exporta RaceChrono (cabecera, líneas del circuito y nombres de canal),
   // para que lo abran los mismos programas. Latitud y longitud van en minutos, y la longitud OESTE es positiva.
   function toVBO(samples, track, name) {
@@ -393,7 +428,7 @@
     return { repo, tok, syncUp, listRemote, getRemote, delRemote, pistas, savePista, check, setToken: t => localStorage.setItem('blr_ghToken', JSON.stringify(t)) };
   })();
 
-  const RB = { UART, TX, Reader, decode, Engine, connect, supported, Store, Recorder, parseAll, lapsOf, toCSV, toVBO, fromVBO, Cloud };
+  const RB = { UART, TX, Reader, decode, Engine, connect, supported, Store, Recorder, parseAll, lapsOf, toCSV, toVBO, fromVBO, fromCSV, Cloud };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = RB; else root.RaceBox = RB;
 })(typeof window !== 'undefined' ? window : globalThis);

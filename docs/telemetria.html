@@ -7,7 +7,7 @@
 <title>KR · Telemetría RaceBox</title>
 <script>try{const t=JSON.parse(localStorage.getItem('blr_tema')||'null')||{},h=document.documentElement;h.dataset.fondo=t.f||'azul';h.dataset.resalte=t.r||'amarillof';}catch(e){}</script>
 <link rel="stylesheet" href="tema.css?v=1">
-<script src="racebox.js?v=20261127e"></script>
+<script src="racebox.js?v=20261127f"></script>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 -apple-system,system-ui,"Segoe UI",sans-serif;padding:14px}
@@ -74,12 +74,12 @@ async function list() {
   $('out').innerHTML = `<div class="card">${st === 'ok' ? `<b style="color:var(--fast)">✓ Copia en GitHub activada en este aparato.</b> <span class="mini">${up.error ? 'Última subida con error: ' + esc(up.error) : pend ? pend + ' sesión(es) por subir (se suben solas un minuto después de terminar).' : 'Todo subido.'}</span> <button id="tokOff">Quitar llave</button>`
       : `<b>Para que las sesiones se suban solas a GitHub falta la llave en este aparato</b>${st !== 'sin llave' ? ` <span class="mini" style="color:var(--vslow)">(${esc(st)})</span>` : ''}
       <ol class="mini"><li>Abre <a href="https://github.com/settings/personal-access-tokens/new" target="_blank">crear llave de GitHub</a> (con tu sesión de GitHub iniciada).</li>
-      <li><b>Token name</b>: <i>KR Telemetría</i>. <b>Expiration</b>: <i>No expiration</i>.</li>
+      <li><b>Token name</b>: <i>KR-Telemetria</i> (sin tildes ni espacios). <b>Expiration</b>: <i>No expiration</i>.</li>
       <li><b>Repository access</b>: <i>Only select repositories</i> → <b>rafa_krtrnk</b>.</li>
       <li><b>Permissions → Repository permissions</b>: pon <b>Contents</b> en <i>Read and write</i> y también <b>Issues</b> en <i>Read and write</i>.</li>
       <li>Pulsa <b>Generate token</b>, copia el código que empieza por <code>github_pat_</code> y pégalo aquí:</li></ol>
       <div class="row" style="margin-top:8px"><input type="text" id="tokIn" placeholder="github_pat_…" autocomplete="off"><button class="pri" id="tokOk">Guardar llave</button></div><div class="mini" id="tokMsg" style="margin-top:6px">Sin llave puedes ver lo que ya esté subido, pero este aparato no sube nada.</div>`}</div>
-    <div class="row"><button id="imp">📂 Abrir archivo (.vbo de RaceChrono, .csv o .krb)</button><input type="file" id="impF" accept=".vbo,.csv,.krb" hidden></div>
+    <div class="row"><button id="imp">📂 Abrir archivo (archivo de RaceChrono .vbo o .csv)</button><input type="file" id="impF" accept=".vbo,.csv,.krb" hidden></div>
     <div class="card"><h2>Circuitos con meta y sectores</h2><div class="mini">${Object.keys(PISTAS).length ? Object.entries(PISTAS).map(([k, p]) => `<b style="color:var(--text)">${esc(p.nombre || k)}</b> (${(p.splits || []).length + 1} sectores)`).join(' · ') : 'Ninguno todavía.'}<br>Para añadir uno: exporta de RaceChrono una sesión de ese circuito en <b>.vbo</b>, ábrela aquí con el botón de arriba y pulsa «Guardar como circuito». En los demás circuitos el RaceBox sigue dando vueltas y delta, pero sin sectores.</div></div>
     ${ses.length ? ses.map(s => `<div class="card ses" data-id="${esc(s.id)}" data-r="${s.remote ? 1 : ''}"><div><b>${esc(s.circuit || 'Sin circuito')}</b>${s.kart ? ' · kart ' + esc(s.kart) : ''}<div class="mini">${fDate(s.start)} · ${Math.round((s.n || 0) / 25 / 60)} min · ${s.remote ? '☁ en GitHub' : s.up ? '📱 en este aparato · ☁ subida' : '📱 solo en este aparato'}</div></div>
       <div style="text-align:right"><div class="num purple" style="font-size:18px">${s.best ? fT(s.best) : '–'}</div><div class="mini">${(s.laps || []).length} vueltas</div></div></div>`).join('') : '<div class="card">Todavía no hay ninguna sesión grabada.</div>'}`;
@@ -95,14 +95,11 @@ async function importFile(f) {
   let samples, track = null, name = f.name.replace(/\.(csv|krb|vbo)$/i, '');
   if (/\.krb$/i.test(f.name)) samples = RaceBox.parseAll(new Uint8Array(await f.arrayBuffer()));
   else if (/\.vbo$/i.test(f.name)) { const V = RaceBox.fromVBO(await f.text()); samples = V.samples; track = V.track; if (V.name) name = V.name; }
-  else {
-    const L = (await f.text()).split(/\r?\n/).filter(Boolean), H = L[0].split(','), ix = n => H.indexOf(n);
-    if (ix('latitud') < 0) throw new Error('no es un CSV exportado por KR');
-    samples = L.slice(1).map(r => { const c = r.split(','), g = n => +c[ix(n)];
-      return { utc: c[0] ? Date.parse(c[0]) : null, t: g('tiempo_s'), lat: g('latitud'), lon: g('longitud'), v: g('velocidad_kmh'), hdg: g('rumbo_grados'), alt: g('altura_m'), altW: g('altura_wgs_m'), gx: g('g_longitudinal'), gy: g('g_lateral'), gz: g('g_vertical'), rx: g('giro_balanceo_gs'), ry: g('giro_cabeceo_gs'), rz: g('giro_guinada_gs'), sv: g('satelites'), fix: g('fix'), valid: c[ix('gps_valido')] === '1', hAcc: g('precision_horizontal_m'), vAcc: g('precision_vertical_m'), sAcc: g('precision_velocidad_kmh'), hdgAcc: g('precision_rumbo_grados'), pdop: g('pdop'), bat: g('bateria_pct') }; });
-  }
+  else { const V = RaceBox.fromCSV(await f.text()); if (!V) throw new Error('no es un CSV de RaceChrono (formato v3) ni de KR'); samples = V.samples; if (V.name) name = V.name; }
   if (!samples.length) throw new Error('el archivo no tiene datos');
-  show({ id: null, circuit: name, start: samples.find(s => s.utc)?.utc || Date.now(), n: samples.length, fileTrack: track }, samples, null);
+  // si el archivo no trae las líneas pero la sesión está en un circuito que ya tenemos, se usan las guardadas
+  const near = !track && samples.length ? Object.keys(PISTAS).find(k => { const p = PISTAS[k].start, q = samples.find(x => x.valid) || samples[0]; return p && Math.hypot((p.lat - q.lat) * 110540, (p.lon - q.lon) * 85000) < 3000; }) : null;
+  show({ id: null, circuit: name, slug: near || undefined, start: samples.find(s => s.utc)?.utc || Date.now(), n: samples.length, fileTrack: track }, samples, null);
 }
 
 async function openSes(id, remote) {
@@ -170,7 +167,7 @@ function render() {
       </div><div class="card" style="align-self:start;position:sticky;top:8px"><h2>Trazada</h2><div id="cM"></div><div class="mini" id="mInfo">Pasa el dedo o el ratón por una gráfica para ver el punto en la pista.</div></div></div>` : '<div class="card mini">Hacen falta al menos dos vueltas limpias para comparar.</div>'}`}`;
   $('back').onclick = list;
   const base = (meta.circuit || 'racebox').replace(/[^\w\-]+/g, '_') + '_' + new Date(meta.start).toISOString().slice(0, 16).replace(/[:T]/g, '-');
-  $('xCsv').onclick = () => saveFile(base + '.csv', RaceBox.toCSV(S.samples, S.an.laps), 'text/csv');
+  $('xCsv').onclick = () => saveFile(base + '.csv', RaceBox.toCSV(S.samples, S.an.laps, meta.circuit), 'text/csv');
   $('xVbo').onclick = () => saveFile(base + '.vbo', RaceBox.toVBO(S.samples, S.track, meta.circuit), 'application/octet-stream');
   if ($('xRaw')) $('xRaw').onclick = () => saveFile(base + '.krb', S.raw, 'application/octet-stream');
   if ($('del')) $('del').onclick = async () => { if (!confirm('¿Borrar esta sesión' + (meta.remote || meta.up ? ' también de GitHub' : '') + '? No se puede deshacer.')) return; try { await RaceBox.Store.del(meta.id); } catch (e) {} if ((meta.remote || meta.up) && C.tok()) { try { await C.delRemote(meta.id); } catch (e) {} } list(); };
