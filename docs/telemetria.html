@@ -7,7 +7,7 @@
 <title>KR · Telemetría RaceBox</title>
 <script>try{const t=JSON.parse(localStorage.getItem('blr_tema')||'null')||{},h=document.documentElement;h.dataset.fondo=t.f||'azul';h.dataset.resalte=t.r||'amarillof';}catch(e){}</script>
 <link rel="stylesheet" href="tema.css?v=1">
-<script src="racebox.js?v=20261127g"></script>
+<script src="racebox.js?v=20261127h"></script>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 -apple-system,system-ui,"Segoe UI",sans-serif;padding:14px}
@@ -46,11 +46,11 @@ ol{margin:6px 0 0 20px;padding:0}li{margin:5px 0}
 </head>
 <body>
 <div class="w">
-  <div class="row" style="justify-content:space-between"><h1>Telemetría RaceBox</h1><span class="row"><a href="ingeniero-pista.html?v=20261127a">🏁 Ingeniero de pista</a><a href="index.html">← Volver a la app</a></span></div>
+  <div class="row" style="justify-content:space-between"><h1>Telemetría RaceBox</h1><span class="row"><a href="ingeniero-pista.html?v=20261127b">🏁 Ingeniero de pista</a><a href="index.html">← Volver a la app</a></span></div>
   <div id="out"></div>
 </div>
 <script>
-const VER = '20261127i';
+const VER = '20261127j';
 // si el navegador enseña una copia vieja de esta página, se cambia sola a la última
 fetch('telemetria.html?t=' + Date.now(), { cache: 'no-store' }).then(r => r.text()).then(t => { const m = /const VER = '(\w+)'/.exec(t); if (m && m[1] !== VER && !location.search.includes(m[1])) location.replace('telemetria.html?v=' + m[1]); }).catch(() => {});
 const $ = id => document.getElementById(id);
@@ -68,13 +68,13 @@ async function list() {
   $('out').innerHTML = '<div class="card">Cargando…</div>';
   let loc = [], rem = [];
   try { loc = await RaceBox.Store.list(); } catch (e) {}
-  const up = await C.syncUp();
+  const up = await C.syncUp({ force: true }).catch(e => ({ subidas: 0, error: String(e && e.message || e) })); // al abrir esta pantalla se sube ya todo lo pendiente
   [PISTAS, rem, CIRCS] = await Promise.all([C.pistas(), C.listRemote().catch(() => []), fetch('https://raw.githubusercontent.com/' + C.repo() + '/main/circuitos.json?t=' + Date.now()).then(r => r.json()).catch(() => [])]);
   try { loc = await RaceBox.Store.list(); } catch (e) {}
   const ses = loc.concat(rem.filter(r => !loc.some(l => l.id === r.id))).sort((a, b) => b.start - a.start);
-  const st = C.tok() ? await C.check().catch(() => 'sin conexión') : 'sin llave';
+  const st = C.tok() ? 'ok' : 'sin llave'; // la llave se comprueba de verdad al guardarla; aquí no, para no escribir en GitHub cada vez que se abre
   const pend = loc.filter(x => !x.up).length;
-  $('out').innerHTML = `<div class="card">${st === 'ok' ? `<b style="color:var(--fast)">✓ Copia en GitHub activada en este aparato.</b> <span class="mini">${up.error ? 'Última subida con error: ' + esc(up.error) : pend ? pend + ' sesión(es) por subir (se suben solas un minuto después de terminar).' : 'Todo subido.'}</span> <button id="tokOff">Quitar llave</button>`
+  $('out').innerHTML = `<div class="card">${st === 'ok' ? `<b style="color:var(--fast)">✓ Copia en GitHub activada en este aparato.</b> <span class="mini">${up.error ? 'Última subida con error: ' + esc(up.error) : pend ? pend + ' sesión(es) por subir. Se reintenta sola cada minuto mientras tengas esta pantalla abierta.' : 'Todo subido.'}</span>${pend ? ' <button class="pri" id="upNow">⬆ Subir ahora</button>' : ''} <button id="tokOff">Quitar llave</button>`
       : `<b>Para que las sesiones se suban solas a GitHub falta la llave en este aparato</b>${st !== 'sin llave' ? ` <span class="mini" style="color:var(--vslow)">(${esc(st)})</span>` : ''}
       <ol class="mini"><li>Abre <a href="https://github.com/settings/personal-access-tokens/new" target="_blank">crear llave de GitHub</a> (con tu sesión de GitHub iniciada).</li>
       <li><b>Token name</b>: <i>KR-Telemetria</i> (sin tildes ni espacios). <b>Expiration</b>: <i>No expiration</i>.</li>
@@ -89,9 +89,13 @@ async function list() {
   document.querySelectorAll('.ses').forEach(el => el.onclick = () => openSes(el.dataset.id, !!el.dataset.r));
   $('imp').onclick = () => $('impF').click();
   $('impF').onchange = async e => { const f = e.target.files[0]; if (!f) return; try { await importFile(f); } catch (err) { alert('No se pudo abrir: ' + (err && err.message || err)); } };
+  if ($('upNow')) $('upNow').onclick = () => { $('upNow').textContent = 'Subiendo…'; list(); };
   if ($('tokOff')) $('tokOff').onclick = () => { C.setToken(''); list(); };
   if ($('tokOk')) $('tokOk').onclick = async () => { const t = $('tokIn').value.trim(); if (!t) return; C.setToken(t); $('tokMsg').textContent = 'Comprobando…'; const r = await C.check().catch(e => 'fallo inesperado: ' + (e && e.message || e)); if (r === 'ok') list(); else { $('tokMsg').innerHTML = '<span style="color:var(--vslow)">No ha funcionado: ' + esc(r) + '.</span>'; } };
 }
+
+// mientras se ve la lista, cada minuto se reintenta subir lo pendiente
+setInterval(async () => { if (S || !C.tok()) return; if ((await C.pending()).length) list(); }, 60000);
 
 // ---- abrir un archivo (RaceChrono .vbo, o lo exportado por KR) ----
 async function importFile(f) {
@@ -149,7 +153,7 @@ function show(meta, samples, raw) {
 function render() {
   const { meta, laps, A, B } = S, bestT = A ? Math.min(...laps.filter(l => !l.lap.bad).map(l => l.lap.T)) : null;
   $('out').innerHTML = `<div class="row" style="justify-content:space-between"><button id="back">← Sesiones</button>
-      <div class="row">${meta.id && laps.length ? `<a href="ingeniero-pista.html?v=20261127a#rb=${encodeURIComponent(meta.id)}" style="text-decoration:none"><button class="pri">🏁 Analizar en Ingeniero de pista</button></a>` : ''}<button class="pri" id="xCsv">Exportar .csv</button><button class="pri" id="xVbo">Exportar .vbo</button>${S.raw ? '<button id="xRaw" title="La grabación tal cual, para abrirla en otro aparato">Copia .krb</button>' : ''}${meta.id && (!meta.remote || C.tok()) ? '<button class="dng" id="del">Borrar</button>' : ''}</div></div>
+      <div class="row">${meta.id && laps.length ? `<a href="ingeniero-pista.html?v=20261127b#rb=${encodeURIComponent(meta.id)}" style="text-decoration:none"><button class="pri">🏁 Analizar en Ingeniero de pista</button></a>` : ''}<button class="pri" id="xCsv">Exportar .csv</button><button class="pri" id="xVbo">Exportar .vbo</button>${S.raw ? '<button id="xRaw" title="La grabación tal cual, para abrirla en otro aparato">Copia .krb</button>' : ''}${meta.id && (!meta.remote || C.tok()) ? '<button class="dng" id="del">Borrar</button>' : ''}</div></div>
     <div class="card"><h2>${esc(meta.circuit || 'Sesión')}${meta.kart ? ' · kart ' + esc(meta.kart) : ''}</h2><div class="mini">${fDate(meta.start)} · ${Math.round(S.samples.length / 25 / 60)} min · ${S.samples.length.toLocaleString('es-ES')} datos · ${laps.length} vueltas${bestT ? ' · mejor ' + fT(bestT) : ''}</div></div>
     ${meta.fileTrack ? `<div class="card"><h2>Este archivo trae la meta y ${meta.fileTrack.splits.length} parciales del circuito</h2><div class="row"><span class="mini">Guardarlos para:</span><select id="svSlug"><option value="">— elige circuito —</option>${CIRCS.slice().sort((a, b) => a.nombre.localeCompare(b.nombre)).map(c => `<option value="${esc(c.slug)}">${esc(c.nombre)}${PISTAS[c.slug] ? ' (ya tiene)' : ''}</option>`).join('')}</select><button class="pri" id="svP">Guardar como circuito</button></div><div class="mini" style="margin-top:6px">A partir de entonces, en ese circuito el RaceBox cronometra con la misma meta y los mismos sectores que RaceChrono.</div></div>` : ''}
     ${!laps.length ? '<div class="card">En esta grabación no hay ninguna vuelta completa (hace falta rodar al menos dos vueltas seguidas con GPS). Los datos se pueden exportar igualmente.</div>' : `

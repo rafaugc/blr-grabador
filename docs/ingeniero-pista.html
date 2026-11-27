@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- KartRank · Ingeniero de pista · versión 20261127a (generado a partir de la app de Claude; ver claude/diseno-v1-kartrank.md) -->
+<!-- KartRank · Ingeniero de pista · versión 20261127b (generado a partir de la app de Claude; ver claude/diseno-v1-kartrank.md) -->
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -11,7 +11,7 @@
 <script>/* colores elegidos en KartRank; el fondo claro aquí no se usa (los mapas y el 3D están pensados para fondo oscuro) */
 try{var t=JSON.parse(localStorage.getItem('blr_tema')||'null')||{},h=document.documentElement;h.dataset.fondo=!t.f||t.f==='claro'?'azul':t.f;h.dataset.resalte=t.r||'amarillof';if(/^(cian|azul|azulf|turquesaf)$/.test(h.dataset.resalte))h.style.setProperty('--b','#ff8a3d');}catch(e){}</script>
 <link rel="stylesheet" href="tema.css?v=1">
-<script src="racebox.js?v=20261127g"></script>
+<script src="racebox.js?v=20261127h"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;1,700&family=Barlow:wght@400;500;600&family=Oswald:wght@600;700&family=Saira+Condensed:wght@600;700&family=Archivo+Narrow:ital,wght@0,600;0,700;1,700&display=swap" rel="stylesheet">
 <style>
@@ -1406,7 +1406,12 @@ function importDialog(items) {
           if (it.err) return;
           it.ses.title = $('imp-t' + i).value.trim() || it.ses.title; it.ses.pilot = $('imp-p' + i).value.trim();
           p = p.then(function () {
-            var old = sesById(it.ses.id);
+            var old = sesById(it.ses.id), pre = it.ses.id.split('x')[0] + 'x';
+            S.sessions.filter(function (o) { return o.id !== it.ses.id && o.id.indexOf(pre) === 0 && o.trackId === it.tid; }).forEach(function (tw) {
+              if (!old) tw.laps.forEach(function (o) { var lm = lapMeta(it.ses, o.n); if (lm) { lm.name = o.name; lm.pilot = o.pilot; lm.ref = o.ref; if (o.note) lm.note = o.note; if (o.car) lm.car = o.car; } });
+              var q = S.store.del('ses_' + tw.id); for (var ci = 0; ci < tw.chunks; ci++) q = q.then((function (j) { return function () { return S.store.del('lap_' + tw.id + '_' + j); }; })(ci)); q.catch(function () {});
+              S.sessions.splice(S.sessions.indexOf(tw), 1); delete S.laps[tw.id];
+            });
             if (old) old.laps.forEach(function (o) { var lm = lapMeta(it.ses, o.n); if (lm) { lm.name = o.name; lm.pilot = o.pilot; lm.ref = o.ref; } });
             var td = null; if (it.isNew && !S.tracks[it.tid]) { td = RE.encodeTrack(it.T); td.kind = 'track'; td.id = it.tid; }
             S.tracks[it.tid] = it.T; S.laps[it.ses.id] = it.laps;
@@ -3515,6 +3520,7 @@ function initStore() {
   }).catch(function () { return memStore(); });
 }
 window.addEventListener('online', function () { if (ghPending()) ghKick(1000); });
+setInterval(function () { try { if (window.RaceBox) RaceBox.Cloud.syncUp(); } catch (e) {} }, 60000);
 
 /* ================= KartRank: sectores de los circuitos compartidos (data/pistas.json) ================= */
 var PISTAS = null;
@@ -3556,7 +3562,9 @@ function rbOpen(meta, btn) {
     if (!an.laps.length) { toast('En esa grabación no hay ninguna vuelta completa.', 6000); return; }
     var name = (track && track.nombre) || meta.circuit || 'RaceBox', d = new Date(meta.start), p2 = function (n) { return (n < 10 ? '0' : '') + n; };
     var title = name + (meta.kart ? ' · kart ' + meta.kart : '') + ' · ' + p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes());
-    var csv = RaceBox.toCSV(samples, an.laps, name).replace(/^Session title,.*$/m, 'Session title,"' + title.replace(/"/g, "'") + '"');
+    /* los datos de después de cruzar la última meta también llevan número de vuelta: si no, el lector no cierra la última vuelta */
+    var lapsX = an.laps.slice(), lastL = lapsX[lapsX.length - 1]; lapsX.push({ n: lastL.n + 1, t0: lastL.t1, t1: Infinity });
+    var csv = RaceBox.toCSV(samples, lapsX, name).replace(/^Session title,.*$/m, 'Session title,"' + title.replace(/"/g, "'") + '"');
     showPage('ses'); importFiles([new File([csv], title.replace(/[\/:]/g, '-') + '.csv', { type: 'text/csv' })]);
   }).catch(function () { toast('No se ha podido abrir esa sesión del RaceBox. Comprueba la conexión.', 7000); })
     .then(function () { if (btn) { btn.disabled = false; btn.textContent = 'Analizar'; } });
@@ -3569,7 +3577,7 @@ var rbTok = 0;
 function renderRbPage() {
   var body = $('rbBody'), tok = ++rbTok; body.textContent = ''; body.appendChild(el('p', 'empty', 'Buscando las sesiones grabadas…'));
   if (!window.RaceBox) { body.textContent = ''; body.appendChild(el('p', 'empty', 'No se ha podido cargar la parte del RaceBox. Recarga la página.')); return; }
-  rbList().then(function (ses) {
+  RaceBox.Cloud.syncUp({ force: true }).catch(function () {}).then(rbList).then(function (ses) {
     if (tok !== rbTok) return; body.textContent = ''; $('rbCount').textContent = ses.length ? ses.length + (ses.length === 1 ? ' sesión' : ' sesiones') : '';
     if (!ses.length) { body.appendChild(el('p', 'empty', 'Todavía no hay ninguna sesión grabada con el RaceBox. Se graban solas desde la vista piloto de KartRank.')); return; }
     var grid = el('div', 'cgrid');

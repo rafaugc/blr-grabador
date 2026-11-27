@@ -20,7 +20,7 @@ try{const t=JSON.parse(localStorage.getItem('blr_tema')||'null')||{},h=document.
 <script src="core.js?v=20261127a"></script>
 <script src="ingeniero.js?v=20261127a"></script>
 <script src="ingeniero-ui.js?v=20261127a"></script>
-<script src="racebox.js?v=20261127g"></script>
+<script src="racebox.js?v=20261127h"></script>
 <link rel="stylesheet" href="tema.css?v=1">
 <style>
 .tema{position:relative}.tema>button{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;cursor:pointer;color:var(--mute);font-size:12px;display:inline-flex;gap:6px;align-items:center}
@@ -108,7 +108,7 @@ body.pilot{overflow:hidden;position:fixed;inset:0}
 .kp{display:grid;grid-template-columns:repeat(3,64px);gap:8px;justify-content:center}.kp button{height:52px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:22px;cursor:pointer}
 .ks{width:var(--pw,100vw);height:var(--ph,100vh);box-sizing:border-box;padding:max(6px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));display:grid;grid-template-columns:1fr 1.15fr;gap:12px}
 .dashlogo{display:flex;align-items:center;gap:12px;min-width:0}.dashlogo img{height:clamp(38px,12vh,64px);width:auto;display:block}.dashlogo.big{justify-content:center;margin-bottom:2.5vh}.dashlogo.big img{height:clamp(44px,16vh,110px)}.dashlogo .lg-l{display:none}html[data-fondo="claro"] .dashlogo .lg-d{display:none}html[data-fondo="claro"] .dashlogo .lg-l{display:block}
-.ksl{display:flex;flex-direction:column;gap:1.2vh;justify-content:center;min-width:0}
+.ksl{display:flex;flex-direction:column;gap:1.2vh;justify-content:safe center;min-width:0;min-height:0;overflow-y:auto}
 .kst{font:700 clamp(18px,6vh,34px) 'Barlow Condensed'}
 .ksv{font:700 clamp(48px,26vh,180px)/1 'Barlow Condensed';color:var(--acc-txt)}
 .ksgo{height:clamp(40px,13vh,80px);border:0;border-radius:14px;background:var(--accent);color:var(--on-accent);font:700 clamp(18px,6vh,34px) 'Barlow Condensed';cursor:pointer}
@@ -1638,7 +1638,43 @@ function rbEngine() { // motor nuevo para el circuito elegido
   if (RBX.rec) Object.assign(RBX.rec.info, { slug: C ? C.slug : '', circuit: C ? C.nombre : '', gate: tr ? null : store.get(gk, null) });
 }
 // las sesiones grabadas se suben solas a GitHub cuando no se está rodando (hace falta la llave, una vez por aparato)
-setInterval(() => { if (RBX.st === 'off') RaceBox.Cloud.syncUp(); }, 120000); setTimeout(() => RaceBox.Cloud.syncUp(), 8000);
+// Cada minuto se sube lo que lleve 45 s sin recibir datos (tanda terminada), se haya pulsado «desconectar» o no. Una grabación en marcha no se toca.
+setInterval(() => { RaceBox.Cloud.syncUp().then(rbPendPaint).catch(() => {}); }, 60000); setTimeout(() => RaceBox.Cloud.syncUp({ force: !RBX.rec }).then(rbPendPaint).catch(() => {}), 8000);
+// ---- empezar / terminar sesión a mano y subirla ----
+function rbBegin() { RBX.rec = RaceBox.Recorder({ slug: C ? C.slug : '', circuit: C ? C.nombre : '', kart: pilotKart || '', laps: [], best: null }); RBX.recAt = Date.now(); rbEngine(); }
+async function rbEnd() { // cierra la sesión en curso y la sube ya
+  const r = RBX.rec; RBX.rec = null; if (!r) return null;
+  await r.close(); if (!r.n) return null;
+  let res = await RaceBox.Cloud.syncUp({ force: true, id: r.id }).catch(e => ({ error: String(e && e.message || e) }));
+  if (res && res.ocupado) { await new Promise(k => setTimeout(k, 6000)); res = await RaceBox.Cloud.syncUp({ force: true, id: r.id }).catch(e => ({ error: String(e && e.message || e) })); }
+  rbPendPaint(); return res;
+}
+const rbUpMsg = res => !res ? '' : res.error === 'sin llave' ? 'Falta la llave de GitHub en este aparato: se pone en Telemetría. La sesión queda guardada aquí.' : res.error ? 'No se pudo subir (' + res.error + '). Queda guardada en este aparato y se reintenta sola.' : res.subidas ? '✓ Subida a GitHub.' : res.ocupado ? 'Subiendo…' : '';
+async function rbPendList() { const cur = RBX.rec ? RBX.rec.id : null; return (await RaceBox.Cloud.pending()).filter(x => x.id !== cur); }
+async function rbPendPaint() {
+  let n = 0; try { n = (await rbPendList()).length; } catch (e) {}
+  let p = $('rbPend');
+  if (!p) { p = document.createElement('button'); p.id = 'rbPend'; p.style.cssText = 'position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:60;padding:9px 14px;border-radius:99px;border:1px solid var(--acc-line);background:var(--panel);color:var(--text);font:600 14px Inter,system-ui,sans-serif;box-shadow:0 6px 20px #0008;max-width:calc(100vw - 24px)'; document.body.appendChild(p);
+    p.onclick = async () => { p.disabled = true; p.textContent = '⬆ Subiendo…'; const res = await RaceBox.Cloud.syncUp({ force: true }).catch(e => ({ error: String(e && e.message || e) })); p.disabled = false; const m = rbUpMsg(res); await rbPendPaint(); if (m && res.error) { p.hidden = false; p.textContent = '⚠ ' + m; } }; }
+  p.hidden = !n || document.body.classList.contains('pilot'); p.textContent = '⬆ ' + n + (n === 1 ? ' sesión del RaceBox sin subir' : ' sesiones del RaceBox sin subir') + ' · tocar para subir';
+  rbCtlPaint(n);
+}
+let rbCtlMsg = '';
+function rbCtlPaint(n) {
+  const box = $('rbCtl'); if (!box) return;
+  const on = RBX.st === 'on', rec = !!RBX.rec && on, laps = RBX.eng ? RBX.eng.laps.length : 0, bs = 'padding:8px 12px;font-size:clamp(13px,3.6vh,18px)';
+  if (n == null) n = +box.dataset.n || 0; box.dataset.n = n;
+  box.innerHTML = (on ? `<div class="mini" style="margin:2px 0">${rec ? '⏺ <b style="color:var(--vslow)">Grabando sesión</b> · ' + RBX.rec.n.toLocaleString('es-ES') + ' datos · ' + laps + ' vueltas' : '⏸ RaceBox conectado, <b>sin grabar</b>'}</div>
+      <button class="back" id="rbRec" style="${bs}">${rec ? '⏹ Terminar sesión y subirla' : '⏺ Empezar sesión'}</button>` : '')
+    + (n ? `<button class="back" id="rbUp" style="${bs}">⬆ Subir ${n === 1 ? 'la sesión pendiente' : 'las ' + n + ' sesiones pendientes'}</button>` : '')
+    + (rbCtlMsg ? `<div class="mini" style="margin:2px 0">${esc(rbCtlMsg)}</div>` : '');
+  if ($('rbRec')) $('rbRec').onclick = async () => {
+    if (RBX.rec) { $('rbRec').disabled = true; $('rbRec').textContent = '⬆ Guardando y subiendo…'; const res = await rbEnd(); rbCtlMsg = rbUpMsg(res) || 'Sesión terminada.'; }
+    else { rbBegin(); rbCtlMsg = 'Sesión nueva empezada.'; }
+    rbPendPaint(); };
+  if ($('rbUp')) $('rbUp').onclick = async () => { $('rbUp').disabled = true; $('rbUp').textContent = '⬆ Subiendo…'; const res = await RaceBox.Cloud.syncUp({ force: true }).catch(e => ({ error: String(e && e.message || e) })); rbCtlMsg = rbUpMsg(res); rbPendPaint(); };
+}
+setInterval(() => { if ($('rbCtl')) rbCtlPaint(); }, 2000); setTimeout(rbPendPaint, 3000); setInterval(rbPendPaint, 10000);
 const rbFresh = () => RBX.st === 'on' && Date.now() - RBX.lastAt < 2500;
 function rbDelta() {
   if (!rbFresh() || !RBX.eng) return null;
@@ -1691,13 +1727,13 @@ function rbPaint() {
 setInterval(rbPaint, 100);
 async function rbToggle(btn) {
   const lab = () => { if (btn && btn.isConnected) btn.textContent = RBX.st === 'on' ? '🛰 RaceBox conectado ✓ · tocar para desconectar' : RBX.st === 'wait' ? '🛰 ' + (RBX.txt || 'Conectando…') : '🛰 Conectar RaceBox · delta continuo'; };
-  if (RBX.h) { RBX.h.stop(); RBX.h = null; RBX.st = 'off'; if (RBX.rec) RBX.rec.flush(); setTimeout(() => RaceBox.Cloud.syncUp(), 50000); return lab(); }
+  if (RBX.h) { RBX.h.stop(); RBX.h = null; RBX.st = 'off'; lab(); rbCtlMsg = 'Guardando y subiendo la sesión…'; rbCtlPaint(); rbEnd().then(res => { rbCtlMsg = rbUpMsg(res); rbPendPaint(); }); return; }
   // todo lo que manda el RaceBox se graba solo en este navegador (sección Telemetría)
-  RBX.rec = RaceBox.Recorder({ slug: C ? C.slug : '', circuit: C ? C.nombre : '', kart: pilotKart || '', laps: [], best: null });
-  rbEngine();
+  if (RBX.rec) rbEnd(); // sin esperar: el aviso de Bluetooth tiene que salir justo al tocar
+  rbBegin(); rbCtlMsg = '';
   try {
     RBX.st = 'wait'; RBX.txt = 'Elige tu RaceBox en la lista…'; lab();
-    RBX.h = await RaceBox.connect({ sample: (s, pl) => { RBX.last = s; RBX.lastAt = Date.now(); RBX.eng.push(s); if (pl) RBX.rec.add(pl); rbPaint(); }, status: (t, st) => { RBX.txt = t; RBX.st = st; lab(); pilotSoon(); } });
+    RBX.h = await RaceBox.connect({ sample: (s, pl) => { RBX.last = s; RBX.lastAt = Date.now(); RBX.eng.push(s); if (pl && RBX.rec) RBX.rec.add(pl); rbPaint(); }, status: (t, st) => { RBX.txt = t; RBX.st = st; lab(); rbCtlPaint(); pilotSoon(); } });
   } catch (e) { RBX.h = null; RBX.st = 'off'; lab(); if (btn && btn.isConnected) btn.textContent = '🛰 No se pudo conectar · tocar para reintentar'; }
 }
 function pilotSetup(el) {
@@ -1712,7 +1748,8 @@ function pilotSetup(el) {
       <div id="kv" class="ksv">${esc(val || '–')}</div>
       <button id="ksgo" class="ksgo">Entrar</button>
       ${RaceBox.supported() ? `<button class="back" id="rbBtn" style="padding:8px 12px;font-size:clamp(13px,3.6vh,18px)">${RBX.st === 'on' ? '🛰 RaceBox conectado ✓ · tocar para desconectar' : '🛰 Conectar RaceBox · delta continuo'}</button>` : '<a class="mini" href="racebox.html" style="color:var(--acc-txt);text-decoration:none">🛰 Delta continuo con RaceBox: cómo activarlo</a>'}
-      <a class="mini" href="telemetria.html?v=20261127h" style="color:var(--acc-txt);text-decoration:none">📈 Telemetría grabada con el RaceBox</a>
+      <div id="rbCtl" style="display:flex;flex-direction:column;gap:6px"></div>
+      <a class="mini" href="telemetria.html?v=20261127j" style="color:var(--acc-txt);text-decoration:none">📈 Telemetría grabada con el RaceBox</a>
       ${onTrack.length ? `<div class="mini">En pista ahora (toca el tuyo):</div><div class="ksc">${onTrack.map(k => `<span class="chipd" data-q="${k}">${k}</span>`).join('')}</div>` : '<div class="mini">Gira el móvil en horizontal.</div>'}
       ${DASH ? '' : '<a class="mini" href="dash.html" style="color:var(--acc-txt);text-decoration:none">📲 Pon KR DASH en tu pantalla de inicio (abre directo esta vista)</a>'}
     </div>
@@ -1731,8 +1768,9 @@ function pilotSetup(el) {
   el.querySelectorAll('[data-q]').forEach(b => b.onclick = () => { val = b.dataset.q; show(); go(); });
   $('ksgo').onclick = go;
   if ($('rbBtn')) $('rbBtn').onclick = () => rbToggle($('rbBtn'));
+  rbPendPaint();
   $('ksCirc').onchange = () => { $('circ').value = $('ksCirc').value; $('circ').onchange(); setTimeout(() => { if (RBX.h) rbEngine(); if (!pilotReady) pilotSetup(el); }, 300); };
-  $('ksx').onclick = () => { document.body.classList.remove('pilot'); document.querySelector('#tabs a[data-v=ranking]').click(); };
+  $('ksx').onclick = () => { setTimeout(rbPendPaint, 300); document.body.classList.remove('pilot'); document.querySelector('#tabs a[data-v=ranking]').click(); };
 }
 let pilotReady = false;
 function renderPilot(force) {
@@ -2185,7 +2223,7 @@ window.__dbg = { get live() { return live; }, get pilotKart() { return pilotKart
 loadCircuits();
 })();
 </script>
-<script>document.querySelector('#tabs a[data-v=tele]').onclick = () => { location.href = 'telemetria.html?v=20261127i'; };
-document.querySelector('#tabs a[data-v=ingp]').onclick = () => { location.href = 'ingeniero-pista.html?v=20261127a'; };</script>
+<script>document.querySelector('#tabs a[data-v=tele]').onclick = () => { location.href = 'telemetria.html?v=20261127j'; };
+document.querySelector('#tabs a[data-v=ingp]').onclick = () => { location.href = 'ingeniero-pista.html?v=20261127b'; };</script>
 </body>
 </html>

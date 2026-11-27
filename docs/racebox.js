@@ -249,6 +249,8 @@
       } catch (e) { R.err = String(e && e.message || e); const b = new Uint8Array(Math.max(buf.length, part.length + fill + LEN * 300)); b.set(part); b.set(buf.subarray(0, fill), part.length); buf = b; fill += part.length; }
       busy = false;
     };
+    // cerrar la sesión: espera a que acabe el guardado en curso y guarda lo que quede
+    R.close = async () => { for (let i = 0; i < 60 && busy; i++) await new Promise(r => setTimeout(r, 50)); await R.flush(); for (let i = 0; i < 60 && busy; i++) await new Promise(r => setTimeout(r, 50)); };
     if (typeof addEventListener !== 'undefined') { addEventListener('pagehide', () => R.flush()); document.addEventListener('visibilitychange', () => { if (document.hidden) R.flush(); }); }
     try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
     return R;
@@ -387,11 +389,14 @@
     }
     let busy = false;
     // sube lo que falte; devuelve { subidas, pendientes, error }
-    async function syncUp() {
-      if (busy || !tok() || typeof CompressionStream === 'undefined') return { subidas: 0, pendientes: 0, error: !tok() ? 'sin llave' : null };
+    // Sin opciones: solo sube sesiones terminadas (45 s sin datos nuevos). { force: true } sube ya todo lo pendiente; con { id } solo esa sesión.
+    async function syncUp(opt) {
+      opt = opt || {};
+      if (busy) return { subidas: 0, pendientes: 0, error: null, ocupado: true };
+      if (!tok() || typeof CompressionStream === 'undefined') return { subidas: 0, pendientes: 0, error: !tok() ? 'sin llave' : 'este navegador no puede comprimir' };
       busy = true; let subidas = 0, error = null, pend = [];
       try {
-        pend = (await Store.list()).filter(s => !s.up && (s.n || 0) >= 750 && Date.now() - (s.end || 0) > 45000); // terminadas y con más de 30 s de datos
+        pend = (await Store.list()).filter(s => !s.up && (opt.force ? (s.n || 0) >= 25 && (!opt.id || s.id === opt.id) : (s.n || 0) >= 750 && Date.now() - (s.end || 0) > 45000)); // terminadas y con más de 30 s de datos
         for (const s of pend) {
           const raw = await Store.data(s.id); if (!raw.length) continue;
           await put('rb/' + s.id + '.krb.gz', await gzip(raw), BR, 'Telemetría ' + s.id);
@@ -403,6 +408,8 @@
       busy = false;
       return { subidas, pendientes: pend.length - subidas, error };
     }
+    // sesiones grabadas en este aparato que aún no están en GitHub
+    async function pending() { try { return (await Store.list()).filter(s => !s.up && (s.n || 0) >= 25); } catch (e) { return []; } }
     async function listRemote() {
       const r = await api('git/trees/' + BR + '?recursive=1'); if (!r.ok) return [];
       const files = ((await r.json()).tree || []).filter(f => /^rb\/.+\.json$/.test(f.path));
@@ -433,7 +440,7 @@
       try { await put('rb/.llave-ok', utf8('Llave comprobada el ' + new Date().toISOString() + '\n'), BR, 'Comprobación de llave'); } catch (e) { return String(e.message || e) + ' (paso 4)'; }
       return 'ok';
     }
-    return { repo, tok, syncUp, listRemote, getRemote, delRemote, pistas, savePista, check, setToken: t => localStorage.setItem('blr_ghToken', JSON.stringify(t)) };
+    return { repo, tok, syncUp, pending, listRemote, getRemote, delRemote, pistas, savePista, check, setToken: t => localStorage.setItem('blr_ghToken', JSON.stringify(t)) };
   })();
 
   const RB = { UART, TX, Reader, decode, Engine, connect, supported, Store, Recorder, parseAll, lapsOf, toCSV, toVBO, fromVBO, fromCSV, Cloud };
