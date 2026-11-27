@@ -156,6 +156,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:var(--hover)}
     <a data-v="capturas">📸 Capturas</a>
     <a data-v="apex">Live timing de Apex</a>
     <a data-v="piloto">Vista piloto</a>
+    <a data-v="tele">📈 Telemetría</a>
     <a data-v="circuitos">Circuitos</a>
     <a data-v="pdf">Importar PDF</a>
   </nav>
@@ -2183,5 +2184,6 @@ window.__dbg = { get live() { return live; }, get pilotKart() { return pilotKart
 loadCircuits();
 })();
 </script>
+<script>document.querySelector('#tabs a[data-v=tele]').onclick = () => { location.href = 'telemetria.html?v=20261127h'; };</script>
 </body>
 </html>
