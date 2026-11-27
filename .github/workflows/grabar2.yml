@@ -1,0 +1,61 @@
+name: Grabar circuitos (segundo grabador)
+
+# SEGUNDO GRABADOR, independiente del de grabar.yml y desfasado ~3 h: si uno se cuelga o releva tarde,
+# el otro sigue grabando. Las sesiones que graban los dos se juntan solas (grabador/unir.py).
+# Igual que el primero, se releva a sí mismo; el aviso programado queda de reserva.
+on:
+  schedule:
+    - cron: '15,45 * * * *'
+  workflow_dispatch:
+    inputs:
+      minutos:
+        description: 'Minutos de grabación (para una prueba rápida, pon 5)'
+        default: '350'
+      solo:
+        description: 'Grabar solo estos circuitos (nombres cortos separados por espacios; vacío = todos)'
+        default: ''
+      forzar:
+        description: 'Grabar aunque ya haya otro grabador en marcha'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  grabar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 358
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: ¿Hace falta grabar?
+        id: turno
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FORZAR: ${{ github.event.inputs.forzar || 'false' }}
+          WORKFLOW: grabar2.yml
+          DESFASE_DE: grabar.yml
+        run: python -m grabador.turno
+      - if: steps.turno.outputs.grabar == 'true'
+        run: pip install -r requirements.txt
+      - name: Grabar
+        if: steps.turno.outputs.grabar == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WORKFLOW: grabar2.yml
+        run: |
+          git config user.name "blr-grabador"
+          git config user.email "blr-grabador@users.noreply.github.com"
+          python -m grabador.grabar --minutos "${{ github.event.inputs.minutos || '350' }}" ${{ github.event.inputs.solo && format('--solo {0}', github.event.inputs.solo) || '' }}
+      - name: Guardar copia en bruto (30 días)
+        if: always() && steps.turno.outputs.grabar == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: bruto2-${{ github.run_id }}
+          path: raw/
+          retention-days: 30
+          if-no-files-found: ignore

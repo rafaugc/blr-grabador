@@ -105,6 +105,21 @@ def _git(*args):
     return subprocess.run(['git', *args], cwd=ROOT, capture_output=True, text=True)
 
 
+def _juntar(p: Path, text: str) -> str:
+    """Hay dos grabadores a la vez: si el otro ya subió esta misma sesión, se juntan las vueltas de los dos
+    en vez de pisar su archivo (uno de los dos puede haberse enganchado con la sesión empezada)."""
+    try:
+        from . import unir
+        old, new = json.loads(p.read_text()), json.loads(text)
+        if old != new and unir.same(old, new):
+            m = unir.merge(old, new)
+            m['id'] = p.stem
+            return json.dumps(m, ensure_ascii=False, separators=(',', ':'))
+    except Exception as e:
+        log(f'No pude juntar {p.name} con lo ya subido ({e!r}); dejo lo mío')
+    return text
+
+
 def publish_git():
     """Sube a GitHub sin poder atascarse aunque haya otro grabador a la vez:
     parte siempre de la versión más reciente de GitHub y pone encima solo lo que ha escrito este grabador."""
@@ -124,7 +139,7 @@ def publish_git():
                     p.unlink()
             else:
                 p.parent.mkdir(parents=True, exist_ok=True)
-                p.write_text(text)
+                p.write_text(_juntar(p, text) if rel.startswith('data/sesiones/') and p.exists() else text)
         try:  # ajustes hechos desde la app (pilotos juntados, mojado, sesiones borradas…)
             applied = ajustes.apply_pending()
         except Exception as e:
@@ -150,6 +165,7 @@ def publish_git():
             MINE.pop(rel, None)
 
 
+WF = os.environ.get('WORKFLOW', 'grabar.yml')  # hay dos grabadores independientes: grabar.yml y grabar2.yml
 RELEVO = 300  # minutos: a esta edad el grabador lanza a su sustituto (igual que en turno.py)
 
 
@@ -168,7 +184,7 @@ def _gh(method, path, body=None):
 def hay_sustituto():
     """¿Hay otro turno posterior a este que lleve más de 3 min en marcha? (los que no graban se cierran en segundos)"""
     me = str(os.environ.get('GITHUB_RUN_ID'))
-    runs = (_gh('GET', 'workflows/grabar.yml/runs?status=in_progress&per_page=30') or {}).get('workflow_runs', [])
+    runs = (_gh('GET', f'workflows/{WF}/runs?status=in_progress&per_page=30') or {}).get('workflow_runs', [])
     mine = next((r for r in runs if str(r['id']) == me), None)
     if not mine:
         return False
@@ -194,7 +210,7 @@ async def relevo(t0: float, deadline: float):
             if await asyncio.to_thread(hay_sustituto):
                 log('Relevo: el siguiente turno ya está grabando')
                 return
-            await asyncio.to_thread(_gh, 'POST', 'workflows/grabar.yml/dispatches',
+            await asyncio.to_thread(_gh, 'POST', f'workflows/{WF}/dispatches',
                                     {'ref': 'main', 'inputs': {'forzar': 'true' if forzar else 'false'}})
             log('Relevo: he lanzado el siguiente turno' + (' (forzado)' if forzar else ''))
         except Exception as e:
