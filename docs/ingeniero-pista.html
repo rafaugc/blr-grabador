@@ -13,7 +13,7 @@ try{var t=JSON.parse(localStorage.getItem('blr_tema')||'null')||{},h=document.do
 <link rel="stylesheet" href="tema.css?v=1">
 <script src="racebox.js?v=20261127h"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;1,700&family=Barlow:wght@400;500;600&family=Oswald:wght@600;700&family=Saira+Condensed:wght@600;700&family=Archivo+Narrow:ital,wght@0,600;0,700;1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;1,700&family=Barlow:wght@400;500;600&family=Oswald:wght@600;700&family=Saira+Condensed:wght@600;700&family=Archivo+Narrow:ital,wght@0,600;0,700;1,700&family=Titillium+Web:wght@600;700&family=Fira+Sans+Extra+Condensed:ital,wght@1,600;1,700&family=Roboto+Condensed:wght@600;700&family=Rajdhani:wght@600;700&family=Chakra+Petch:wght@600;700&family=Anton&family=Roboto+Slab:wght@600;700&family=Outfit:wght@600;700&family=Exo+2:ital,wght@1,600;1,700&family=Teko:wght@600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   /* Muro de tiempos nocturno: paneles de asfalto azulado, ámbar para tu vuelta, cian para la referencia. */
@@ -506,7 +506,7 @@ body:not([data-page="ses"]) .layout,body:not([data-page="ses"]) .sesonly{display
             <ol>
               <li>Elige el vídeo de la cámara o del móvil de esta sesión.</li>
               <li>Sincronízalo: páralo justo al cruzar la meta y pulsa «Sincronizar aquí».</li>
-              <li>Elige el estilo de los marcadores y la vuelta, y pulsa «Crear vídeo».</li>
+              <li>Elige la plantilla, la rotulación y la vuelta, y pulsa «Crear vídeo».</li>
             </ol>
             <div class="vrow"><button class="btn primary" id="vPick" type="button">Elegir vídeo</button><button class="btn" id="vPickLayer" type="button">Crear solo la capa de datos, sin vídeo</button></div>
             <p class="hint">El vídeo no se sube a ningún sitio: se queda en tu ordenador y la app trabaja con él aquí mismo. También puedes arrastrarlo a la ventana.</p>
@@ -539,7 +539,8 @@ body:not([data-page="ses"]) .layout,body:not([data-page="ses"]) .sesonly{display
           </div>
           <div class="vbox">
             <h4>2 · Qué se ve</h4>
-            <label>Plantilla<select id="vStyle"></select></label>
+            <label>Plantilla (dónde va cada marcador)<select id="vStyle"></select></label>
+            <label>Rotulación (aspecto de los marcadores)<select id="vSkin"></select></label>
             <label>Tipografía de los marcadores<select id="vFont"></select></label>
             <p class="vmsg">Cada módulo se mueve arrastrándolo sobre el vídeo y cambia de tamaño desde su esquina inferior derecha o con la rueda del ratón. <button class="btn small" id="vTplReset" type="button">Restablecer plantilla</button></p>
             <div class="vchecks" id="vChecks"></div>
@@ -2076,10 +2077,10 @@ function vTemplate(name) {
 function modOn(id) { var m = VD.opts.mods[id]; return !!(m && m.on); }
 function teleMask() { return { vel: modOn('vel'), pedales: modOn('pedales'), g: modOn('g') }; }
 function vOptsLoad() {
-  var o = { style: 'clasico', ar: false }, k; for (k in VNUM) o[k] = VNUM[k]; VD.opts = o; vTemplate('clasico');
+  var o = { style: 'clasico', skin: 'kr', ar: false }, k; for (k in VNUM) o[k] = VNUM[k]; VD.opts = o; vTemplate('clasico');
   try {
     var s = JSON.parse(localStorage.getItem('ip_vopts3') || 'null');
-    if (s) { o.ar = !!s.ar; if (s.font) o.font = s.font; for (k in VNUM) if (isFinite(s[k])) o[k] = +s[k]; if (VTPL[s.style]) vTemplate(s.style); if (s.mods) MODS.forEach(function (d) { var a = s.mods[d[0]], b = o.mods[d[0]]; if (a && isFinite(a.dx) && isFinite(a.dy) && isFinite(a.s)) { b.on = !!a.on; b.ax = +a.ax || 0; b.ay = +a.ay || 0; b.dx = +a.dx; b.dy = +a.dy; b.s = Math.max(0.3, Math.min(4, +a.s)); } }); }
+    if (s) { o.ar = !!s.ar; if (s.font) o.font = s.font; if (VSK[s.skin]) o.skin = s.skin; for (k in VNUM) if (isFinite(s[k])) o[k] = +s[k]; if (VTPL[s.style]) vTemplate(s.style); if (s.mods) MODS.forEach(function (d) { var a = s.mods[d[0]], b = o.mods[d[0]]; if (a && isFinite(a.dx) && isFinite(a.dy) && isFinite(a.s)) { b.on = !!a.on; b.ax = +a.ax || 0; b.ay = +a.ay || 0; b.dx = +a.dx; b.dy = +a.dy; b.s = Math.max(0.3, Math.min(4, +a.s)); } }); }
   } catch (e) {}
 }
 function vOptsSave() { try { localStorage.setItem('ip_vopts3', JSON.stringify(VD.opts)); } catch (e) {} }
@@ -2127,9 +2128,102 @@ var ORG = '#ff7a1a';
 function vCol(val, pb, prev) { return val < pb - 1e-6 || !isFinite(pb) ? VR : prev != null && val < prev - 1e-6 ? COL.gain : ORG; }
 
 /* ---------- piezas del dibujo (sirven igual para la vista previa y para el vídeo final) ---------- */
+/* ---------- rotulación: juegos de aspecto para los marcadores (forma, color y letra) ----------
+   Cada juego solo cambia cómo se pintan los paneles; los datos y las plantillas son los mismos.
+   'a' y 'b' en un color significan «el color de tu vuelta» y «el de la vuelta B». */
+var VSKINS = [['kr', 'KR · la de siempre'], ['gp', 'Gran Premio · negro mate, esquina cortada'], ['moto', 'Dos ruedas · paneles inclinados'], ['resist', 'Resistencia · claro y limpio'],
+  ['retro', 'Retro TV · azul y amarillo de los 90'], ['vintage', 'Clásico · crema y verde carreras'], ['neon', 'Neón · futurista con brillo'], ['hud', 'Visor · solo líneas, tipo HUD'],
+  ['cristal', 'Cristal · paneles translúcidos'], ['sim', 'Simulador · videojuego de carreras'], ['carbono', 'Carbono · fibra y rojo']];
+var VSK0 = { shape: 'round', r: 10, cardR: 8, cut: 22, fill: 'rgba(8,12,18,.8)', solid: 'rgb(12,17,25)', card: 'rgba(14,19,27,.9)', cardSolid: 'rgb(18,24,34)', hdr: 'rgba(3,5,8,.92)', hdrSolid: 'rgb(5,8,12)',
+  ink: null, hdrInk: null, mute: '#9aa6b5', track: '#2c394b', track2: '#263243', grid: 'rgb(70,82,100)', road: '#3a475a', roadIn: 'rgb(125,133,146)', hi: '#ffffff', dot: '#0b0f15', badgeInk: '#10151c',
+  hot: 'rgba(255,178,30,.28)', bg: '#0b0f15', bar: true, line: null, lw: 2, glow: null, edge: null, tsh: null, font: null, fs: 1, it: 1, w: null, a: null, b: null, gain: null, loss: null, vr: null, org: null };
+var VSK = {
+  kr: {},
+  gp: { shape: 'cut', cut: 24, fill: 'rgba(0,0,0,.86)', solid: '#000000', card: 'rgba(0,0,0,.88)', cardSolid: '#000000', hdr: 'rgba(30,30,36,.96)', hdrSolid: 'rgb(30,30,36)', ink: '#ffffff', mute: '#b4b8c2', track: '#34343c', track2: '#34343c', grid: '#55565f', road: '#3c3d46', roadIn: '#8a8c96',
+    bg: '#08080a', edge: ['bottom', 'a', 4], font: '"Titillium Web"', fs: 0.84, it: 0 },
+  moto: { shape: 'skew', cut: 26, fill: 'rgba(9,13,36,.9)', solid: 'rgb(9,13,36)', card: 'rgba(9,13,36,.92)', cardSolid: 'rgb(9,13,36)', hdr: 'rgba(214,22,44,.96)', hdrSolid: 'rgb(214,22,44)', ink: '#ffffff', hdrInk: '#ffffff', mute: '#b9c0dc', track: '#27305c', track2: '#27305c', grid: '#4a5488', road: '#2f3a70', roadIn: '#8d97c4',
+    bg: '#060916', edge: ['right', '#d6162c', 10], font: '"Fira Sans Extra Condensed"', fs: 1, it: 2 },
+  resist: { shape: 'round', r: 4, cardR: 4, fill: 'rgba(244,246,249,.95)', solid: 'rgb(244,246,249)', card: 'rgba(244,246,249,.96)', cardSolid: 'rgb(244,246,249)', hdr: 'rgba(14,34,82,.98)', hdrSolid: 'rgb(14,34,82)', ink: '#0d1422', hdrInk: '#ffffff', mute: '#566173', track: '#ccd3de', track2: '#ccd3de', grid: '#a9b3c2', road: '#c3cbd7', roadIn: '#6f7b8d',
+    hi: '#0d1422', dot: '#ffffff', hot: 'rgba(11,70,201,.14)', bg: '#dfe4ec', a: '#0b46c9', b: '#e0531a', gain: '#0a8a47', loss: '#d51b3c', vr: '#a40fb9', org: '#c95600', badgeInk: '#ffffff', edge: ['top', 'rgb(14,34,82)', 5], font: '"Roboto Condensed"', fs: 0.92, it: 0 },
+  retro: { shape: 'rect', fill: 'rgba(10,24,128,.9)', solid: 'rgb(10,24,128)', card: 'rgba(10,24,128,.92)', cardSolid: 'rgb(10,24,128)', hdr: 'rgba(255,214,0,.98)', hdrSolid: 'rgb(255,214,0)', ink: '#ffe94a', hdrInk: '#0b0b0b', mute: '#ffffff', track: '#06105e', track2: '#06105e', grid: '#5a6ad6', road: '#06105e', roadIn: '#9aa6ff',
+    hot: 'rgba(255,255,255,.22)', bg: '#03082e', line: '#ffffff', lw: 3, gain: '#4dff8a', loss: '#ff6464', bar: false, font: 'Anton', fs: 0.86, it: 0, w: { 600: 400, 700: 400 } },
+  vintage: { shape: 'round', r: 5, cardR: 5, fill: 'rgba(243,234,210,.96)', solid: 'rgb(243,234,210)', card: 'rgba(243,234,210,.97)', cardSolid: 'rgb(243,234,210)', hdr: 'rgba(18,60,42,.98)', hdrSolid: 'rgb(18,60,42)', ink: '#18261e', hdrInk: '#f3ead2', mute: '#666b57', track: '#d6cba9', track2: '#d6cba9', grid: '#a79f83', road: '#cfc4a2', roadIn: '#6f6a55',
+    hi: '#18261e', dot: '#f3ead2', hot: 'rgba(163,33,28,.14)', bg: '#e6dcc0', line: '#123c2a', lw: 3, a: '#a3211c', b: '#1c4d8f', gain: '#1b7a3d', loss: '#b3261e', vr: '#7a1fa0', org: '#b55a00', badgeInk: '#f3ead2', font: '"Roboto Slab"', fs: 0.78, it: 0 },
+  neon: { shape: 'round', r: 16, cardR: 16, fill: 'rgba(6,8,22,.62)', solid: 'rgb(6,8,22)', card: 'rgba(6,8,22,.7)', cardSolid: 'rgb(6,8,22)', hdr: 'rgba(0,0,0,.5)', hdrSolid: 'rgb(3,4,12)', ink: '#eafcff', mute: '#8fb6c9', track: '#182340', track2: '#182340', grid: '#4f7fb5', road: '#1b2a4a', roadIn: '#5f86b3',
+    bg: '#03040c', line: 'a', lw: 2.5, glow: 'a', bar: false, font: 'Rajdhani', fs: 1, it: 0 },
+  hud: { shape: 'hud', fill: 'rgba(0,0,0,.26)', solid: 'rgb(8,12,16)', card: 'rgba(0,0,0,.3)', cardSolid: 'rgb(8,12,16)', hdr: 'rgba(0,0,0,.34)', hdrSolid: 'rgb(2,4,6)', ink: '#f4f8fb', mute: '#c2ccd6', track: 'rgba(255,255,255,.22)', track2: 'rgba(255,255,255,.22)', grid: 'rgba(255,255,255,.4)', road: 'rgba(255,255,255,.25)', roadIn: 'rgba(255,255,255,.75)',
+    bg: '#06090c', line: 'a', lw: 3, bar: false, tsh: 'rgba(0,0,0,.9)', font: '"Chakra Petch"', fs: 0.8, it: 0 },
+  cristal: { shape: 'round', r: 24, cardR: 24, fill: 'rgba(255,255,255,.17)', solid: 'rgb(56,64,76)', card: 'rgba(255,255,255,.17)', cardSolid: 'rgb(56,64,76)', hdr: 'rgba(255,255,255,.16)', hdrSolid: 'rgb(84,92,104)', ink: '#ffffff', mute: 'rgba(255,255,255,.78)', track: 'rgba(255,255,255,.24)', track2: 'rgba(255,255,255,.24)', grid: 'rgba(255,255,255,.4)', road: 'rgba(255,255,255,.25)', roadIn: 'rgba(255,255,255,.8)',
+    hot: 'rgba(255,255,255,.2)', bg: '#1b2028', line: 'rgba(255,255,255,.55)', lw: 1.5, bar: false, tsh: 'rgba(0,0,0,.7)', font: 'Outfit', fs: 0.8, it: 0 },
+  sim: { shape: 'slant', cut: 20, fill: function (g, x, y, w) { var q = g.createLinearGradient(x, 0, x + w, 0); q.addColorStop(0, 'rgba(12,12,16,.94)'); q.addColorStop(1, 'rgba(12,12,16,.5)'); return q; }, solid: 'rgb(12,12,16)', card: 'rgba(12,12,16,.9)', cardSolid: 'rgb(12,12,16)', hdr: 'rgba(40,42,50,.95)', hdrSolid: 'rgb(40,42,50)', ink: '#ffffff', mute: '#aab0bb', track: '#33363f', track2: '#33363f', grid: '#555a66', road: '#3a3d47', roadIn: '#8b909c',
+    bg: '#09090c', edge: ['bottom', 'a', 4], bar: false, font: '"Exo 2"', fs: 0.8, it: 2 },
+  carbono: { shape: 'cut2', cut: 20, fill: function (g, x, y, w, h, u) { return skCarbon(g, u, 0.9); }, solid: function (g, x, y, w, h, u) { return skCarbon(g, u, 1); }, card: function (g, x, y, w, h, u) { return skCarbon(g, u, 0.92); }, cardSolid: function (g, x, y, w, h, u) { return skCarbon(g, u, 1); }, hdr: 'rgba(8,8,10,.94)', hdrSolid: 'rgb(8,8,10)', ink: '#f2f3f5', mute: '#a5a8ae', track: '#3a3c42', track2: '#3a3c42', grid: '#5b5e66', road: '#404248', roadIn: '#9a9da5',
+    bg: '#0a0a0c', line: '#4a4d55', lw: 2, edge: ['top', '#e11d2e', 5], bar: false, font: 'Teko', fs: 1.12, it: 0 }
+};
+var SK = VSK0, SKC = {};
+function vSkinDef() { return VSK[VD.opts && VD.opts.skin] || VSK.kr; }
+function skGet() {
+  var id = VSK[VD.opts.skin] ? VD.opts.skin : 'kr', auto = !VD.opts.font || VD.opts.font === 'auto', key = id + (auto ? '' : '+f'), o = SKC[key], k;
+  if (!o) { o = {}; for (k in VSK0) o[k] = VSK0[k]; for (k in VSK[id]) o[k] = VSK[id][k]; o.id = id; if (!auto) { o.fs = 1; o.w = null; } SKC[key] = o; }
+  return o;
+}
+/* pone los colores y la letra del juego elegido mientras se dibuja y los devuelve a su sitio al acabar */
+function skUse(fn) {
+  var F0 = FONT, S0 = SK, c0 = { ink: COL.ink, a: COL.a, b: COL.b, gain: COL.gain, loss: COL.loss }, G0 = GRY, V0 = VR, O0 = ORG, k = skGet();
+  SK = k; FONT = vFam() + ',"Barlow Condensed","Arial Narrow",Arial,sans-serif'; GRY = k.mute; if (k.vr) VR = k.vr; if (k.org) ORG = k.org;
+  if (k.ink) COL.ink = k.ink; if (k.a) COL.a = k.a; if (k.b) COL.b = k.b; if (k.gain) COL.gain = k.gain; if (k.loss) COL.loss = k.loss;
+  if (!k.hdrInk || !VSK[k.id].hdrInk) k.hdrInk = VSK[k.id].hdrInk || COL.ink;
+  try { fn(); } finally { SK = S0; FONT = F0; GRY = G0; VR = V0; ORG = O0; for (var q in c0) COL[q] = c0[q]; }
+}
+function skc(c) { return c === 'a' ? COL.a : c === 'b' ? COL.b : c; }
+function skPaint(g, v, x, y, w, h, u) { return typeof v === 'function' ? v(g, x, y, w, h, u) : v; }
+function fnt(it, wt, size) { return (SK.it === 2 || (it && SK.it !== 0) ? 'italic ' : '') + (SK.w ? SK.w[wt] || wt : wt) + ' ' + Math.max(1, size * SK.fs) + 'px ' + FONT; }
+var SKPAT = {};
+function skCarbon(g, u, al) {
+  var n = Math.max(4, Math.round(7 * u)), key = n + '|' + al, p = SKPAT[key];
+  if (!p) { var c = document.createElement('canvas'), q = c.getContext('2d'); c.width = c.height = 2 * n; q.fillStyle = 'rgba(17,18,21,' + al + ')'; q.fillRect(0, 0, 2 * n, 2 * n); q.fillStyle = 'rgba(38,40,46,' + al + ')'; q.fillRect(0, 0, n, n); q.fillRect(n, n, n, n); q.fillStyle = 'rgba(255,255,255,.05)'; q.fillRect(0, 0, n, 1); q.fillRect(n, n, n, 1); p = SKPAT[key] = { c: c }; }
+  return g.createPattern(p.c, 'repeat');
+}
+function skPath(g, x, y, w, h, u, r) {
+  var s = SK.shape, c = Math.min(SK.cut * u, h * 0.42);
+  if (s === 'round') { rr(g, x, y, w, h, Math.min((r == null ? SK.r : r) * u, h / 2, w / 2)); return; }
+  g.beginPath();
+  if (s === 'cut') { g.moveTo(x, y); g.lineTo(x + w, y); g.lineTo(x + w, y + h - c); g.lineTo(x + w - c, y + h); g.lineTo(x, y + h); }
+  else if (s === 'cut2') { g.moveTo(x + c, y); g.lineTo(x + w, y); g.lineTo(x + w, y + h - c); g.lineTo(x + w - c, y + h); g.lineTo(x, y + h); g.lineTo(x, y + c); }
+  else if (s === 'skew') { c = Math.min(SK.cut * u, h * 0.16) / 2; g.moveTo(x + c, y); g.lineTo(x + w + c, y); g.lineTo(x + w - c, y + h); g.lineTo(x - c, y + h); }
+  else if (s === 'slant') { c = Math.min(SK.cut * u, h * 0.3, w * 0.2); g.moveTo(x, y); g.lineTo(x + w, y); g.lineTo(x + w - c, y + h); g.lineTo(x, y + h); }
+  else { g.moveTo(x, y); g.lineTo(x + w, y); g.lineTo(x + w, y + h); g.lineTo(x, y + h); }
+  g.closePath();
+}
+function skStroke(g, x, y, w, h, u, r) {
+  if (!SK.line) return;
+  g.save(); g.strokeStyle = skc(SK.line); g.lineWidth = SK.lw * u; g.lineJoin = 'miter';
+  if (SK.glow && !VD.solid) { g.shadowColor = skc(SK.glow); g.shadowBlur = 16 * u; }
+  if (SK.shape === 'hud') {
+    var L = Math.min(26 * u, w / 4, h / 3); g.lineCap = 'square'; g.beginPath();
+    g.moveTo(x, y + L); g.lineTo(x, y); g.lineTo(x + L, y); g.moveTo(x + w - L, y); g.lineTo(x + w, y); g.lineTo(x + w, y + L);
+    g.moveTo(x + w, y + h - L); g.lineTo(x + w, y + h); g.lineTo(x + w - L, y + h); g.moveTo(x + L, y + h); g.lineTo(x, y + h); g.lineTo(x, y + h - L); g.stroke();
+  } else { skPath(g, x, y, w, h, u, r); g.stroke(); if (g.shadowBlur) { g.shadowBlur = 0; g.stroke(); } }
+  g.restore();
+}
+function skBox(g, x, y, w, h, u) {
+  var f = skPaint(g, VD.solid ? SK.solid : SK.fill, x, y, w, h, u), e = SK.edge;
+  skPath(g, x, y, w, h, u); if (f) { g.fillStyle = f; g.fill(); }
+  if (e) {
+    var t = e[2] * u, m = 60 * u; g.save(); skPath(g, x, y, w, h, u); g.clip(); g.fillStyle = skc(e[1]);
+    if (e[0] === 'bottom') g.fillRect(x - m, y + h - t, w + 2 * m, t); else if (e[0] === 'top') g.fillRect(x - m, y, w + 2 * m, t); else if (e[0] === 'right') g.fillRect(x + w - t - m / 6, y, t + m, h); else g.fillRect(x - m, y, t + m, h);
+    g.restore();
+  }
+  skStroke(g, x, y, w, h, u);
+}
+function skBar(g, x, y, w, h, u, t) {
+  if (!SK.bar) return;
+  if (SK.shape === 'round' && SK.r >= 8) { g.fillStyle = COL.a; rr(g, x, y, t * u, h, t / 2 * u); g.fill(); return; }
+  g.save(); skPath(g, x, y, w, h, u); g.clip(); g.fillStyle = COL.a; g.fillRect(x - 60 * u, y, (60 + t) * u, h); g.restore();
+}
 function rr(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
-function panelBox(g, x, y, w, h, u) { g.fillStyle = VD.solid ? 'rgb(12,17,25)' : 'rgba(8,12,18,.8)'; rr(g, x, y, w, h, 10 * u); g.fill(); }
-function tx(g, s, x, y, size, wt, col, align, it) { g.font = (it ? 'italic ' : '') + wt + ' ' + Math.max(1, size) + 'px ' + FONT; g.fillStyle = col; g.textAlign = align || 'left'; g.fillText(s, x, y); }
+function panelBox(g, x, y, w, h, u) { skBox(g, x, y, w, h, u); }
+function tx(g, s, x, y, size, wt, col, align, it) { g.font = fnt(it, wt, size); g.fillStyle = col; g.textAlign = align || 'left'; if (SK.tsh && !VD.solid) { g.shadowColor = SK.tsh; g.shadowBlur = size * 0.22; g.fillText(s, x, y); g.shadowBlur = 0; g.shadowColor = 'transparent'; } else g.fillText(s, x, y); }
 function fitStr(g, s, w) { if (g.measureText(s).width <= w) return s; while (s.length > 2 && g.measureText(s + '…').width > w) s = s.slice(0, -1); return s + '…'; }
 function trackPt(tl, P, k) { var T = tl.T, off = P ? lerp(P.off, k) : 0; return [lerp(T.x, k) - lerp(T.ty, k) * off, lerp(T.y, k) + lerp(T.tx, k) * off]; }
 function secFr(tl, k, i) { return clamp01((k - tl.T.secs[i]) / (tl.T.secs[i + 1] - tl.T.secs[i])); }
@@ -2157,23 +2251,26 @@ function cardB(st) {
 var CARD_H = 204;
 function drawCard(g, x, y, w, u, o) {
   var h = CARD_H * u, hh = 56 * u;
-  g.fillStyle = VD.solid ? 'rgb(18,24,34)' : 'rgba(14,19,27,.9)'; rr(g, x, y, w, h, 8 * u); g.fill();
-  g.fillStyle = VD.solid ? 'rgb(5,8,12)' : 'rgba(3,5,8,.92)'; rr(g, x, y, w, hh, 8 * u); g.fill(); g.fillRect(x, y + hh / 2, w, hh / 2);
-  g.fillStyle = o.accent; g.fillRect(x, y + hh, w, 5 * u);
-  g.beginPath(); g.moveTo(x + 14 * u, y + 10 * u); g.lineTo(x + 66 * u, y + 10 * u); g.lineTo(x + 58 * u, y + 46 * u); g.lineTo(x + 6 * u, y + 46 * u); g.closePath(); g.fill();
-  tx(g, o.badge, x + 36 * u, y + 40 * u, 32 * u, 700, '#10151c', 'center', true);
-  g.font = 'italic 700 ' + 36 * u + 'px ' + FONT;
-  tx(g, fitStr(g, String(o.name).toUpperCase(), w - 100 * u), x + 80 * u, y + 41 * u, 36 * u, 700, COL.ink, 'left', true);
+  var e = 60 * u;
+  g.save(); skPath(g, x, y, w, h, u, SK.cardR); g.clip();
+  g.fillStyle = skPaint(g, VD.solid ? SK.cardSolid : SK.card, x, y, w, h, u); g.fillRect(x - e, y, w + 2 * e, h);
+  g.fillStyle = skPaint(g, VD.solid ? SK.hdrSolid : SK.hdr, x, y, w, h, u); g.fillRect(x - e, y, w + 2 * e, hh);
+  g.fillStyle = o.accent; g.fillRect(x - e, y + hh, w + 2 * e, 5 * u);
+  g.restore(); skStroke(g, x, y, w, h, u, SK.cardR);
+  g.fillStyle = o.accent; g.beginPath(); g.moveTo(x + 14 * u, y + 10 * u); g.lineTo(x + 66 * u, y + 10 * u); g.lineTo(x + 58 * u, y + 46 * u); g.lineTo(x + 6 * u, y + 46 * u); g.closePath(); g.fill();
+  tx(g, o.badge, x + 36 * u, y + 40 * u, 32 * u, 700, SK.badgeInk, 'center', true);
+  g.font = fnt(1, 700, 36 * u);
+  tx(g, fitStr(g, String(o.name).toUpperCase(), w - 100 * u), x + 80 * u, y + 41 * u, 36 * u, 700, SK.hdrInk, 'left', true);
   tx(g, o.big, x + 20 * u, y + 134 * u, 76 * u, 700, o.bigCol, 'left', true);
   tx(g, o.refTime, x + w - 20 * u, y + 104 * u, 32 * u, 600, COL.ink, 'right');
-  g.font = '600 ' + 21 * u + 'px ' + FONT;
+  g.font = fnt(0, 600, 21 * u);
   tx(g, fitStr(g, o.refName, w * 0.42), x + w - 20 * u, y + 132 * u, 21 * u, 600, GRY, 'right');
   var gap = 8 * u, bw = (w - 40 * u - 2 * gap) / 3;
   o.secs.forEach(function (s, i) {
     var bx = x + 20 * u + i * (bw + gap), by = y + h - 18 * u;
     tx(g, s.txt, bx + bw / 2, by - 9 * u, 25 * u, 700, s.col, 'center');
-    g.fillStyle = '#2c394b'; g.fillRect(bx, by, bw, 8 * u);
-    if (s.fr > 0) { g.fillStyle = s.fr >= 1 ? s.col : '#ffffff'; g.fillRect(bx, by, bw * s.fr, 8 * u); }
+    g.fillStyle = SK.track; g.fillRect(bx, by, bw, 8 * u);
+    if (s.fr > 0) { g.fillStyle = s.fr >= 1 ? s.col : SK.hi; g.fillRect(bx, by, bw * s.fr, 8 * u); }
   });
 }
 function deltaChip(g, cx, y, u, st) {
@@ -2183,11 +2280,11 @@ function deltaChip(g, cx, y, u, st) {
 function drawTower(g, x, y, u, st) {
   var tl = st.tl, done = tl.laps.filter(function (l) { return l.t0 + l.time <= st.s + 1e-6; }).sort(function (a, b) { return a.time - b.time; }).slice(0, 8), w = 300 * u, rh = 42 * u, h = 52 * u + Math.max(1, done.length) * rh + 8 * u;
   panelBox(g, x, y, w, h, u); g.fillStyle = COL.a; g.fillRect(x, y + 48 * u, w, 4 * u);
-  g.font = 'italic 700 ' + 26 * u + 'px ' + FONT; tx(g, fitStr(g, String(tl.T.name || 'TIEMPOS').toUpperCase(), w - 32 * u), x + 16 * u, y + 35 * u, 26 * u, 700, COL.ink, 'left', true);
+  g.font = fnt(1, 700, 26 * u); tx(g, fitStr(g, String(tl.T.name || 'TIEMPOS').toUpperCase(), w - 32 * u), x + 16 * u, y + 35 * u, 26 * u, 700, COL.ink, 'left', true);
   if (!done.length) tx(g, 'SIN VUELTAS TODAVÍA', x + 16 * u, y + 82 * u, 22 * u, 600, GRY, 'left');
   done.forEach(function (l, i) {
     var ry = y + 52 * u + i * rh, hot = st.flash === l;
-    if (hot) { g.fillStyle = 'rgba(255,178,30,.28)'; g.fillRect(x, ry + 2 * u, w, rh - 2 * u); }
+    if (hot) { g.fillStyle = SK.hot; g.fillRect(x, ry + 2 * u, w, rh - 2 * u); }
     tx(g, String(i + 1), x + 30 * u, ry + 31 * u, 26 * u, 700, i ? GRY : VR, 'center');
     tx(g, 'V' + l.n, x + 58 * u, ry + 31 * u, 27 * u, 700, COL.ink, 'left', true);
     tx(g, i ? sg(l.time - done[0].time, 3) : fmt(l.time), x + w - 16 * u, ry + 31 * u, 26 * u, 600, i ? COL.ink : VR, 'right');
@@ -2205,7 +2302,7 @@ function drawTele(g, x, by0, u, st, only) {
     var w4 = 150 * u, gl = P ? lerp(P.gls, k) : 0, fb = P ? clamp01(-gl / 0.5) : 0, fg = P ? clamp01(gl / 0.25) : 0, ph = 112 * u, pt = by0 + 22 * u;
     panelBox(g, x, by0, w4, bh, u);
     [[fb, COL.loss, 'FRENO'], [fg, COL.gain, 'GAS']].forEach(function (q, j) {
-      var px = x + 30 * u + j * 62 * u; g.fillStyle = '#263243'; rr(g, px, pt, 28 * u, ph, 4 * u); g.fill();
+      var px = x + 30 * u + j * 62 * u; g.fillStyle = SK.track2; rr(g, px, pt, 28 * u, ph, 4 * u); g.fill();
       if (q[0] > 0.01) { g.fillStyle = q[1]; rr(g, px, pt + ph * (1 - q[0]), 28 * u, ph * q[0], 4 * u); g.fill(); }
       tx(g, q[2], px + 14 * u, by0 + 162 * u, 18 * u, 600, GRY, 'center');
     });
@@ -2214,7 +2311,7 @@ function drawTele(g, x, by0, u, st, only) {
   if (O.g) {
     var w5 = 180 * u, cx = x + w5 / 2, cy = by0 + 78 * u, R = 60 * u, gt = P ? lerp(P.gt, k) : 0, gq = P ? lerp(P.gls, k) : 0;
     panelBox(g, x, by0, w5, bh, u);
-    g.strokeStyle = 'rgb(70,82,100)'; g.lineWidth = 2 * u;
+    g.strokeStyle = SK.grid; g.lineWidth = 2 * u;
     g.beginPath(); g.arc(cx, cy, R, 0, 7); g.stroke(); g.beginPath(); g.arc(cx, cy, R / 2, 0, 7); g.stroke();
     g.beginPath(); g.moveTo(cx - R, cy); g.lineTo(cx + R, cy); g.moveTo(cx, cy - R); g.lineTo(cx, cy + R); g.stroke();
     var gx = Math.max(-1, Math.min(1, gt / 1.5)), gy = Math.max(-1, Math.min(1, gq / 1.5));
@@ -2228,52 +2325,52 @@ function drawMini(g, mx, my, u, st) {
   var MXv = function (v) { return ox + v * sc; }, MYv = function (v) { return oy - v * sc; };
   panelBox(g, mx, my, ms, ms, u);
   g.beginPath(); for (q = 0; q <= tl.N; q += 2) { var X1 = MXv(T.x[q]), Y1 = MYv(T.y[q]); if (q) g.lineTo(X1, Y1); else g.moveTo(X1, Y1); } g.closePath();
-  g.strokeStyle = '#3a475a'; g.lineWidth = 13 * u; g.stroke(); g.strokeStyle = 'rgb(125,133,146)'; g.lineWidth = 4 * u; g.stroke();
+  g.strokeStyle = SK.road; g.lineWidth = 13 * u; g.stroke(); g.strokeStyle = SK.roadIn; g.lineWidth = 4 * u; g.stroke();
   if (lap) {
     g.beginPath(); for (q = 0; q <= Math.floor(k); q += 2) { var pp = trackPt(tl, P, q); if (q) g.lineTo(MXv(pp[0]), MYv(pp[1])); else g.moveTo(MXv(pp[0]), MYv(pp[1])); }
     g.strokeStyle = COL.a; g.lineWidth = 5 * u; g.stroke();
   }
   var sx = MXv(T.x[0]), sy = MYv(T.y[0]), nxv = -T.ty[0], nyv = T.tx[0];
-  g.strokeStyle = '#fff'; g.lineWidth = 4 * u; g.beginPath(); g.moveTo(sx + nxv * 12 * u, sy - nyv * 12 * u); g.lineTo(sx - nxv * 12 * u, sy + nyv * 12 * u); g.stroke();
+  g.strokeStyle = SK.hi; g.lineWidth = 4 * u; g.beginPath(); g.moveTo(sx + nxv * 12 * u, sy - nyv * 12 * u); g.lineTo(sx - nxv * 12 * u, sy + nyv * 12 * u); g.stroke();
   if (lap) {
     if (tl.B !== P) { var pb = trackPt(tl, tl.B, st.kB); g.fillStyle = COL.b; g.beginPath(); g.arc(MXv(pb[0]), MYv(pb[1]), 9 * u, 0, 7); g.fill(); }
-    var pa = trackPt(tl, P, k); g.fillStyle = COL.a; g.strokeStyle = '#0b0f15'; g.lineWidth = 3 * u; g.beginPath(); g.arc(MXv(pa[0]), MYv(pa[1]), 12 * u, 0, 7); g.fill(); g.stroke();
+    var pa = trackPt(tl, P, k); g.fillStyle = COL.a; g.strokeStyle = SK.dot; g.lineWidth = 3 * u; g.beginPath(); g.arc(MXv(pa[0]), MYv(pa[1]), 12 * u, 0, 7); g.fill(); g.stroke();
   }
 }
 function drawCurva(g, W, y, u, st) {
   if (!st.lap) return; var T = st.tl.T, k = st.k, nx = -1; for (var c = 0; c < T.corners.length; c++) if (T.corners[c].b >= k) { nx = c; break; }
   if (nx < 0) return;
   var cr = T.corners[nx], dist = (cr.a - k) * T.ds, s1 = 'CURVA ' + (nx + 1) + ' · ' + (cr.dir === 'I' ? 'IZQUIERDA' : 'DERECHA') + (dist > 0 ? ' · ' + Math.round(dist) + ' M' : '');
-  g.font = 'italic 700 ' + 30 * u + 'px ' + FONT; var tw = g.measureText(s1).width + 44 * u;
+  g.font = fnt(1, 700, 30 * u); var tw = g.measureText(s1).width + 44 * u;
   panelBox(g, W / 2 - tw / 2, y, tw, 54 * u, u); tx(g, s1, W / 2, y + 38 * u, 30 * u, 700, COL.ink, 'center', true);
 }
 function drawClasico(g, W, p, u, st) {
   var tl = st.tl, lap = st.lap, w = 440 * u, h = 170 * u, o = cardA(st), sub, subCol = GRY, f = st.flash;
-  panelBox(g, p, p, w, h, u); g.fillStyle = COL.a; rr(g, p, p, 8 * u, h, 4 * u); g.fill();
+  panelBox(g, p, p, w, h, u); skBar(g, p, p, w, h, u, 8);
   if (f) { var dd = f.time - tl.bTime; sub = f.time <= tl.best + 1e-6 ? 'MEJOR VUELTA DE LA SESIÓN' : sg(dd, 3) + ' FRENTE A B'; subCol = f.time <= tl.best + 1e-6 ? VR : dd > 0 ? COL.loss : COL.gain; }
   else sub = 'MEJOR ' + fmt(tl.best);
   tx(g, f ? 'VUELTA ' + f.n : lap ? 'VUELTA ' + lap.n : st.before ? 'VUELTA DE SALIDA' : st.after ? 'VUELTA DE ENTRADA' : 'FUERA DE VUELTA', p + 26 * u, p + 44 * u, 32 * u, 700, COL.a, 'left', true);
   tx(g, o.big, p + 24 * u, p + 122 * u, 88 * u, 700, o.bigCol, 'left', true); tx(g, sub, p + 26 * u, p + 154 * u, 25 * u, 600, subCol, 'left');
   var w2 = 400 * u, h2 = 216 * u, x2 = W - p - w2, dv = lap ? st.d : null, dc = dv == null ? GRY : dv > 0.0005 ? COL.loss : dv < -0.0005 ? COL.gain : COL.ink;
-  panelBox(g, x2, p, w2, h2, u); g.font = '600 ' + 25 * u + 'px ' + FONT;
+  panelBox(g, x2, p, w2, h2, u); g.font = fnt(0, 600, 25 * u);
   tx(g, fitStr(g, 'FRENTE A ' + String(tl.bLabel).toUpperCase(), w2 - 48 * u), x2 + 24 * u, p + 42 * u, 25 * u, 600, COL.b, 'left');
   tx(g, dv == null ? '–' : sg(dv, 2), x2 + 22 * u, p + 128 * u, 86 * u, 700, dc, 'left', true);
   var gap = 10 * u, bw = (w2 - 48 * u - 2 * gap) / 3;
   o.secs.forEach(function (s, i) {
     var bx = x2 + 24 * u + i * (bw + gap), by = p + 150 * u;
-    g.fillStyle = '#2c394b'; g.fillRect(bx, by, bw, 10 * u); if (s.fr > 0) { g.fillStyle = s.fr >= 1 ? s.col : '#fff'; g.fillRect(bx, by, bw * s.fr, 10 * u); }
+    g.fillStyle = SK.track; g.fillRect(bx, by, bw, 10 * u); if (s.fr > 0) { g.fillStyle = s.fr >= 1 ? s.col : SK.hi; g.fillRect(bx, by, bw * s.fr, 10 * u); }
     tx(g, s.txt, bx, by + 42 * u, 24 * u, 700, s.col, 'left');
   });
 }
 function drawTiempo(g, x, y, u, st) {
   var tl = st.tl, lap = st.lap, f = st.flash, w = 330 * u, h = 124 * u, big, col = COL.ink, lab;
   if (f) { lab = 'VUELTA ' + f.n; big = fmt(f.time); col = vCol(f.time, f.pbTime, f.prevTime); } else if (lap) { lab = 'VUELTA ' + lap.n; big = fmt(st.tau, 1); } else { lab = st.before ? 'VUELTA DE SALIDA' : st.after ? 'VUELTA DE ENTRADA' : 'FUERA DE VUELTA'; big = '–:––.–'; col = GRY; }
-  panelBox(g, x, y, w, h, u); g.fillStyle = COL.a; rr(g, x, y, 7 * u, h, 3 * u); g.fill();
+  panelBox(g, x, y, w, h, u); skBar(g, x, y, w, h, u, 7);
   tx(g, lab, x + 24 * u, y + 36 * u, 26 * u, 700, COL.a, 'left', true); tx(g, big, x + 22 * u, y + 104 * u, 72 * u, 700, col, 'left', true);
 }
 function drawDelta(g, x, y, u, st) {
   var tl = st.tl, d = st.flash ? st.flash.time - tl.bTime : st.lap ? st.d : null, col = d == null ? GRY : d > 0.0005 ? COL.loss : d < -0.0005 ? COL.gain : COL.ink, w = 270 * u, h = 124 * u;
-  panelBox(g, x, y, w, h, u); g.font = '600 ' + 22 * u + 'px ' + FONT; tx(g, fitStr(g, 'DIF. CON ' + String(tl.bLabel).toUpperCase(), w - 36 * u), x + 18 * u, y + 34 * u, 22 * u, 600, COL.b, 'left');
+  panelBox(g, x, y, w, h, u); g.font = fnt(0, 600, 22 * u); tx(g, fitStr(g, 'DIF. CON ' + String(tl.bLabel).toUpperCase(), w - 36 * u), x + 18 * u, y + 34 * u, 22 * u, 600, COL.b, 'left');
   tx(g, d == null ? '–' : sg(d, 2), x + w / 2, y + 104 * u, 72 * u, 700, col, 'center', true);
 }
 function modRect(id, W, H, u) { var d = MODS.filter(function (q) { return q[0] === id; })[0], m = VD.opts.mods[id], w = d[2] * u * m.s, h = d[3] * u * m.s; return { id: id, x: m.ax * (W - w) + m.dx * u, y: m.ay * (H - h) + m.dy * u, w: w, h: h, u: u * m.s }; }
@@ -2282,11 +2379,11 @@ function modSet(id, x, y, s, W, H, u) {
   x = Math.max(-w * 0.6, Math.min(W - w * 0.4, x)); y = Math.max(-h * 0.6, Math.min(H - h * 0.4, y)); var cx = x + w / 2, cy = y + h / 2;
   m.ax = cx < W / 3 ? 0 : cx > 2 * W / 3 ? 1 : 0.5; m.ay = cy < H / 3 ? 0 : cy > 2 * H / 3 ? 1 : 0.5; m.dx = (x - m.ax * (W - w)) / u; m.dy = (y - m.ay * (H - h)) / u;
 }
-var VFONTS = [['barlow', 'Barlow Condensed (la de la app)', '"Barlow Condensed"'], ['oswald', 'Oswald', 'Oswald'], ['saira', 'Saira Condensed', '"Saira Condensed"'], ['archivo', 'Archivo Narrow', '"Archivo Narrow"']];
-function vFam() { var f = VFONTS.filter(function (x) { return x[0] === VD.opts.font; })[0] || VFONTS[0]; return f[2]; }
-function vFontLoad() { var fam = vFam(); return document.fonts && document.fonts.load ? Promise.all([document.fonts.load('italic 700 40px ' + fam), document.fonts.load('700 40px ' + fam), document.fonts.load('600 40px ' + fam)]).catch(function () {}) : Promise.resolve(); }
-function drawOverlay(g, X, Y, W, H, st, rects) { var F0 = FONT; FONT = vFam() + ',"Barlow Condensed","Arial Narrow",Arial,sans-serif'; try { drawOverlay0(g, X, Y, W, H, st, rects); } finally { FONT = F0; } }
-function drawDash(g, X0, Y0, W, H, st, layout, v) { var F0 = FONT; FONT = vFam() + ',"Barlow Condensed","Arial Narrow",Arial,sans-serif'; try { drawDash0(g, X0, Y0, W, H, st, layout, v); } finally { FONT = F0; } }
+var VFONTS = [['auto', 'La propia de la rotulación', ''], ['barlow', 'Barlow Condensed (la de la app)', '"Barlow Condensed"'], ['oswald', 'Oswald', 'Oswald'], ['saira', 'Saira Condensed', '"Saira Condensed"'], ['archivo', 'Archivo Narrow', '"Archivo Narrow"']];
+function vFam() { var f = VFONTS.filter(function (x) { return x[0] === VD.opts.font; })[0]; return f && f[2] ? f[2] : (vSkinDef().font || '"Barlow Condensed"'); }
+function vFontLoad() { var fam = vFam(); return document.fonts && document.fonts.load ? Promise.all(['italic 700', '700', '600', 'italic 600', '400'].map(function (q) { return document.fonts.load(q + ' 40px ' + fam); })).catch(function () {}) : Promise.resolve(); }
+function drawOverlay(g, X, Y, W, H, st, rects) { skUse(function () { drawOverlay0(g, X, Y, W, H, st, rects); }); }
+function drawDash(g, X0, Y0, W, H, st, layout, v) { skUse(function () { drawDash0(g, X0, Y0, W, H, st, layout, v); }); }
 function drawOverlay0(g, X, Y, W, H, st, rects) {
   if (!st || W < 40 || H < 40) return;
   var u = Math.min(W, H) / 1080, O = VD.opts;
@@ -2315,14 +2412,14 @@ function drawTrace(g, x, y, w, h, u, st) {
   panelBox(g, x, y, w, h, u);
   for (k = 0; k <= N; k += 2) { lo = Math.min(lo, B.v[k], P ? P.v[k] : 1e9); hi = Math.max(hi, B.v[k], P ? P.v[k] : 0); }
   function X(q) { return x + pad + q / N * (w - 2 * pad); } function Yv(v) { return y + h - pad - (v - lo) / ((hi - lo) || 1) * (h - 2 * pad - 18 * u); }
-  g.strokeStyle = 'rgb(70,82,100)'; g.lineWidth = 2 * u; [tl.T.secs[1], tl.T.secs[2]].forEach(function (s) { g.beginPath(); g.moveTo(X(s), y + pad); g.lineTo(X(s), y + h - pad); g.stroke(); });
+  g.strokeStyle = SK.grid; g.lineWidth = 2 * u; [tl.T.secs[1], tl.T.secs[2]].forEach(function (s) { g.beginPath(); g.moveTo(X(s), y + pad); g.lineTo(X(s), y + h - pad); g.stroke(); });
   function path(A, col, lw) { g.beginPath(); for (var q = 0; q <= N; q += 2) { if (q) g.lineTo(X(q), Yv(A.v[q])); else g.moveTo(X(q), Yv(A.v[q])); } g.strokeStyle = col; g.lineWidth = lw; g.stroke(); }
   if (B !== P) path(B, COL.b, 2 * u); if (P) path(P, COL.a, 3.5 * u);
   tx(g, 'VELOCIDAD · ' + Math.round(lo * 3.6) + '–' + Math.round(hi * 3.6) + ' KM/H', x + pad, y + pad + 12 * u, 18 * u, 600, GRY, 'left');
-  if (st.lap) { var cx = X(st.k); g.strokeStyle = '#fff'; g.lineWidth = 2 * u; g.beginPath(); g.moveTo(cx, y + pad); g.lineTo(cx, y + h - pad); g.stroke(); g.fillStyle = COL.a; g.beginPath(); g.arc(cx, Yv(lerp(P.v, st.k)), 7 * u, 0, 7); g.fill(); }
+  if (st.lap) { var cx = X(st.k); g.strokeStyle = SK.hi; g.lineWidth = 2 * u; g.beginPath(); g.moveTo(cx, y + pad); g.lineTo(cx, y + h - pad); g.stroke(); g.fillStyle = COL.a; g.beginPath(); g.arc(cx, Yv(lerp(P.v, st.k)), 7 * u, 0, 7); g.fill(); }
 }
 function drawDash0(g, X0, Y0, W, H, st, layout, v) {
-  g.save(); g.translate(X0, Y0); g.fillStyle = '#0b0f15'; g.fillRect(0, 0, W, H); g.textBaseline = 'alphabetic'; g.lineCap = 'round'; g.lineJoin = 'round';
+  g.save(); g.translate(X0, Y0); g.fillStyle = SK.bg; g.fillRect(0, 0, W, H); g.textBaseline = 'alphabetic'; g.lineCap = 'round'; g.lineJoin = 'round';
   var vw = v && v.videoWidth || 16, vh = v && v.videoHeight || 9, u, p, box, O = { ar: VD.opts.ar, mapa: modOn('mapa') }, y, tw;
   if (layout === 'vert') { u = W / 1080; p = 36 * u; var bh = Math.min(W * vh / vw, H * 0.46), bw = bh * vw / vh; box = [(W - bw) / 2, 0, bw, bh]; }
   else { u = H / 1080; p = 24 * u; var col = 480 * u, aw = W - col, ah = Math.min(aw * vh / vw, H * 0.8), bw2 = ah * vw / vh; box = [col + (aw - bw2) / 2, 0, bw2, ah]; }
@@ -2381,7 +2478,7 @@ function arBuild(tl) {
 function arRender(W, H, st) {
   if (!arInit()) return null;
   var tl = st.tl, O = VD.opts, T = tl.T, N = tl.N, P = st.lap.P, k = st.k, rad = Math.PI / 180;
-  if (AR.tl !== tl) { arBuild(tl); AR.tl = tl; }
+  if (AR.tl !== tl || AR.sk !== SK.id) { arBuild(tl); AR.tl = tl; AR.sk = SK.id; }
   if (AR.w !== W || AR.h !== H) { AR.R.setSize(W, H, false); AR.w = W; AR.h = H; }
   var a = trackPt(tl, P, k), a0 = trackPt(tl, P, Math.max(0, k - 1)), b = trackPt(tl, P, Math.min(N, k + 3)), dx = b[0] - a0[0], dy = b[1] - a0[1], dl = Math.hypot(dx, dy) || 1, z = lerp(T.z, k), cam = AR.cam;
   cam.fov = O.fov; cam.aspect = W / H; cam.position.set(a[0], z + O.alt, -a[1]); cam.up.set(0, 1, 0); cam.lookAt(a[0] + dx / dl, z + O.alt, -(a[1] + dy / dl));
@@ -2561,7 +2658,9 @@ function vBuildControls() {
   var chk = $('vChecks'); if (chk.firstChild) return;
   var ss = $('vStyle'); VSTYLES.forEach(function (s) { var o = el('option', null, s[1]); o.value = s[0]; ss.appendChild(o); });
   ss.value = VD.opts.style; ss.onchange = function () { vTemplate(ss.value); vOptsSave(); vChecks(); vKick(); };
-  var fs = $('vFont'); VFONTS.forEach(function (f) { var o = el('option', null, f[1]); o.value = f[0]; fs.appendChild(o); }); fs.value = VD.opts.font || 'barlow'; fs.onchange = function () { VD.opts.font = fs.value; vOptsSave(); vFontLoad().then(vKick); vKick(); }; vFontLoad().then(vKick);
+  var sk = $('vSkin'); VSKINS.forEach(function (q) { var o = el('option', null, q[1]); o.value = q[0]; sk.appendChild(o); });
+  sk.value = VD.opts.skin || 'kr'; sk.onchange = function () { VD.opts.skin = sk.value; VD.opts.font = 'auto'; $('vFont').value = 'auto'; vOptsSave(); vFontLoad().then(vKick); vKick(); };
+  var fs = $('vFont'); VFONTS.forEach(function (f) { var o = el('option', null, f[1]); o.value = f[0]; fs.appendChild(o); }); fs.value = VD.opts.font || 'auto'; fs.onchange = function () { VD.opts.font = fs.value; vOptsSave(); vFontLoad().then(vKick); vKick(); }; vFontLoad().then(vKick);
   $('vTplReset').onclick = function () { vTemplate(VD.opts.style); vOptsSave(); vChecks(); vKick(); };
   MODS.forEach(function (o) {
     var l = el('label', o[0] === 'card' || o[0] === 'delta' || o[0] === 'tiempo' || o[0] === 'torre' ? 'wide' : ''), c = el('input'); c.type = 'checkbox'; c.dataset.m = o[0];
