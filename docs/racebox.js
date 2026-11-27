@@ -173,27 +173,103 @@
   // ---------- 3. Bluetooth ----------
   const supported = () => typeof navigator !== 'undefined' && !!navigator.bluetooth && !!navigator.bluetooth.requestDevice;
   // cb.sample(s) con cada dato; cb.status(texto, estado) con cada cambio. Devuelve { stop() }.
+  /* Otros GPS Bluetooth (Dragy y parecidos). No publican su protocolo, así que la conexión es genérica:
+     se escuchan todos los canales del aparato y se reconocen solos dos formatos habituales de los chips u-blox
+     (UBX NAV-PVT y texto NMEA). Cada dato se convierte al mismo mensaje de 80 bytes del RaceBox, para que el
+     cronometraje, la grabación y la exportación funcionen igual. Sin acelerómetro: G y giros van a cero. */
+  const NUS = UART, SERIALES = [0xffe0, 0xfff0, 0xffb0, 0xffd0, 0xffc0, 0xff00, 0xff10, 0xfee0, 0xfe60, 0xae00, 0xae30, 0xabf0, 0x1819, 0x180f, '49535343-fe7d-4ae5-8fa9-9fafd205e455', '0000fe40-cc7a-482a-984a-7f2ed5b3e58f'];
+  const MARCAS = ['RaceBox', 'DRG', 'Dragy', 'dragy', 'DRAGY'];
+  const esRaceBox = n => /^RaceBox/i.test(n || '');
+  // UBX NAV-PVT (92 bytes) → mensaje RaceBox (80 bytes)
+  function pvtToRb(p) {
+    if (p.length < 92) return null;
+    const o = new Uint8Array(80), d = new DataView(p.buffer, p.byteOffset, p.byteLength), w = new DataView(o.buffer);
+    o.set(p.subarray(0, 48));
+    w.setInt32(48, d.getInt32(60, true), true); w.setInt32(52, d.getInt32(64, true), true);
+    w.setUint32(56, d.getUint32(68, true), true); w.setUint32(60, d.getUint32(72, true), true); w.setUint16(64, d.getUint16(76, true), true);
+    o[66] = d.getUint16(78, true) & 1; return o;
+  }
+  // frases NMEA (RMC + GGA) → mensaje RaceBox
+  function Nmea(onMsg) {
+    let txt = '', gga = { sv: 0, alt: 0, fix: 0 };
+    const dm = (v, h) => { const x = parseFloat(v); if (!isFinite(x)) return null; const g = Math.floor(x / 100); return (g + (x - g * 100) / 60) * (h === 'S' || h === 'W' ? -1 : 1); };
+    const fn = chunk => {
+      for (let i = 0; i < chunk.length; i++) txt += String.fromCharCode(chunk[i]);
+      if (txt.length > 4096) txt = txt.slice(-1024);
+      let k;
+      while ((k = txt.indexOf('\n')) >= 0) {
+        const line = txt.slice(0, k).trim(); txt = txt.slice(k + 1);
+        const m = /^\$(..)(RMC|GGA),([^*]*)\*([0-9A-Fa-f]{2})/.exec(line); if (!m) continue;
+        let cs = 0; for (let j = 1; j < line.indexOf('*'); j++) cs ^= line.charCodeAt(j); if (cs !== parseInt(m[4], 16)) continue;
+        const f = m[3].split(',');
+        if (m[2] === 'GGA') { gga = { fix: +f[5] || 0, sv: +f[6] || 0, alt: parseFloat(f[8]) || 0 }; continue; }
+        const hh = +f[0].slice(0, 2), mi = +f[0].slice(2, 4), ss = parseFloat(f[0].slice(4)) || 0, lat = dm(f[2], f[3]), lon = dm(f[4], f[5]), ok = f[1] === 'A' && lat != null && lon != null;
+        const o = new Uint8Array(80), w = new DataView(o.buffer), dt = f[8] || '';
+        w.setUint32(0, Math.round((hh * 3600 + mi * 60 + ss) * 1000), true);
+        if (dt.length === 6) { w.setUint16(4, 2000 + +dt.slice(4, 6), true); o[6] = +dt.slice(2, 4); o[7] = +dt.slice(0, 2); o[8] = hh; o[9] = mi; o[10] = Math.floor(ss); o[11] = 3; w.setInt32(16, Math.round((ss % 1) * 1e9), true); }
+        o[20] = ok ? 3 : 0; o[21] = ok ? 1 : 0; o[23] = gga.sv; o[66] = ok ? 0 : 1;
+        if (ok) { w.setInt32(24, Math.round(lon * 1e7), true); w.setInt32(28, Math.round(lat * 1e7), true); }
+        w.setInt32(32, Math.round(gga.alt * 1000), true); w.setInt32(36, Math.round(gga.alt * 1000), true);
+        w.setInt32(48, Math.round((parseFloat(f[6]) || 0) * 514.444), true); w.setInt32(52, Math.round((parseFloat(f[7]) || 0) * 1e5), true);
+        fn.n++; onMsg(o);
+      }
+    };
+    fn.n = 0; return fn;
+  }
+  const hex = u => Array.prototype.map.call(u, x => (x < 16 ? '0' : '') + x.toString(16)).join('');
+  const DIAG = 'kr_gps_diag';
+  const diag = () => { try { return JSON.parse(localStorage.getItem(DIAG) || 'null'); } catch (e) { return null; } };
+  // cb.sample(s) con cada dato; cb.status(texto, estado) con cada cambio. Devuelve { stop() }.
   async function connect(cb, opt) {
     cb = cb || {}; opt = opt || {};
     const say = (t, st) => { try { cb.status && cb.status(t, st); } catch (e) {} };
-    const req = opt.all ? { acceptAllDevices: true, optionalServices: [UART] } : { filters: [{ namePrefix: 'RaceBox' }], optionalServices: [UART] };
+    const serv = [NUS].concat(SERIALES);
+    const req = opt.all ? { acceptAllDevices: true, optionalServices: serv } : { filters: MARCAS.map(p => ({ namePrefix: p })), optionalServices: serv };
     const dev = await navigator.bluetooth.requestDevice(req);
-    const H = { dev, want: true, reader: null, last: 0, stop() { H.want = false; try { dev.gatt.disconnect(); } catch (e) {} say('Desconectado', 'off'); } };
-    const open = async () => {
-      say('Conectando con ' + (dev.name || 'RaceBox') + '…', 'wait');
-      const srv = await dev.gatt.connect();
+    const nom = dev.name || 'GPS', rb = esRaceBox(dev.name) || (!dev.name && !opt.all);
+    const H = { dev, name: nom, racebox: rb, fmt: rb ? 'RaceBox' : null, want: true, reader: null, last: 0, stop() { H.want = false; try { dev.gatt.disconnect(); } catch (e) {} say('Desconectado', 'off'); } };
+    const give = pl => { const s = decode(pl); if (s) { H.last = Date.now(); try { cb.sample && cb.sample(s, pl); } catch (e) {} } };
+    const openRb = async srv => {
       const svc = await srv.getPrimaryService(UART);
       const ch = await svc.getCharacteristic(TX);
-      H.reader = Reader((cls, id, pl) => { if (cls === 0xFF && id === 0x01) { const s = decode(pl); if (s) { H.last = Date.now(); try { cb.sample && cb.sample(s, pl); } catch (e) {} } } });
+      H.reader = Reader((cls, id, pl) => { if (cls === 0xFF && id === 0x01) give(pl); });
       ch.addEventListener('characteristicvaluechanged', ev => { const v = ev.target.value; H.reader(new Uint8Array(v.buffer, v.byteOffset, v.byteLength)); });
       await ch.startNotifications();
-      say((dev.name || 'RaceBox') + ' conectado', 'on');
+      say(nom + ' conectado', 'on');
+    };
+    const openGen = async srv => {
+      const D = { nombre: nom, cuando: new Date().toISOString(), servicios: [], bytes: 0, muestra: '', formato: null };
+      const keep = () => { try { localStorage.setItem(DIAG, JSON.stringify(D)); } catch (e) {} };
+      const ubx = Reader((cls, id, pl) => { let o = null; if (cls === 0x01 && id === 0x07) { o = pvtToRb(pl); if (o && !D.formato) { D.formato = H.fmt = 'UBX NAV-PVT'; keep(); } } else if (cls === 0xFF && id === 0x01 && pl.length >= 80) { o = pl; if (!D.formato) { D.formato = H.fmt = 'RaceBox'; keep(); } } if (o) give(o); });
+      const nm = Nmea(o => { if (!D.formato) { D.formato = H.fmt = 'NMEA'; keep(); } if (D.formato === 'NMEA') give(o); });
+      const onData = (u, cu) => { D.bytes += u.length; if (D.muestra.length < 1600) { D.muestra += cu.slice(4, 8) + ':' + hex(u) + ' '; if (D.muestra.length >= 1600) keep(); } ubx(u); nm(u); };
+      let svcs = []; try { svcs = await srv.getPrimaryServices(); } catch (e) {}
+      let subs = 0;
+      for (const sv of svcs) {
+        const row = { uuid: sv.uuid, canales: [] }; D.servicios.push(row);
+        let chs = []; try { chs = await sv.getCharacteristics(); } catch (e) {}
+        for (const ch of chs) {
+          const p = ch.properties || {}; row.canales.push(ch.uuid + ' ' + ['read', 'write', 'writeWithoutResponse', 'notify', 'indicate'].filter(k => p[k]).join('/'));
+          if (!p.notify && !p.indicate) continue;
+          try { ch.addEventListener('characteristicvaluechanged', ev => { const v = ev.target.value; onData(new Uint8Array(v.buffer, v.byteOffset, v.byteLength), ch.uuid); }); await ch.startNotifications(); subs++; } catch (e) {}
+        }
+      }
+      keep();
+      if (!subs) { say(nom + ': conectado, pero no ofrece datos a esta app', 'wait'); return; }
+      say(nom + ' conectado · esperando datos…', 'on');
+      setTimeout(() => { keep(); if (H.want && !H.fmt) say(nom + ': conectado, pero aún no sé leer sus datos', 'wait'); }, 8000);
+    };
+    const open = async () => {
+      say('Conectando con ' + nom + '…', 'wait');
+      const srv = await dev.gatt.connect();
+      if (rb) return openRb(srv);
+      return openGen(srv);
     };
     let retrying = false;
     const retry = async () => {
       if (retrying) return; retrying = true;
       while (H.want) {
-        say('RaceBox desconectado. Reconectando…', 'wait');
+        say(nom + ' desconectado. Reconectando…', 'wait');
         try { await open(); break; } catch (e) { await new Promise(r => setTimeout(r, 2500)); }
       }
       retrying = false;
@@ -443,7 +519,7 @@
     return { repo, tok, syncUp, pending, listRemote, getRemote, delRemote, pistas, savePista, check, setToken: t => localStorage.setItem('blr_ghToken', JSON.stringify(t)) };
   })();
 
-  const RB = { UART, TX, Reader, decode, Engine, connect, supported, Store, Recorder, parseAll, lapsOf, toCSV, toVBO, fromVBO, fromCSV, Cloud };
+  const RB = { UART, TX, Reader, decode, Engine, connect, supported, pvtToRb, Nmea, diag, Store, Recorder, parseAll, lapsOf, toCSV, toVBO, fromVBO, fromCSV, Cloud };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = RB; else root.RaceBox = RB;
 })(typeof window !== 'undefined' ? window : globalThis);
