@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0f1c">
+<link rel="icon" href="icono-dash-192.png">
+<title>KR DASH · prueba RaceBox</title>
+<script src="racebox.js?v=20261127b"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0a0f1c;color:#e9ebf0;font:16px/1.5 -apple-system,system-ui,sans-serif;padding:18px}
+.w{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1{font-size:24px;margin:0}h1 span{color:#e8ff00}
+p{margin:0;color:#aab3c5}
+.card{background:#111a2b;border:1px solid #253350;border-radius:14px;padding:14px 16px}
+.card b{color:#e8ff00}.card ol{margin:6px 0 0 20px;padding:0}.card li{margin:6px 0}
+button{width:100%;border:0;border-radius:14px;padding:16px;font:700 19px -apple-system,system-ui,sans-serif;cursor:pointer}
+.go{background:#e8ff00;color:#0a0f1c}.alt{background:#182337;color:#e9ebf0;border:1px solid #253350;font-size:15px;padding:12px}
+.chk div{padding:7px 0;border-top:1px solid #253350;display:flex;gap:10px}.chk div:first-child{border-top:0}
+.chk i{font-style:normal;width:22px;flex:none}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.t{background:#182337;border-radius:10px;padding:8px 10px}.t small{display:block;color:#8d98ad;font-size:12px}.t span{font:600 22px ui-monospace,Menlo,monospace}
+#dl{border-radius:14px;padding:10px;text-align:center;background:#182337;color:#8d98ad}
+#dl.g{background:#0b8f3c;color:#fff}#dl.r{background:#d0122f;color:#fff}#dl.n{background:#69717e;color:#fff}
+#dl span{display:block;font:700 54px/1.05 ui-monospace,Menlo,monospace}
+#res{font-weight:700;font-size:18px}
+</style>
+</head>
+<body>
+<div class="w">
+  <h1>KR <span>DASH</span> · prueba del RaceBox</h1>
+  <p>Sirve para saber si KR DASH puede leer tu RaceBox <b style="color:#e9ebf0">a la vez</b> que RaceChrono. Son 5 minutos y se hace en casa.</p>
+
+  <div class="card" id="noBt" hidden><b>Este navegador no puede usar Bluetooth</b>
+    <p style="margin-top:6px;color:#e9ebf0">Safari no deja. Hay que abrir esta misma página en <b>Bluefy</b>:</p>
+    <ol><li>En el App Store busca <b>Bluefy</b> (es gratis) e instálalo.</li><li>Abre Bluefy y, en su barra de dirección, pega la dirección de esta página.</li></ol>
+    <button class="alt" id="copyUrl" style="margin-top:10px">Copiar la dirección de esta página</button></div>
+
+  <div class="card" id="steps"><b>Pasos</b>
+    <ol><li>Enciende el RaceBox y déjalo cerca de una ventana (o sal a la calle) para que coja satélites.</li>
+    <li>Abre <b>RaceChrono</b> y conéctalo al RaceBox <b>como haces siempre</b>, y empieza a grabar.</li>
+    <li>Vuelve aquí (sin cerrar RaceChrono) y pulsa el botón amarillo. Elige tu RaceBox en la lista.</li>
+    <li>Mira el resultado de abajo y dime qué te sale.</li></ol></div>
+
+  <button class="go" id="go">Conectar RaceBox</button>
+  <button class="alt" id="all">¿No aparece en la lista? Buscar entre todos los aparatos</button>
+
+  <div class="card"><div id="res">Aún sin probar</div><div class="chk" id="chk" style="margin-top:8px"></div></div>
+
+  <div id="dl"><small>DELTA contra tu vuelta rápida (aparece al rodar en pista)</small><span id="dlv">–</span></div>
+  <div class="grid">
+    <div class="t"><small>Datos por segundo</small><span id="hz">–</span></div>
+    <div class="t"><small>Satélites</small><span id="sv">–</span></div>
+    <div class="t"><small>Velocidad</small><span id="v">–</span></div>
+    <div class="t"><small>Precisión GPS</small><span id="acc">–</span></div>
+    <div class="t"><small>Batería RaceBox</small><span id="bat">–</span></div>
+    <div class="t"><small>Vueltas · mejor</small><span id="laps">–</span></div>
+  </div>
+  <button class="alt" id="copy">Copiar el resultado para enviárselo a Claude</button>
+  <p style="font-size:13px">Si todo sale en verde, el delta continuo ya funciona en la vista piloto: abre KR DASH <b style="color:#e9ebf0">en este mismo navegador</b> y pulsa «Conectar RaceBox» en la pantalla donde eliges el kart. <a href="index.html?vista=piloto" style="color:#e8ff00">Abrir la vista piloto</a></p>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const S = { bt: RaceBox.supported(), found: null, conn: null, data: false, fix: false, name: '', err: '', n: 0, hz: 0, wake: null, t0: 0 };
+let H = null, last = null, cnt = 0, eng = RaceBox.Engine();
+function paint() {
+  const row = (ok, txt) => `<div><i>${ok === true ? '✅' : ok === false ? '❌' : '⏳'}</i><span>${txt}</span></div>`;
+  $('chk').innerHTML = row(S.bt, S.bt ? 'Este navegador puede usar Bluetooth' : 'Este navegador no puede usar Bluetooth (usa Bluefy)')
+    + row(S.found, S.found ? 'RaceBox encontrado: ' + S.name : S.found === false ? 'No se encontró el RaceBox' + (S.err ? ' (' + S.err + ')' : '') : 'Buscar el RaceBox')
+    + row(S.conn, S.conn ? 'Conectado' : S.conn === false ? 'No se pudo conectar' + (S.err ? ' (' + S.err + ')' : '') : 'Conectar')
+    + row(S.data ? true : null, S.data ? 'Llegan datos: ' + S.hz + ' por segundo' : 'Recibir datos')
+    + row(S.fix ? true : null, S.fix ? 'GPS con posición' : 'GPS con posición (necesita ver el cielo)')
+    + row(S.wake, S.wake ? 'La pantalla se puede mantener encendida' : S.wake === false ? 'La pantalla no se puede mantener encendida sola: pon «Bloqueo automático: Nunca» en Ajustes → Pantalla y brillo' : 'Mantener la pantalla encendida');
+  $('res').textContent = !S.bt ? 'Abre esta página en Bluefy' : S.data && S.fix ? '✅ FUNCIONA: KR DASH lee tu RaceBox' : S.data ? '🟡 Llegan datos; falta que el GPS coja satélites' : S.found === false || S.conn === false ? '❌ No ha funcionado' : S.conn ? '⏳ Conectado, esperando datos…' : 'Aún sin probar';
+  $('res').style.color = S.data && S.fix ? '#3ddc84' : S.found === false || S.conn === false || !S.bt ? '#ff6b6b' : '#e9ebf0';
+}
+async function go(all) {
+  if (!S.bt) return;
+  if (H) { H.stop(); H = null; }
+  S.found = S.conn = null; S.data = S.fix = false; S.err = ''; paint();
+  try { S.wake = !!(navigator.wakeLock && await navigator.wakeLock.request('screen')); } catch (e) { S.wake = false; }
+  try {
+    H = await RaceBox.connect({
+      sample: s => { last = s; cnt++; S.n++; S.data = true; if (s.valid) S.fix = true; eng.push(s); },
+      status: (t, st) => { if (st === 'on') { S.found = true; S.conn = true; } paint(); }
+    }, { all });
+    S.name = H.dev.name || 'sin nombre'; S.found = true; S.conn = true;
+  } catch (e) {
+    S.err = (e && (e.name || '')) + (e && e.message ? ': ' + e.message : '');
+    if (/NotFound|cancel/i.test(S.err)) S.found = false; else { S.found = S.found || null; S.conn = false; }
+  }
+  paint();
+}
+setInterval(() => {
+  S.hz = cnt; cnt = 0;
+  $('hz').textContent = S.data ? S.hz : '–';
+  if (last) {
+    $('sv').textContent = last.sv; $('v').textContent = last.v.toFixed(0) + ' km/h'; $('acc').textContent = last.valid ? '±' + last.hAcc.toFixed(1) + ' m' : 'sin posición';
+    $('bat').textContent = last.bat + ' %' + (last.charging ? ' ⚡' : '');
+  }
+  const v = eng.view(); $('laps').textContent = v.laps ? v.laps + ' · ' + v.best.toFixed(2) : '–';
+  paint();
+}, 1000);
+setInterval(() => { const v = eng.view(), d = v.delta; $('dl').className = d == null ? '' : d <= -0.05 ? 'g' : d >= 0.05 ? 'r' : 'n'; $('dlv').textContent = d == null ? '–' : (d < 0 ? '−' : '+') + Math.abs(d).toFixed(2).replace('.', ','); }, 100);
+$('go').onclick = () => go(false); $('all').onclick = () => go(true);
+const copy = (t, b, ok) => { const done = () => { b.textContent = ok; }; if (navigator.clipboard) navigator.clipboard.writeText(t).then(done, () => prompt('Copia este texto:', t)); else prompt('Copia este texto:', t); };
+$('copy').onclick = () => copy(`Prueba RaceBox · navegador: ${navigator.userAgent}\nBluetooth: ${S.bt} · encontrado: ${S.found} (${S.name}) · conectado: ${S.conn} · datos: ${S.data} (${S.hz}/s, total ${S.n}) · GPS: ${S.fix} · pantalla: ${S.wake}${S.err ? ' · error: ' + S.err : ''}${last ? ` · sat ${last.sv} · fix ${last.fix} · ±${last.hAcc} m` : ''}${H && H.reader ? ` · paquetes ok ${H.reader.stats.ok} malos ${H.reader.stats.bad}` : ''}`, $('copy'), 'Copiado ✓ · pégalo en el chat');
+$('copyUrl').onclick = () => copy(location.href, $('copyUrl'), 'Dirección copiada ✓');
+if (!S.bt) { $('noBt').hidden = false; $('go').hidden = true; $('all').hidden = true; }
+paint();
+</script>
+</body>
+</html>
