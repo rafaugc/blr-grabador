@@ -20,7 +20,7 @@ try{const t=JSON.parse(localStorage.getItem('blr_tema')||'null')||{},h=document.
 <script src="core.js?v=20261127a"></script>
 <script src="ingeniero.js?v=20261127a"></script>
 <script src="ingeniero-ui.js?v=20261127a"></script>
-<script src="racebox.js?v=20261127d"></script>
+<script src="racebox.js?v=20261127e"></script>
 <link rel="stylesheet" href="tema.css?v=1">
 <style>
 .tema{position:relative}.tema>button{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;cursor:pointer;color:var(--mute);font-size:12px;display:inline-flex;gap:6px;align-items:center}
@@ -1625,6 +1625,18 @@ function apexDelta(rid) {
   return null;
 }
 const RBX = { h: null, eng: null, rec: null, st: 'off', txt: '', last: null, lastAt: 0 };
+// circuitos con meta y parciales definidos (data/pistas.json): con ellos el RaceBox cronometra igual que RaceChrono y da los sectores
+let PISTAS = {}; RaceBox.Cloud.pistas().then(p => { PISTAS = p || {}; });
+function rbEngine() { // motor nuevo para el circuito elegido
+  const gk = 'rbGate_' + (C ? C.slug : ''), tr = C ? PISTAS[C.slug] : null;
+  RBX.eng = RaceBox.Engine();
+  if (tr && tr.start) RBX.eng.setTrack(tr); else RBX.eng.setGate(store.get(gk, null));
+  RBX.eng.onGate = g => { store.set(gk, { lat: g.lat, lon: g.lon, hdg: g.hdg }); if (RBX.rec) RBX.rec.info.gate = { lat: g.lat, lon: g.lon, hdg: g.hdg }; };
+  RBX.eng.onLap = l => { if (!RBX.rec) return; RBX.rec.info.laps = RBX.eng.laps.map(x => +x.T.toFixed(3)); RBX.rec.info.best = l.best; RBX.rec.info.kart = pilotKart || RBX.rec.info.kart; };
+  if (RBX.rec) Object.assign(RBX.rec.info, { slug: C ? C.slug : '', circuit: C ? C.nombre : '', gate: tr ? null : store.get(gk, null) });
+}
+// las sesiones grabadas se suben solas a GitHub cuando no se está rodando (hace falta la llave, una vez por aparato)
+setInterval(() => { if (RBX.st === 'off') RaceBox.Cloud.syncUp(); }, 120000); setTimeout(() => RaceBox.Cloud.syncUp(), 8000);
 const rbFresh = () => RBX.st === 'on' && Date.now() - RBX.lastAt < 2500;
 function rbDelta() {
   if (!rbFresh() || !RBX.eng) return null;
@@ -1677,14 +1689,10 @@ function rbPaint() {
 setInterval(rbPaint, 100);
 async function rbToggle(btn) {
   const lab = () => { if (btn && btn.isConnected) btn.textContent = RBX.st === 'on' ? '🛰 RaceBox conectado ✓ · tocar para desconectar' : RBX.st === 'wait' ? '🛰 ' + (RBX.txt || 'Conectando…') : '🛰 Conectar RaceBox · delta continuo'; };
-  if (RBX.h) { RBX.h.stop(); RBX.h = null; RBX.st = 'off'; if (RBX.rec) RBX.rec.flush(); return lab(); }
-  RBX.eng = RaceBox.Engine();
-  const gk = 'rbGate_' + (C ? C.slug : '');
-  RBX.eng.setGate(store.get(gk, null));
-  RBX.eng.onGate = g => { store.set(gk, { lat: g.lat, lon: g.lon, hdg: g.hdg }); if (RBX.rec) RBX.rec.info.gate = { lat: g.lat, lon: g.lon, hdg: g.hdg }; };
+  if (RBX.h) { RBX.h.stop(); RBX.h = null; RBX.st = 'off'; if (RBX.rec) RBX.rec.flush(); setTimeout(() => RaceBox.Cloud.syncUp(), 50000); return lab(); }
   // todo lo que manda el RaceBox se graba solo en este navegador (sección Telemetría)
-  RBX.rec = RaceBox.Recorder({ slug: C ? C.slug : '', circuit: C ? C.nombre : '', kart: pilotKart || '', gate: store.get(gk, null), laps: [], best: null });
-  RBX.eng.onLap = l => { RBX.rec.info.laps = RBX.eng.laps.map(x => +x.T.toFixed(3)); RBX.rec.info.best = l.best; RBX.rec.info.kart = pilotKart || RBX.rec.info.kart; };
+  RBX.rec = RaceBox.Recorder({ slug: C ? C.slug : '', circuit: C ? C.nombre : '', kart: pilotKart || '', laps: [], best: null });
+  rbEngine();
   try {
     RBX.st = 'wait'; RBX.txt = 'Elige tu RaceBox en la lista…'; lab();
     RBX.h = await RaceBox.connect({ sample: (s, pl) => { RBX.last = s; RBX.lastAt = Date.now(); RBX.eng.push(s); if (pl) RBX.rec.add(pl); rbPaint(); }, status: (t, st) => { RBX.txt = t; RBX.st = st; lab(); pilotSoon(); } });
@@ -1696,7 +1704,8 @@ function pilotSetup(el) {
   let val = pilotKart || '';
   el.innerHTML = `<div class="ks">
     <div class="ksl">
-      <div style="display:flex;justify-content:space-between;align-items:center"><span class="dashlogo"><img class="lg-d" src="logo-dash-oscuro.png" alt="KR Dash"><img class="lg-l" src="logo-dash-claro.png" alt="KR Dash"><span class="mini">${esc(C ? C.nombre : '')}</span></span><button class="xx2" id="ksx">✕</button></div>
+      <div style="display:flex;justify-content:space-between;align-items:center"><span class="dashlogo"><img class="lg-d" src="logo-dash-oscuro.png" alt="KR Dash"><img class="lg-l" src="logo-dash-claro.png" alt="KR Dash"></span><button class="xx2" id="ksx">✕</button></div>
+      <label class="mini" style="display:flex;gap:8px;align-items:center">Circuito <select id="ksCirc" style="flex:1;min-width:0;font-size:clamp(14px,4vh,20px);padding:6px 8px">${CIRCS.slice().sort((a, b) => a.nombre.localeCompare(b.nombre)).map(c => `<option value="${esc(c.slug)}" ${C && c.slug === C.slug ? 'selected' : ''}>${esc(c.nombre)}${PISTAS[c.slug] ? ' · con sectores' : ''}</option>`).join('')}</select></label>
       <div class="kst">¿Qué kart llevas?</div>
       <div id="kv" class="ksv">${esc(val || '–')}</div>
       <button id="ksgo" class="ksgo">Entrar</button>
@@ -1720,6 +1729,7 @@ function pilotSetup(el) {
   el.querySelectorAll('[data-q]').forEach(b => b.onclick = () => { val = b.dataset.q; show(); go(); });
   $('ksgo').onclick = go;
   if ($('rbBtn')) $('rbBtn').onclick = () => rbToggle($('rbBtn'));
+  $('ksCirc').onchange = () => { $('circ').value = $('ksCirc').value; $('circ').onchange(); setTimeout(() => { if (RBX.h) rbEngine(); if (!pilotReady) pilotSetup(el); }, 300); };
   $('ksx').onclick = () => { document.body.classList.remove('pilot'); document.querySelector('#tabs a[data-v=ranking]').click(); };
 }
 let pilotReady = false;
@@ -1740,7 +1750,7 @@ function renderPilot(force) {
     if (RBX.rec && pilotKart) RBX.rec.info.kart = pilotKart;
     el.innerHTML = `<div class="pv">${msgPop()}${head()}${deltaBand(null)}
       <div class="top">
-        <div class="tile"><div class="lab">Última vuelta · RaceBox</div><div class="fv"><span class="mono">${v.last != null ? fmt2(v.last) : '–'}</span></div><div class="lab">${v.last != null && v.best != null ? (v.last <= v.best + 0.0005 ? '<span style="color:var(--purple)">tu mejor vuelta</span>' : fmt(v.last - v.best) + ' vs tu VR') : '&nbsp;'}</div></div>
+        <div class="tile"><div class="lab">Última vuelta · RaceBox</div><div class="fv"><span class="mono">${v.last != null ? fmt2(v.last) : '–'}</span></div><div class="lab">${v.last != null && v.best != null ? (v.last <= v.best + 0.0005 ? '<span style="color:var(--purple)">tu mejor vuelta</span>' : fmt(v.last - v.best) + ' vs tu VR') : '&nbsp;'}${(x => x && x.sec ? ' · ' + x.sec.map((t, i) => 'S' + (i + 1) + ' ' + t.toFixed(2)).join(' · ') : '')(RBX.eng && RBX.eng.laps[RBX.eng.laps.length - 1])}</div></div>
         <div class="tile" style="padding-left:4px;padding-right:4px"><div class="lab" style="text-align:center">Vueltas</div><div class="fv c"><span class="bc">${v.laps || 0}</span></div></div>
         <div class="tile"><div class="lab">Velocidad · km/h</div><div class="fv"><span class="mono" id="rbV">${L ? L.v.toFixed(0) : '–'}</span></div></div>
       </div>

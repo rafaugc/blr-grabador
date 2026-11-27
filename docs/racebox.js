@@ -54,15 +54,26 @@
   }
 
   // ---------- 2. vueltas y delta ----------
-  const DEF = { gateHalf: 14, minLap: 12, maxLap: 400, gateSpeed: 25, gateAfter: 15, lostAfter: 180, off: 12, win: 45 };
+  const DEF = { gateHalf: 15, minLap: 12, maxLap: 400, gateSpeed: 25, gateAfter: 15, lostAfter: 180, off: 12, win: 45 };
   function Engine(opts) {
     const o = Object.assign({}, DEF, opts || {});
-    const E = { o, origin: null, gate: null, laps: [], ref: null, lap: null, last: null, delta: null, deltaRaw: null, idx: 0, miss: 0, moving: 0, sinceGate: 0, lastCross: null, endDelta: null, endAt: 0, n: 0, onLap: null, onGate: null };
+    const E = { o, origin: null, track: null, fixed: false, splits: [], gate: null, laps: [], ref: null, lap: null, last: null, delta: null, deltaRaw: null, idx: 0, miss: 0, moving: 0, sinceGate: 0, lastCross: null, endDelta: null, endAt: 0, n: 0, onLap: null, onGate: null };
     const xy = (lat, lon) => ({ x: (lon - E.origin.lon) * E.origin.k * 111320, y: (lat - E.origin.lat) * 110540 });
     E.setGate = g => { // meta virtual guardada de otro día en este circuito
       if (!g || !isFinite(g.lat)) return;
       E.savedGate = g;
     };
+    // Circuito con meta y parciales definidos (como en RaceChrono): track = { start: { lat, lon, hdg }, splits: [{ lat, lon, hdg, name }] }
+    // Cada línea es un punto de la pista y el rumbo con el que se pasa por él.
+    E.setTrack = t => { E.track = t && t.start && isFinite(t.start.lat) ? t : null; };
+    const mkG = (g) => { const q = xy(g.lat, g.lon), r = g.hdg * Math.PI / 180; return { x: q.x, y: q.y, dx: Math.sin(r), dy: Math.cos(r), lat: g.lat, lon: g.lon, hdg: g.hdg }; };
+    // ¿el tramo prev→p cruza la línea G en su sentido? devuelve el instante y el punto
+    function gcross(G, prev, p, dt) {
+      const s0 = (prev.x - G.x) * G.dx + (prev.y - G.y) * G.dy, s1 = (p.x - G.x) * G.dx + (p.y - G.y) * G.dy;
+      if (!(s0 < 0 && s1 >= 0 && s1 - s0 < 30)) return null;
+      const f = -s0 / (s1 - s0), cx = prev.x + f * (p.x - prev.x), cy = prev.y + f * (p.y - prev.y);
+      return Math.abs((cx - G.x) * -G.dy + (cy - G.y) * G.dx) <= o.gateHalf ? { tc: prev.t + f * dt, cx, cy } : null;
+    }
     function makeGate(p, hdg, lat, lon) {
       const r = hdg * Math.PI / 180;
       E.gate = { x: p.x, y: p.y, dx: Math.sin(r), dy: Math.cos(r), lat, lon, hdg };
@@ -88,7 +99,12 @@
       if (!s || !s.valid) return;
       if (!E.origin) {
         E.origin = { lat: s.lat, lon: s.lon, k: Math.cos(s.lat * Math.PI / 180) };
-        if (E.savedGate) { const g = xy(E.savedGate.lat, E.savedGate.lon); if (Math.hypot(g.x, g.y) < 3000) makeGate(g, E.savedGate.hdg, E.savedGate.lat, E.savedGate.lon); }
+        if (E.track) {
+          const q = xy(E.track.start.lat, E.track.start.lon);
+          if (Math.hypot(q.x, q.y) > 5000) E.track = null; // ese circuito está en otro sitio
+          else { E.gate = mkG(E.track.start); E.fixed = true; E.splits = (E.track.splits || []).map(mkG); }
+        }
+        if (E.savedGate && !E.track) { const g = xy(E.savedGate.lat, E.savedGate.lon); if (Math.hypot(g.x, g.y) < 3000) makeGate(g, E.savedGate.hdg, E.savedGate.lat, E.savedGate.lon); }
       }
       const p = xy(s.lat, s.lon); p.t = s.t; p.v = s.v;
       const prev = E.last; E.last = p;
@@ -98,30 +114,34 @@
       else if (dt > 1.2 && E.lap) E.lap.bad = true; // hueco de datos: esa vuelta no vale como referencia
       if (s.v > o.gateSpeed) { E.moving += dt; E.sinceGate += dt; }
       // meta virtual: se fija sola cuando ya llevas un rato rodando; si no vuelves a pasar por ella (p. ej. cayó en la salida de boxes), se pone otra
-      if (E.gate && E.sinceGate > o.lostAfter && (!E.lastCross || p.t - E.lastCross > o.lostAfter)) { E.gate = null; E.ref = null; E.lap = null; E.delta = null; E.moving = o.gateAfter; }
-      if (!E.gate) { if (E.moving >= o.gateAfter && s.v > o.gateSpeed && s.hAcc < 6) { makeGate(p, s.hdg, s.lat, s.lon); E.lap = { t0: p.t, pts: [{ x: p.x, y: p.y, t: 0 }], bad: false }; E.lastCross = p.t; if (E.onGate) E.onGate(E.gate); } return; }
-      const G = E.gate;
-      const s0 = (prev.x - G.x) * G.dx + (prev.y - G.y) * G.dy, s1 = (p.x - G.x) * G.dx + (p.y - G.y) * G.dy;
-      if (s0 < 0 && s1 >= 0 && s1 - s0 < 30) {
-        const f = -s0 / (s1 - s0), cx = prev.x + f * (p.x - prev.x), cy = prev.y + f * (p.y - prev.y);
-        const lat = Math.abs((cx - G.x) * -G.dy + (cy - G.y) * G.dx), tc = prev.t + f * dt;
-        if (lat <= o.gateHalf && (!E.lastCross || tc - E.lastCross >= o.minLap || !E.lap)) {
-          if (E.lap) {
-            const T = tc - E.lap.t0;
-            E.lap.pts.push({ x: cx, y: cy, t: T });
-            if (T >= o.minLap && T <= o.maxLap) {
-              const isBest = !E.lap.bad && (!E.ref || T < E.ref.T);
-              const prevBest = E.ref ? E.ref.T : null;
-              E.laps.push({ T, bad: !!E.lap.bad, at: Date.now(), t0: E.lap.t0, t1: tc });
-              E.endDelta = prevBest != null ? T - prevBest : null; E.endAt = Date.now();
-              if (isBest) E.ref = { T, pts: E.lap.pts };
-              if (E.onLap) E.onLap({ T, best: E.ref ? E.ref.T : null, isBest, delta: E.endDelta });
-            }
-          }
-          E.lap = { t0: tc, pts: [{ x: cx, y: cy, t: 0 }], bad: false };
-          E.lastCross = tc; E.sinceGate = 0; E.idx = 0; E.miss = 0; E.delta = null; E.deltaRaw = null;
+      if (E.gate && !E.fixed && E.sinceGate > o.lostAfter && (!E.lastCross || p.t - E.lastCross > o.lostAfter)) { E.gate = null; E.ref = null; E.lap = null; E.delta = null; E.moving = o.gateAfter; }
+      if (!E.gate) { if (E.moving >= o.gateAfter && s.v > o.gateSpeed && s.hAcc < 6) { makeGate(p, s.hdg, s.lat, s.lon); E.lap = { t0: p.t, pts: [{ x: p.x, y: p.y, t: 0 }], bad: false, sp: [] }; E.lastCross = p.t; if (E.onGate) E.onGate(E.gate); } return; }
+      const c = gcross(E.gate, prev, p, dt);
+      if (c && (!E.lastCross || c.tc - E.lastCross >= o.minLap || !E.lap)) finish(c.tc, c.cx, c.cy);
+      if (E.lap) E.splits.forEach((G, i) => { const k = gcross(G, prev, p, dt); if (!k) return; const t = k.tc - E.lap.t0; if (t > 1 && !E.lap.sp.some(x => x.i === i)) E.lap.sp.push({ i, t }); });
+      follow(prev, p, s);
+    };
+    // paso por meta: cierra la vuelta (si había una en marcha) y abre la siguiente
+    function finish(tc, cx, cy) {
+      if (E.lap) {
+        const T = tc - E.lap.t0;
+        E.lap.pts.push({ x: cx, y: cy, t: T });
+        if (T >= o.minLap && T <= o.maxLap) {
+          const isBest = !E.lap.bad && (!E.ref || T < E.ref.T);
+          const prevBest = E.ref ? E.ref.T : null;
+          // parciales: los cruces de cada línea, en el orden en que se pasaron
+          let sec = null;
+          if (E.splits.length && E.lap.sp && E.lap.sp.length === E.splits.length) { const ts = E.lap.sp.map(x => x.t).sort((a, b) => a - b).concat([T]); sec = ts.map((t, i) => t - (i ? ts[i - 1] : 0)); }
+          E.laps.push({ T, bad: !!E.lap.bad, at: Date.now(), t0: E.lap.t0, t1: tc, sec });
+          E.endDelta = prevBest != null ? T - prevBest : null; E.endAt = Date.now();
+          if (isBest) E.ref = { T, pts: E.lap.pts };
+          if (E.onLap) E.onLap({ T, best: E.ref ? E.ref.T : null, isBest, delta: E.endDelta, sec });
         }
       }
+      E.lap = { t0: tc, pts: [{ x: cx, y: cy, t: 0 }], bad: false, sp: [] };
+      E.lastCross = tc; E.sinceGate = 0; E.idx = 0; E.miss = 0; E.delta = null; E.deltaRaw = null;
+    }
+    function follow(prev, p, s) {
       if (!E.lap) return;
       const ct = p.t - E.lap.t0;
       if (ct > o.maxLap) { E.lap.bad = true; }
@@ -140,7 +160,7 @@
       const R = E.ref.pts, rt = R[m.j].t + m.f * (R[m.j + 1].t - R[m.j].t);
       E.deltaRaw = ct - rt;
       E.delta = E.delta == null ? E.deltaRaw : E.delta + 0.35 * (E.deltaRaw - E.delta);
-    };
+    }
     // lo que hay que enseñar ahora mismo
     E.view = () => {
       const fresh = E.endAt && Date.now() - E.endAt < 4000; // al cruzar meta se queda 4 s el resultado de la vuelta
@@ -237,10 +257,10 @@
   // ---------- 5. análisis y exportación ----------
   function parseAll(u8) { const out = []; for (let o = 0; o + LEN <= u8.length; o += LEN) { const s = decode(u8.subarray(o, o + LEN)); if (s) out.push(s); } return out; }
   // vueltas de una sesión grabada: se vuelve a pasar por el mismo motor que en directo
-  function lapsOf(samples, gate) {
-    const E = Engine(); if (gate) E.setGate(gate);
+  function lapsOf(samples, gate, track) {
+    const E = Engine(); if (gate) E.setGate(gate); if (track) E.setTrack(track);
     samples.forEach(s => E.push(s));
-    return { laps: E.laps.map((l, i) => ({ n: i + 1, T: l.T, t0: l.t0, t1: l.t1, bad: l.bad })), best: E.ref ? E.ref.T : null, gate: E.gate ? { lat: E.gate.lat, lon: E.gate.lon, hdg: E.gate.hdg } : null };
+    return { byLine: !!E.fixed, laps: E.laps.map((l, i) => ({ n: i + 1, T: l.T, t0: l.t0, t1: l.t1, bad: l.bad, sec: l.sec })), best: E.ref ? E.ref.T : null, gate: E.gate ? { lat: E.gate.lat, lon: E.gate.lon, hdg: E.gate.hdg } : null };
   }
   const lapAt = (laps, t) => { for (const l of laps) if (t >= l.t0 && t < l.t1) return l.n; return 0; };
   const p2 = n => String(n).padStart(2, '0');
@@ -251,23 +271,129 @@
     for (const s of samples) rows.push([s.utc != null ? new Date(s.utc).toISOString() : '', f(s.t - t0, 2), lapAt(laps, s.t), f(s.lat, 7), f(s.lon, 7), f(s.v, 2), f(s.hdg, 2), f(s.alt, 2), f(s.altW, 2), f(s.gx, 3), f(s.gy, 3), f(s.gz, 3), f(s.rx, 2), f(s.ry, 2), f(s.rz, 2), s.sv, s.fix, s.valid ? 1 : 0, f(s.hAcc, 2), f(s.vAcc, 2), f(s.sAcc, 2), f(s.hdgAcc, 2), f(s.pdop, 2), s.bat].join(','));
     return rows.join('\r\n') + '\r\n';
   }
-  // Formato .vbo (Racelogic VBOX): lo abren Circuit Tools, RaceChrono, etc. Latitud y longitud van en minutos, y la longitud OESTE es positiva.
-  function toVBO(samples) {
+  // Formato .vbo con la misma forma que el que exporta RaceChrono (cabecera, líneas del circuito y nombres de canal),
+  // para que lo abran los mismos programas. Latitud y longitud van en minutos, y la longitud OESTE es positiva.
+  function toVBO(samples, track, name) {
     const ok = samples.filter(s => s.valid && s.utc != null);
     const d0 = new Date(ok.length ? ok[0].utc : Date.now());
-    const sg = (x, w, n) => (x < 0 ? '-' : '+') + Math.abs(x).toFixed(n).padStart(w, '0');
+    const sg = (x, w, n) => (x < 0 ? '-' : '+') + Math.abs(x || 0).toFixed(n).padStart(w, '0');
     const head = ['File created on ' + p2(d0.getUTCDate()) + '/' + p2(d0.getUTCMonth() + 1) + '/' + d0.getUTCFullYear() + ' at ' + p2(d0.getUTCHours()) + ':' + p2(d0.getUTCMinutes()) + ':' + p2(d0.getUTCSeconds()), '',
-      '[header]', 'satellites', 'time', 'latitude', 'longitude', 'velocity kmh', 'heading', 'height', 'longitudinal acceleration g', 'lateral acceleration g', 'vertical acceleration g', 'roll rate deg/s', 'pitch rate deg/s', 'yaw rate deg/s', '',
-      '[comments]', 'KR DASH · RaceBox', 'Log Rate (Hz) : 25.00', '',
-      '[column names]', 'sats time lat long velocity heading height longacc latacc vertacc rollrate pitchrate yawrate', '', '[data]'];
+      '[header]', 'satellites', 'time', 'latitude', 'longitude', 'velocity kmh', 'heading', 'height', 'long accel g', 'lat accel g', 'device_battery_level', 'fix_type', 'accuracy',
+      'x_acc-acc g', 'y_acc-acc g', 'z_acc-acc g', 'x_rate_of_rotation-gyro', 'y_rate_of_rotation-gyro', 'z_rate_of_rotation-gyro', '',
+      '[comments]', 'Generated by KR DASH (RaceBox)', '', '[session data]', 'name ' + (name || 'KR DASH'), ''];
+    if (track && track.start) {
+      // cada línea: el punto de paso y otro 50 m antes (de dónde vienes)
+      const line = g => { const r = g.hdg * Math.PI / 180, k = Math.cos(g.lat * Math.PI / 180), lat2 = g.lat - 50 * Math.cos(r) / 110540, lon2 = g.lon - 50 * Math.sin(r) / (k * 111320);
+        return sg(-g.lon * 60, 10, 6) + ' ' + sg(g.lat * 60, 11, 6) + ' ' + sg(-lon2 * 60, 10, 6) + ' ' + sg(lat2 * 60, 11, 6); };
+      head.push('[laptiming]', 'Start   ' + line(track.start) + ' ¬ Start/Finish');
+      (track.splits || []).forEach((g, i) => head.push('Split   ' + line(g) + ' ¬ ' + (g.name || 'Sector ' + (i + 1))));
+      head.push('');
+    }
+    head.push('[column names]', 'sats time lat long velocity heading height longacc latacc device_battery_level fix_type accuracy x_acc-acc y_acc-acc z_acc-acc x_rate_of_rotation-gyro y_rate_of_rotation-gyro z_rate_of_rotation-gyro', '', '[data]');
     const rows = ok.map(s => { const d = new Date(Math.round(s.utc / 10) * 10);
-      return [String(s.sv).padStart(3, '0'), p2(d.getUTCHours()) + p2(d.getUTCMinutes()) + p2(d.getUTCSeconds()) + '.' + p2(Math.floor(d.getUTCMilliseconds() / 10)),
-        sg(s.lat * 60, 12, 6), sg(-s.lon * 60, 13, 6), Math.max(0, s.v).toFixed(3).padStart(7, '0'), (((s.hdg % 360) + 360) % 360).toFixed(2).padStart(6, '0'), sg(s.alt, 8, 2),
-        sg(s.gx, 5, 3), sg(s.gy, 5, 3), sg(s.gz, 5, 3), sg(s.rx, 6, 2), sg(s.ry, 6, 2), sg(s.rz, 6, 2)].join(' '); });
+      return [String(s.sv || 0).padStart(3, '0'), p2(d.getUTCHours()) + p2(d.getUTCMinutes()) + p2(d.getUTCSeconds()) + '.' + p2(Math.floor(d.getUTCMilliseconds() / 10)),
+        sg(s.lat * 60, 11, 6), sg(-s.lon * 60, 12, 6), Math.max(0, s.v).toFixed(3).padStart(7, '0'), (((s.hdg % 360) + 360) % 360).toFixed(2).padStart(6, '0'), sg(s.alt, 8, 2),
+        sg(s.gx, 7, 3), sg(s.gy, 7, 3), sg(s.bat, 7, 3), s.fix, (s.hAcc || 0).toFixed(3).padStart(11, '0'),
+        sg(s.gx, 7, 3), sg(s.gy, 7, 3), sg(s.gz, 7, 3), sg(s.rx, 7, 3), sg(s.ry, 7, 3), sg(s.rz, 7, 3)].join(' '); });
     return head.concat(rows).join('\r\n') + '\r\n';
   }
 
-  const RB = { UART, TX, Reader, decode, Engine, connect, supported, Store, Recorder, parseAll, lapsOf, toCSV, toVBO };
+  // Leer un .vbo (por ejemplo, exportado de RaceChrono): saca los datos y, si las trae, las líneas de meta y parciales del circuito.
+  function fromVBO(text) {
+    const L = text.split(/\r?\n/); let sec = '', cols = [], samples = [], track = null, name = '', day = null;
+    const m0 = /created on (\d+)\/(\d+)\/(\d+)/i.exec(L[0] || ''); if (m0) day = Date.UTC(+m0[3], +m0[2] - 1, +m0[1]);
+    // En el archivo cada línea son dos puntos (longitud y latitud en minutos, oeste positivo): el primero es el punto de paso
+    // y el segundo marca de dónde vienes. Comprobado con una sesión real de DR7: reproduce los tiempos de RaceChrono a la centésima.
+    const ln = a => { const lat = a[1] / 60, lon = -a[0] / 60, lat2 = a[3] / 60, lon2 = -a[2] / 60, k = Math.cos(lat * Math.PI / 180);
+      return { lat, lon, hdg: (Math.atan2((lon - lon2) * k * 111320, (lat - lat2) * 110540) * 180 / Math.PI + 360) % 360 }; };
+    let prevT = null;
+    for (const raw of L) {
+      const r = raw.trim(); if (!r) continue;
+      if (r[0] === '[') { sec = r.toLowerCase(); continue; }
+      if (sec === '[session data]' && /^name /i.test(r)) name = r.slice(5).trim();
+      else if (sec === '[laptiming]') {
+        const m = /^(start|split)\s+([+\-\d.]+)\s+([+\-\d.]+)\s+([+\-\d.]+)\s+([+\-\d.]+)(?:\s*¬\s*(.*))?/i.exec(r); if (!m) continue;
+        track = track || { start: null, splits: [] };
+        const a = ln([+m[2], +m[3], +m[4], +m[5]]);
+        if (/start/i.test(m[1])) track.start = a; else { a.name = (m[6] || '').trim(); track.splits.push(a); }
+      } else if (sec === '[column names]') cols = r.split(/\s+/);
+      else if (sec === '[data]') {
+        const c = r.split(/\s+/), g = n => { const i = cols.indexOf(n); return i < 0 ? null : +c[i]; };
+        const tm = c[cols.indexOf('time')]; if (!tm) continue;
+        let t = (+tm.slice(0, 2)) * 3600 + (+tm.slice(2, 4)) * 60 + (+tm.slice(4));
+        if (prevT != null && t < prevT - 43200) { day += 86400000; } prevT = t;
+        const fx = g('fix_type');
+        samples.push({ t, utc: day != null ? day + t * 1000 : null, sv: g('sats'), lat: g('lat') / 60, lon: -g('long') / 60, v: g('velocity'), hdg: g('heading'), alt: g('height'), altW: null,
+          fix: fx == null ? 3 : fx, valid: fx == null ? g('sats') > 3 : fx >= 2, hAcc: g('accuracy'), vAcc: null, sAcc: null, hdgAcc: null, pdop: null, bat: g('device_battery_level'),
+          gx: g('x_acc-acc') ?? g('longacc'), gy: g('y_acc-acc') ?? g('latacc'), gz: g('z_acc-acc'), rx: g('x_rate_of_rotation-gyro'), ry: g('y_rate_of_rotation-gyro'), rz: g('z_rate_of_rotation-gyro') });
+      }
+    }
+    if (track && !track.start) track = null;
+    return { samples, track, name };
+  }
+
+  // ---------- 6. copia en GitHub ----------
+  // Las sesiones se suben solas a una rama aparte ("telemetria") del proyecto, para verlas desde cualquier aparato.
+  // Leer no necesita llave (el proyecto es público); subir sí: la llave se guarda en este navegador.
+  const Cloud = (() => {
+    const repo = () => { const h = location.hostname.match(/^([\w-]+)\.github\.io$/i), seg = location.pathname.split('/')[1]; return h && seg ? h[1] + '/' + seg : 'rafaugc/rafa_krtrnk'; };
+    const BR = 'telemetria';
+    const tok = () => { try { return JSON.parse(localStorage.getItem('blr_ghToken') || '""') || ''; } catch (e) { return ''; } };
+    const hdr = () => Object.assign({ Accept: 'application/vnd.github+json' }, tok() ? { Authorization: 'Bearer ' + tok() } : {});
+    const api = (path, opt) => fetch('https://api.github.com/repos/' + repo() + '/' + path, Object.assign({ headers: Object.assign(hdr(), opt && opt.body ? { 'Content-Type': 'application/json' } : {}) }, opt || {}));
+    const b64 = u8 => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); };
+    const pipe = async (u8, T) => new Uint8Array(await new Response(new Blob([u8]).stream().pipeThrough(new T('gzip'))).arrayBuffer());
+    const gzip = u8 => pipe(u8, CompressionStream), gunzip = u8 => pipe(u8, DecompressionStream);
+    const utf8 = t => new TextEncoder().encode(t);
+    async function put(path, u8, branch, msg) {
+      let sha; const g = await api('contents/' + path + '?ref=' + branch); if (g.ok) sha = (await g.json()).sha;
+      const r = await api('contents/' + path, { method: 'PUT', body: JSON.stringify({ message: msg, content: b64(u8), branch, sha }) });
+      if (!r.ok) { const e = new Error(r.status === 401 ? 'la llave no vale o ha caducado' : r.status === 403 || r.status === 404 ? 'la llave no tiene permiso de «Contents» (lectura y escritura)' : 'GitHub respondió ' + r.status); e.status = r.status; throw e; }
+    }
+    let busy = false;
+    // sube lo que falte; devuelve { subidas, pendientes, error }
+    async function syncUp() {
+      if (busy || !tok() || typeof CompressionStream === 'undefined') return { subidas: 0, pendientes: 0, error: !tok() ? 'sin llave' : null };
+      busy = true; let subidas = 0, error = null, pend = [];
+      try {
+        pend = (await Store.list()).filter(s => !s.up && (s.n || 0) >= 750 && Date.now() - (s.end || 0) > 45000); // terminadas y con más de 30 s de datos
+        for (const s of pend) {
+          const raw = await Store.data(s.id); if (!raw.length) continue;
+          await put('rb/' + s.id + '.krb.gz', await gzip(raw), BR, 'Telemetría ' + s.id);
+          const meta = Object.assign({}, s); delete meta.up;
+          await put('rb/' + s.id + '.json', utf8(JSON.stringify(meta)), BR, 'Telemetría ' + s.id + ' (ficha)');
+          await Store.patch(s.id, { up: Date.now() }); subidas++;
+        }
+      } catch (e) { error = String(e && e.message || e); }
+      busy = false;
+      return { subidas, pendientes: pend.length - subidas, error };
+    }
+    async function listRemote() {
+      const r = await api('git/trees/' + BR + '?recursive=1'); if (!r.ok) return [];
+      const files = ((await r.json()).tree || []).filter(f => /^rb\/.+\.json$/.test(f.path));
+      let cache = {}; try { cache = JSON.parse(localStorage.getItem('kr_rb_remote') || '{}'); } catch (e) {}
+      const out = [], next = {};
+      await Promise.all(files.map(async f => { let m = cache[f.sha];
+        if (!m) { try { m = await (await fetch('https://raw.githubusercontent.com/' + repo() + '/' + BR + '/' + f.path)).json(); } catch (e) { return; } }
+        next[f.sha] = m; out.push(Object.assign({ remote: true }, m)); }));
+      try { localStorage.setItem('kr_rb_remote', JSON.stringify(next)); } catch (e) {}
+      return out.sort((a, b) => b.start - a.start);
+    }
+    async function getRemote(id) { const r = await fetch('https://raw.githubusercontent.com/' + repo() + '/' + BR + '/rb/' + id + '.krb.gz'); if (!r.ok) throw new Error('no se pudo descargar'); return gunzip(new Uint8Array(await r.arrayBuffer())); }
+    async function delRemote(id) { for (const ext of ['.krb.gz', '.json']) { const p = 'contents/rb/' + id + ext, g = await api(p + '?ref=' + BR); if (!g.ok) continue; await api(p, { method: 'DELETE', body: JSON.stringify({ message: 'Borrar ' + id, sha: (await g.json()).sha, branch: BR }) }); } }
+    // circuitos (meta, parciales y trazado): un archivo común en el proyecto
+    async function pistas() { try { return await (await fetch('https://raw.githubusercontent.com/' + repo() + '/main/data/pistas.json?t=' + Date.now(), { cache: 'no-store' })).json(); } catch (e) { return {}; } }
+    async function savePista(slug, def) {
+      const g = await api('contents/data/pistas.json?ref=main'); let all = {};
+      if (g.ok) { const j = await g.json(); all = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(j.content.replace(/\s/g, '')), c => c.charCodeAt(0)))); }
+      all[slug] = def;
+      await put('data/pistas.json', utf8(JSON.stringify(all, null, 1)), 'main', 'Circuito ' + slug + ': meta y parciales');
+    }
+    async function check() { if (!tok()) return 'sin llave'; const r = await api(''); if (!r.ok) return 'la llave no vale'; const j = await r.json(); return j.permissions && j.permissions.push ? 'ok' : 'falta el permiso de «Contents» (lectura y escritura)'; }
+    return { repo, tok, syncUp, listRemote, getRemote, delRemote, pistas, savePista, check, setToken: t => localStorage.setItem('blr_ghToken', JSON.stringify(t)) };
+  })();
+
+  const RB = { UART, TX, Reader, decode, Engine, connect, supported, Store, Recorder, parseAll, lapsOf, toCSV, toVBO, fromVBO, Cloud };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = RB; else root.RaceBox = RB;
 })(typeof window !== 'undefined' ? window : globalThis);
