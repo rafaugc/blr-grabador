@@ -20,7 +20,7 @@ try{const t=JSON.parse(localStorage.getItem('blr_tema')||'null')||{},h=document.
 <script src="core.js?v=20261127a"></script>
 <script src="ingeniero.js?v=20261127a"></script>
 <script src="ingeniero-ui.js?v=20261127a"></script>
-<script src="racebox.js?v=20261127c"></script>
+<script src="racebox.js?v=20261127d"></script>
 <link rel="stylesheet" href="tema.css?v=1">
 <style>
 .tema{position:relative}.tema>button{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;cursor:pointer;color:var(--mute);font-size:12px;display:inline-flex;gap:6px;align-items:center}
@@ -1624,7 +1624,7 @@ function apexDelta(rid) {
   if (ls.length >= 2) { const prev = Math.min(...ls.slice(0, -1).map(l => l.t)); return { d: ls[ls.length - 1].t - prev, lab: 'Apex · en meta', ref: Math.min(prev, ls[ls.length - 1].t) }; }
   return null;
 }
-const RBX = { h: null, eng: null, st: 'off', txt: '', last: null, lastAt: 0 };
+const RBX = { h: null, eng: null, rec: null, st: 'off', txt: '', last: null, lastAt: 0 };
 const rbFresh = () => RBX.st === 'on' && Date.now() - RBX.lastAt < 2500;
 function rbDelta() {
   if (!rbFresh() || !RBX.eng) return null;
@@ -1650,10 +1650,10 @@ function bandLap() { // tiempo de la vuelta en curso
   if (bandRid && live) { const ls = lapsOf(bandRid), L = ls[ls.length - 1]; if (L && L.ts) { const e = (Date.now() - L.ts) / 1000; if (e >= 0 && e < 600) return fmt1(e); } }
   return '–';
 }
-function bandVR() { // la VR oficial (Apex) si la hay; si no, la medida por el RaceBox
+function bandVR() { // con RaceBox conectado, siempre la VR que mide el RaceBox; sin él, la de Apex
+  if (RBX.st !== 'off') return RBX.eng ? fmt2(RBX.eng.view().best) : '–';
   const r = bandRid && live ? live.rows[bandRid] : null, a = r ? Math.min(...lapsOf(bandRid).map(l => l.t), parseT(r.blp) ?? Infinity) : null;
-  if (a != null && isFinite(a)) return fmt2(a);
-  return RBX.eng && rbFresh() ? fmt2(RBX.eng.view().best) : '–';
+  return a != null && isFinite(a) ? fmt2(a) : '–';
 }
 const dlSrc = D => D ? D.lab : (rbHint() || 'vs tu vuelta rápida');
 function deltaBand(rid) {
@@ -1669,7 +1669,7 @@ function rbPaint() {
   const now = Date.now(); if (now - rbPaintAt < 100) return; rbPaintAt = now;
   const b = $('dlb'); if (!b) return;
   const set = (id, t) => { const e = $(id); if (e && e.textContent !== t) e.textContent = t; };
-  set('dlt', bandLap());
+  set('dlt', bandLap()); if (RBX.last) set('rbV', RBX.last.v.toFixed(0));
   const D = rbDelta(); if (!D) return;
   const cls = 'dl ' + dlCls(D); if (b.className !== cls) b.className = cls;
   set('dlv', fmtDl(D.d)); set('dls', 'DELTA · ' + D.lab); set('dlr', bandVR());
@@ -1677,14 +1677,17 @@ function rbPaint() {
 setInterval(rbPaint, 100);
 async function rbToggle(btn) {
   const lab = () => { if (btn && btn.isConnected) btn.textContent = RBX.st === 'on' ? '🛰 RaceBox conectado ✓ · tocar para desconectar' : RBX.st === 'wait' ? '🛰 ' + (RBX.txt || 'Conectando…') : '🛰 Conectar RaceBox · delta continuo'; };
-  if (RBX.h) { RBX.h.stop(); RBX.h = null; RBX.st = 'off'; return lab(); }
+  if (RBX.h) { RBX.h.stop(); RBX.h = null; RBX.st = 'off'; if (RBX.rec) RBX.rec.flush(); return lab(); }
   RBX.eng = RaceBox.Engine();
   const gk = 'rbGate_' + (C ? C.slug : '');
   RBX.eng.setGate(store.get(gk, null));
-  RBX.eng.onGate = g => store.set(gk, { lat: g.lat, lon: g.lon, hdg: g.hdg });
+  RBX.eng.onGate = g => { store.set(gk, { lat: g.lat, lon: g.lon, hdg: g.hdg }); if (RBX.rec) RBX.rec.info.gate = { lat: g.lat, lon: g.lon, hdg: g.hdg }; };
+  // todo lo que manda el RaceBox se graba solo en este navegador (sección Telemetría)
+  RBX.rec = RaceBox.Recorder({ slug: C ? C.slug : '', circuit: C ? C.nombre : '', kart: pilotKart || '', gate: store.get(gk, null), laps: [], best: null });
+  RBX.eng.onLap = l => { RBX.rec.info.laps = RBX.eng.laps.map(x => +x.T.toFixed(3)); RBX.rec.info.best = l.best; RBX.rec.info.kart = pilotKart || RBX.rec.info.kart; };
   try {
     RBX.st = 'wait'; RBX.txt = 'Elige tu RaceBox en la lista…'; lab();
-    RBX.h = await RaceBox.connect({ sample: s => { RBX.last = s; RBX.lastAt = Date.now(); RBX.eng.push(s); rbPaint(); }, status: (t, st) => { RBX.txt = t; RBX.st = st; lab(); pilotSoon(); } });
+    RBX.h = await RaceBox.connect({ sample: (s, pl) => { RBX.last = s; RBX.lastAt = Date.now(); RBX.eng.push(s); if (pl) RBX.rec.add(pl); rbPaint(); }, status: (t, st) => { RBX.txt = t; RBX.st = st; lab(); pilotSoon(); } });
   } catch (e) { RBX.h = null; RBX.st = 'off'; lab(); if (btn && btn.isConnected) btn.textContent = '🛰 No se pudo conectar · tocar para reintentar'; }
 }
 function pilotSetup(el) {
@@ -1698,6 +1701,7 @@ function pilotSetup(el) {
       <div id="kv" class="ksv">${esc(val || '–')}</div>
       <button id="ksgo" class="ksgo">Entrar</button>
       ${RaceBox.supported() ? `<button class="back" id="rbBtn" style="padding:8px 12px;font-size:clamp(13px,3.6vh,18px)">${RBX.st === 'on' ? '🛰 RaceBox conectado ✓ · tocar para desconectar' : '🛰 Conectar RaceBox · delta continuo'}</button>` : '<a class="mini" href="racebox.html" style="color:var(--acc-txt);text-decoration:none">🛰 Delta continuo con RaceBox: cómo activarlo</a>'}
+      <a class="mini" href="telemetria.html" style="color:var(--acc-txt);text-decoration:none">📈 Telemetría grabada con el RaceBox</a>
       ${onTrack.length ? `<div class="mini">En pista ahora (toca el tuyo):</div><div class="ksc">${onTrack.map(k => `<span class="chipd" data-q="${k}">${k}</span>`).join('')}</div>` : '<div class="mini">Gira el móvil en horizontal.</div>'}
       ${DASH ? '' : '<a class="mini" href="dash.html" style="color:var(--acc-txt);text-decoration:none">📲 Pon KR DASH en tu pantalla de inicio (abre directo esta vista)</a>'}
     </div>
@@ -1731,8 +1735,24 @@ function renderPilot(force) {
       <span style="min-width:0"><div>${esc(C.nombre)}</div><div style="color:var(--text)">${esc([live?.title1, live?.title2].filter(Boolean).join(' – '))}${me && me[1].tlp ? ' · vuelta ' + esc(me[1].tlp) : ''}</div></span>
       ${fl ? `<span class="flag" style="background:${fl[1]};font-size:clamp(12px,2.6vh,18px)">${(t => t.charAt(0).toUpperCase() + t.slice(1))(fl[0].replace('Bandera ', ''))}</span>` : ''}</span>
     <span style="display:flex;gap:12px;align-items:center"><span class="clock" id="pclk">${clockTxt.replace('Quedan ', '')}</span>${RBX.st !== 'off' ? `<span class="flag" title="RaceBox" style="background:${rbFresh() && RBX.last && RBX.last.valid ? '#0b8f3c' : '#b36b00'};color:#fff;font-size:clamp(12px,2.6vh,18px)">RB</span>` : ''}${pilotLock ? '<button class="lockb" id="flipP" title="Girar 180°">⟲</button>' : ''}<button class="lockb ${pilotLock ? 'on' : ''}" id="lockP" title="${pilotLock ? 'Mantén pulsado para desbloquear' : 'Bloquear en horizontal'}">${pilotLock ? '🔒' : '🔓'}</button><button class="xx" id="exitP" title="Salir">✕</button></span></div>`;
+  if (!me && RBX.st !== 'off') { // sin datos de Apex pero con RaceBox: el tablero sale igual, con lo que mide el RaceBox
+    const v = RBX.eng ? RBX.eng.view() : {}, L = RBX.last, apexTxt = live && live.ws && live.ws.readyState === 1 ? `El kart ${esc(pilotKart)} aún no aparece en Apex` : 'Sin conexión con Apex';
+    if (RBX.rec && pilotKart) RBX.rec.info.kart = pilotKart;
+    el.innerHTML = `<div class="pv">${msgPop()}${head()}${deltaBand(null)}
+      <div class="top">
+        <div class="tile"><div class="lab">Última vuelta · RaceBox</div><div class="fv"><span class="mono">${v.last != null ? fmt2(v.last) : '–'}</span></div><div class="lab">${v.last != null && v.best != null ? (v.last <= v.best + 0.0005 ? '<span style="color:var(--purple)">tu mejor vuelta</span>' : fmt(v.last - v.best) + ' vs tu VR') : '&nbsp;'}</div></div>
+        <div class="tile" style="padding-left:4px;padding-right:4px"><div class="lab" style="text-align:center">Vueltas</div><div class="fv c"><span class="bc">${v.laps || 0}</span></div></div>
+        <div class="tile"><div class="lab">Velocidad · km/h</div><div class="fv"><span class="mono" id="rbV">${L ? L.v.toFixed(0) : '–'}</span></div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;min-height:0">
+        <div class="tile"><div class="lab">Apex</div><div class="fv w"><span style="font-size:clamp(13px,4.2vh,26px);color:var(--mute)">${apexTxt}. En cuanto aparezca verás posición, ritmo y distancias.</span></div></div>
+        <div class="tile"><div class="lab">RaceBox</div><div class="fv w"><span style="font-size:clamp(13px,4.2vh,26px)">${rbFresh() ? (L && L.valid ? `${L.sv} satélites · batería ${L.bat} %` : 'Buscando satélites…') : esc(RBX.txt || 'Sin datos')}${RBX.rec && RBX.rec.n ? `<br><span style="color:var(--mute)">● Grabando · ${Math.floor(RBX.rec.n / 25 / 60)} min</span>` : ''}</span></div></div>
+      </div>
+      ${msgTile()}</div>`;
+    return bindPilot();
+  }
   if (!me) {
-    el.innerHTML = `<div class="pv">${msgPop()}${head()}${RBX.st !== 'off' ? deltaBand(null) : ''}<div class="tile" style="grid-column:1/3;grid-row:${RBX.st !== 'off' ? 3 : 2}/5;align-items:center;text-align:center">
+    el.innerHTML = `<div class="pv">${msgPop()}${head()}<div class="tile" style="grid-column:1/3;grid-row:2/5;align-items:center;text-align:center">
       <span class="dashlogo big"><img class="lg-d" src="logo-dash-oscuro.png" alt="KR Dash"><img class="lg-l" src="logo-dash-claro.png" alt="KR Dash"></span>
       <div class="mid">Esperando al kart ${esc(pilotKart)}…</div><div class="sub2" style="color:var(--mute);margin-top:8px">${live && live.ws && live.ws.readyState === 1 ? 'Aún no aparece en el live timing de Apex.' : 'Sin conexión con Apex. Reconectando…'}</div>
       <div class="rot sub2" style="margin-top:10px;color:var(--acc-txt)">Gira el móvil en horizontal</div></div></div>`;

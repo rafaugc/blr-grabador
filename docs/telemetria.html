@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="icono-dash-192.png">
+<title>KR · Telemetría RaceBox</title>
+<script>try{const t=JSON.parse(localStorage.getItem('blr_tema')||'null')||{},h=document.documentElement;h.dataset.fondo=t.f||'azul';h.dataset.resalte=t.r||'amarillof';}catch(e){}</script>
+<link rel="stylesheet" href="tema.css?v=1">
+<script src="racebox.js?v=20261127d"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 -apple-system,system-ui,"Segoe UI",sans-serif;padding:14px}
+.w{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+h1{font-size:22px;margin:0}h2{font-size:16px;margin:0 0 6px}
+a{color:var(--acc-txt)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.mini{color:var(--mute);font-size:13px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button{font:600 14px -apple-system,system-ui,sans-serif;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:9px 12px;cursor:pointer}
+button.pri{background:var(--accent);color:var(--on-accent);border-color:transparent}
+button.dng{color:var(--vslow)}
+.ses{display:flex;justify-content:space-between;gap:10px;align-items:center;cursor:pointer}
+.ses:hover{border-color:var(--acc-line)}
+.ses b{font-size:16px}
+.num{font-variant-numeric:tabular-nums;font-family:ui-monospace,Menlo,Consolas,monospace}
+table{border-collapse:collapse;width:100%}
+th,td{padding:6px 8px;text-align:right;border-top:1px solid var(--line);white-space:nowrap}
+th{color:var(--mute);font-weight:500;font-size:12px;border-top:0}
+td:first-child,th:first-child{text-align:left}
+tr.lap{cursor:pointer}tr.lap:hover{background:var(--hover)}
+.pick{display:inline-block;min-width:26px;text-align:center;border-radius:6px;padding:1px 6px;font-weight:700;color:#fff}
+.sw{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
+.leg{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;margin-bottom:2px}
+.leg span.v{color:var(--text);font-weight:600;margin-left:6px}
+svg{display:block;width:100%;height:auto;touch-action:pan-y}
+.gridl{stroke:var(--line);stroke-width:1}.axl{fill:var(--mute);font-size:11px}
+.scroll{overflow-x:auto}
+.two{display:grid;grid-template-columns:2fr 1fr;gap:12px}@media(max-width:800px){.two{grid-template-columns:1fr}}
+select{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:7px 8px;font-size:14px}
+.purple{color:var(--purple)}
+</style>
+</head>
+<body>
+<div class="w">
+  <div class="row" style="justify-content:space-between"><h1>Telemetría RaceBox</h1><a href="index.html">← Volver a la app</a></div>
+  <div id="out"></div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fT = x => { if (x == null || !isFinite(x)) return '–'; const m = Math.floor(x / 60), s = x - m * 60; return (m ? m + ':' + (s < 10 ? '0' : '') : '') + s.toFixed(3); };
+const fD = (x, n = 2) => x == null || !isFinite(x) ? '–' : (x < 0 ? '−' : '+') + Math.abs(x).toFixed(n).replace('.', ',');
+const fDate = ms => new Date(ms).toLocaleString('es-ES', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+const COL = { a: '#338ced', b: '#e76624' }; // vuelta A (referencia) y vuelta B
+let S = null; // sesión abierta
+
+async function list() {
+  S = null;
+  let ses = [];
+  try { ses = await RaceBox.Store.list(); } catch (e) { $('out').innerHTML = `<div class="card">Este navegador no deja guardar datos (${esc(e && e.message || e)}).</div>`; return; }
+  $('out').innerHTML = `<div class="card mini">Aquí aparecen solas las sesiones grabadas con el RaceBox desde la vista piloto. <b style="color:var(--text)">Se guardan en este navegador de este aparato</b>: para verlas en otro (por ejemplo el ordenador) exporta el archivo y ábrelo allí con «Abrir archivo».</div>
+    <div class="row"><button id="imp">📂 Abrir archivo (.csv de KR o grabación .krb)</button><input type="file" id="impF" accept=".csv,.krb" hidden></div>
+    ${ses.length ? ses.map(s => `<div class="card ses" data-id="${esc(s.id)}"><div><b>${esc(s.circuit || 'Sin circuito')}</b>${s.kart ? ' · kart ' + esc(s.kart) : ''}<div class="mini">${fDate(s.start)} · ${Math.round((s.n || 0) / 25 / 60)} min grabados</div></div>
+      <div style="text-align:right"><div class="num purple" style="font-size:18px">${s.best ? fT(s.best) : '–'}</div><div class="mini">${(s.laps || []).length} vueltas</div></div></div>`).join('') : '<div class="card">Todavía no hay ninguna sesión grabada en este navegador.</div>'}`;
+  document.querySelectorAll('.ses').forEach(el => el.onclick = () => openSes(el.dataset.id));
+  $('imp').onclick = () => $('impF').click();
+  $('impF').onchange = async e => { const f = e.target.files[0]; if (!f) return; try { await importFile(f); } catch (err) { alert('No se pudo abrir: ' + (err && err.message || err)); } };
+}
+
+// ---- abrir un archivo exportado en otro aparato ----
+async function importFile(f) {
+  let samples;
+  if (/\.krb$/i.test(f.name)) samples = RaceBox.parseAll(new Uint8Array(await f.arrayBuffer()));
+  else {
+    const L = (await f.text()).split(/\r?\n/).filter(Boolean), H = L[0].split(','), ix = n => H.indexOf(n);
+    if (ix('latitud') < 0) throw new Error('no es un CSV exportado por KR');
+    samples = L.slice(1).map(r => { const c = r.split(','), g = n => +c[ix(n)];
+      return { utc: c[0] ? Date.parse(c[0]) : null, t: g('tiempo_s'), lat: g('latitud'), lon: g('longitud'), v: g('velocidad_kmh'), hdg: g('rumbo_grados'), alt: g('altura_m'), altW: g('altura_wgs_m'), gx: g('g_longitudinal'), gy: g('g_lateral'), gz: g('g_vertical'), rx: g('giro_balanceo_gs'), ry: g('giro_cabeceo_gs'), rz: g('giro_guinada_gs'), sv: g('satelites'), fix: g('fix'), valid: c[ix('gps_valido')] === '1', hAcc: g('precision_horizontal_m'), vAcc: g('precision_vertical_m'), sAcc: g('precision_velocidad_kmh'), hdgAcc: g('precision_rumbo_grados'), pdop: g('pdop'), bat: g('bateria_pct') }; });
+  }
+  if (!samples.length) throw new Error('el archivo no tiene datos');
+  show({ id: null, circuit: f.name.replace(/\.(csv|krb)$/i, ''), start: samples.find(s => s.utc)?.utc || Date.now(), n: samples.length }, samples, null);
+}
+
+async function openSes(id) {
+  $('out').innerHTML = '<div class="card">Cargando la sesión…</div>';
+  const meta = await RaceBox.Store.meta(id), raw = await RaceBox.Store.data(id);
+  show(meta, RaceBox.parseAll(raw), raw);
+}
+
+// ---- preparar las vueltas: distancia recorrida y canales, remuestreados cada metro aprox. ----
+function buildLap(samples, lap) {
+  const P = samples.filter(s => s.valid && s.t >= lap.t0 && s.t <= lap.t1);
+  if (P.length < 10) return null;
+  const k = Math.cos(P[0].lat * Math.PI / 180);
+  let d = 0; const pts = P.map((s, i) => { if (i) d += Math.hypot((s.lon - P[i - 1].lon) * k * 111320, (s.lat - P[i - 1].lat) * 110540); return { d, t: s.t - lap.t0, s }; });
+  return { lap, pts, len: d, vmax: Math.max(...P.map(s => s.v)), vmin: Math.min(...P.map(s => s.v)), gmax: Math.max(...P.map(s => Math.abs(s.gy))) };
+}
+function sampleAt(L, frac, f) { // valor del canal en un punto de la vuelta (0..1 de su recorrido)
+  const d = frac * L.len, p = L.pts; let lo = 0, hi = p.length - 1;
+  while (hi - lo > 1) { const m = (lo + hi) >> 1; if (p[m].d <= d) lo = m; else hi = m; }
+  const a = p[lo], b = p[hi], w = b.d > a.d ? (d - a.d) / (b.d - a.d) : 0;
+  return f(a) + w * (f(b) - f(a));
+}
+const CH = { v: ['Velocidad', 'km/h', p => p.s.v, 0], gy: ['G lateral', 'g', p => p.s.gy, 2], gx: ['G longitudinal (frenada / aceleración)', 'g', p => p.s.gx, 2], rz: ['Giro (guiñada)', '°/s', p => p.s.rz, 0] };
+
+function show(meta, samples, raw) {
+  const an = RaceBox.lapsOf(samples, meta.gate || null);
+  const laps = an.laps.map(l => buildLap(samples, l)).filter(Boolean);
+  const clean = laps.filter(l => !l.lap.bad);
+  const best = clean.reduce((a, l) => !a || l.lap.T < a.lap.T ? l : a, null);
+  const second = clean.filter(l => l !== best).reduce((a, l) => !a || l.lap.T < a.lap.T ? l : a, null);
+  S = { meta, samples, raw, laps, an, A: best, B: second, ch: 'gy', hover: null };
+  render();
+}
+
+function render() {
+  const { meta, laps, A, B } = S, bestT = A ? Math.min(...laps.filter(l => !l.lap.bad).map(l => l.lap.T)) : null;
+  $('out').innerHTML = `<div class="row" style="justify-content:space-between"><button id="back">← Sesiones</button>
+      <div class="row"><button class="pri" id="xCsv">Exportar .csv</button><button class="pri" id="xVbo">Exportar .vbo</button>${S.raw ? '<button id="xRaw" title="La grabación tal cual, para abrirla en otro aparato">Copia .krb</button>' : ''}${meta.id ? '<button class="dng" id="del">Borrar</button>' : ''}</div></div>
+    <div class="card"><h2>${esc(meta.circuit || 'Sesión')}${meta.kart ? ' · kart ' + esc(meta.kart) : ''}</h2><div class="mini">${fDate(meta.start)} · ${Math.round(S.samples.length / 25 / 60)} min · ${S.samples.length.toLocaleString('es-ES')} datos · ${laps.length} vueltas${bestT ? ' · mejor ' + fT(bestT) : ''}</div></div>
+    ${!laps.length ? '<div class="card">En esta grabación no hay ninguna vuelta completa (hace falta rodar al menos dos vueltas seguidas con GPS). Los datos se pueden exportar igualmente.</div>' : `
+    <div class="card scroll"><h2>Vueltas</h2><div class="mini" style="margin-bottom:6px">Toca una vuelta para compararla (<span class="pick" style="background:${COL.b}">B</span>) con la de referencia (<span class="pick" style="background:${COL.a}">A</span>). Para cambiar la referencia, usa el desplegable.</div>
+      <div class="row" style="margin-bottom:6px"><span class="mini">Referencia A:</span><select id="selA">${laps.map(l => `<option value="${l.lap.n}" ${l === A ? 'selected' : ''}>Vuelta ${l.lap.n} · ${fT(l.lap.T)}</option>`).join('')}</select></div>
+      <table><thead><tr><th>Vuelta</th><th>Tiempo</th><th>Vs. mejor</th><th>Vel. máx.</th><th>Vel. mín.</th><th>G lateral máx.</th><th>Metros</th></tr></thead><tbody>
+      ${laps.map(l => `<tr class="lap" data-n="${l.lap.n}"><td>${l === A ? `<span class="pick" style="background:${COL.a}">A</span> ` : l === B ? `<span class="pick" style="background:${COL.b}">B</span> ` : ''}${l.lap.n}${l.lap.bad ? ' <span class="mini">(con hueco de datos)</span>' : ''}</td><td class="num ${l.lap.T === bestT ? 'purple' : ''}">${fT(l.lap.T)}</td><td class="num">${l.lap.T === bestT ? '–' : fD(l.lap.T - bestT, 3)}</td><td class="num">${l.vmax.toFixed(1)}</td><td class="num">${l.vmin.toFixed(1)}</td><td class="num">${l.gmax.toFixed(2)}</td><td class="num">${l.len.toFixed(0)}</td></tr>`).join('')}
+      </tbody></table></div>
+    ${A && B ? `<div class="two"><div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+        <div class="card"><h2>Velocidad a lo largo de la vuelta</h2><div id="cV"></div></div>
+        <div class="card"><h2>Dónde gana o pierde la vuelta B frente a la A</h2><div class="mini">Por debajo de cero, B va ganando tiempo; por encima, lo pierde.</div><div id="cD"></div></div>
+        <div class="card"><div class="row" style="justify-content:space-between"><h2 id="chT"></h2><select id="selCh">${Object.entries(CH).filter(([k]) => k !== 'v').map(([k, c]) => `<option value="${k}" ${k === S.ch ? 'selected' : ''}>${c[0]}</option>`).join('')}</select></div><div id="cC"></div></div>
+      </div><div class="card" style="align-self:start;position:sticky;top:8px"><h2>Trazada</h2><div id="cM"></div><div class="mini" id="mInfo">Pasa el dedo o el ratón por una gráfica para ver el punto en la pista.</div></div></div>` : '<div class="card mini">Hacen falta al menos dos vueltas limpias para comparar.</div>'}`}`;
+  $('back').onclick = list;
+  const base = (meta.circuit || 'racebox').replace(/[^\w\-]+/g, '_') + '_' + new Date(meta.start).toISOString().slice(0, 16).replace(/[:T]/g, '-');
+  $('xCsv').onclick = () => saveFile(base + '.csv', RaceBox.toCSV(S.samples, S.an.laps), 'text/csv');
+  $('xVbo').onclick = () => saveFile(base + '.vbo', RaceBox.toVBO(S.samples), 'application/octet-stream');
+  if ($('xRaw')) $('xRaw').onclick = () => saveFile(base + '.krb', S.raw, 'application/octet-stream');
+  if ($('del')) $('del').onclick = async () => { if (confirm('¿Borrar esta sesión de este navegador? No se puede deshacer.')) { await RaceBox.Store.del(meta.id); list(); } };
+  if (!laps.length) return;
+  $('selA').onchange = () => { S.A = laps.find(l => l.lap.n === +$('selA').value); if (S.B === S.A) S.B = laps.find(l => l !== S.A && !l.lap.bad) || null; render(); };
+  document.querySelectorAll('tr.lap').forEach(tr => tr.onclick = () => { const l = laps.find(x => x.lap.n === +tr.dataset.n); if (l && l !== S.A) { S.B = l; render(); } });
+  if (!(A && B)) return;
+  $('selCh').onchange = () => { S.ch = $('selCh').value; render(); };
+  charts();
+}
+
+// ---- gráficas (una escala por gráfica; cursor compartido entre todas y con el mapa) ----
+const N = 400;
+function charts() {
+  const { A, B } = S, fr = i => i / (N - 1), xm = i => fr(i) * A.len;
+  const ser = k => [A, B].map(L => Array.from({ length: N }, (_, i) => sampleAt(L, fr(i), CH[k][2])));
+  const names = [`A · vuelta ${A.lap.n} (${fT(A.lap.T)})`, `B · vuelta ${B.lap.n} (${fT(B.lap.T)})`];
+  const tA = Array.from({ length: N }, (_, i) => sampleAt(A, fr(i), p => p.t)), tB = Array.from({ length: N }, (_, i) => sampleAt(B, fr(i), p => p.t));
+  const delta = tB.map((t, i) => t - tA[i]);
+  $('chT').textContent = CH[S.ch][0];
+  const C = [
+    chart($('cV'), { ys: ser('v'), names, cols: [COL.a, COL.b], unit: 'km/h', dec: 0, xm, len: A.len }),
+    chart($('cD'), { ys: [delta], names: ['B − A'], cols: [COL.b], unit: 's', dec: 2, zero: true, signed: true, xm, len: A.len }),
+    chart($('cC'), { ys: ser(S.ch), names, cols: [COL.a, COL.b], unit: CH[S.ch][1], dec: CH[S.ch][3], zero: true, xm, len: A.len }),
+  ];
+  const M = map($('cM'), A, B);
+  const hover = i => { C.forEach(c => c.set(i)); M.set(i == null ? null : fr(i)); $('mInfo').textContent = i == null ? 'Pasa el dedo o el ratón por una gráfica para ver el punto en la pista.' : `A ${Math.round(xm(i))} m de la meta · B lleva ${fD(delta[i])} s respecto a A`; };
+  C.forEach(c => c.on(hover));
+}
+function chart(el, o) {
+  const W = 720, H = 210, m = { l: 44, r: 10, t: 8, b: 22 }, pw = W - m.l - m.r, ph = H - m.t - m.b;
+  let lo = Math.min(...o.ys.flat()), hi = Math.max(...o.ys.flat());
+  if (o.zero) { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
+  if (hi - lo < 1e-6) { hi += 1; lo -= 1; }
+  const pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+  const step = (() => { const raw = (hi - lo) / 4, p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p; return (f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10) * p; })();
+  const X = i => m.l + i / (N - 1) * pw, Y = v => m.t + (hi - v) / (hi - lo) * ph;
+  const fmtY = v => (o.signed && v > 0 ? '+' : '') + v.toFixed(step < 0.1 ? 2 : step < 1 ? 1 : 0).replace('.', ',').replace('-', '−');
+  let g = '';
+  for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) g += `<line class="gridl" x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" ${Math.abs(v) < step / 1e6 && o.zero ? 'style="stroke:var(--mute)"' : ''}/><text class="axl" x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end">${fmtY(Math.abs(v) < step / 1e6 ? 0 : v)}</text>`;
+  const xs = (() => { const st = o.len > 1500 ? 500 : o.len > 600 ? 200 : 100; let s = ''; for (let d = 0; d <= o.len; d += st) s += `<text class="axl" x="${m.l + d / o.len * pw}" y="${H - 6}" text-anchor="middle">${d} m</text>`; return s; })();
+  const paths = o.ys.map((ys, k) => `<path d="${ys.map((v, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1)).join('')}" fill="none" stroke="${o.cols[k]}" stroke-width="2" stroke-linejoin="round"/>`).join('');
+  el.innerHTML = `<div class="leg">${o.names.map((n, k) => `<span><i class="sw" style="background:${o.cols[k]}"></i>${esc(n)}<span class="v" data-v="${k}"></span></span>`).join('')}<span class="mini">${esc(o.unit)}</span></div>
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfica por distancia">${g}${xs}${paths}<line data-x y1="${m.t}" y2="${m.t + ph}" stroke="var(--text)" stroke-width="1" opacity="0"/>${o.ys.map((_, k) => `<circle data-d="${k}" r="4.5" fill="${o.cols[k]}" stroke="var(--panel)" stroke-width="2" opacity="0"/>`).join('')}<rect x="${m.l}" y="${m.t}" width="${pw}" height="${ph}" fill="transparent"/></svg>`;
+  const svg = el.querySelector('svg'), xl = svg.querySelector('[data-x]');
+  let cb = () => {};
+  const pos = e => { const r = svg.getBoundingClientRect(), cx = (e.touches ? e.touches[0].clientX : e.clientX) - r.left; const i = Math.round((cx / r.width * W - m.l) / pw * (N - 1)); return Math.max(0, Math.min(N - 1, i)); };
+  svg.addEventListener('mousemove', e => cb(pos(e))); svg.addEventListener('mouseleave', () => cb(null));
+  svg.addEventListener('touchstart', e => cb(pos(e)), { passive: true }); svg.addEventListener('touchmove', e => cb(pos(e)), { passive: true });
+  return { on: f => cb = f, set: i => {
+    xl.setAttribute('opacity', i == null ? 0 : .5); if (i != null) { xl.setAttribute('x1', X(i)); xl.setAttribute('x2', X(i)); }
+    o.ys.forEach((ys, k) => { const c = svg.querySelector(`[data-d="${k}"]`); c.setAttribute('opacity', i == null ? 0 : 1); if (i != null) { c.setAttribute('cx', X(i)); c.setAttribute('cy', Y(ys[i])); }
+      el.querySelector(`[data-v="${k}"]`).textContent = i == null ? '' : (o.signed ? fD(ys[i], o.dec) : ys[i].toFixed(o.dec).replace('.', ',').replace('-', '−')); });
+  } };
+}
+function map(el, A, B) {
+  const all = A.pts.concat(B.pts).map(p => p.s), k = Math.cos(all[0].lat * Math.PI / 180);
+  const xy = s => [s.lon * k * 111320, -s.lat * 110540];
+  const P = all.map(xy), x0 = Math.min(...P.map(p => p[0])), x1 = Math.max(...P.map(p => p[0])), y0 = Math.min(...P.map(p => p[1])), y1 = Math.max(...P.map(p => p[1]));
+  const W = 340, pad = 14, sc = (W - 2 * pad) / Math.max(x1 - x0, y1 - y0, 1), H = (y1 - y0) * sc + 2 * pad;
+  const T = s => { const p = xy(s); return [pad + (p[0] - x0) * sc + ((W - 2 * pad) - (x1 - x0) * sc) / 2, pad + (p[1] - y0) * sc]; };
+  const path = (L, c) => `<path d="${L.pts.map((p, i) => { const q = T(p.s); return (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join('')}" fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round"/>`;
+  const st = T(A.pts[0].s);
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H.toFixed(0)}" role="img" aria-label="Trazada de las dos vueltas">${path(A, COL.a)}${path(B, COL.b)}<circle cx="${st[0]}" cy="${st[1]}" r="4" fill="var(--text)"/><text class="axl" x="${st[0] + 7}" y="${st[1] - 6}">meta</text>
+    <circle data-m="a" r="6" fill="${COL.a}" stroke="var(--panel)" stroke-width="2" opacity="0"/><circle data-m="b" r="6" fill="${COL.b}" stroke="var(--panel)" stroke-width="2" opacity="0"/></svg>`;
+  const at = (L, f) => { const lat = sampleAt(L, f, p => p.s.lat), lon = sampleAt(L, f, p => p.s.lon); return T({ lat, lon }); };
+  return { set: f => [['a', A], ['b', B]].forEach(([n, L]) => { const c = el.querySelector(`[data-m="${n}"]`); c.setAttribute('opacity', f == null ? 0 : 1); if (f != null) { const q = at(L, f); c.setAttribute('cx', q[0]); c.setAttribute('cy', q[1]); } }) };
+}
+
+// ---- guardar un archivo: en el móvil abre «Compartir» (Guardar en Archivos, AirDrop, correo…); en el ordenador lo descarga ----
+async function saveFile(name, data, type) {
+  const blob = new Blob([data], { type });
+  try { const f = new File([blob], name, { type }); if (navigator.canShare && navigator.canShare({ files: [f] }) && /iPhone|iPad|Android/i.test(navigator.userAgent)) { await navigator.share({ files: [f], title: name }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+}
+window.__kr = { show, list };
+list();
+</script>
+</body>
+</html>

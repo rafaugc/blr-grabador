@@ -32,16 +32,24 @@
     fn.stats = st;
     return fn;
   }
+  // Todos los canales del mensaje (80 bytes): posición, velocidad, altura, fuerzas G, giros, calidad del GPS y batería.
   function decode(p) {
     if (p.length < 80) return null;
     const d = new DataView(p.buffer, p.byteOffset, p.byteLength);
-    const fix = d.getUint8(20), ff = d.getUint8(21), llf = d.getUint8(66), bat = d.getUint8(67);
+    const fix = d.getUint8(20), ff = d.getUint8(21), llf = d.getUint8(66), bat = d.getUint8(67), vf = d.getUint8(11);
+    const ns = d.getInt32(16, true);
     return {
       t: d.getUint32(0, true) / 1000, // segundos (reloj GPS): más fiable que la hora a la que llega el aviso
+      utc: (vf & 3) === 3 ? Date.UTC(d.getUint16(4, true), d.getUint8(6) - 1, d.getUint8(7), d.getUint8(8), d.getUint8(9), d.getUint8(10)) + ns / 1e6 : null,
       fix, sv: d.getUint8(23), valid: fix === 3 && !!(ff & 1) && !(llf & 1),
       lon: d.getInt32(24, true) / 1e7, lat: d.getInt32(28, true) / 1e7,
-      hAcc: d.getUint32(40, true) / 1000, v: d.getInt32(48, true) * 0.0036, hdg: d.getInt32(52, true) / 1e5,
-      bat: bat & 127, charging: !!(bat & 128), gx: d.getInt16(68, true) / 1000, gy: d.getInt16(70, true) / 1000,
+      altW: d.getInt32(32, true) / 1000, alt: d.getInt32(36, true) / 1000,
+      hAcc: d.getUint32(40, true) / 1000, vAcc: d.getUint32(44, true) / 1000,
+      v: d.getInt32(48, true) * 0.0036, hdg: d.getInt32(52, true) / 1e5,
+      sAcc: d.getUint32(56, true) * 0.0036, hdgAcc: d.getUint32(60, true) / 1e5, pdop: d.getUint16(64, true) / 100,
+      bat: bat & 127, charging: !!(bat & 128),
+      gx: d.getInt16(68, true) / 1000, gy: d.getInt16(70, true) / 1000, gz: d.getInt16(72, true) / 1000, // G: X delante/atrás, Y derecha/izquierda, Z arriba/abajo
+      rx: d.getInt16(74, true) / 100, ry: d.getInt16(76, true) / 100, rz: d.getInt16(78, true) / 100,   // giro en °/s: X balanceo, Y cabeceo, Z guiñada
     };
   }
 
@@ -104,7 +112,7 @@
             if (T >= o.minLap && T <= o.maxLap) {
               const isBest = !E.lap.bad && (!E.ref || T < E.ref.T);
               const prevBest = E.ref ? E.ref.T : null;
-              E.laps.push({ T, bad: !!E.lap.bad, at: Date.now() });
+              E.laps.push({ T, bad: !!E.lap.bad, at: Date.now(), t0: E.lap.t0, t1: tc });
               E.endDelta = prevBest != null ? T - prevBest : null; E.endAt = Date.now();
               if (isBest) E.ref = { T, pts: E.lap.pts };
               if (E.onLap) E.onLap({ T, best: E.ref ? E.ref.T : null, isBest, delta: E.endDelta });
@@ -156,7 +164,7 @@
       const srv = await dev.gatt.connect();
       const svc = await srv.getPrimaryService(UART);
       const ch = await svc.getCharacteristic(TX);
-      H.reader = Reader((cls, id, pl) => { if (cls === 0xFF && id === 0x01) { const s = decode(pl); if (s) { H.last = Date.now(); try { cb.sample && cb.sample(s); } catch (e) {} } } });
+      H.reader = Reader((cls, id, pl) => { if (cls === 0xFF && id === 0x01) { const s = decode(pl); if (s) { H.last = Date.now(); try { cb.sample && cb.sample(s, pl); } catch (e) {} } } });
       ch.addEventListener('characteristicvaluechanged', ev => { const v = ev.target.value; H.reader(new Uint8Array(v.buffer, v.byteOffset, v.byteLength)); });
       await ch.startNotifications();
       say((dev.name || 'RaceBox') + ' conectado', 'on');
@@ -175,6 +183,91 @@
     return H;
   }
 
-  const RB = { UART, TX, Reader, decode, Engine, connect, supported };
+  // ---------- 4. grabación (en la memoria del navegador) ----------
+  // Se guarda el mensaje tal cual llega del RaceBox (los 80 bytes, 25 veces por segundo): así no se pierde ningún canal.
+  const DB = 'kr-racebox', LEN = 80;
+  let dbp = null;
+  const db = () => dbp || (dbp = new Promise((ok, ko) => {
+    const r = indexedDB.open(DB, 1);
+    r.onupgradeneeded = () => { const d = r.result; d.createObjectStore('ses', { keyPath: 'id' }); d.createObjectStore('chunks', { keyPath: ['sid', 'i'] }); };
+    r.onsuccess = () => ok(r.result); r.onerror = () => { dbp = null; ko(r.error); };
+  }));
+  const tx = async (stores, mode, fn) => { const d = await db(); return new Promise((ok, ko) => { const t = d.transaction(stores, mode); let out; t.oncomplete = () => ok(out); t.onerror = t.onabort = () => ko(t.error); out = fn(t); }); };
+  const req = r => new Promise((ok, ko) => { r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
+  const Store = {
+    async list() { const d = await db(); const a = await req(d.transaction('ses').objectStore('ses').getAll()); return a.sort((x, y) => y.start - x.start); },
+    async meta(id) { const d = await db(); return req(d.transaction('ses').objectStore('ses').get(id)); },
+    async data(id) { // todos los mensajes de la sesión, seguidos
+      const d = await db(); const cs = await req(d.transaction('chunks').objectStore('chunks').getAll(IDBKeyRange.bound([id, 0], [id, Infinity])));
+      const n = cs.reduce((a, c) => a + c.buf.byteLength, 0), out = new Uint8Array(n); let o = 0;
+      cs.sort((a, b) => a.i - b.i).forEach(c => { out.set(new Uint8Array(c.buf), o); o += c.buf.byteLength; });
+      return out;
+    },
+    del(id) { return tx(['ses', 'chunks'], 'readwrite', t => { t.objectStore('ses').delete(id); t.objectStore('chunks').delete(IDBKeyRange.bound([id, 0], [id, Infinity])); }); },
+    patch(id, o) { return tx(['ses'], 'readwrite', t => { const st = t.objectStore('ses'); st.get(id).onsuccess = e => { if (e.target.result) st.put(Object.assign(e.target.result, o)); }; }); },
+  };
+  function Recorder(meta) {
+    const id = 'rb-' + new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14) + '-' + Math.random().toString(36).slice(2, 6);
+    const R = { id, n: 0, saved: 0, err: null, info: Object.assign({}, meta) };
+    let buf = new Uint8Array(LEN * 300), fill = 0, chunk = 0, start = null, lastFlush = Date.now(), busy = false;
+    R.add = pl => {
+      if (pl.length !== LEN) return;
+      if (start == null) start = Date.now();
+      if (fill + LEN > buf.length) { const b = new Uint8Array(buf.length * 2); b.set(buf); buf = b; }
+      buf.set(pl, fill); fill += LEN; R.n++;
+      if (fill >= LEN * 250 || Date.now() - lastFlush > 10000) R.flush();
+    };
+    R.flush = async () => {
+      if (busy || start == null) return; busy = true; lastFlush = Date.now();
+      const part = buf.slice(0, fill), i = chunk; fill = 0;
+      try {
+        await tx(['ses', 'chunks'], 'readwrite', t => {
+          if (part.length) t.objectStore('chunks').put({ sid: id, i, buf: part.buffer });
+          t.objectStore('ses').put(Object.assign({}, R.info, { id, start, end: Date.now(), n: R.n }));
+        });
+        if (part.length) chunk++; R.saved = R.n - fill / LEN; R.err = null;
+      } catch (e) { R.err = String(e && e.message || e); const b = new Uint8Array(Math.max(buf.length, part.length + fill + LEN * 300)); b.set(part); b.set(buf.subarray(0, fill), part.length); buf = b; fill += part.length; }
+      busy = false;
+    };
+    if (typeof addEventListener !== 'undefined') { addEventListener('pagehide', () => R.flush()); document.addEventListener('visibilitychange', () => { if (document.hidden) R.flush(); }); }
+    try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
+    return R;
+  }
+
+  // ---------- 5. análisis y exportación ----------
+  function parseAll(u8) { const out = []; for (let o = 0; o + LEN <= u8.length; o += LEN) { const s = decode(u8.subarray(o, o + LEN)); if (s) out.push(s); } return out; }
+  // vueltas de una sesión grabada: se vuelve a pasar por el mismo motor que en directo
+  function lapsOf(samples, gate) {
+    const E = Engine(); if (gate) E.setGate(gate);
+    samples.forEach(s => E.push(s));
+    return { laps: E.laps.map((l, i) => ({ n: i + 1, T: l.T, t0: l.t0, t1: l.t1, bad: l.bad })), best: E.ref ? E.ref.T : null, gate: E.gate ? { lat: E.gate.lat, lon: E.gate.lon, hdg: E.gate.hdg } : null };
+  }
+  const lapAt = (laps, t) => { for (const l of laps) if (t >= l.t0 && t < l.t1) return l.n; return 0; };
+  const p2 = n => String(n).padStart(2, '0');
+  function toCSV(samples, laps) {
+    laps = laps || [];
+    const t0 = samples.length ? samples[0].t : 0, f = (x, n) => x == null || !isFinite(x) ? '' : x.toFixed(n);
+    const rows = ['utc,tiempo_s,vuelta,latitud,longitud,velocidad_kmh,rumbo_grados,altura_m,altura_wgs_m,g_longitudinal,g_lateral,g_vertical,giro_balanceo_gs,giro_cabeceo_gs,giro_guinada_gs,satelites,fix,gps_valido,precision_horizontal_m,precision_vertical_m,precision_velocidad_kmh,precision_rumbo_grados,pdop,bateria_pct'];
+    for (const s of samples) rows.push([s.utc != null ? new Date(s.utc).toISOString() : '', f(s.t - t0, 2), lapAt(laps, s.t), f(s.lat, 7), f(s.lon, 7), f(s.v, 2), f(s.hdg, 2), f(s.alt, 2), f(s.altW, 2), f(s.gx, 3), f(s.gy, 3), f(s.gz, 3), f(s.rx, 2), f(s.ry, 2), f(s.rz, 2), s.sv, s.fix, s.valid ? 1 : 0, f(s.hAcc, 2), f(s.vAcc, 2), f(s.sAcc, 2), f(s.hdgAcc, 2), f(s.pdop, 2), s.bat].join(','));
+    return rows.join('\r\n') + '\r\n';
+  }
+  // Formato .vbo (Racelogic VBOX): lo abren Circuit Tools, RaceChrono, etc. Latitud y longitud van en minutos, y la longitud OESTE es positiva.
+  function toVBO(samples) {
+    const ok = samples.filter(s => s.valid && s.utc != null);
+    const d0 = new Date(ok.length ? ok[0].utc : Date.now());
+    const sg = (x, w, n) => (x < 0 ? '-' : '+') + Math.abs(x).toFixed(n).padStart(w, '0');
+    const head = ['File created on ' + p2(d0.getUTCDate()) + '/' + p2(d0.getUTCMonth() + 1) + '/' + d0.getUTCFullYear() + ' at ' + p2(d0.getUTCHours()) + ':' + p2(d0.getUTCMinutes()) + ':' + p2(d0.getUTCSeconds()), '',
+      '[header]', 'satellites', 'time', 'latitude', 'longitude', 'velocity kmh', 'heading', 'height', 'longitudinal acceleration g', 'lateral acceleration g', 'vertical acceleration g', 'roll rate deg/s', 'pitch rate deg/s', 'yaw rate deg/s', '',
+      '[comments]', 'KR DASH · RaceBox', 'Log Rate (Hz) : 25.00', '',
+      '[column names]', 'sats time lat long velocity heading height longacc latacc vertacc rollrate pitchrate yawrate', '', '[data]'];
+    const rows = ok.map(s => { const d = new Date(Math.round(s.utc / 10) * 10);
+      return [String(s.sv).padStart(3, '0'), p2(d.getUTCHours()) + p2(d.getUTCMinutes()) + p2(d.getUTCSeconds()) + '.' + p2(Math.floor(d.getUTCMilliseconds() / 10)),
+        sg(s.lat * 60, 12, 6), sg(-s.lon * 60, 13, 6), Math.max(0, s.v).toFixed(3).padStart(7, '0'), (((s.hdg % 360) + 360) % 360).toFixed(2).padStart(6, '0'), sg(s.alt, 8, 2),
+        sg(s.gx, 5, 3), sg(s.gy, 5, 3), sg(s.gz, 5, 3), sg(s.rx, 6, 2), sg(s.ry, 6, 2), sg(s.rz, 6, 2)].join(' '); });
+    return head.concat(rows).join('\r\n') + '\r\n';
+  }
+
+  const RB = { UART, TX, Reader, decode, Engine, connect, supported, Store, Recorder, parseAll, lapsOf, toCSV, toVBO };
+
   if (typeof module !== 'undefined' && module.exports) module.exports = RB; else root.RaceBox = RB;
 })(typeof window !== 'undefined' ? window : globalThis);
