@@ -50,6 +50,9 @@ ol{margin:6px 0 0 20px;padding:0}li{margin:5px 0}
   <div id="out"></div>
 </div>
 <script>
+const VER = '20261127h';
+// si el navegador enseña una copia vieja de esta página, se cambia sola a la última
+fetch('telemetria.html?t=' + Date.now(), { cache: 'no-store' }).then(r => r.text()).then(t => { const m = /const VER = '(\w+)'/.exec(t); if (m && m[1] !== VER && !location.search.includes(m[1])) location.replace('telemetria.html?v=' + m[1]); }).catch(() => {});
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fT = x => { if (x == null || !isFinite(x)) return '–'; const m = Math.floor(x / 60), s = x - m * 60; return (m ? m + ':' + (s < 10 ? '0' : '') : '') + s.toFixed(3); };

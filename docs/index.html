@@ -1710,7 +1710,7 @@ function pilotSetup(el) {
       <div id="kv" class="ksv">${esc(val || '–')}</div>
       <button id="ksgo" class="ksgo">Entrar</button>
       ${RaceBox.supported() ? `<button class="back" id="rbBtn" style="padding:8px 12px;font-size:clamp(13px,3.6vh,18px)">${RBX.st === 'on' ? '🛰 RaceBox conectado ✓ · tocar para desconectar' : '🛰 Conectar RaceBox · delta continuo'}</button>` : '<a class="mini" href="racebox.html" style="color:var(--acc-txt);text-decoration:none">🛰 Delta continuo con RaceBox: cómo activarlo</a>'}
-      <a class="mini" href="telemetria.html" style="color:var(--acc-txt);text-decoration:none">📈 Telemetría grabada con el RaceBox</a>
+      <a class="mini" href="telemetria.html?v=20261127h" style="color:var(--acc-txt);text-decoration:none">📈 Telemetría grabada con el RaceBox</a>
       ${onTrack.length ? `<div class="mini">En pista ahora (toca el tuyo):</div><div class="ksc">${onTrack.map(k => `<span class="chipd" data-q="${k}">${k}</span>`).join('')}</div>` : '<div class="mini">Gira el móvil en horizontal.</div>'}
       ${DASH ? '' : '<a class="mini" href="dash.html" style="color:var(--acc-txt);text-decoration:none">📲 Pon KR DASH en tu pantalla de inicio (abre directo esta vista)</a>'}
     </div>
