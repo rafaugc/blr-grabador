@@ -46,11 +46,11 @@ ol{margin:6px 0 0 20px;padding:0}li{margin:5px 0}
 </head>
 <body>
 <div class="w">
-  <div class="row" style="justify-content:space-between"><h1>Telemetría RaceBox</h1><a href="index.html">← Volver a la app</a></div>
+  <div class="row" style="justify-content:space-between"><h1>Telemetría RaceBox</h1><span class="row"><a href="ingeniero-pista.html?v=20261127a">🏁 Ingeniero de pista</a><a href="index.html">← Volver a la app</a></span></div>
   <div id="out"></div>
 </div>
 <script>
-const VER = '20261127h';
+const VER = '20261127i';
 // si el navegador enseña una copia vieja de esta página, se cambia sola a la última
 fetch('telemetria.html?t=' + Date.now(), { cache: 'no-store' }).then(r => r.text()).then(t => { const m = /const VER = '(\w+)'/.exec(t); if (m && m[1] !== VER && !location.search.includes(m[1])) location.replace('telemetria.html?v=' + m[1]); }).catch(() => {});
 const $ = id => document.getElementById(id);
@@ -149,7 +149,7 @@ function show(meta, samples, raw) {
 function render() {
   const { meta, laps, A, B } = S, bestT = A ? Math.min(...laps.filter(l => !l.lap.bad).map(l => l.lap.T)) : null;
   $('out').innerHTML = `<div class="row" style="justify-content:space-between"><button id="back">← Sesiones</button>
-      <div class="row"><button class="pri" id="xCsv">Exportar .csv</button><button class="pri" id="xVbo">Exportar .vbo</button>${S.raw ? '<button id="xRaw" title="La grabación tal cual, para abrirla en otro aparato">Copia .krb</button>' : ''}${meta.id && (!meta.remote || C.tok()) ? '<button class="dng" id="del">Borrar</button>' : ''}</div></div>
+      <div class="row">${meta.id && laps.length ? `<a href="ingeniero-pista.html?v=20261127a#rb=${encodeURIComponent(meta.id)}" style="text-decoration:none"><button class="pri">🏁 Analizar en Ingeniero de pista</button></a>` : ''}<button class="pri" id="xCsv">Exportar .csv</button><button class="pri" id="xVbo">Exportar .vbo</button>${S.raw ? '<button id="xRaw" title="La grabación tal cual, para abrirla en otro aparato">Copia .krb</button>' : ''}${meta.id && (!meta.remote || C.tok()) ? '<button class="dng" id="del">Borrar</button>' : ''}</div></div>
     <div class="card"><h2>${esc(meta.circuit || 'Sesión')}${meta.kart ? ' · kart ' + esc(meta.kart) : ''}</h2><div class="mini">${fDate(meta.start)} · ${Math.round(S.samples.length / 25 / 60)} min · ${S.samples.length.toLocaleString('es-ES')} datos · ${laps.length} vueltas${bestT ? ' · mejor ' + fT(bestT) : ''}</div></div>
     ${meta.fileTrack ? `<div class="card"><h2>Este archivo trae la meta y ${meta.fileTrack.splits.length} parciales del circuito</h2><div class="row"><span class="mini">Guardarlos para:</span><select id="svSlug"><option value="">— elige circuito —</option>${CIRCS.slice().sort((a, b) => a.nombre.localeCompare(b.nombre)).map(c => `<option value="${esc(c.slug)}">${esc(c.nombre)}${PISTAS[c.slug] ? ' (ya tiene)' : ''}</option>`).join('')}</select><button class="pri" id="svP">Guardar como circuito</button></div><div class="mini" style="margin-top:6px">A partir de entonces, en ese circuito el RaceBox cronometra con la misma meta y los mismos sectores que RaceChrono.</div></div>` : ''}
     ${!laps.length ? '<div class="card">En esta grabación no hay ninguna vuelta completa (hace falta rodar al menos dos vueltas seguidas con GPS). Los datos se pueden exportar igualmente.</div>' : `

@@ -151,11 +151,12 @@ tr.click{cursor:pointer}tr.click:hover td{background:var(--hover)}
     <a data-v="pilotos">Pilotos</a>
     <a data-v="score">Score pilotos</a>
     <a data-v="pista">En pista ahora</a>
-    <a data-v="ing">Ingeniero de pista</a>
+    <a data-v="ing">Estrategia</a>
     <a data-v="sesiones">Sesiones</a>
     <a data-v="capturas">📸 Capturas</a>
     <a data-v="apex">Live timing de Apex</a>
     <a data-v="piloto">Vista piloto</a>
+    <a data-v="ingp">🏁 Ingeniero de pista</a>
     <a data-v="tele">📈 Telemetría</a>
     <a data-v="circuitos">Circuitos</a>
     <a data-v="pdf">Importar PDF</a>
@@ -1284,7 +1285,7 @@ function renderIng() {
   const running = ING.mode === 'live' && ING.start;
   const presetName = P[cfg.preset] ? P[cfg.preset].name : 'Reglamento propio';
   const setup = `<div class="card">
-    <div class="row" style="justify-content:space-between"><b style="font:700 20px 'Barlow Condensed'">Ingeniero de pista</b>
+    <div class="row" style="justify-content:space-between"><b style="font:700 20px 'Barlow Condensed'">Estrategia</b>
       <span class="seg" id="ingMode"><button data-m="live" class="${ING.mode === 'live' ? 'on' : ''}">Carrera real</button><button data-m="sim" class="${ING.mode === 'sim' ? 'on' : ''}">Probar con simulación</button></span></div>
     <div class="row" style="margin-top:10px;gap:14px">
       <div><span class="mini">1 · Reglamento</span><div class="row"><b>${esc(presetName)}</b><span class="mini">${cfg.dur}′ · ${cfg.stopsMin} paradas · relevo mín. ${cfg.stintMin}′${cfg.stintMax < cfg.dur ? ' · máx. ' + cfg.stintMax + '′' : ''} · ${cfg.rows} fila${cfg.rows > 1 ? 's' : ''} de ${cfg.boxKarts} karts</span><button class="back" id="ingEdit">✏️ Editar reglamento</button></div></div>
@@ -2184,6 +2185,7 @@ window.__dbg = { get live() { return live; }, get pilotKart() { return pilotKart
 loadCircuits();
 })();
 </script>
-<script>document.querySelector('#tabs a[data-v=tele]').onclick = () => { location.href = 'telemetria.html?v=20261127h'; };</script>
+<script>document.querySelector('#tabs a[data-v=tele]').onclick = () => { location.href = 'telemetria.html?v=20261127i'; };
+document.querySelector('#tabs a[data-v=ingp]').onclick = () => { location.href = 'ingeniero-pista.html?v=20261127a'; };</script>
 </body>
 </html>
