@@ -7,7 +7,7 @@
 <title>KR · Telemetría RaceBox</title>
 <script>try{const t=JSON.parse(localStorage.getItem('blr_tema')||'null')||{},h=document.documentElement;h.dataset.fondo=t.f||'azul';h.dataset.resalte=t.r||'amarillof';}catch(e){}</script>
 <link rel="stylesheet" href="tema.css?v=1">
-<script src="racebox.js?v=20261127f"></script>
+<script src="racebox.js?v=20261127g"></script>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 -apple-system,system-ui,"Segoe UI",sans-serif;padding:14px}
@@ -87,7 +87,7 @@ async function list() {
   $('imp').onclick = () => $('impF').click();
   $('impF').onchange = async e => { const f = e.target.files[0]; if (!f) return; try { await importFile(f); } catch (err) { alert('No se pudo abrir: ' + (err && err.message || err)); } };
   if ($('tokOff')) $('tokOff').onclick = () => { C.setToken(''); list(); };
-  if ($('tokOk')) $('tokOk').onclick = async () => { const t = $('tokIn').value.trim(); if (!t) return; C.setToken(t); $('tokMsg').textContent = 'Comprobando…'; const r = await C.check().catch(() => 'sin conexión'); if (r === 'ok') list(); else { $('tokMsg').innerHTML = '<span style="color:var(--vslow)">No vale: ' + esc(r) + '. Revisa los pasos 3 y 4.</span>'; } };
+  if ($('tokOk')) $('tokOk').onclick = async () => { const t = $('tokIn').value.trim(); if (!t) return; C.setToken(t); $('tokMsg').textContent = 'Comprobando…'; const r = await C.check().catch(e => 'fallo inesperado: ' + (e && e.message || e)); if (r === 'ok') list(); else { $('tokMsg').innerHTML = '<span style="color:var(--vslow)">No ha funcionado: ' + esc(r) + '.</span>'; } };
 }
 
 // ---- abrir un archivo (RaceChrono .vbo, o lo exportado por KR) ----

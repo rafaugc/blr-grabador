@@ -375,7 +375,7 @@
     const BR = 'telemetria';
     const tok = () => { try { return JSON.parse(localStorage.getItem('blr_ghToken') || '""') || ''; } catch (e) { return ''; } };
     const hdr = () => Object.assign({ Accept: 'application/vnd.github+json' }, tok() ? { Authorization: 'Bearer ' + tok() } : {});
-    const api = (path, opt) => fetch('https://api.github.com/repos/' + repo() + '/' + path, Object.assign({ headers: Object.assign(hdr(), opt && opt.body ? { 'Content-Type': 'application/json' } : {}) }, opt || {}));
+    const api = (path, opt) => fetch('https://api.github.com/repos/' + repo() + (path ? '/' + path : ''), Object.assign({ headers: Object.assign(hdr(), opt && opt.body ? { 'Content-Type': 'application/json' } : {}) }, opt || {}));
     const b64 = u8 => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); };
     const pipe = async (u8, T) => new Uint8Array(await new Response(new Blob([u8]).stream().pipeThrough(new T('gzip'))).arrayBuffer());
     const gzip = u8 => pipe(u8, CompressionStream), gunzip = u8 => pipe(u8, DecompressionStream);
@@ -424,7 +424,15 @@
       all[slug] = def;
       await put('data/pistas.json', utf8(JSON.stringify(all, null, 1)), 'main', 'Circuito ' + slug + ': meta y parciales');
     }
-    async function check() { if (!tok()) return 'sin llave'; const r = await api(''); if (!r.ok) return 'la llave no vale'; const j = await r.json(); return j.permissions && j.permissions.push ? 'ok' : 'falta el permiso de «Contents» (lectura y escritura)'; }
+    // comprueba la llave de verdad: escribe un archivo diminuto de prueba en la rama de telemetría
+    async function check() {
+      if (!tok()) return 'sin llave';
+      let r; try { r = await api(''); } catch (e) { return 'no se pudo contactar con GitHub (revisa la conexión a internet)'; }
+      if (r.status === 401) return 'GitHub no reconoce la llave (¿copiada entera?)';
+      if (!r.ok) return 'la llave no da acceso al proyecto rafa_krtrnk (paso 3)';
+      try { await put('rb/.llave-ok', utf8('Llave comprobada el ' + new Date().toISOString() + '\n'), BR, 'Comprobación de llave'); } catch (e) { return String(e.message || e) + ' (paso 4)'; }
+      return 'ok';
+    }
     return { repo, tok, syncUp, listRemote, getRemote, delRemote, pistas, savePista, check, setToken: t => localStorage.setItem('blr_ghToken', JSON.stringify(t)) };
   })();
 
