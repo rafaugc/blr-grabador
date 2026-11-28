@@ -6,9 +6,9 @@
   "mensajes": 348,
   "sesiones": 0,
   "errores_lectura": 0,
-  "ultima_ejecucion": "2026-11-28 05:52 UTC",
+  "ultima_ejecucion": "2026-11-28 08:57 UTC",
   "sesiones_total": 6,
-  "ultima_conexion_ok": "2026-11-28 05:52 UTC",
+  "ultima_conexion_ok": "2026-11-28 08:57 UTC",
   "ultima_sesion": "2026-11-21 16:47 Q JUNIOR CUP"
  },
  "kartodromo-lucas-guerrero": {
@@ -19,9 +19,9 @@
   "sesiones": 0,
   "errores_lectura": 0,
   "titulo": "Carrera 8",
-  "ultima_ejecucion": "2026-11-28 05:52 UTC",
+  "ultima_ejecucion": "2026-11-28 08:57 UTC",
   "sesiones_total": 9,
-  "ultima_conexion_ok": "2026-11-28 05:52 UTC",
+  "ultima_conexion_ok": "2026-11-28 08:57 UTC",
   "ultima_sesion": "2026-11-26 17:11 Carrera 8"
  },
  "kartodromodeviana": {
@@ -31,9 +31,9 @@
   "mensajes": 348,
   "sesiones": 0,
   "errores_lectura": 0,
-  "ultima_ejecucion": "2026-11-28 05:52 UTC",
+  "ultima_ejecucion": "2026-11-28 08:57 UTC",
   "sesiones_total": 3,
-  "ultima_conexion_ok": "2026-11-28 05:52 UTC",
+  "ultima_conexion_ok": "2026-11-28 08:57 UTC",
   "ultima_sesion": "2026-11-21 11:20 GP 5 + 10+10 - Final"
  },
  "karting-vendrell": {
@@ -43,9 +43,9 @@
   "mensajes": 348,
   "sesiones": 0,
   "errores_lectura": 0,
-  "ultima_ejecucion": "2026-11-28 05:52 UTC",
+  "ultima_ejecucion": "2026-11-28 08:57 UTC",
   "sesiones_total": 20,
-  "ultima_conexion_ok": "2026-11-28 05:52 UTC",
+  "ultima_conexion_ok": "2026-11-28 08:57 UTC",
   "ultima_sesion": "2026-11-22 17:13 FINAL ORO"
  },
  "karting-sevilla": {
@@ -55,21 +55,21 @@
   "mensajes": 348,
   "sesiones": 0,
   "errores_lectura": 0,
-  "ultima_ejecucion": "2026-11-28 05:52 UTC",
+  "ultima_ejecucion": "2026-11-28 08:57 UTC",
   "sesiones_total": 0,
-  "ultima_conexion_ok": "2026-11-28 05:52 UTC",
+  "ultima_conexion_ok": "2026-11-28 08:57 UTC",
   "ultima_sesion": null
  },
  "karting-rivas": {
   "nombre": "Karting Rivas",
   "conectado": true,
   "conexiones": 1,
-  "mensajes": 348,
+  "mensajes": 349,
   "sesiones": 0,
   "errores_lectura": 0,
-  "ultima_ejecucion": "2026-11-28 05:52 UTC",
+  "ultima_ejecucion": "2026-11-28 08:57 UTC",
   "sesiones_total": 0,
-  "ultima_conexion_ok": "2026-11-28 05:52 UTC",
+  "ultima_conexion_ok": "2026-11-28 08:57 UTC",
   "ultima_sesion": null
  },
  "henakart": {
@@ -79,9 +79,9 @@
   "mensajes": 348,
   "sesiones": 0,
   "errores_lectura": 0,
-  "ultima_ejecucion": "2026-11-28 05:52 UTC",
+  "ultima_ejecucion": "2026-11-28 08:57 UTC",
   "sesiones_total": 1,
-  "ultima_conexion_ok": "2026-11-28 05:52 UTC",
+  "ultima_conexion_ok": "2026-11-28 08:57 UTC",
   "ultima_sesion": "2026-11-22 12:39 INDIVIDUAL 1H - CARRERA"
  },
  "karting-campillos": {
@@ -92,22 +92,23 @@
   "sesiones": 0,
   "errores_lectura": 0,
   "titulo": "15´",
-  "ultima_ejecucion": "2026-11-28 05:52 UTC",
+  "ultima_ejecucion": "2026-11-28 08:57 UTC",
   "sesiones_total": 79,
-  "ultima_conexion_ok": "2026-11-28 05:52 UTC",
+  "ultima_conexion_ok": "2026-11-28 08:57 UTC",
   "ultima_sesion": "2026-11-26 18:08 15´"
  },
  "circuito-dr7": {
   "nombre": "DR7",
   "conectado": true,
   "conexiones": 1,
-  "mensajes": 349,
-  "sesiones": 0,
+  "mensajes": 772,
+  "sesiones": 1,
   "errores_lectura": 0,
-  "ultima_ejecucion": "2026-11-28 05:52 UTC",
-  "sesiones_total": 16,
-  "ultima_conexion_ok": "2026-11-28 05:52 UTC",
-  "ultima_sesion": "2026-11-22 13:03 Carrera1 +80"
+  "titulo": "Enrtrenos 70 gold",
+  "ultima_sesion": "2026-11-28 09:43 Enrtrenos 70 gold",
+  "ultima_ejecucion": "2026-11-28 08:57 UTC",
+  "sesiones_total": 17,
+  "ultima_conexion_ok": "2026-11-28 08:57 UTC"
  },
  "karting-cabanillas": {
   "nombre": "Karting Cabanillas",
@@ -116,21 +117,21 @@
   "mensajes": 348,
   "sesiones": 0,
   "errores_lectura": 0,
-  "ultima_ejecucion": "2026-11-28 05:52 UTC",
+  "ultima_ejecucion": "2026-11-28 08:57 UTC",
   "sesiones_total": 6,
-  "ultima_conexion_ok": "2026-11-28 05:52 UTC",
+  "ultima_conexion_ok": "2026-11-28 08:57 UTC",
   "ultima_sesion": "2026-11-22 17:46 Sesión 35"
  },
  "karting-los-santos": {
   "nombre": "Karting Los Santos",
   "conectado": true,
   "conexiones": 1,
-  "mensajes": 348,
+  "mensajes": 349,
   "sesiones": 0,
   "errores_lectura": 0,
-  "ultima_ejecucion": "2026-11-28 05:52 UTC",
+  "ultima_ejecucion": "2026-11-28 08:57 UTC",
   "sesiones_total": 0,
-  "ultima_conexion_ok": "2026-11-28 05:52 UTC",
+  "ultima_conexion_ok": "2026-11-28 08:57 UTC",
   "ultima_sesion": null
  }
 }
