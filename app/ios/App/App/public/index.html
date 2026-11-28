@@ -14,7 +14,7 @@
 <meta name="apple-mobile-web-app-title" content="KR Karts">
 <title>KR Karts · En directo</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-<script src="bt-nativo.js?v=mx0834gz"></script><script src="ajustes-app.js?v=mx0834gz"></script>
+<script src="bt-nativo.js?v=mx08gycx"></script><script src="ajustes-app.js?v=mx08gycx"></script>
 <script>/* tema guardado: se aplica antes de pintar para que no parpadee */
 if(/[?&]vista=piloto/.test(location.search))document.documentElement.classList.add('dashboot');
 try{const t=JSON.parse(localStorage.getItem('blr_tema')||'null')||{},h=document.documentElement;h.dataset.fondo=t.f||'azul';h.dataset.resalte=t.r||'amarillof';}catch(e){}</script>
@@ -1792,6 +1792,8 @@ function pilotSetup(el) {
 }
 let pilotReady = false;
 function renderPilot(force) {
+  // Solo se pinta si la pestaña abierta es la vista piloto. Si no, un aviso tardío (el «¿Salir?» de 3 s, un mensaje del box, el GPS) volvía a poner la pantalla fija y sin menú encima de otra pestaña.
+  if (document.querySelector('#tabs a.on')?.dataset.v !== 'piloto') { document.body.classList.remove('pilot'); return; }
   const el = $('pilotOut'); if (!el) return;
   if (!pilotKart || !pilotReady) { if (force || !el.querySelector('.kp2')) pilotSetup(el); return; }
   const rows = live ? Object.entries(live.rows).filter(([, r]) => r.no) : [];
