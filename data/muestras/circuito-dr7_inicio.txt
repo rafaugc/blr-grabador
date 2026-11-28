@@ -607,3 +607,8 @@ r265c1|gs| ⏎ r265c2||1 ⏎ r265c5|tb|1:10.190 ⏎ r265c6|in|Vuelta 1 ⏎ r265c
 r265c1|gf| ⏎ 
 r264c1|gl| ⏎ r264c2||2 ⏎ r264c5|ti|1:10.943 ⏎ r264c6|ib|0.959 ⏎ r264c7|in|0.959 ⏎ r264c8|in|1:10.943 ⏎ r264c11|in|1 ⏎ r264|*|70943| ⏎ 
 light|lf| ⏎ com||<p><b>16:07</b><span data-flag="chequered"></span>Llegada</p> ⏎ 
+r265c9|in|0:02 ⏎ 
+r264c9|in|0:02 ⏎ 
+r265c9|in|0:03 ⏎ 
+r264c9|in|0:03 ⏎ 
+r265c9|in|0:04 ⏎ r264c9|in|0:04 ⏎ 
