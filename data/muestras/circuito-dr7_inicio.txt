@@ -31,161 +31,6 @@
  ⏎ 
  ⏎ 
  ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
- ⏎ 
 init|p| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no2|border-bottom-color:#80FF00 !important; color:#000000 !important; ⏎ css|pena1|color:#f00; font-size:11px; font-weight: bold; text-align:center; ⏎ effects||Mostrar Efectos ⏎ comments||Comentarios ⏎ title1|| ⏎ title2||Enrtrenos 70 gold ⏎ dyn1|countdown|595093 ⏎ light|lg| ⏎ wth1|| ⏎ wth2|| ⏎ wth3|| ⏎ track||Pista Principal (1075m) ⏎ com|| ⏎ grid||<tbody><tr data-id="r0" class="head" data-pos="0"><td data-id="c1" data-type="grp" data-pr="6"></td><td data-id="c2" data-type="sta" data-pr="1"></td><td data-id="c3" data-type="rk" data-pr="1">Clasif.</td><td data-id="c4" data-type="no" data-pr="1">Kart</td><td data-id="c5" data-type="dr" data-pr="1" data-width="24" data-min="16">Piloto</td><td data-id="c6" data-type="llp" data-pr="2" data-width="17" data-min="7">Última vuelta</td><td data-id="c7" data-type="blp" data-pr="1" data-width="17" data-min="7">Mejor vuelta</td><td data-id="c8" data-type="gap" data-pr="4" data-width="12" data-min="7">Gap</td><td data-id="c9" data-type="tlp" data-pr="5" data-width="7" data-min="4">Vueltas</td><td data-id="c10" data-type="otr" data-pr="2" data-width="12" data-min="4">Tiempo en PIT</td><td data-id="c11" data-type="pit" data-pr="2" data-width="8" data-min="7">Pits</td></tr><tr data-id="r109" data-pos="1"><td data-id="r109c1" class="in"></td><td data-id="r109c2" class="ss"></td><td class="rk"><div><p data-id="r109c3" class=""></p></div></td><td class="no"><div data-id="r109c4" class="no1">43</div></td><td data-id="r109c5" class="dr">KART 43</td><td data-id="r109c6" class=""></td><td data-id="r109c7" class="ib"></td><td data-id="r109c8" class="in"></td><td data-id="r109c9" class="in"></td><td data-id="r109c10" class="in"></td><td data-id="r109c11" class="in"></td></tr><tr data-id="r110" data-pos="2"><td data-id="r110c1" class="in"></td><td data-id="r110c2" class="in"></td><td class="rk"><div><p data-id="r110c3" class=""></p></div></td><td class="no"><div data-id="r110c4" class="no1">30</div></td><td data-id="r110c5" class="dr">KART 30</td><td data-id="r110c6" class=""></td><td data-id="r110c7" class="ib"></td><td data-id="r110c8" class="in"></td><td data-id="r110c9" class="in"></td><td data-id="r110c10" class="in"></td><td data-id="r110c11" class="in"></td></tr><tr data-id="r111" data-pos="3"><td data-id="r111c1" class="in"></td><td data-id="r111c2" class="so"></td><td class="rk"><div><p data-id="r111c3" class=""></p></div></td><td class="no"><div data-id="r111c4" class="no1">55</div></td><td data-id="r111c5" class="dr">KART 55</td><td data-id="r111c6" class=""></td><td data-id="r111c7" class="ib"></td><td data-id="r111c8" class="in"></td><td data-id="r111c9" class="in"></td><td data-id="r111c10" class="in"></td><td data-id="r111c11" class="in"></td></tr><tr data-id="r112" data-pos="4"><td data-id="r112c1" class="in"></td><td data-id="r112c2" class="so"></td><td class="rk"><div><p data-id="r112c3" class=""></p></div></td><td class="no"><div data-id="r112c4" class="no1">44</div></td><td data-id="r112c5" class="dr">KART 44</td><td data-id="r112c6" class=""></td><td data-id="r112c7" class="ib"></td><td data-id="r112c8" class="in"></td><td data-id="r112c9" class="in"></td><td data-id="r112c10" class="in"></td><td data-id="r112c11" class="in"></td></tr><tr data-id="r113" data-pos="5"><td data-id="r113c1" class="in"></td><td data-id="r113c2" class="so"></td><td class="rk"><div><p data-id="r113c3" class=""></p></div></td><td class="no"><div data-id="r113c4" class="no1">56</div></td><td data-id="r113c5" class="dr">KART 56</td><td data-id="r113c6" class=""></td><td data-id="r113c7" class="ib"></td><td data-id="r113c8" class="in"></td><td data-id="r113c9" class="in"></td><td data-id="r113c10" class="to">50:26.</td><td data-id="r113c11" class="in"></td></tr><tr data-id="r114" data-pos="6"><td data-id="r114c1" class="in"></td><td data-id="r114c2" class="so"></td><td class="rk"><div><p data-id="r114c3" class=""></p></div></td><td class="no"><div data-id="r114c4" class="no1">36</div></td><td data-id="r114c5" class="dr">KART 36</td><td data-id="r114c6" class=""></td><td data-id="r114c7" class="ib"></td><td data-id="r114c8" class="in"></td><td data-id="r114c9" class="in"></td><td data-id="r114c10" class="in"></td><td data-id="r114c11" class="in"></td></tr><tr data-id="r115" data-pos="7"><td data-id="r115c1" class="in"></td><td data-id="r115c2" class="so"></td><td class="rk"><div><p data-id="r115c3" class=""></p></div></td><td class="no"><div data-id="r115c4" class="no1">46</div></td><td data-id="r115c5" class="dr">KART 46</td><td data-id="r115c6" class=""></td><td data-id="r115c7" class="ib"></td><td data-id="r115c8" class="in"></td><td data-id="r115c9" class="in"></td><td data-id="r115c10" class="in"></td><td data-id="r115c11" class="in"></td></tr><tr data-id="r116" data-pos="8"><td data-id="r116c1" class="in"></td><td data-id="r116c2" class="so"></td><td class="rk"><div><p data-id="r116c3" class=""></p></div></td><td class="no"><div data-id="r116c4" class="no1">54</div></td><td data-id="r116c5" class="dr">KART 54</td><td data-id="r116c6" class=""></td><td data-id="r116c7" class="ib"></td><td data-id="r116c8" class="in"></td><td data-id="r116c9" class="in"></td><td data-id="r116c10" class="in"></td><td data-id="r116c11" class="in"></td></tr><tr data-id="r117" data-pos="9"><td data-id="r117c1" class="in"></td><td data-id="r117c2" class="so"></td><td class="rk"><div><p data-id="r117c3" class=""></p></div></td><td class="no"><div data-id="r117c4" class="no1">33</div></td><td data-id="r117c5" class="dr">KART 33</td><td data-id="r117c6" class=""></td><td data-id="r117c7" class="ib"></td><td data-id="r117c8" class="in"></td><td data-id="r117c9" class="in"></td><td data-id="r117c10" class="in"></td><td data-id="r117c11" class="in"></td></tr><tr data-id="r118" data-pos="10"><td data-id="r118c1" class="in"></td><td data-id="r118c2" class="in"></td><td class="rk"><div><p data-id="r118c3" class=""></p></div></td><td class="no"><div data-id="r118c4" class="no1">31</div></td><td data-id="r118c5" class="dr">KART 31</td><td data-id="r118c6" class=""></td><td data-id="r118c7" class="ib"></td><td data-id="r118c8" class="in"></td><td data-id="r118c9" class="in"></td><td data-id="r118c10" class="in"></td><td data-id="r118c11" class="in"></td></tr><tr data-id="r119" data-pos="11"><td data-id="r119c1" class="in"></td><td data-id="r119c2" class="so"></td><td class="rk"><div><p data-id="r119c3" class=""></p></div></td><td class="no"><div data-id="r119c4" class="no1">41</div></td><td data-id="r119c5" class="dr">KART 41</td><td data-id="r119c6" class=""></td><td data-id="r119c7" class="ib"></td><td data-id="r119c8" class="in"></td><td data-id="r119c9" class="in"></td><td data-id="r119c10" class="in"></td><td data-id="r119c11" class="in"></td></tr><tr data-id="r120" data-pos="12"><td data-id="r120c1" class="in"></td><td data-id="r120c2" class="so"></td><td class="rk"><div><p data-id="r120c3" class=""></p></div></td><td class="no"><div data-id="r120c4" class="no1">53</div></td><td data-id="r120c5" class="dr">KART 53</td><td data-id="r120c6" class=""></td><td data-id="r120c7" class="ib"></td><td data-id="r120c8" class="in"></td><td data-id="r120c9" class="in"></td><td data-id="r120c10" class="in"></td><td data-id="r120c11" class="in"></td></tr><tr data-id="r121" data-pos="13"><td data-id="r121c1" class="in"></td><td data-id="r121c2" class="so"></td><td class="rk"><div><p data-id="r121c3" class=""></p></div></td><td class="no"><div data-id="r121c4" class="no1">34</div></td><td data-id="r121c5" class="dr">KART 34</td><td data-id="r121c6" class=""></td><td data-id="r121c7" class="ib"></td><td data-id="r121c8" class="in"></td><td data-id="r121c9" class="in"></td><td data-id="r121c10" class="in"></td><td data-id="r121c11" class="in"></td></tr><tr data-id="r122" data-pos="14"><td data-id="r122c1" class="in"></td><td data-id="r122c2" class="in"></td><td class="rk"><div><p data-id="r122c3" class=""></p></div></td><td class="no"><div data-id="r122c4" class="no1">48</div></td><td data-id="r122c5" class="dr">KART 48</td><td data-id="r122c6" class=""></td><td data-id="r122c7" class="ib"></td><td data-id="r122c8" class="in"></td><td data-id="r122c9" class="in"></td><td data-id="r122c10" class="in"></td><td data-id="r122c11" class="in"></td></tr><tr data-id="r123" data-pos="15"><td data-id="r123c1" class="in"></td><td data-id="r123c2" class="in"></td><td class="rk"><div><p data-id="r123c3" class=""></p></div></td><td class="no"><div data-id="r123c4" class="no1">32</div></td><td data-id="r123c5" class="dr">KART 32</td><td data-id="r123c6" class=""></td><td data-id="r123c7" class="ib"></td><td data-id="r123c8" class="in"></td><td data-id="r123c9" class="in"></td><td data-id="r123c10" class="in"></td><td data-id="r123c11" class="in"></td></tr><tr data-id="r124" data-pos="16"><td data-id="r124c1" class="in"></td><td data-id="r124c2" class="in"></td><td class="rk"><div><p data-id="r124c3" class=""></p></div></td><td class="no"><div data-id="r124c4" class="no1">42</div></td><td data-id="r124c5" class="dr">KART 42</td><td data-id="r124c6" class=""></td><td data-id="r124c7" class="ib"></td><td data-id="r124c8" class="in"></td><td data-id="r124c9" class="in"></td><td data-id="r124c10" class="in"></td><td data-id="r124c11" class="in"></td></tr><tr data-id="r125" data-pos="17"><td data-id="r125c1" class="in"></td><td data-id="r125c2" class="in"></td><td class="rk"><div><p data-id="r125c3" class=""></p></div></td><td class="no"><div data-id="r125c4" class="no1">37</div></td><td data-id="r125c5" class="dr">KART 37</td><td data-id="r125c6" class=""></td><td data-id="r125c7" class="ib"></td><td data-id="r125c8" class="in"></td><td data-id="r125c9" class="in"></td><td data-id="r125c10" class="in"></td><td data-id="r125c11" class="in"></td></tr></tbody> ⏎ msg|| ⏎ 
 init|p| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no2|border-bottom-color:#80FF00 !important; color:#000000 !important; ⏎ css|pena1|color:#f00; font-size:11px; font-weight: bold; text-align:center; ⏎ effects||Mostrar Efectos ⏎ comments||Comentarios ⏎ title1|| ⏎ title2||Enrtrenos 70 gold ⏎ dyn1|countdown|594770 ⏎ light|lg| ⏎ wth1|| ⏎ wth2|| ⏎ wth3|| ⏎ track||Pista Principal (1075m) ⏎ com|| ⏎ grid||<tbody><tr data-id="r0" class="head" data-pos="0"><td data-id="c1" data-type="grp" data-pr="6"></td><td data-id="c2" data-type="sta" data-pr="1"></td><td data-id="c3" data-type="rk" data-pr="1">Clasif.</td><td data-id="c4" data-type="no" data-pr="1">Kart</td><td data-id="c5" data-type="dr" data-pr="1" data-width="24" data-min="16">Piloto</td><td data-id="c6" data-type="llp" data-pr="2" data-width="17" data-min="7">Última vuelta</td><td data-id="c7" data-type="blp" data-pr="1" data-width="17" data-min="7">Mejor vuelta</td><td data-id="c8" data-type="gap" data-pr="4" data-width="12" data-min="7">Gap</td><td data-id="c9" data-type="tlp" data-pr="5" data-width="7" data-min="4">Vueltas</td><td data-id="c10" data-type="otr" data-pr="2" data-width="12" data-min="4">Tiempo en PIT</td><td data-id="c11" data-type="pit" data-pr="2" data-width="8" data-min="7">Pits</td></tr><tr data-id="r109" data-pos="1"><td data-id="r109c1" class="in"></td><td data-id="r109c2" class="ss"></td><td class="rk"><div><p data-id="r109c3" class=""></p></div></td><td class="no"><div data-id="r109c4" class="no1">43</div></td><td data-id="r109c5" class="dr">KART 43</td><td data-id="r109c6" class=""></td><td data-id="r109c7" class="ib"></td><td data-id="r109c8" class="in"></td><td data-id="r109c9" class="in"></td><td data-id="r109c10" class="in"></td><td data-id="r109c11" class="in"></td></tr><tr data-id="r110" data-pos="2"><td data-id="r110c1" class="in"></td><td data-id="r110c2" class="in"></td><td class="rk"><div><p data-id="r110c3" class=""></p></div></td><td class="no"><div data-id="r110c4" class="no1">30</div></td><td data-id="r110c5" class="dr">KART 30</td><td data-id="r110c6" class=""></td><td data-id="r110c7" class="ib"></td><td data-id="r110c8" class="in"></td><td data-id="r110c9" class="in"></td><td data-id="r110c10" class="in"></td><td data-id="r110c11" class="in"></td></tr><tr data-id="r111" data-pos="3"><td data-id="r111c1" class="in"></td><td data-id="r111c2" class="so"></td><td class="rk"><div><p data-id="r111c3" class=""></p></div></td><td class="no"><div data-id="r111c4" class="no1">55</div></td><td data-id="r111c5" class="dr">KART 55</td><td data-id="r111c6" class=""></td><td data-id="r111c7" class="ib"></td><td data-id="r111c8" class="in"></td><td data-id="r111c9" class="in"></td><td data-id="r111c10" class="in"></td><td data-id="r111c11" class="in"></td></tr><tr data-id="r112" data-pos="4"><td data-id="r112c1" class="in"></td><td data-id="r112c2" class="so"></td><td class="rk"><div><p data-id="r112c3" class=""></p></div></td><td class="no"><div data-id="r112c4" class="no1">44</div></td><td data-id="r112c5" class="dr">KART 44</td><td data-id="r112c6" class=""></td><td data-id="r112c7" class="ib"></td><td data-id="r112c8" class="in"></td><td data-id="r112c9" class="in"></td><td data-id="r112c10" class="in"></td><td data-id="r112c11" class="in"></td></tr><tr data-id="r113" data-pos="5"><td data-id="r113c1" class="in"></td><td data-id="r113c2" class="so"></td><td class="rk"><div><p data-id="r113c3" class=""></p></div></td><td class="no"><div data-id="r113c4" class="no1">56</div></td><td data-id="r113c5" class="dr">KART 56</td><td data-id="r113c6" class=""></td><td data-id="r113c7" class="ib"></td><td data-id="r113c8" class="in"></td><td data-id="r113c9" class="in"></td><td data-id="r113c10" class="to">50:26.</td><td data-id="r113c11" class="in"></td></tr><tr data-id="r114" data-pos="6"><td data-id="r114c1" class="in"></td><td data-id="r114c2" class="so"></td><td class="rk"><div><p data-id="r114c3" class=""></p></div></td><td class="no"><div data-id="r114c4" class="no1">36</div></td><td data-id="r114c5" class="dr">KART 36</td><td data-id="r114c6" class=""></td><td data-id="r114c7" class="ib"></td><td data-id="r114c8" class="in"></td><td data-id="r114c9" class="in"></td><td data-id="r114c10" class="in"></td><td data-id="r114c11" class="in"></td></tr><tr data-id="r115" data-pos="7"><td data-id="r115c1" class="in"></td><td data-id="r115c2" class="so"></td><td class="rk"><div><p data-id="r115c3" class=""></p></div></td><td class="no"><div data-id="r115c4" class="no1">46</div></td><td data-id="r115c5" class="dr">KART 46</td><td data-id="r115c6" class=""></td><td data-id="r115c7" class="ib"></td><td data-id="r115c8" class="in"></td><td data-id="r115c9" class="in"></td><td data-id="r115c10" class="in"></td><td data-id="r115c11" class="in"></td></tr><tr data-id="r116" data-pos="8"><td data-id="r116c1" class="in"></td><td data-id="r116c2" class="so"></td><td class="rk"><div><p data-id="r116c3" class=""></p></div></td><td class="no"><div data-id="r116c4" class="no1">54</div></td><td data-id="r116c5" class="dr">KART 54</td><td data-id="r116c6" class=""></td><td data-id="r116c7" class="ib"></td><td data-id="r116c8" class="in"></td><td data-id="r116c9" class="in"></td><td data-id="r116c10" class="in"></td><td data-id="r116c11" class="in"></td></tr><tr data-id="r117" data-pos="9"><td data-id="r117c1" class="in"></td><td data-id="r117c2" class="so"></td><td class="rk"><div><p data-id="r117c3" class=""></p></div></td><td class="no"><div data-id="r117c4" class="no1">33</div></td><td data-id="r117c5" class="dr">KART 33</td><td data-id="r117c6" class=""></td><td data-id="r117c7" class="ib"></td><td data-id="r117c8" class="in"></td><td data-id="r117c9" class="in"></td><td data-id="r117c10" class="in"></td><td data-id="r117c11" class="in"></td></tr><tr data-id="r118" data-pos="10"><td data-id="r118c1" class="in"></td><td data-id="r118c2" class="in"></td><td class="rk"><div><p data-id="r118c3" class=""></p></div></td><td class="no"><div data-id="r118c4" class="no1">31</div></td><td data-id="r118c5" class="dr">KART 31</td><td data-id="r118c6" class=""></td><td data-id="r118c7" class="ib"></td><td data-id="r118c8" class="in"></td><td data-id="r118c9" class="in"></td><td data-id="r118c10" class="in"></td><td data-id="r118c11" class="in"></td></tr><tr data-id="r119" data-pos="11"><td data-id="r119c1" class="in"></td><td data-id="r119c2" class="so"></td><td class="rk"><div><p data-id="r119c3" class=""></p></div></td><td class="no"><div data-id="r119c4" class="no1">41</div></td><td data-id="r119c5" class="dr">KART 41</td><td data-id="r119c6" class=""></td><td data-id="r119c7" class="ib"></td><td data-id="r119c8" class="in"></td><td data-id="r119c9" class="in"></td><td data-id="r119c10" class="in"></td><td data-id="r119c11" class="in"></td></tr><tr data-id="r120" data-pos="12"><td data-id="r120c1" class="in"></td><td data-id="r120c2" class="so"></td><td class="rk"><div><p data-id="r120c3" class=""></p></div></td><td class="no"><div data-id="r120c4" class="no1">53</div></td><td data-id="r120c5" class="dr">KART 53</td><td data-id="r120c6" class=""></td><td data-id="r120c7" class="ib"></td><td data-id="r120c8" class="in"></td><td data-id="r120c9" class="in"></td><td data-id="r120c10" class="in"></td><td data-id="r120c11" class="in"></td></tr><tr data-id="r121" data-pos="13"><td data-id="r121c1" class="in"></td><td data-id="r121c2" class="so"></td><td class="rk"><div><p data-id="r121c3" class=""></p></div></td><td class="no"><div data-id="r121c4" class="no1">34</div></td><td data-id="r121c5" class="dr">KART 34</td><td data-id="r121c6" class=""></td><td data-id="r121c7" class="ib"></td><td data-id="r121c8" class="in"></td><td data-id="r121c9" class="in"></td><td data-id="r121c10" class="in"></td><td data-id="r121c11" class="in"></td></tr><tr data-id="r122" data-pos="14"><td data-id="r122c1" class="in"></td><td data-id="r122c2" class="in"></td><td class="rk"><div><p data-id="r122c3" class=""></p></div></td><td class="no"><div data-id="r122c4" class="no1">48</div></td><td data-id="r122c5" class="dr">KART 48</td><td data-id="r122c6" class=""></td><td data-id="r122c7" class="ib"></td><td data-id="r122c8" class="in"></td><td data-id="r122c9" class="in"></td><td data-id="r122c10" class="in"></td><td data-id="r122c11" class="in"></td></tr><tr data-id="r123" data-pos="15"><td data-id="r123c1" class="in"></td><td data-id="r123c2" class="in"></td><td class="rk"><div><p data-id="r123c3" class=""></p></div></td><td class="no"><div data-id="r123c4" class="no1">32</div></td><td data-id="r123c5" class="dr">KART 32</td><td data-id="r123c6" class=""></td><td data-id="r123c7" class="ib"></td><td data-id="r123c8" class="in"></td><td data-id="r123c9" class="in"></td><td data-id="r123c10" class="in"></td><td data-id="r123c11" class="in"></td></tr><tr data-id="r124" data-pos="16"><td data-id="r124c1" class="in"></td><td data-id="r124c2" class="in"></td><td class="rk"><div><p data-id="r124c3" class=""></p></div></td><td class="no"><div data-id="r124c4" class="no1">42</div></td><td data-id="r124c5" class="dr">KART 42</td><td data-id="r124c6" class=""></td><td data-id="r124c7" class="ib"></td><td data-id="r124c8" class="in"></td><td data-id="r124c9" class="in"></td><td data-id="r124c10" class="in"></td><td data-id="r124c11" class="in"></td></tr><tr data-id="r125" data-pos="17"><td data-id="r125c1" class="in"></td><td data-id="r125c2" class="in"></td><td class="rk"><div><p data-id="r125c3" class=""></p></div></td><td class="no"><div data-id="r125c4" class="no1">37</div></td><td data-id="r125c5" class="dr">KART 37</td><td data-id="r125c6" class=""></td><td data-id="r125c7" class="ib"></td><td data-id="r125c8" class="in"></td><td data-id="r125c9" class="in"></td><td data-id="r125c10" class="in"></td><td data-id="r125c11" class="in"></td></tr><tr data-id="r126" data-pos="18"><td data-id="r126c1" class="in"></td><td data-id="r126c2" class="so"></td><td class="rk"><div><p data-id="r126c3" class=""></p></div></td><td class="no"><div data-id="r126c4" class="no1">51</div></td><td data-id="r126c5" class="dr">KART 51</td><td data-id="r126c6" class=""></td><td data-id="r126c7" class="ib"></td><td data-id="r126c8" class="in"></td><td data-id="r126c9" class="in"></td><td data-id="r126c10" class="in"></td><td data-id="r126c11" class="in"></td></tr><tr data-id="r127" data-pos="19"><td data-id="r127c1" class="in"></td><td data-id="r127c2" class="so"></td><td class="rk"><div><p data-id="r127c3" class=""></p></div></td><td class="no"><div data-id="r127c4" class="no1">39</div></td><td data-id="r127c5" class="dr">KART 39</td><td data-id="r127c6" class=""></td><td data-id="r127c7" class="ib"></td><td data-id="r127c8" class="in"></td><td data-id="r127c9" class="in"></td><td data-id="r127c10" class="in"></td><td data-id="r127c11" class="in"></td></tr></tbody> ⏎ msg|| ⏎ 
 r111c10|to|54:43. ⏎ 
@@ -568,3 +413,58 @@ r121c10|in|0:09 ⏎
 r115c10|in|0:09 ⏎ 
 r124c10|in|0:09 ⏎ 
 r117c2|in| ⏎ 
+r116c10|in|0:09 ⏎ 
+r120c2|sr| ⏎ 
+r120c6|ti|1:27.319 ⏎ r120c7|ib|1:27.319 ⏎ r120c8|in|3.009 ⏎ r120c9|in|6 ⏎ r120|*|87319| ⏎ 
+r116c2|in| ⏎ 
+r125c10|in|0:09 ⏎ 
+r120c10|in|0:09 ⏎ 
+r117c10|in|0:09 ⏎ 
+r110c2|in| ⏎ 
+r120c2|in| ⏎ 
+dyn1|countdown|18782 ⏎ 
+light|lf| ⏎ 
+com||<p><b>09:52</b><span data-flag="chequered"></span>Llegada</p> ⏎ r109c2|sf| ⏎ r126c2|sf| ⏎ r127c2|sf| ⏎ r128c2|sf| ⏎ r129c2|sf| ⏎ dyn1|text| ⏎ 
+r113c10|in|0:10 ⏎ 
+r111c10|in|0:10 ⏎ 
+r112c10|in|0:10 ⏎ 
+r110c10|in|0:10 ⏎ 
+r122c10|in|0:10 ⏎ r114c10|in|0:10 ⏎ 
+r113c2|sf| ⏎ 
+r113c6|tn|1:25.208 ⏎ r113c9|in|7 ⏎ r113|*|| ⏎ r112c2|sf| ⏎ r112c6|tn|1:25.614 ⏎ r112c9|in|7 ⏎ r112|*|| ⏎ 
+r122c2|sf| ⏎ r122c6|tn|1:24.667 ⏎ r122c9|in|7 ⏎ r122|*|| ⏎ 
+r119c10|in|0:10 ⏎ 
+r118c10|in|0:10 ⏎ 
+r123c2|sf| ⏎ 
+r123c6|tn|1:24.788 ⏎ r123c9|in|7 ⏎ r123|*|| ⏎ 
+r119c2|sf| ⏎ 
+r119c3||4 ⏎ r119c6|ti|1:24.655 ⏎ r119c7|ib|1:24.655 ⏎ r119c8|in|0.345 ⏎ r119c9|in|7 ⏎ r113c3||5 ⏎ r112c3||6 ⏎ r111c3||7 ⏎ r124c3||8 ⏎ r121c3||9 ⏎ r113|#|5 ⏎ r112|#|6 ⏎ r111|#|7 ⏎ r124|#|8 ⏎ r119|*|| ⏎ r119|#|4 ⏎ r121|#|9 ⏎ 
+r111c1|gm| ⏎ r111c2|sf| ⏎ r111c3||5 ⏎ r111c6|ti|1:24.759 ⏎ r111c7|ib|1:24.759 ⏎ r111c8|in|0.449 ⏎ r111c9|in|7 ⏎ r113c3||6 ⏎ r112c1|gl| ⏎ r112c3||7 ⏎ r113|#|6 ⏎ r112|#|7 ⏎ r111|*|| ⏎ r111|#|5 ⏎ 
+r121c10|in|0:10 ⏎ 
+r125c1|gf| ⏎ 
+r125c2|sf| ⏎ r125c3||1 ⏎ r125c6|tb|1:23.782 ⏎ r125c7|ib|1:23.782 ⏎ r125c8|in| ⏎ r125c9|in|7 ⏎ r122c1|gm| ⏎ r122c3||2 ⏎ r122c8|in|0.528 ⏎ r123c8|in|0.801 ⏎ r119c8|in|0.873 ⏎ r111c1|gl| ⏎ r111c8|in|0.977 ⏎ r113c1|gf| ⏎ r113c8|in|1.034 ⏎ r112c1|gm| ⏎ r112c8|in|1.116 ⏎ r124c1|gm| ⏎ r124c8|in|1.553 ⏎ r121c8|in|1.699 ⏎ r115c1|gl| ⏎ r115c8|in|1.967 ⏎ r117c1|gf| ⏎ r117c8|in|2.081 ⏎ r114c1|gl| ⏎ r114c8|in|2.658 ⏎ r110c1|gf| ⏎ r110c8|in|3.231 ⏎ r116c8|in|3.380 ⏎ r118c1|gm| ⏎ r118c8|in|3.407 ⏎ r120c1|gl| ⏎ r120c8|in|3.537 ⏎ r125|*|| ⏎ r125|#|1 ⏎ r122|#|2 ⏎ r115c10|in|0:10 ⏎ 
+r124c10|in|0:10 ⏎ 
+r116c10|in|0:10 ⏎ 
+r130c2|sf| ⏎ 
+r124c2|sf| ⏎ r124c6|tn|1:26.005 ⏎ r124c9|in|7 ⏎ r124|*|| ⏎ 
+r120c10|in|0:10 ⏎ 
+r117c10|in|0:10 ⏎ 
+r121c2|sf| ⏎ 
+r121c6|tn|1:26.105 ⏎ r121c9|in|7 ⏎ r121|*|| ⏎ 
+r114c2|sf| ⏎ 
+r114c6|ti|1:25.879 ⏎ r114c7|ib|1:25.879 ⏎ r114c8|in|2.097 ⏎ r114c9|in|7 ⏎ r114|*|| ⏎ 
+r115c2|sf| ⏎ 
+r115c6|tn|1:25.882 ⏎ r115c9|in|7 ⏎ r115|*|| ⏎ 
+r118c2|sf| ⏎ 
+r118c6|tn|1:31.856 ⏎ r118c9|in|7 ⏎ r118|*|| ⏎ 
+r117c2|sf| ⏎ 
+r117c6|tn|1:26.890 ⏎ r117c9|in|7 ⏎ r117|*|| ⏎ 
+r131c2|sf| ⏎ 
+r116c2|sf| ⏎ r116c6|tn|1:27.387 ⏎ r116c9|in|7 ⏎ r116|*|| ⏎ 
+r114c1|gm| ⏎ 
+r110c1|gl| ⏎ r110c2|sf| ⏎ r110c6|ti|1:26.004 ⏎ r110c7|ib|1:26.004 ⏎ r110c8|in|2.222 ⏎ r110c9|in|7 ⏎ r116c1|gf| ⏎ r110|*|| ⏎ 
+r120c2|sf| ⏎ 
+r120c6|tn|1:27.421 ⏎ r120c9|in|7 ⏎ r120|*|| ⏎ 
+ ⏎ 
+init|p| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no2|border-bottom-color:#80FF00 !important; color:#000000 !important; ⏎ css|pena1|color:#f00; font-size:11px; font-weight: bold; text-align:center; ⏎ effects||Mostrar Efectos ⏎ comments||Comentarios ⏎ title1|| ⏎ title2||Enrtrenos 70 gold ⏎ dyn1|text| ⏎ light|lf| ⏎ wth1|| ⏎ wth2|| ⏎ wth3|| ⏎ track||Pista Principal (1075m) ⏎ com||<p><b>09:52</b><span data-flag="chequered"></span>Llegada</p> ⏎ grid||<tbody><tr data-id="r0" class="head" data-pos="0"><td data-id="c1" data-type="grp" data-pr="6"></td><td data-id="c2" data-type="sta" data-pr="1"></td><td data-id="c3" data-type="rk" data-pr="1">Clasif.</td><td data-id="c4" data-type="no" data-pr="1">Kart</td><td data-id="c5" data-type="dr" data-pr="1" data-width="24" data-min="16">Piloto</td><td data-id="c6" data-type="llp" data-pr="2" data-width="17" data-min="7">Última vuelta</td><td data-id="c7" data-type="blp" data-pr="1" data-width="17" data-min="7">Mejor vuelta</td><td data-id="c8" data-type="gap" data-pr="4" data-width="12" data-min="7">Gap</td><td data-id="c9" data-type="tlp" data-pr="5" data-width="7" data-min="4">Vueltas</td><td data-id="c10" data-type="otr" data-pr="2" data-width="12" data-min="4">Tiempo en PIT</td><td data-id="c11" data-type="pit" data-pr="2" data-width="8" data-min="7">Pits</td></tr><tr data-id="r125" data-pos="1"><td data-id="r125c1" class="gf"></td><td data-id="r125c2" class="sf"></td><td class="rk"><div><p data-id="r125c3" class="">1</p></div></td><td class="no"><div data-id="r125c4" class="no1">37</div></td><td data-id="r125c5" class="dr">KART 37</td><td data-id="r125c6" class="tb">1:23.782</td><td data-id="r125c7" class="ib">1:23.782</td><td data-id="r125c8" class="in"></td><td data-id="r125c9" class="in">7</td><td data-id="r125c10" class="in">0:09</td><td data-id="r125c11" class="in"></td></tr><tr data-id="r122" data-pos="2"><td data-id="r122c1" class="gm"></td><td data-id="r122c2" class="sf"></td><td class="rk"><div><p data-id="r122c3" class="">2</p></div></td><td class="no"><div data-id="r122c4" class="no1">48</div></td><td data-id="r122c5" class="dr">KART 48</td><td data-id="r122c6" class="tn">1:24.667</td><td data-id="r122c7" class="ib">1:24.310</td><td data-id="r122c8" class="in">0.528</td><td data-id="r122c9" class="in">7</td><td data-id="r122c10" class="in">0:10</td><td data-id="r122c11" class="in"></td></tr><tr data-id="r123" data-pos="3"><td data-id="r123c1" class="gm"></td><td data-id="r123c2" class="sf"></td><td class="rk"><div><p data-id="r123c3" class="">3</p></div></td><td class="no"><div data-id="r123c4" class="no1">32</div></td><td data-id="r123c5" class="dr">KART 32</td><td data-id="r123c6" class="tn">1:24.788</td><td data-id="r123c7" class="ib">1:24.583</td><td data-id="r123c8" class="in">0.801</td><td data-id="r123c9" class="in">7</td><td data-id="r123c10" class="in">0:09</td><td data-id="r123c11" class="in"></td></tr><tr data-id="r119" data-pos="4"><td data-id="r119c1" class="gm"></td><td data-id="r119c2" class="sf"></td><td class="rk"><div><p data-id="r119c3" class="">4</p></div></td><td class="no"><div data-id="r119c4" class="no1">41</div></td><td data-id="r119c5" class="dr">KART 41</td><td data-id="r119c6" class="ti">1:24.655</td><td data-id="r119c7" class="ib">1:24.655</td><td data-id="r119c8" class="in">0.873</td><td data-id="r119c9" class="in">7</td><td data-id="r119c10" class="in">0:10</td><td data-id="r119c11" class="in"></td></tr><tr data-id="r111" data-pos="5"><td data-id="r111c1" class="gl"></td><td data-id="r111c2" class="sf"></td><td class="rk"><div><p data-id="r111c3" class="">5</p></div></td><td class="no"><div data-id="r111c4" class="no1">55</div></td><td data-id="r111c5" class="dr">KART 55</td><td data-id="r111c6" class="ti">1:24.759</td><td data-id="r111c7" class="ib">1:24.759</td><td data-id="r111c8" class="in">0.977</td><td data-id="r111c9" class="in">7</td><td data-id="r111c10" class="in">0:10</td><td data-id="r111c11" class="in"></td></tr><tr data-id="r113" data-pos="6"><td data-id="r113c1" class="gf"></td><td data-id="r113c2" class="sf"></td><td class="rk"><div><p data-id="r113c3" class="">6</p></div></td><td class="no"><div data-id="r113c4" class="no1">56</div></td><td data-id="r113c5" class="dr">KART 56</td><td data-id="r113c6" class="tn">1:25.208</td><td data-id="r113c7" class="ib">1:24.816</td><td data-id="r113c8" class="in">1.034</td><td data-id="r113c9" class="in">7</td><td data-id="r113c10" class="in">0:10</td><td data-id="r113c11" class="in"></td></tr><tr data-id="r112" data-pos="7"><td data-id="r112c1" class="gm"></td><td data-id="r112c2" class="sf"></td><td class="rk"><div><p data-id="r112c3" class="">7</p></div></td><td class="no"><div data-id="r112c4" class="no1">44</div></td><td data-id="r112c5" class="dr">KART 44</td><td data-id="r112c6" class="tn">1:25.614</td><td data-id="r112c7" class="ib">1:24.898</td><td data-id="r112c8" class="in">1.116</td><td data-id="r112c9" class="in">7</td><td data-id="r112c10" class="in">0:10</td><td data-id="r112c11" class="in"></td></tr><tr data-id="r124" data-pos="8"><td data-id="r124c1" class="gm"></td><td data-id="r124c2" class="sf"></td><td class="rk"><div><p data-id="r124c3" class="">8</p></div></td><td class="no"><div data-id="r124c4" class="no1">42</div></td><td data-id="r124c5" class="dr">KART 42</td><td data-id="r124c6" class="tn">1:26.005</td><td data-id="r124c7" class="ib">1:25.335</td><td data-id="r124c8" class="in">1.553</td><td data-id="r124c9" class="in">7</td><td data-id="r124c10" class="in">0:10</td><td data-id="r124c11" class="in"></td></tr><tr data-id="r121" data-pos="9"><td data-id="r121c1" class="gm"></td><td data-id="r121c2" class="sf"></td><td class="rk"><div><p data-id="r121c3" class="">9</p></div></td><td class="no"><div data-id="r121c4" class="no1">34</div></td><td data-id="r121c5" class="dr">KART 34</td><td data-id="r121c6" class="tn">1:26.105</td><td data-id="r121c7" class="ib">1:25.481</td><td data-id="r121c8" class="in">1.699</td><td data-id="r121c9" class="in">7</td><td data-id="r121c10" class="in">0:10</td><td data-id="r121c11" class="in"></td></tr><tr data-id="r115" data-pos="10"><td data-id="r115c1" class="gl"></td><td data-id="r115c2" class="sf"></td><td class="rk"><div><p data-id="r115c3" class="">10</p></div></td><td class="no"><div data-id="r115c4" class="no1">46</div></td><td data-id="r115c5" class="dr">KART 46</td><td data-id="r115c6" class="tn">1:25.882</td><td data-id="r115c7" class="ib">1:25.749</td><td data-id="r115c8" class="in">1.967</td><td data-id="r115c9" class="in">7</td><td data-id="r115c10" class="in">0:10</td><td data-id="r115c11" class="in"></td></tr><tr data-id="r117" data-pos="11"><td data-id="r117c1" class="gf"></td><td data-id="r117c2" class="sf"></td><td class="rk"><div><p data-id="r117c3" class="">11</p></div></td><td class="no"><div data-id="r117c4" class="no1">33</div></td><td data-id="r117c5" class="dr">KART 33</td><td data-id="r117c6" class="tn">1:26.890</td><td data-id="r117c7" class="ib">1:25.863</td><td data-id="r117c8" class="in">2.081</td><td data-id="r117c9" class="in">7</td><td data-id="r117c10" class="in">0:10</td><td data-id="r117c11" class="in"></td></tr><tr data-id="r114" data-pos="12"><td data-id="r114c1" class="gm"></td><td data-id="r114c2" class="sf"></td><td class="rk"><div><p data-id="r114c3" class="">12</p></div></td><td class="no"><div data-id="r114c4" class="no1">36</div></td><td data-id="r114c5" class="dr">KART 36</td><td data-id="r114c6" class="ti">1:25.879</td><td data-id="r114c7" class="ib">1:25.879</td><td data-id="r114c8" class="in">2.097</td><td data-id="r114c9" class="in">7</td><td data-id="r114c10" class="in">0:10</td><td data-id="r114c11" class="in"></td></tr><tr data-id="r110" data-pos="13"><td data-id="r110c1" class="gl"></td><td data-id="r110c2" class="sf"></td><td class="rk"><div><p data-id="r110c3" class="">13</p></div></td><td class="no"><div data-id="r110c4" class="no1">30</div></td><td data-id="r110c5" class="dr">KART 30</td><td data-id="r110c6" class="ti">1:26.004</td><td data-id="r110c7" class="ib">1:26.004</td><td data-id="r110c8" class="in">2.222</td><td data-id="r110c9" class="in">7</td><td data-id="r110c10" class="in">0:10</td><td data-id="r110c11" class="in"></td></tr><tr data-id="r116" data-pos="14"><td data-id="r116c1" class="gf"></td><td data-id="r116c2" class="sf"></td><td class="rk"><div><p data-id="r116c3" class="">14</p></div></td><td class="no"><div data-id="r116c4" class="no1">54</div></td><td data-id="r116c5" class="dr">KART 54</td><td data-id="r116c6" class="tn">1:27.387</td><td data-id="r116c7" class="ib">1:27.162</td><td data-id="r116c8" class="in">3.380</td><td data-id="r116c9" class="in">7</td><td data-id="r116c10" class="in">0:10</td><td data-id="r116c11" class="in"></td></tr><tr data-id="r118" data-pos="15"><td data-id="r118c1" class="gm"></td><td data-id="r118c2" class="sf"></td><td class="rk"><div><p data-id="r118c3" class="">15</p></div></td><td class="no"><div data-id="r118c4" class="no1">31</div></td><td data-id="r118c5" class="dr">KART 31</td><td data-id="r118c6" class="tn">1:31.856</td><td data-id="r118c7" class="ib">1:27.189</td><td data-id="r118c8" class="in">3.407</td><td data-id="r118c9" class="in">7</td><td data-id="r118c10" class="in">0:10</td><td data-id="r118c11" class="in"></td></tr><tr data-id="r120" data-pos="16"><td data-id="r120c1" class="gl"></td><td data-id="r120c2" class="sf"></td><td class="rk"><div><p data-id="r120c3" class="">16</p></div></td><td class="no"><div data-id="r120c4" class="no1">53</div></td><td data-id="r120c5" class="dr">KART 53</td><td data-id="r120c6" class="tn">1:27.421</td><td data-id="r120c7" class="ib">1:27.319</td><td data-id="r120c8" class="in">3.537</td><td data-id="r120c9" class="in">7</td><td data-id="r120c10" class="in">0:10</td><td data-id="r120c11" class="in"></td></tr><tr data-id="r109" data-pos="17"><td data-id="r109c1" class="in"></td><td data-id="r109c2" class="sf"></td><td class="rk"><div><p data-id="r109c3" class=""></p></div></td><td class="no"><div data-id="r109c4" class="no1">43</div></td><td data-id="r109c5" class="dr">KART 43</td><td data-id="r109c6" class=""></td><td data-id="r109c7" class="ib"></td><td data-id="r109c8" class="in"></td><td data-id="r109c9" class="in"></td><td data-id="r109c10" class="in"></td><td data-id="r109c11" class="in"></td></tr><tr data-id="r126" data-pos="18"><td data-id="r126c1" class="in"></td><td data-id="r126c2" class="sf"></td><td class="rk"><div><p data-id="r126c3" class=""></p></div></td><td class="no"><div data-id="r126c4" class="no1">51</div></td><td data-id="r126c5" class="dr">KART 51</td><td data-id="r126c6" class=""></td><td data-id="r126c7" class="ib"></td><td data-id="r126c8" class="in"></td><td data-id="r126c9" class="in"></td><td data-id="r126c10" class="in"></td><td data-id="r126c11" class="in"></td></tr><tr data-id="r127" data-pos="19"><td data-id="r127c1" class="in"></td><td data-id="r127c2" class="sf"></td><td class="rk"><div><p data-id="r127c3" class=""></p></div></td><td class="no"><div data-id="r127c4" class="no1">39</div></td><td data-id="r127c5" class="dr">KART 39</td><td data-id="r127c6" class=""></td><td data-id="r127c7" class="ib"></td><td data-id="r127c8" class="in"></td><td data-id="r127c9" class="in"></td><td data-id="r127c10" class="in"></td><td data-id="r127c11" class="in"></td></tr><tr data-id="r128" data-pos="20"><td data-id="r128c1" class="in"></td><td data-id="r128c2" class="sf"></td><td class="rk"><div><p data-id="r128c3" class=""></p></div></td><td class="no"><div data-id="r128c4" class="no1">38</div></td><td data-id="r128c5" class="dr">KART 38</td><td data-id="r128c6" class=""></td><td data-id="r128c7" class="ib"></td><td data-id="r128c8" class="in"></td><td data-id="r128c9" class="in"></td><td data-id="r128c10" class="to">49:09.</td><td data-id="r128c11" class="in"></td></tr><tr data-id="r129" data-pos="21"><td data-id="r129c1" class="in"></td><td data-id="r129c2" class="sf"></td><td class="rk"><div><p data-id="r129c3" class=""></p></div></td><td class="no"><div data-id="r129c4" class="no1">35</div></td><td data-id="r129c5" class="dr">KART 35</td><td data-id="r129c6" class=""></td><td data-id="r129c7" class="ib"></td><td data-id="r129c8" class="in"></td><td data-id="r129c9" class="in"></td><td data-id="r129c10" class="to">41:39.</td><td data-id="r129c11" class="in"></td></tr><tr data-id="r130" data-pos="22"><td data-id="r130c1" class="in"></td><td data-id="r130c2" class="sf"></td><td class="rk"><div><p data-id="r130c3" class=""></p></div></td><td class="no"><div data-id="r130c4" class="no1">50</div></td><td data-id="r130c5" class="dr">KART 50</td><td data-id="r130c6" class=""></td><td data-id="r130c7" class="ib"></td><td data-id="r130c8" class="in"></td><td data-id="r130c9" class="in"></td><td data-id="r130c10" class="in"></td><td data-id="r130c11" class="in"></td></tr><tr data-id="r131" data-pos="23"><td data-id="r131c1" class="in"></td><td data-id="r131c2" class="sf"></td><td class="rk"><div><p data-id="r131c3" class=""></p></div></td><td class="no"><div data-id="r131c4" class="no1">40</div></td><td data-id="r131c5" class="dr">KART 40</td><td data-id="r131c6" class=""></td><td data-id="r131c7" class="ib"></td><td data-id="r131c8" class="in"></td><td data-id="r131c9" class="in"></td><td data-id="r131c10" class="in"></td><td data-id="r131c11" class="in"></td></tr><tr data-id="r132" data-pos="24"><td data-id="r132c1" class="in"></td><td data-id="r132c2" class="so"></td><td class="rk"><div><p data-id="r132c3" class=""></p></div></td><td class="no"><div data-id="r132c4" class="no1">47</div></td><td data-id="r132c5" class="dr">KART 47</td><td data-id="r132c6" class=""></td><td data-id="r132c7" class="ib"></td><td data-id="r132c8" class="in"></td><td data-id="r132c9" class="in"></td><td data-id="r132c10" class="in"></td><td data-id="r132c11" class="in"></td></tr></tbody> ⏎ msg|| ⏎ 
+ ⏎ 
