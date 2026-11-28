@@ -1,0 +1,22 @@
+{
+	"appId": "com.rafaugc.krkarts",
+	"appName": "KR Karts",
+	"webDir": "www",
+	"ios": {
+		"contentInset": "never",
+		"backgroundColor": "#0b1220"
+	},
+	"plugins": {
+		"BluetoothLe": {
+			"displayStrings": {
+				"scanning": "Buscando…",
+				"cancel": "Cancelar",
+				"availableDevices": "Aparatos encontrados",
+				"noDeviceFound": "No se ha encontrado ninguno"
+			}
+		}
+	},
+	"packageClassList": [
+		"BluetoothLe"
+	]
+}

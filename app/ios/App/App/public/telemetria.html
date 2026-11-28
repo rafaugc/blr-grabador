@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="icono-dash-192.png">
+<title>KR · Telemetría RaceBox</title>
+<script src="bt-nativo.js?v=mx06dvn3"></script>
+<script>try{const t=JSON.parse(localStorage.getItem('blr_tema')||'null')||{},h=document.documentElement;h.dataset.fondo=t.f||'azul';h.dataset.resalte=t.r||'amarillof';}catch(e){}</script>
+<link rel="stylesheet" href="tema.css?v=1">
+<script src="racebox.js?v=20261128a"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 -apple-system,system-ui,"Segoe UI",sans-serif;padding:14px}
+.w{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+h1{font-size:22px;margin:0}h2{font-size:16px;margin:0 0 6px}
+a{color:var(--acc-txt)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.mini{color:var(--mute);font-size:13px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button{font:600 14px -apple-system,system-ui,sans-serif;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:9px 12px;cursor:pointer}
+button.pri{background:var(--accent);color:var(--on-accent);border-color:transparent}
+button.dng{color:var(--vslow)}
+.ses{display:flex;justify-content:space-between;gap:10px;align-items:center;cursor:pointer}
+.ses:hover{border-color:var(--acc-line)}
+.ses b{font-size:16px}
+.num{font-variant-numeric:tabular-nums;font-family:ui-monospace,Menlo,Consolas,monospace}
+table{border-collapse:collapse;width:100%}
+th,td{padding:6px 8px;text-align:right;border-top:1px solid var(--line);white-space:nowrap}
+th{color:var(--mute);font-weight:500;font-size:12px;border-top:0}
+td:first-child,th:first-child{text-align:left}
+tr.lap{cursor:pointer}tr.lap:hover{background:var(--hover)}
+.pick{display:inline-block;min-width:26px;text-align:center;border-radius:6px;padding:1px 6px;font-weight:700;color:#fff}
+.sw{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
+.leg{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;margin-bottom:2px}
+.leg span.v{color:var(--text);font-weight:600;margin-left:6px}
+svg{display:block;width:100%;height:auto;touch-action:pan-y}
+.gridl{stroke:var(--line);stroke-width:1}.axl{fill:var(--mute);font-size:11px}
+.scroll{overflow-x:auto}
+.two{display:grid;grid-template-columns:2fr 1fr;gap:12px}@media(max-width:800px){.two{grid-template-columns:1fr}}
+select{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:7px 8px;font-size:14px}
+.purple{color:var(--purple)}
+td.bs{background:#0b8f3c;color:#fff;font-weight:700}tr.bl td{background:#1d3fae;color:#fff;font-weight:700}tr.opt td{background:var(--panel2);font-weight:600}
+input[type=text]{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px;flex:1;min-width:200px}
+ol{margin:6px 0 0 20px;padding:0}li{margin:5px 0}
+</style>
+</head>
+<body>
+<div class="w">
+  <div class="row" style="justify-content:space-between"><h1>Telemetría RaceBox</h1><span class="row"><a href="ingeniero-pista.html?v=20261128a">🏁 Ingeniero de pista</a><a href="index.html">← Volver a la app</a></span></div>
+  <div id="out"></div>
+</div>
+<script>
+const VER = '20261127j';
+// si el navegador enseña una copia vieja de esta página, se cambia sola a la última
+fetch('telemetria.html?t=' + Date.now(), { cache: 'no-store' }).then(r => r.text()).then(t => { const m = /const VER = '(\w+)'/.exec(t); if (m && m[1] !== VER && !location.search.includes(m[1])) location.replace('telemetria.html?v=' + m[1]); }).catch(() => {});
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fT = x => { if (x == null || !isFinite(x)) return '–'; const m = Math.floor(x / 60), s = x - m * 60; return (m ? m + ':' + (s < 10 ? '0' : '') : '') + s.toFixed(3); };
+const fD = (x, n = 2) => x == null || !isFinite(x) ? '–' : (x < 0 ? '−' : '+') + Math.abs(x).toFixed(n).replace('.', ',');
+const fDate = ms => new Date(ms).toLocaleString('es-ES', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+const COL = { a: '#338ced', b: '#e76624' }; // vuelta A (referencia) y vuelta B
+let S = null; // sesión abierta
+
+let PISTAS = {}, CIRCS = [];
+const C = RaceBox.Cloud;
+async function list() {
+  S = null;
+  $('out').innerHTML = '<div class="card">Cargando…</div>';
+  let loc = [], rem = [];
+  try { loc = await RaceBox.Store.list(); } catch (e) {}
+  const up = await C.syncUp({ force: true }).catch(e => ({ subidas: 0, error: String(e && e.message || e) })); // al abrir esta pantalla se sube ya todo lo pendiente
+  [PISTAS, rem, CIRCS] = await Promise.all([C.pistas(), C.listRemote().catch(() => []), fetch('https://raw.githubusercontent.com/' + C.repo() + '/main/circuitos.json?t=' + Date.now()).then(r => r.json()).catch(() => [])]);
+  try { loc = await RaceBox.Store.list(); } catch (e) {}
+  const ses = loc.concat(rem.filter(r => !loc.some(l => l.id === r.id))).sort((a, b) => b.start - a.start);
+  const st = C.tok() ? 'ok' : 'sin llave'; // la llave se comprueba de verdad al guardarla; aquí no, para no escribir en GitHub cada vez que se abre
+  const pend = loc.filter(x => !x.up).length;
+  $('out').innerHTML = `<div class="card">${st === 'ok' ? `<b style="color:var(--fast)">✓ Copia en GitHub activada en este aparato.</b> <span class="mini">${up.error ? 'Última subida con error: ' + esc(up.error) : pend ? pend + ' sesión(es) por subir. Se reintenta sola cada minuto mientras tengas esta pantalla abierta.' : 'Todo subido.'}</span>${pend ? ' <button class="pri" id="upNow">⬆ Subir ahora</button>' : ''} <button id="tokOff">Quitar llave</button>`
+      : `<b>Para que las sesiones se suban solas a GitHub falta la llave en este aparato</b>${st !== 'sin llave' ? ` <span class="mini" style="color:var(--vslow)">(${esc(st)})</span>` : ''}
+      <ol class="mini"><li>Abre <a href="https://github.com/settings/personal-access-tokens/new" target="_blank">crear llave de GitHub</a> (con tu sesión de GitHub iniciada).</li>
+      <li><b>Token name</b>: <i>KR-Telemetria</i> (sin tildes ni espacios). <b>Expiration</b>: <i>No expiration</i>.</li>
+      <li><b>Repository access</b>: <i>Only select repositories</i> → <b>rafa_krtrnk</b>.</li>
+      <li><b>Permissions → Repository permissions</b>: pon <b>Contents</b> en <i>Read and write</i> y también <b>Issues</b> en <i>Read and write</i>.</li>
+      <li>Pulsa <b>Generate token</b>, copia el código que empieza por <code>github_pat_</code> y pégalo aquí:</li></ol>
+      <div class="row" style="margin-top:8px"><input type="text" id="tokIn" placeholder="github_pat_…" autocomplete="off"><button class="pri" id="tokOk">Guardar llave</button></div><div class="mini" id="tokMsg" style="margin-top:6px">Sin llave puedes ver lo que ya esté subido, pero este aparato no sube nada.</div>`}</div>
+    <div class="row"><button id="imp">📂 Abrir archivo (archivo de RaceChrono .vbo o .csv)</button><input type="file" id="impF" accept=".vbo,.csv,.krb" hidden></div>
+    <div class="card"><h2>Circuitos con meta y sectores</h2><div class="mini">${Object.keys(PISTAS).length ? Object.entries(PISTAS).map(([k, p]) => `<b style="color:var(--text)">${esc(p.nombre || k)}</b> (${(p.splits || []).length + 1} sectores)`).join(' · ') : 'Ninguno todavía.'}<br>Para añadir uno: exporta de RaceChrono una sesión de ese circuito en <b>.vbo</b>, ábrela aquí con el botón de arriba y pulsa «Guardar como circuito». En los demás circuitos el RaceBox sigue dando vueltas y delta, pero sin sectores.</div></div>
+    ${ses.length ? ses.map(s => `<div class="card ses" data-id="${esc(s.id)}" data-r="${s.remote ? 1 : ''}"><div><b>${esc(s.circuit || 'Sin circuito')}</b>${s.kart ? ' · kart ' + esc(s.kart) : ''}<div class="mini">${fDate(s.start)} · ${Math.round((s.n || 0) / 25 / 60)} min · ${s.remote ? '☁ en GitHub' : s.up ? '📱 en este aparato · ☁ subida' : '📱 solo en este aparato'}</div></div>
+      <div style="text-align:right"><div class="num purple" style="font-size:18px">${s.best ? fT(s.best) : '–'}</div><div class="mini">${(s.laps || []).length} vueltas</div></div></div>`).join('') : '<div class="card">Todavía no hay ninguna sesión grabada.</div>'}`;
+  document.querySelectorAll('.ses').forEach(el => el.onclick = () => openSes(el.dataset.id, !!el.dataset.r));
+  $('imp').onclick = () => $('impF').click();
+  $('impF').onchange = async e => { const f = e.target.files[0]; if (!f) return; try { await importFile(f); } catch (err) { alert('No se pudo abrir: ' + (err && err.message || err)); } };
+  if ($('upNow')) $('upNow').onclick = () => { $('upNow').textContent = 'Subiendo…'; list(); };
+  if ($('tokOff')) $('tokOff').onclick = () => { C.setToken(''); list(); };
+  if ($('tokOk')) $('tokOk').onclick = async () => { const t = $('tokIn').value.trim(); if (!t) return; C.setToken(t); $('tokMsg').textContent = 'Comprobando…'; const r = await C.check().catch(e => 'fallo inesperado: ' + (e && e.message || e)); if (r === 'ok') list(); else { $('tokMsg').innerHTML = '<span style="color:var(--vslow)">No ha funcionado: ' + esc(r) + '.</span>'; } };
+}
+
+// mientras se ve la lista, cada minuto se reintenta subir lo pendiente
+setInterval(async () => { if (S || !C.tok()) return; if ((await C.pending()).length) list(); }, 60000);
+
+// ---- abrir un archivo (RaceChrono .vbo, o lo exportado por KR) ----
+async function importFile(f) {
+  let samples, track = null, name = f.name.replace(/\.(csv|krb|vbo)$/i, '');
+  if (/\.krb$/i.test(f.name)) samples = RaceBox.parseAll(new Uint8Array(await f.arrayBuffer()));
+  else if (/\.vbo$/i.test(f.name)) { const V = RaceBox.fromVBO(await f.text()); samples = V.samples; track = V.track; if (V.name) name = V.name; }
+  else { const V = RaceBox.fromCSV(await f.text()); if (!V) throw new Error('no es un CSV de RaceChrono (formato v3) ni de KR'); samples = V.samples; if (V.name) name = V.name; }
+  if (!samples.length) throw new Error('el archivo no tiene datos');
+  // si el archivo no trae las líneas pero la sesión está en un circuito que ya tenemos, se usan las guardadas
+  const near = !track && samples.length ? Object.keys(PISTAS).find(k => { const p = PISTAS[k].start, q = samples.find(x => x.valid) || samples[0]; return p && Math.hypot((p.lat - q.lat) * 110540, (p.lon - q.lon) * 85000) < 3000; }) : null;
+  show({ id: null, circuit: name, slug: near || undefined, start: samples.find(s => s.utc)?.utc || Date.now(), n: samples.length, fileTrack: track }, samples, null);
+}
+
+async function openSes(id, remote) {
+  $('out').innerHTML = '<div class="card">Cargando la sesión…</div>';
+  try {
+    if (remote) { const raw = await C.getRemote(id), meta = (await C.listRemote()).find(x => x.id === id) || { id, start: Date.now() }; return show(meta, RaceBox.parseAll(raw), raw); }
+    const meta = await RaceBox.Store.meta(id), raw = await RaceBox.Store.data(id);
+    show(meta, RaceBox.parseAll(raw), raw);
+  } catch (e) { $('out').innerHTML = `<div class="card">No se pudo abrir (${esc(e && e.message || e)}). <button onclick="location.reload()">Volver</button></div>`; }
+}
+
+// ---- preparar las vueltas: distancia recorrida y canales, remuestreados cada metro aprox. ----
+function buildLap(samples, lap) {
+  const P = samples.filter(s => s.valid && s.t >= lap.t0 && s.t <= lap.t1);
+  if (P.length < 10) return null;
+  const k = Math.cos(P[0].lat * Math.PI / 180);
+  let d = 0; const pts = P.map((s, i) => { if (i) d += Math.hypot((s.lon - P[i - 1].lon) * k * 111320, (s.lat - P[i - 1].lat) * 110540); return { d, t: s.t - lap.t0, s }; });
+  return { lap, pts, len: d, vmax: Math.max(...P.map(s => s.v)), vmin: Math.min(...P.map(s => s.v)), gmax: Math.max(...P.map(s => Math.abs(s.gy))) };
+}
+// parciales en el orden en que se pasan en la pista (en el archivo pueden venir desordenados)
+function orderSplits(T) {
+  const E = RaceBox.Engine(); E.setTrack(T); let order = null; E.onLap = () => {}; S.samples.forEach(s => { E.push(s); if (!order && E.laps.length && E.lap && E.lap.sp.length === T.splits.length) order = E.lap.sp.slice().sort((a, b) => a.t - b.t).map(x => x.i); });
+  return order ? order.map(i => T.splits[i]) : T.splits;
+}
+function sampleAt(L, frac, f) { // valor del canal en un punto de la vuelta (0..1 de su recorrido)
+  const d = frac * L.len, p = L.pts; let lo = 0, hi = p.length - 1;
+  while (hi - lo > 1) { const m = (lo + hi) >> 1; if (p[m].d <= d) lo = m; else hi = m; }
+  const a = p[lo], b = p[hi], w = b.d > a.d ? (d - a.d) / (b.d - a.d) : 0;
+  return f(a) + w * (f(b) - f(a));
+}
+const CH = { v: ['Velocidad', 'km/h', p => p.s.v, 0], rz: ['Guiñada (giro del kart)', '°/s', p => p.s.rz || 0, 0], gy: ['G lateral', 'g', p => p.s.gy || 0, 2], gx: ['G longitudinal (frenada / aceleración)', 'g', p => p.s.gx || 0, 2], rx: ['Balanceo', '°/s', p => p.s.rx || 0, 0], ry: ['Cabeceo', '°/s', p => p.s.ry || 0, 0], gz: ['G vertical', 'g', p => p.s.gz || 0, 2] };
+
+function show(meta, samples, raw) {
+  const track = meta.fileTrack || (meta.slug && PISTAS[meta.slug]) || null;
+  const an = RaceBox.lapsOf(samples, meta.gate || null, track);
+  const laps = an.laps.map(l => buildLap(samples, l)).filter(Boolean);
+  const clean = laps.filter(l => !l.lap.bad);
+  const best = clean.reduce((a, l) => !a || l.lap.T < a.lap.T ? l : a, null);
+  const second = clean.filter(l => l !== best).reduce((a, l) => !a || l.lap.T < a.lap.T ? l : a, null);
+  S = { meta, samples, raw, laps, an, track, A: best, B: second, ch: 'rz', hover: null };
+  render();
+}
+
+function render() {
+  const { meta, laps, A, B } = S, bestT = A ? Math.min(...laps.filter(l => !l.lap.bad).map(l => l.lap.T)) : null;
+  $('out').innerHTML = `<div class="row" style="justify-content:space-between"><button id="back">← Sesiones</button>
+      <div class="row">${meta.id && laps.length ? `<a href="ingeniero-pista.html?v=20261128a#rb=${encodeURIComponent(meta.id)}" style="text-decoration:none"><button class="pri">🏁 Analizar en Ingeniero de pista</button></a>` : ''}<button class="pri" id="xCsv">Exportar .csv</button><button class="pri" id="xVbo">Exportar .vbo</button>${S.raw ? '<button id="xRaw" title="La grabación tal cual, para abrirla en otro aparato">Copia .krb</button>' : ''}${meta.id && (!meta.remote || C.tok()) ? '<button class="dng" id="del">Borrar</button>' : ''}</div></div>
+    <div class="card"><h2>${esc(meta.circuit || 'Sesión')}${meta.kart ? ' · kart ' + esc(meta.kart) : ''}</h2><div class="mini">${fDate(meta.start)} · ${Math.round(S.samples.length / 25 / 60)} min · ${S.samples.length.toLocaleString('es-ES')} datos · ${laps.length} vueltas${bestT ? ' · mejor ' + fT(bestT) : ''}</div></div>
+    ${meta.fileTrack ? `<div class="card"><h2>Este archivo trae la meta y ${meta.fileTrack.splits.length} parciales del circuito</h2><div class="row"><span class="mini">Guardarlos para:</span><select id="svSlug"><option value="">— elige circuito —</option>${CIRCS.slice().sort((a, b) => a.nombre.localeCompare(b.nombre)).map(c => `<option value="${esc(c.slug)}">${esc(c.nombre)}${PISTAS[c.slug] ? ' (ya tiene)' : ''}</option>`).join('')}</select><button class="pri" id="svP">Guardar como circuito</button></div><div class="mini" style="margin-top:6px">A partir de entonces, en ese circuito el RaceBox cronometra con la misma meta y los mismos sectores que RaceChrono.</div></div>` : ''}
+    ${!laps.length ? '<div class="card">En esta grabación no hay ninguna vuelta completa (hace falta rodar al menos dos vueltas seguidas con GPS). Los datos se pueden exportar igualmente.</div>' : `
+    <div class="card scroll"><h2>Vueltas</h2><div class="mini" style="margin-bottom:6px">Toca una vuelta para compararla (<span class="pick" style="background:${COL.b}">B</span>) con la de referencia (<span class="pick" style="background:${COL.a}">A</span>). Para cambiar la referencia, usa el desplegable.</div>
+      <div class="row" style="margin-bottom:6px"><span class="mini">Referencia A:</span><select id="selA">${laps.map(l => `<option value="${l.lap.n}" ${l === A ? 'selected' : ''}>Vuelta ${l.lap.n} · ${fT(l.lap.T)}</option>`).join('')}</select></div>
+      ${(() => { const nS = S.track ? (S.track.splits || []).length + 1 : 0, ok = laps.filter(l => !l.lap.bad && l.lap.sec);
+        const bs = Array.from({ length: nS }, (_, k) => ok.length ? Math.min(...ok.map(l => l.lap.sec[k])) : null), opt = nS && ok.length ? bs.reduce((a, b) => a + b, 0) : null;
+        const f2 = x => x == null ? '*' : (x >= 60 ? Math.floor(x / 60) + ':' + (x % 60 < 10 ? '0' : '') : '') + (x % 60).toFixed(2);
+        return `<table><thead><tr><th>Vuelta</th><th>Tiempo</th><th>Delta</th>${Array.from({ length: nS }, (_, k) => `<th>Sector ${k + 1}</th>`).join('')}<th>Vel. máx.</th><th>Vel. mín.</th><th>G lateral máx.</th></tr></thead><tbody>
+        ${opt != null ? `<tr class="opt"><td>Ideal</td><td class="num">${f2(opt)}</td><td class="num">${fD(opt - bestT)}</td>${bs.map(x => `<td class="num">${f2(x)}</td>`).join('')}<td></td><td></td><td></td></tr>` : ''}
+        ${laps.map(l => `<tr class="lap ${l.lap.T === bestT ? 'bl' : ''}" data-n="${l.lap.n}"><td>${l === A ? `<span class="pick" style="background:${COL.a}">A</span> ` : l === B ? `<span class="pick" style="background:${COL.b}">B</span> ` : ''}${l.lap.n}${l.lap.bad ? ' <span class="mini">(hueco de datos)</span>' : ''}</td><td class="num">${f2(l.lap.T)}</td><td class="num">${l.lap.T === bestT ? '0,00' : fD(l.lap.T - bestT)}</td>${Array.from({ length: nS }, (_, k) => { const x = l.lap.sec ? l.lap.sec[k] : null; return `<td class="num ${x != null && !l.lap.bad && x === bs[k] ? 'bs' : ''}">${f2(x)}</td>`; }).join('')}<td class="num">${l.vmax.toFixed(1)}</td><td class="num">${l.vmin.toFixed(1)}</td><td class="num">${l.gmax.toFixed(2)}</td></tr>`).join('')}
+        </tbody></table>${nS ? '<div class="mini" style="margin-top:6px">Azul: tu mejor vuelta · Verde: tu mejor sector · Ideal: la suma de tus mejores sectores.</div>' : '<div class="mini" style="margin-top:6px">Este circuito aún no tiene meta ni sectores definidos: las vueltas se cuentan desde un punto que la app elige sola, así que el tiempo puede diferir alguna centésima del de RaceChrono.</div>'}`; })()}
+</div>
+    ${A && B ? `<div class="two"><div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+        <div class="card"><h2>Velocidad a lo largo de la vuelta</h2><div id="cV"></div></div>
+        <div class="card"><h2>Dónde gana o pierde la vuelta B frente a la A</h2><div class="mini">Por debajo de cero, B va ganando tiempo; por encima, lo pierde.</div><div id="cD"></div></div>
+        <div class="card"><div class="row" style="justify-content:space-between"><h2 id="chT"></h2><select id="selCh">${Object.entries(CH).filter(([k]) => k !== 'v' && S.samples.some(x => x[k] != null)).map(([k, c]) => `<option value="${k}" ${k === S.ch ? 'selected' : ''}>${c[0]}</option>`).join('')}</select></div><div id="cC"></div></div>
+      </div><div class="card" style="align-self:start;position:sticky;top:8px"><h2>Trazada</h2><div id="cM"></div><div class="mini" id="mInfo">Pasa el dedo o el ratón por una gráfica para ver el punto en la pista.</div></div></div>` : '<div class="card mini">Hacen falta al menos dos vueltas limpias para comparar.</div>'}`}`;
+  $('back').onclick = list;
+  const base = (meta.circuit || 'racebox').replace(/[^\w\-]+/g, '_') + '_' + new Date(meta.start).toISOString().slice(0, 16).replace(/[:T]/g, '-');
+  $('xCsv').onclick = () => saveFile(base + '.csv', RaceBox.toCSV(S.samples, S.an.laps, meta.circuit), 'text/csv');
+  $('xVbo').onclick = () => saveFile(base + '.vbo', RaceBox.toVBO(S.samples, S.track, meta.circuit), 'application/octet-stream');
+  if ($('xRaw')) $('xRaw').onclick = () => saveFile(base + '.krb', S.raw, 'application/octet-stream');
+  if ($('del')) $('del').onclick = async () => { if (!confirm('¿Borrar esta sesión' + (meta.remote || meta.up ? ' también de GitHub' : '') + '? No se puede deshacer.')) return; try { await RaceBox.Store.del(meta.id); } catch (e) {} if ((meta.remote || meta.up) && C.tok()) { try { await C.delRemote(meta.id); } catch (e) {} } list(); };
+  if ($('svP')) $('svP').onclick = async () => { const slug = $('svSlug').value, c = CIRCS.find(x => x.slug === slug); if (!slug) return; if (!C.tok()) return alert('Hace falta la llave de GitHub en este aparato (pantalla de sesiones).');
+    if (PISTAS[slug] && !confirm('Ese circuito ya tiene meta y sectores. ¿Sustituirlos por los de este archivo?')) return;
+    const bl = S.A, step = bl ? Math.ceil(bl.pts.length / 160) : 1, r6 = x => +x.toFixed(7), T = meta.fileTrack;
+    const def = { nombre: c ? c.nombre : slug, variante: meta.circuit, origen: 'RaceChrono', start: { lat: r6(T.start.lat), lon: r6(T.start.lon), hdg: +T.start.hdg.toFixed(1) }, splits: orderSplits(T).map(g => ({ lat: r6(g.lat), lon: r6(g.lon), hdg: +g.hdg.toFixed(1), name: g.name || '' })), trazado: bl ? bl.pts.filter((_, i) => i % step === 0).map(q => [r6(q.s.lat), r6(q.s.lon)]) : [] };
+    $('svP').textContent = 'Guardando…'; try { await C.savePista(slug, def); PISTAS[slug] = def; $('svP').textContent = 'Guardado ✓'; } catch (e) { $('svP').textContent = 'No se pudo: ' + (e.message || e); } };
+  if (!laps.length) return;
+  $('selA').onchange = () => { S.A = laps.find(l => l.lap.n === +$('selA').value); if (S.B === S.A) S.B = laps.find(l => l !== S.A && !l.lap.bad) || null; render(); };
+  document.querySelectorAll('tr.lap').forEach(tr => tr.onclick = () => { const l = laps.find(x => x.lap.n === +tr.dataset.n); if (l && l !== S.A) { S.B = l; render(); } });
+  if (!(A && B)) return;
+  $('selCh').onchange = () => { S.ch = $('selCh').value; render(); };
+  charts();
+}
+
+// ---- gráficas (una escala por gráfica; cursor compartido entre todas y con el mapa) ----
+const N = 400;
+function charts() {
+  const { A, B } = S, fr = i => i / (N - 1), xm = i => fr(i) * A.len;
+  const ser = k => [A, B].map(L => Array.from({ length: N }, (_, i) => sampleAt(L, fr(i), CH[k][2])));
+  const names = [`A · vuelta ${A.lap.n} (${fT(A.lap.T)})`, `B · vuelta ${B.lap.n} (${fT(B.lap.T)})`];
+  const tA = Array.from({ length: N }, (_, i) => sampleAt(A, fr(i), p => p.t)), tB = Array.from({ length: N }, (_, i) => sampleAt(B, fr(i), p => p.t));
+  const delta = tB.map((t, i) => t - tA[i]);
+  $('chT').textContent = CH[S.ch][0];
+  const C = [
+    chart($('cV'), { ys: ser('v'), names, cols: [COL.a, COL.b], unit: 'km/h', dec: 0, xm, len: A.len }),
+    chart($('cD'), { ys: [delta], names: ['B − A'], cols: [COL.b], unit: 's', dec: 2, zero: true, signed: true, xm, len: A.len }),
+    chart($('cC'), { ys: ser(S.ch), names, cols: [COL.a, COL.b], unit: CH[S.ch][1], dec: CH[S.ch][3], zero: true, xm, len: A.len }),
+  ];
+  const M = map($('cM'), A, B);
+  const hover = i => { C.forEach(c => c.set(i)); M.set(i == null ? null : fr(i)); $('mInfo').textContent = i == null ? 'Pasa el dedo o el ratón por una gráfica para ver el punto en la pista.' : `A ${Math.round(xm(i))} m de la meta · B lleva ${fD(delta[i])} s respecto a A`; };
+  C.forEach(c => c.on(hover));
+}
+function chart(el, o) {
+  const W = 720, H = 210, m = { l: 44, r: 10, t: 8, b: 22 }, pw = W - m.l - m.r, ph = H - m.t - m.b;
+  let lo = Math.min(...o.ys.flat()), hi = Math.max(...o.ys.flat());
+  if (o.zero) { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
+  if (hi - lo < 1e-6) { hi += 1; lo -= 1; }
+  const pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+  const step = (() => { const raw = (hi - lo) / 4, p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p; return (f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10) * p; })();
+  const X = i => m.l + i / (N - 1) * pw, Y = v => m.t + (hi - v) / (hi - lo) * ph;
+  const fmtY = v => (o.signed && v > 0 ? '+' : '') + v.toFixed(step < 0.1 ? 2 : step < 1 ? 1 : 0).replace('.', ',').replace('-', '−');
+  let g = '';
+  for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) g += `<line class="gridl" x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" ${Math.abs(v) < step / 1e6 && o.zero ? 'style="stroke:var(--mute)"' : ''}/><text class="axl" x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end">${fmtY(Math.abs(v) < step / 1e6 ? 0 : v)}</text>`;
+  const xs = (() => { const st = o.len > 1500 ? 500 : o.len > 600 ? 200 : 100; let s = ''; for (let d = 0; d <= o.len; d += st) s += `<text class="axl" x="${m.l + d / o.len * pw}" y="${H - 6}" text-anchor="middle">${d} m</text>`; return s; })();
+  const paths = o.ys.map((ys, k) => `<path d="${ys.map((v, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1)).join('')}" fill="none" stroke="${o.cols[k]}" stroke-width="2" stroke-linejoin="round"/>`).join('');
+  el.innerHTML = `<div class="leg">${o.names.map((n, k) => `<span><i class="sw" style="background:${o.cols[k]}"></i>${esc(n)}<span class="v" data-v="${k}"></span></span>`).join('')}<span class="mini">${esc(o.unit)}</span></div>
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfica por distancia">${g}${xs}${paths}<line data-x y1="${m.t}" y2="${m.t + ph}" stroke="var(--text)" stroke-width="1" opacity="0"/>${o.ys.map((_, k) => `<circle data-d="${k}" r="4.5" fill="${o.cols[k]}" stroke="var(--panel)" stroke-width="2" opacity="0"/>`).join('')}<rect x="${m.l}" y="${m.t}" width="${pw}" height="${ph}" fill="transparent"/></svg>`;
+  const svg = el.querySelector('svg'), xl = svg.querySelector('[data-x]');
+  let cb = () => {};
+  const pos = e => { const r = svg.getBoundingClientRect(), cx = (e.touches ? e.touches[0].clientX : e.clientX) - r.left; const i = Math.round((cx / r.width * W - m.l) / pw * (N - 1)); return Math.max(0, Math.min(N - 1, i)); };
+  svg.addEventListener('mousemove', e => cb(pos(e))); svg.addEventListener('mouseleave', () => cb(null));
+  svg.addEventListener('touchstart', e => cb(pos(e)), { passive: true }); svg.addEventListener('touchmove', e => cb(pos(e)), { passive: true });
+  return { on: f => cb = f, set: i => {
+    xl.setAttribute('opacity', i == null ? 0 : .5); if (i != null) { xl.setAttribute('x1', X(i)); xl.setAttribute('x2', X(i)); }
+    o.ys.forEach((ys, k) => { const c = svg.querySelector(`[data-d="${k}"]`); c.setAttribute('opacity', i == null ? 0 : 1); if (i != null) { c.setAttribute('cx', X(i)); c.setAttribute('cy', Y(ys[i])); }
+      el.querySelector(`[data-v="${k}"]`).textContent = i == null ? '' : (o.signed ? fD(ys[i], o.dec) : ys[i].toFixed(o.dec).replace('.', ',').replace('-', '−')); });
+  } };
+}
+function map(el, A, B) {
+  const all = A.pts.concat(B.pts).map(p => p.s), k = Math.cos(all[0].lat * Math.PI / 180);
+  const xy = s => [s.lon * k * 111320, -s.lat * 110540];
+  const P = all.map(xy), x0 = Math.min(...P.map(p => p[0])), x1 = Math.max(...P.map(p => p[0])), y0 = Math.min(...P.map(p => p[1])), y1 = Math.max(...P.map(p => p[1]));
+  const W = 340, pad = 14, sc = (W - 2 * pad) / Math.max(x1 - x0, y1 - y0, 1), H = (y1 - y0) * sc + 2 * pad;
+  const T = s => { const p = xy(s); return [pad + (p[0] - x0) * sc + ((W - 2 * pad) - (x1 - x0) * sc) / 2, pad + (p[1] - y0) * sc]; };
+  const path = (L, c) => `<path d="${L.pts.map((p, i) => { const q = T(p.s); return (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join('')}" fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round"/>`;
+  const st = T(A.pts[0].s);
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H.toFixed(0)}" role="img" aria-label="Trazada de las dos vueltas">${path(A, COL.a)}${path(B, COL.b)}<circle cx="${st[0]}" cy="${st[1]}" r="4" fill="var(--text)"/><text class="axl" x="${st[0] + 7}" y="${st[1] - 6}">meta</text>
+    <circle data-m="a" r="6" fill="${COL.a}" stroke="var(--panel)" stroke-width="2" opacity="0"/><circle data-m="b" r="6" fill="${COL.b}" stroke="var(--panel)" stroke-width="2" opacity="0"/></svg>`;
+  const at = (L, f) => { const lat = sampleAt(L, f, p => p.s.lat), lon = sampleAt(L, f, p => p.s.lon); return T({ lat, lon }); };
+  return { set: f => [['a', A], ['b', B]].forEach(([n, L]) => { const c = el.querySelector(`[data-m="${n}"]`); c.setAttribute('opacity', f == null ? 0 : 1); if (f != null) { const q = at(L, f); c.setAttribute('cx', q[0]); c.setAttribute('cy', q[1]); } }) };
+}
+
+// ---- guardar un archivo: en el móvil abre «Compartir» (Guardar en Archivos, AirDrop, correo…); en el ordenador lo descarga ----
+async function saveFile(name, data, type) {
+  const blob = new Blob([data], { type });
+  try { const f = new File([blob], name, { type }); if (navigator.canShare && navigator.canShare({ files: [f] }) && /iPhone|iPad|Android/i.test(navigator.userAgent)) { await navigator.share({ files: [f], title: name }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+}
+window.__kr = { show, list };
+list();
+</script>
+</body>
+</html>
