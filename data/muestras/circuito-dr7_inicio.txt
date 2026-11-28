@@ -501,3 +501,99 @@ r8c2|sr| ⏎ r8c10|in|0:00 ⏎ r8|*|| ⏎
 r14c2|in| ⏎ 
 r9c2|sr| ⏎ r9c10|in|0:00 ⏎ r9|*|| ⏎ 
 r6c2|in| ⏎ 
+r3c2|sr| ⏎ r3c10|in|0:00 ⏎ r3|*|| ⏎ 
+r1c2|in| ⏎ 
+r5c2|sr| ⏎ r5c10|in|0:00 ⏎ r5|*|| ⏎ 
+r18c2|in| ⏎ 
+r12c2|sr| ⏎ 
+r12c10|in|0:00 ⏎ r12|*|| ⏎ 
+r7c2|in| ⏎ 
+r19c2|in| ⏎ r8c2|in| ⏎ 
+r4c2|sr| ⏎ 
+r4c10|in|0:00 ⏎ r4|*|| ⏎ r9c2|in| ⏎ 
+r2c2|sr| ⏎ r2c10|in|0:00 ⏎ r2|*|| ⏎ 
+r16c2|sr| ⏎ r16c10|in|0:00 ⏎ r16|*|| ⏎ 
+r17c2|sr| ⏎ r17c10|in|0:00 ⏎ r17|*|| ⏎ 
+r10c2|sr| ⏎ 
+r10c10|in|0:00 ⏎ r10|*|| ⏎ 
+r3c2|in| ⏎ 
+dyn1|countdown|268168 ⏎ 
+r5c2|in| ⏎ 
+r12c2|in| ⏎ 
+r11c2|sr| ⏎ r11c10|in|0:00 ⏎ r11|*|| ⏎ 
+r4c2|in| ⏎ 
+r15c2|sr| ⏎ 
+r15c10|in|0:00 ⏎ r15|*|| ⏎ 
+r2c2|in| ⏎ 
+r16c2|in| ⏎ 
+r17c2|in| ⏎ 
+r10c2|in| ⏎ 
+r11c2|in| ⏎ 
+r15c2|in| ⏎ 
+init|p| ⏎ best|hide| ⏎ css|no1|border-bottom-color:#FFFF00 !important; color:#000000 !important; ⏎ css|no2|border-bottom-color:#80FF00 !important; color:#000000 !important; ⏎ css|pena1|color:#f00; font-size:11px; font-weight: bold; text-align:center; ⏎ effects||Mostrar Efectos ⏎ comments||Comentarios ⏎ title1|| ⏎ title2||70G Q1 ⏎ dyn1|countdown|249320 ⏎ light|lg| ⏎ wth1|| ⏎ wth2|| ⏎ wth3|| ⏎ track||Pista Principal (1075m) ⏎ com|| ⏎ grid||<tbody><tr data-id="r0" class="head" data-pos="0"><td data-id="c1" data-type="grp" data-pr="6"></td><td data-id="c2" data-type="sta" data-pr="1"></td><td data-id="c3" data-type="rk" data-pr="1">Clasif.</td><td data-id="c4" data-type="no" data-pr="1">Kart</td><td data-id="c5" data-type="dr" data-pr="1" data-width="24" data-min="16">Piloto</td><td data-id="c6" data-type="llp" data-pr="2" data-width="17" data-min="7">Última vuelta</td><td data-id="c7" data-type="blp" data-pr="1" data-width="17" data-min="7">Mejor vuelta</td><td data-id="c8" data-type="gap" data-pr="4" data-width="12" data-min="7">Gap</td><td data-id="c9" data-type="tlp" data-pr="5" data-width="7" data-min="4">Vueltas</td><td data-id="c10" data-type="otr" data-pr="2" data-width="12" data-min="4">Tiempo en PIT</td><td data-id="c11" data-type="pit" data-pr="2" data-width="8" data-min="7">Pits</td></tr><tr data-id="r1" data-pos="1"><td data-id="r1c1" class="in"></td><td data-id="r1c2" class="in"></td><td class="rk"><div><p data-id="r1c3" class=""></p></div></td><td class="no"><div data-id="r1c4" class="no1">44</div></td><td data-id="r1c5" class="dr">MIGUEL CUENCA</td><td data-id="r1c6" class=""></td><td data-id="r1c7" class="ib"></td><td data-id="r1c8" class="in"></td><td data-id="r1c9" class="in"></td><td data-id="r1c10" class="in">0:00</td><td data-id="r1c11" class="in"></td></tr><tr data-id="r2" data-pos="2"><td data-id="r2c1" class="in"></td><td data-id="r2c2" class="in"></td><td class="rk"><div><p data-id="r2c3" class=""></p></div></td><td class="no"><div data-id="r2c4" class="no1">47</div></td><td data-id="r2c5" class="dr">JOSE BURILLO</td><td data-id="r2c6" class=""></td><td data-id="r2c7" class="ib"></td><td data-id="r2c8" class="in"></td><td data-id="r2c9" class="in"></td><td data-id="r2c10" class="in">0:00</td><td data-id="r2c11" class="in"></td></tr><tr data-id="r3" data-pos="3"><td data-id="r3c1" class="in"></td><td data-id="r3c2" class="in"></td><td class="rk"><div><p data-id="r3c3" class=""></p></div></td><td class="no"><div data-id="r3c4" class="no1">37</div></td><td data-id="r3c5" class="dr">ANGEL RODRIGUEZ </td><td data-id="r3c6" class=""></td><td data-id="r3c7" class="ib"></td><td data-id="r3c8" class="in"></td><td data-id="r3c9" class="in"></td><td data-id="r3c10" class="in">0:00</td><td data-id="r3c11" class="in"></td></tr><tr data-id="r4" data-pos="4"><td data-id="r4c1" class="in"></td><td data-id="r4c2" class="in"></td><td class="rk"><div><p data-id="r4c3" class=""></p></div></td><td class="no"><div data-id="r4c4" class="no1">34</div></td><td data-id="r4c5" class="dr">RAMON ESPELT</td><td data-id="r4c6" class=""></td><td data-id="r4c7" class="ib"></td><td data-id="r4c8" class="in"></td><td data-id="r4c9" class="in"></td><td data-id="r4c10" class="in">0:00</td><td data-id="r4c11" class="in"></td></tr><tr data-id="r5" data-pos="5"><td data-id="r5c1" class="in"></td><td data-id="r5c2" class="in"></td><td class="rk"><div><p data-id="r5c3" class=""></p></div></td><td class="no"><div data-id="r5c4" class="no1">48</div></td><td data-id="r5c5" class="dr">JOSE GARCIA</td><td data-id="r5c6" class=""></td><td data-id="r5c7" class="ib"></td><td data-id="r5c8" class="in"></td><td data-id="r5c9" class="in"></td><td data-id="r5c10" class="in">0:00</td><td data-id="r5c11" class="in"></td></tr><tr data-id="r6" data-pos="6"><td data-id="r6c1" class="in"></td><td data-id="r6c2" class="in"></td><td class="rk"><div><p data-id="r6c3" class=""></p></div></td><td class="no"><div data-id="r6c4" class="no1">50</div></td><td data-id="r6c5" class="dr">SEBASTIAN SIERRA</td><td data-id="r6c6" class=""></td><td data-id="r6c7" class="ib"></td><td data-id="r6c8" class="in"></td><td data-id="r6c9" class="in"></td><td data-id="r6c10" class="in">0:00</td><td data-id="r6c11" class="in"></td></tr><tr data-id="r7" data-pos="7"><td data-id="r7c1" class="in"></td><td data-id="r7c2" class="in"></td><td class="rk"><div><p data-id="r7c3" class=""></p></div></td><td class="no"><div data-id="r7c4" class="no1">32</div></td><td data-id="r7c5" class="dr">DYLAN VELASQUEZ</td><td data-id="r7c6" class=""></td><td data-id="r7c7" class="ib"></td><td data-id="r7c8" class="in"></td><td data-id="r7c9" class="in"></td><td data-id="r7c10" class="in">0:00</td><td data-id="r7c11" class="in"></td></tr><tr data-id="r8" data-pos="8"><td data-id="r8c1" class="in"></td><td data-id="r8c2" class="in"></td><td class="rk"><div><p data-id="r8c3" class=""></p></div></td><td class="no"><div data-id="r8c4" class="no1">41</div></td><td data-id="r8c5" class="dr">EDUARDO KYRSTYA</td><td data-id="r8c6" class=""></td><td data-id="r8c7" class="ib"></td><td data-id="r8c8" class="in"></td><td data-id="r8c9" class="in"></td><td data-id="r8c10" class="in">0:00</td><td data-id="r8c11" class="in"></td></tr><tr data-id="r9" data-pos="9"><td data-id="r9c1" class="in"></td><td data-id="r9c2" class="in"></td><td class="rk"><div><p data-id="r9c3" class=""></p></div></td><td class="no"><div data-id="r9c4" class="no1">52</div></td><td data-id="r9c5" class="dr">SAMUEL CASTILLO</td><td data-id="r9c6" class=""></td><td data-id="r9c7" class="ib"></td><td data-id="r9c8" class="in"></td><td data-id="r9c9" class="in"></td><td data-id="r9c10" class="in">0:00</td><td data-id="r9c11" class="in"></td></tr><tr data-id="r10" data-pos="10"><td data-id="r10c1" class="in"></td><td data-id="r10c2" class="in"></td><td class="rk"><div><p data-id="r10c3" class=""></p></div></td><td class="no"><div data-id="r10c4" class="no1">54</div></td><td data-id="r10c5" class="dr">SAMUEL BLANCO </td><td data-id="r10c6" class=""></td><td data-id="r10c7" class="ib"></td><td data-id="r10c8" class="in"></td><td data-id="r10c9" class="in"></td><td data-id="r10c10" class="in">0:00</td><td data-id="r10c11" class="in"></td></tr><tr data-id="r11" data-pos="11"><td data-id="r11c1" class="in"></td><td data-id="r11c2" class="in"></td><td class="rk"><div><p data-id="r11c3" class=""></p></div></td><td class="no"><div data-id="r11c4" class="no1">46</div></td><td data-id="r11c5" class="dr">ANTONIO OLIVIERI</td><td data-id="r11c6" class=""></td><td data-id="r11c7" class="ib"></td><td data-id="r11c8" class="in"></td><td data-id="r11c9" class="in"></td><td data-id="r11c10" class="in">0:00</td><td data-id="r11c11" class="in"></td></tr><tr data-id="r12" data-pos="12"><td data-id="r12c1" class="in"></td><td data-id="r12c2" class="in"></td><td class="rk"><div><p data-id="r12c3" class=""></p></div></td><td class="no"><div data-id="r12c4" class="no1">36</div></td><td data-id="r12c5" class="dr">MARIO VALLECILLO</td><td data-id="r12c6" class=""></td><td data-id="r12c7" class="ib"></td><td data-id="r12c8" class="in"></td><td data-id="r12c9" class="in"></td><td data-id="r12c10" class="in">0:00</td><td data-id="r12c11" class="in"></td></tr><tr data-id="r13" data-pos="13"><td data-id="r13c1" class="in"></td><td data-id="r13c2" class="in"></td><td class="rk"><div><p data-id="r13c3" class=""></p></div></td><td class="no"><div data-id="r13c4" class="no1">43</div></td><td data-id="r13c5" class="dr">ANETTE ALVAREZ</td><td data-id="r13c6" class=""></td><td data-id="r13c7" class="ib"></td><td data-id="r13c8" class="in"></td><td data-id="r13c9" class="in"></td><td data-id="r13c10" class="in">0:00</td><td data-id="r13c11" class="in"></td></tr><tr data-id="r14" data-pos="14"><td data-id="r14c1" class="in"></td><td data-id="r14c2" class="in"></td><td class="rk"><div><p data-id="r14c3" class=""></p></div></td><td class="no"><div data-id="r14c4" class="no1">35</div></td><td data-id="r14c5" class="dr">ADRIAN SEGOVIA</td><td data-id="r14c6" class=""></td><td data-id="r14c7" class="ib"></td><td data-id="r14c8" class="in"></td><td data-id="r14c9" class="in"></td><td data-id="r14c10" class="in">0:00</td><td data-id="r14c11" class="in"></td></tr><tr data-id="r15" data-pos="15"><td data-id="r15c1" class="in"></td><td data-id="r15c2" class="in"></td><td class="rk"><div><p data-id="r15c3" class=""></p></div></td><td class="no"><div data-id="r15c4" class="no1">38</div></td><td data-id="r15c5" class="dr">DANIEL GONZALEZ</td><td data-id="r15c6" class=""></td><td data-id="r15c7" class="ib"></td><td data-id="r15c8" class="in"></td><td data-id="r15c9" class="in"></td><td data-id="r15c10" class="in">0:00</td><td data-id="r15c11" class="in"></td></tr><tr data-id="r16" data-pos="16"><td data-id="r16c1" class="in"></td><td data-id="r16c2" class="in"></td><td class="rk"><div><p data-id="r16c3" class=""></p></div></td><td class="no"><div data-id="r16c4" class="no1">31</div></td><td data-id="r16c5" class="dr">LUCAS NOVELLES</td><td data-id="r16c6" class=""></td><td data-id="r16c7" class="ib"></td><td data-id="r16c8" class="in"></td><td data-id="r16c9" class="in"></td><td data-id="r16c10" class="in">0:00</td><td data-id="r16c11" class="in"></td></tr><tr data-id="r17" data-pos="17"><td data-id="r17c1" class="in"></td><td data-id="r17c2" class="in"></td><td class="rk"><div><p data-id="r17c3" class=""></p></div></td><td class="no"><div data-id="r17c4" class="no1">53</div></td><td data-id="r17c5" class="dr">OSCAR YAGÜE</td><td data-id="r17c6" class=""></td><td data-id="r17c7" class="ib"></td><td data-id="r17c8" class="in"></td><td data-id="r17c9" class="in"></td><td data-id="r17c10" class="in">0:00</td><td data-id="r17c11" class="in"></td></tr><tr data-id="r18" data-pos="18"><td data-id="r18c1" class="in"></td><td data-id="r18c2" class="in"></td><td class="rk"><div><p data-id="r18c3" class=""></p></div></td><td class="no"><div data-id="r18c4" class="no1">51</div></td><td data-id="r18c5" class="dr">ROLANDO GUTIERREZ</td><td data-id="r18c6" class=""></td><td data-id="r18c7" class="ib"></td><td data-id="r18c8" class="in"></td><td data-id="r18c9" class="in"></td><td data-id="r18c10" class="in">0:00</td><td data-id="r18c11" class="in"></td></tr><tr data-id="r19" data-pos="19"><td data-id="r19c1" class="in"></td><td data-id="r19c2" class="in"></td><td class="rk"><div><p data-id="r19c3" class=""></p></div></td><td class="no"><div data-id="r19c4" class="no1">56</div></td><td data-id="r19c5" class="dr">CARLOS PELAEZ DE VERA</td><td data-id="r19c6" class=""></td><td data-id="r19c7" class="ib"></td><td data-id="r19c8" class="in"></td><td data-id="r19c9" class="in"></td><td data-id="r19c10" class="in">0:00</td><td data-id="r19c11" class="in"></td></tr><tr data-id="r20" data-pos="20"><td data-id="r20c1" class="in"></td><td data-id="r20c2" class="in"></td><td class="rk"><div><p data-id="r20c3" class=""></p></div></td><td class="no"><div data-id="r20c4" class="no1">45</div></td><td data-id="r20c5" class="dr">IZAN ALVAREZ</td><td data-id="r20c6" class=""></td><td data-id="r20c7" class="ib"></td><td data-id="r20c8" class="in"></td><td data-id="r20c9" class="in"></td><td data-id="r20c10" class="in"></td><td data-id="r20c11" class="in"></td></tr></tbody> ⏎ msg|| ⏎ 
+r13c10|in|0:01 ⏎ 
+r14c10|in|0:01 ⏎ 
+r6c10|in|0:01 ⏎ 
+r1c10|in|0:01 ⏎ 
+r18c10|in|0:01 ⏎ 
+r7c10|in|0:01 ⏎ r19c10|in|0:01 ⏎ 
+r8c10|in|0:01 ⏎ 
+r9c10|in|0:01 ⏎ 
+dyn1|countdown|219379 ⏎ 
+r3c10|in|0:01 ⏎ 
+r5c10|in|0:01 ⏎ 
+r12c10|in|0:01 ⏎ 
+r4c10|in|0:01 ⏎ 
+r2c10|in|0:01 ⏎ 
+r16c10|in|0:01 ⏎ 
+r17c10|in|0:01 ⏎ 
+r14c1|gs| ⏎ r14c2|su| ⏎ r14c3||1 ⏎ r14c6|tb|1:24.486 ⏎ r14c7|ib|1:24.486 ⏎ r14c9|in|1 ⏎ r1|#|2 ⏎ r2|#|3 ⏎ r3|#|4 ⏎ r4|#|5 ⏎ r5|#|6 ⏎ r6|#|7 ⏎ r7|#|8 ⏎ r8|#|9 ⏎ r9|#|10 ⏎ r10|#|11 ⏎ r11|#|12 ⏎ r12|#|13 ⏎ r13|#|14 ⏎ r14|*|84486| ⏎ r14|#|1 ⏎ 
+r10c10|in|0:01 ⏎ 
+r6c1|gf| ⏎ r6c2|su| ⏎ r6c3||1 ⏎ r6c6|tb|1:24.118 ⏎ r6c7|ib|1:24.118 ⏎ r6c9|in|1 ⏎ r14c1|gl| ⏎ r14c2|sr| ⏎ r14c3||2 ⏎ r14c6|ti|1:24.486 ⏎ r14c8|in|0.368 ⏎ r1|#|3 ⏎ r2|#|4 ⏎ r3|#|5 ⏎ r4|#|6 ⏎ r5|#|7 ⏎ r6|*|84118| ⏎ r6|#|1 ⏎ r14|#|2 ⏎ 
+r13c1|gs| ⏎ 
+r13c2|su| ⏎ r13c3||3 ⏎ r13c6|ti|1:30.142 ⏎ r13c7|ib|1:30.142 ⏎ r13c8|in|6.024 ⏎ r13c9|in|1 ⏎ r1|#|4 ⏎ r2|#|5 ⏎ r3|#|6 ⏎ r4|#|7 ⏎ r5|#|8 ⏎ r7|#|9 ⏎ r8|#|10 ⏎ r9|#|11 ⏎ r10|#|12 ⏎ r11|#|13 ⏎ r12|#|14 ⏎ r13|*|90142| ⏎ r13|#|3 ⏎ 
+r11c10|in|0:01 ⏎ 
+r1c1|gm| ⏎ 
+r1c2|su| ⏎ r1c3||2 ⏎ r1c6|ti|1:24.481 ⏎ r1c7|ib|1:24.481 ⏎ r1c8|in|0.363 ⏎ r1c9|in|1 ⏎ r14c3||3 ⏎ r13c2|sr| ⏎ r13c3||4 ⏎ r1|*|84481| ⏎ r1|#|2 ⏎ r13|#|4 ⏎ r14|#|3 ⏎ r15c10|in|0:01 ⏎ 
+r18c1|gm| ⏎ r18c2|su| ⏎ r18c3||2 ⏎ r18c6|ti|1:24.258 ⏎ r18c7|ib|1:24.258 ⏎ r18c8|in|0.140 ⏎ r18c9|in|1 ⏎ r1c2|sr| ⏎ r1c3||3 ⏎ r14c3||4 ⏎ r13c3||5 ⏎ r1|#|3 ⏎ r2|#|6 ⏎ r3|#|7 ⏎ r4|#|8 ⏎ r5|#|9 ⏎ r7|#|10 ⏎ r8|#|11 ⏎ r9|#|12 ⏎ r10|#|13 ⏎ r11|#|14 ⏎ r12|#|15 ⏎ r13|#|5 ⏎ r14|#|4 ⏎ r15|#|16 ⏎ r16|#|17 ⏎ r17|#|18 ⏎ r18|*|84258| ⏎ r18|#|2 ⏎ 
+r14c1|gm| ⏎ r14c2|in| ⏎ r7c1|gl| ⏎ r7c2|su| ⏎ r7c3||5 ⏎ r7c6|ti|1:24.813 ⏎ r7c7|ib|1:24.813 ⏎ r7c8|in|0.695 ⏎ r7c9|in|1 ⏎ r13c3||6 ⏎ r2|#|7 ⏎ r3|#|8 ⏎ r4|#|9 ⏎ r5|#|10 ⏎ r7|*|84813| ⏎ r7|#|5 ⏎ r13|#|6 ⏎ 
+r6c2|in| ⏎ r8c1|gs| ⏎ r8c2|su| ⏎ r8c3||6 ⏎ r8c6|ti|1:25.381 ⏎ r8c7|ib|1:25.381 ⏎ r8c8|in|1.263 ⏎ r8c9|in|1 ⏎ r13c3||7 ⏎ r2|#|8 ⏎ r3|#|9 ⏎ r4|#|10 ⏎ r5|#|11 ⏎ r8|*|85381| ⏎ r8|#|6 ⏎ r13|#|7 ⏎ 
+r13c2|in| ⏎ 
+r19c1|gs| ⏎ 
+r19c2|su| ⏎ r19c3||7 ⏎ r19c6|ti|1:27.211 ⏎ r19c7|ib|1:27.211 ⏎ r19c8|in|3.093 ⏎ r19c9|in|1 ⏎ r13c3||8 ⏎ r2|#|9 ⏎ r3|#|10 ⏎ r4|#|11 ⏎ r5|#|12 ⏎ r9|#|13 ⏎ r10|#|14 ⏎ r11|#|15 ⏎ r12|#|16 ⏎ r13|#|8 ⏎ r15|#|17 ⏎ r16|#|18 ⏎ r17|#|19 ⏎ r19|*|87211| ⏎ r19|#|7 ⏎ 
+r3c1|gf| ⏎ r3c2|su| ⏎ r3c3||1 ⏎ r3c6|tb|1:24.042 ⏎ r3c7|ib|1:24.042 ⏎ r3c9|in|1 ⏎ r6c1|gm| ⏎ r6c3||2 ⏎ r6c6|ti|1:24.118 ⏎ r6c8|in|0.076 ⏎ r18c2|sr| ⏎ r18c3||3 ⏎ r18c8|in|0.216 ⏎ r1c3||4 ⏎ r1c8|in|0.439 ⏎ r14c3||5 ⏎ r14c8|in|0.444 ⏎ r7c2|sr| ⏎ r7c3||6 ⏎ r7c8|in|0.771 ⏎ r8c2|sr| ⏎ r8c3||7 ⏎ r8c8|in|1.339 ⏎ r19c2|sr| ⏎ r19c3||8 ⏎ r19c8|in|3.169 ⏎ r13c3||9 ⏎ r13c8|in|6.100 ⏎ r1|#|4 ⏎ r2|#|10 ⏎ r3|*|84042| ⏎ r3|#|1 ⏎ r6|#|2 ⏎ r7|#|6 ⏎ r8|#|7 ⏎ r13|#|9 ⏎ r14|#|5 ⏎ r18|#|3 ⏎ r19|#|8 ⏎ 
+r9c1|gs| ⏎ r9c2|su| ⏎ r9c3||9 ⏎ r9c6|ti|1:29.098 ⏎ r9c7|ib|1:29.098 ⏎ r9c8|in|5.056 ⏎ r9c9|in|1 ⏎ r13c3||10 ⏎ r2|#|11 ⏎ r4|#|12 ⏎ r5|#|13 ⏎ r9|*|89098| ⏎ r9|#|9 ⏎ r13|#|10 ⏎ 
+r1c2|in| ⏎ 
+r18c2|in| ⏎ 
+r7c1|gm| ⏎ 
+r5c1|gl| ⏎ r5c2|su| ⏎ r5c3||7 ⏎ r5c6|ti|1:24.863 ⏎ r5c7|ib|1:24.863 ⏎ r5c8|in|0.821 ⏎ r5c9|in|1 ⏎ r8c3||8 ⏎ r19c3||9 ⏎ r9c2|sr| ⏎ r9c3||10 ⏎ r13c3||11 ⏎ r2|#|12 ⏎ r4|#|13 ⏎ r5|*|84863| ⏎ r5|#|7 ⏎ r8|#|8 ⏎ r9|#|10 ⏎ r13|#|11 ⏎ r19|#|9 ⏎ 
+r8c1|gf| ⏎ 
+r12c1|gl| ⏎ r12c2|su| ⏎ r12c3||9 ⏎ r12c6|ti|1:25.411 ⏎ r12c7|ib|1:25.411 ⏎ r12c8|in|1.369 ⏎ r12c9|in|1 ⏎ r19c3||10 ⏎ r9c3||11 ⏎ r13c3||12 ⏎ r2|#|13 ⏎ r4|#|14 ⏎ r9|#|11 ⏎ r10|#|15 ⏎ r11|#|16 ⏎ r12|*|85411| ⏎ r12|#|9 ⏎ r13|#|12 ⏎ r19|#|10 ⏎ 
+dyn1|countdown|189281 ⏎ r7c2|in| ⏎ 
+r4c1|gm| ⏎ r4c2|su| ⏎ r4c3||4 ⏎ r4c6|ti|1:24.383 ⏎ r4c7|ib|1:24.383 ⏎ r4c8|in|0.341 ⏎ r4c9|in|1 ⏎ r1c3||5 ⏎ r14c3||6 ⏎ r7c3||7 ⏎ r5c2|sr| ⏎ r5c3||8 ⏎ r8c3||9 ⏎ r12c2|sr| ⏎ r12c3||10 ⏎ r19c3||11 ⏎ r9c3||12 ⏎ r13c3||13 ⏎ r1|#|5 ⏎ r2|#|14 ⏎ r4|*|84383| ⏎ r4|#|4 ⏎ r5|#|8 ⏎ r7|#|7 ⏎ r8|#|9 ⏎ r9|#|12 ⏎ r12|#|10 ⏎ r13|#|13 ⏎ r14|#|6 ⏎ r19|#|11 ⏎ 
+r8c2|in| ⏎ 
+r2c1|gf| ⏎ r2c2|su| ⏎ r2c3||9 ⏎ r2c6|ti|1:25.184 ⏎ r2c7|ib|1:25.184 ⏎ r2c8|in|1.142 ⏎ r2c9|in|1 ⏎ r8c1|gm| ⏎ r8c3||10 ⏎ r12c3||11 ⏎ r19c3||12 ⏎ r9c3||13 ⏎ r13c3||14 ⏎ r2|*|85184| ⏎ r2|#|9 ⏎ r8|#|10 ⏎ r9|#|13 ⏎ r12|#|11 ⏎ r13|#|14 ⏎ r19|#|12 ⏎ 
+r19c2|in| ⏎ 
+r12c1|gm| ⏎ r16c1|gl| ⏎ r16c2|su| ⏎ r16c3||12 ⏎ r16c6|ti|1:25.840 ⏎ r16c7|ib|1:25.840 ⏎ r16c8|in|1.798 ⏎ r16c9|in|1 ⏎ r19c3||13 ⏎ r9c3||14 ⏎ r13c3||15 ⏎ r9|#|14 ⏎ r10|#|16 ⏎ r11|#|17 ⏎ r13|#|15 ⏎ r15|#|18 ⏎ r16|*|85840| ⏎ r16|#|12 ⏎ r19|#|13 ⏎ 
+r3c2|in| ⏎ 
+r9c2|in| ⏎ 
+r10c1|gs| ⏎ 
+r10c2|su| ⏎ r10c3||13 ⏎ r10c6|ti|1:26.072 ⏎ r10c7|ib|1:26.072 ⏎ r10c8|in|2.030 ⏎ r10c9|in|1 ⏎ r19c3||14 ⏎ r9c3||15 ⏎ r13c3||16 ⏎ r9|#|15 ⏎ r10|*|86072| ⏎ r10|#|13 ⏎ r13|#|16 ⏎ r19|#|14 ⏎ 
+r5c2|in| ⏎ 
+r19c1|gf| ⏎ r17c1|gl| ⏎ r17c2|su| ⏎ r17c3||15 ⏎ r17c6|ti|1:27.378 ⏎ r17c7|ib|1:27.378 ⏎ r17c8|in|3.336 ⏎ r17c9|in|1 ⏎ r9c3||16 ⏎ r13c3||17 ⏎ r9|#|16 ⏎ r11|#|18 ⏎ r13|#|17 ⏎ r15|#|19 ⏎ r17|*|87378| ⏎ r17|#|15 ⏎ 
+r11c1|gf| ⏎ 
+r11c2|su| ⏎ r11c3||1 ⏎ r11c6|tb|1:23.454 ⏎ r11c7|ib|1:23.454 ⏎ r11c9|in|1 ⏎ r3c1|gm| ⏎ r3c3||2 ⏎ r3c6|ti|1:24.042 ⏎ r3c8|in|0.588 ⏎ r6c3||3 ⏎ r6c8|in|0.664 ⏎ r18c3||4 ⏎ r18c8|in|0.804 ⏎ r4c1|gl| ⏎ r4c2|sr| ⏎ r4c3||5 ⏎ r4c8|in|0.929 ⏎ r1c1|gf| ⏎ r1c3||6 ⏎ r1c8|in|1.027 ⏎ r14c3||7 ⏎ r14c8|in|1.032 ⏎ r7c3||8 ⏎ r7c8|in|1.359 ⏎ r5c1|gm| ⏎ r5c3||9 ⏎ r5c8|in|1.409 ⏎ r2c1|gm| ⏎ r2c2|sr| ⏎ r2c3||10 ⏎ r2c8|in|1.730 ⏎ r8c3||11 ⏎ r8c8|in|1.927 ⏎ r12c1|gl| ⏎ r12c3||12 ⏎ r12c8|in|1.957 ⏎ r16c1|gf| ⏎ r16c2|sr| ⏎ r16c3||13 ⏎ r16c8|in|2.386 ⏎ r10c1|gl| ⏎ r10c2|sr| ⏎ r10c3||14 ⏎ r10c8|in|2.618 ⏎ r19c3||15 ⏎ r19c8|in|3.757 ⏎ r17c2|sr| ⏎ r17c3||16 ⏎ r17c8|in|3.924 ⏎ r9c3||17 ⏎ r9c8|in|5.644 ⏎ r13c3||18 ⏎ r13c8|in|6.688 ⏎ r1|#|6 ⏎ r2|#|10 ⏎ r3|#|2 ⏎ r4|#|5 ⏎ r5|#|9 ⏎ r6|#|3 ⏎ r7|#|8 ⏎ r8|#|11 ⏎ r9|#|17 ⏎ r10|#|14 ⏎ r11|*|83454| ⏎ r11|#|1 ⏎ r12|#|12 ⏎ r13|#|18 ⏎ r14|#|7 ⏎ r16|#|13 ⏎ r17|#|16 ⏎ r18|#|4 ⏎ r19|#|15 ⏎ 
+r12c2|in| ⏎ 
+r4c2|in| ⏎ 
+r15c1|gm| ⏎ r15c2|su| ⏎ r15c3||10 ⏎ r15c6|ti|1:25.039 ⏎ r15c7|ib|1:25.039 ⏎ r15c8|in|1.585 ⏎ r15c9|in|1 ⏎ r2c3||11 ⏎ r8c3||12 ⏎ r12c3||13 ⏎ r16c3||14 ⏎ r10c3||15 ⏎ r19c3||16 ⏎ r17c3||17 ⏎ r9c3||18 ⏎ r13c3||19 ⏎ r2|#|11 ⏎ r8|#|12 ⏎ r9|#|18 ⏎ r10|#|15 ⏎ r12|#|13 ⏎ r13|#|19 ⏎ r15|*|85039| ⏎ r15|#|10 ⏎ r16|#|14 ⏎ r17|#|17 ⏎ r19|#|16 ⏎ 
+r13c10|in|0:02 ⏎ 
+r2c2|in| ⏎ 
+r16c2|in| ⏎ 
+r14c10|in|0:02 ⏎ 
+r10c2|in| ⏎ r6c10|in|0:02 ⏎ 
+r17c2|in| ⏎ 
+r11c2|in| ⏎ 
+r15c2|in| ⏎ 
+r1c10|in|0:02 ⏎ 
+r18c10|in|0:02 ⏎ 
+r7c10|in|0:02 ⏎ 
