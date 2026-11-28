@@ -1791,6 +1791,8 @@ function pilotSetup(el) {
 }
 let pilotReady = false;
 function renderPilot(force) {
+  // Solo se pinta si la pestaña abierta es la vista piloto. Si no, un aviso tardío (el «¿Salir?» de 3 s, un mensaje del box, el GPS) volvía a poner la pantalla fija y sin menú encima de otra pestaña.
+  if (document.querySelector('#tabs a.on')?.dataset.v !== 'piloto') { document.body.classList.remove('pilot'); return; }
   const el = $('pilotOut'); if (!el) return;
   if (!pilotKart || !pilotReady) { if (force || !el.querySelector('.kp2')) pilotSetup(el); return; }
   const rows = live ? Object.entries(live.rows).filter(([, r]) => r.no) : [];
